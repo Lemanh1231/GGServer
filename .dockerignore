@@ -1,0 +1,14 @@
+.git
+.gitignore
+.DS_Store
+.claude/
+out/
+patcher/
+ref/
+work/
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.log
