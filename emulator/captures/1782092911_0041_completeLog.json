@@ -1,0 +1,45 @@
+{
+ "path": "/user/completeLog/en/",
+ "call": "completeLog",
+ "command": "user.completeLog",
+ "category": "user",
+ "form_fields": {
+  "call": "completeLog",
+  "tapsonic_data": "<372>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 1:48:31 AM:577"
+ },
+ "request_decoded": {
+  "call": "completeLog",
+  "data": {
+   "u_seq": 100001,
+   "u_id": "guest_100001",
+   "uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "type": "TimeCheat",
+   "id": 0,
+   "value": "User: 6/22/2026 10:48:30 AM / Server : 1767022595 ( 12/30/2025 12:36:35 AM)  / UTC : 6/22/2026 1:48:31 AM / span(sec) : -15070315.279"
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "user.completeLogReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782092911,
+   "datetime": 20260622014831
+  },
+  "mode": "user",
+  "call": "completeLog",
+  "data": {},
+  "maintenance": {}
+ }
+}

@@ -1,0 +1,5 @@
+{
+ "path": "/user/userLogin/en/",
+ "error": "no such table: user_data",
+ "tb": "Traceback (most recent call last):\n  File \"/home/leman/GGServer/GGServer/emulator/server/app.py\", line 185, in do_POST\n    ret_data, error = handlers.handle(simple, req_named, ctx)\n                      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/leman/GGServer/GGServer/emulator/server/handlers/__init__.py\", line 8, in handle\n    return fn(req, None, ctx)\n  File \"/home/leman/GGServer/GGServer/emulator/server/handlers/auth.py\", line 119, in h_user_login\n    user = state.get_user(uuid)\n  File \"/home/leman/GGServer/GGServer/emulator/server/state.py\", line 179, in get_user\n    row = conn.execute('SELECT * FROM user_data WHERE uuid = ?', (uuid,)).fetchone()\n          ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsqlite3.OperationalError: no such table: user_data\n"
+}

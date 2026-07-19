@@ -1,0 +1,397 @@
+{
+ "path": "/user/userSave/en/",
+ "call": "userSave",
+ "command": "user.userSave",
+ "category": "user",
+ "form_fields": {
+  "call": "userSave",
+  "tapsonic_data": "<428>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 2:07:33 AM:388"
+ },
+ "request_decoded": {
+  "call": "userSave",
+  "data": {
+   "u_seq": 100001,
+   "u_id": "guest_100001",
+   "uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "type": "music",
+   "user_music": [
+    {
+     "i_id": 1,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 2,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 3,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 4,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 1,
+     "i_EncoreBonusFollowerId": 2
+    },
+    {
+     "i_id": 5,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 6,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 7,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 8,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 9,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 10,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 11,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 12,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 13,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 14,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 15,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 16,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 17,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 18,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 19,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 20,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 21,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 22,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 23,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 24,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 25,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 26,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 201,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 202,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 203,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 204,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 205,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 206,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 207,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 208,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 209,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 210,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 211,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 212,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 213,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 214,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 215,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 216,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 217,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 218,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 219,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 220,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 221,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 222,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 223,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    },
+    {
+     "i_id": 224,
+     "i_Level": 1,
+     "i_BonusLevel": 0,
+     "b_EncoreBonusAppear": 0,
+     "i_EncoreBonusFollowerId": 0
+    }
+   ]
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "user.userSaveReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782094053,
+   "datetime": 20260622020733
+  },
+  "mode": "user",
+  "call": "userSave",
+  "data": {
+   "status": "Y"
+  },
+  "maintenance": {}
+ }
+}

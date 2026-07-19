@@ -1,0 +1,2185 @@
+{
+ "path": "/user/userLogin/vi/",
+ "call": "userLogin",
+ "command": "user.userLogin",
+ "category": "user",
+ "form_fields": {
+  "call": "userLogin",
+  "tapsonic_data": "<200>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "22/06/2026 8:47:15 SA:887"
+ },
+ "request_decoded": {
+  "call": "userLogin",
+  "data": {
+   "u_seq": 100002,
+   "u_id": "guest_100002",
+   "uuid": "445934321",
+   "device_uuid": "b81c0f9864d7c17f425d175cd31733e9",
+   "u_state": "vn"
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "user.userLoginReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782092836,
+   "datetime": 20260622014716
+  },
+  "mode": "user",
+  "call": "userLogin",
+  "data": {
+   "user": {
+    "u_seq": 100002,
+    "u_id": "guest_100002",
+    "uuid": "445934321",
+    "u_name": "guest_100002",
+    "u_nick": "Guitarist",
+    "u_fans_grade": 1,
+    "u_selected_costume_id": 1,
+    "u_selected_music_id": 1,
+    "u_retain_continuous_tap": 0,
+    "u_join_type": 0,
+    "u_last_login": "2026-06-22 08:46:58",
+    "u_last_communication": "2026-06-22 08:46:58",
+    "u_save_date": "2026-06-22 08:46:58",
+    "u_create_time": "20260622",
+    "u_tutorial_step": 0,
+    "u_review_popup": "N",
+    "device_uuid": "b81c0f9864d7c17f425d175cd31733e9",
+    "u_samseck_step": 0,
+    "u_free_cp": 1000000,
+    "u_charge_cp": 0,
+    "u_cp": 1000000,
+    "u_candy": 100000.0,
+    "u_like": 0.0,
+    "u_fans": 0,
+    "attendance_count": 0,
+    "attendance_date": 0
+   },
+   "area_data": {
+    "1": {
+     "u_area_num": 1,
+     "d_Candy": 0.0,
+     "d_Like": 0.0,
+     "i_UserFanCount": 0,
+     "i_UserFanGrade": 1,
+     "i_SelectedCostumeId": 1,
+     "i_SelectedMusicId": 1,
+     "i_SelectedGuitarId": 1,
+     "s_TutorialList": "",
+     "s_Gp1": "",
+     "s_Gp2": ""
+    },
+    "2": {
+     "u_area_num": 2,
+     "d_Candy": 0.0,
+     "d_Like": 0.0,
+     "i_UserFanCount": 0,
+     "i_UserFanGrade": 1,
+     "i_SelectedCostumeId": 1,
+     "i_SelectedMusicId": 1,
+     "i_SelectedGuitarId": 1,
+     "s_TutorialList": "",
+     "s_Gp1": "",
+     "s_Gp2": ""
+    }
+   },
+   "user_contents": {
+    "user_achievement": [
+     {
+      "i_id": 1,
+      "i_Level": 1,
+      "d_Quantity": 1.0,
+      "s_Quantity": ""
+     },
+     {
+      "i_id": 2,
+      "i_Level": 1,
+      "d_Quantity": 1.0,
+      "s_Quantity": ""
+     },
+     {
+      "i_id": 3,
+      "i_Level": 1,
+      "d_Quantity": 1.0,
+      "s_Quantity": ""
+     },
+     {
+      "i_id": 4,
+      "i_Level": 1,
+      "d_Quantity": 1.0,
+      "s_Quantity": ""
+     },
+     {
+      "i_id": 5,
+      "i_Level": 1,
+      "d_Quantity": 1.0,
+      "s_Quantity": ""
+     },
+     {
+      "i_id": 6,
+      "i_Level": 1,
+      "d_Quantity": 1.0,
+      "s_Quantity": ""
+     },
+     {
+      "i_id": 7,
+      "i_Level": 1,
+      "d_Quantity": 1.0,
+      "s_Quantity": ""
+     },
+     {
+      "i_id": 8,
+      "i_Level": 1,
+      "d_Quantity": 1.0,
+      "s_Quantity": ""
+     },
+     {
+      "i_id": 9,
+      "i_Level": 1,
+      "d_Quantity": 1.0,
+      "s_Quantity": ""
+     },
+     {
+      "i_id": 10,
+      "i_Level": 1,
+      "d_Quantity": 1.0,
+      "s_Quantity": ""
+     }
+    ],
+    "user_candy_shop": [
+     {
+      "i_id": 1,
+      "i_CurrentBuyCount": 1,
+      "i_TotalBuyCount": 1,
+      "l_LastBuyTick": 1767022695,
+      "upd_day": 20251230
+     },
+     {
+      "i_id": 2,
+      "i_CurrentBuyCount": 1,
+      "i_TotalBuyCount": 1,
+      "l_LastBuyTick": 1767114498,
+      "upd_day": 20251231
+     }
+    ],
+    "user_character": [
+     {
+      "i_id": 1,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     }
+    ],
+    "user_costume": [
+     {
+      "i_id": 1,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 2,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 3,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 4,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 5,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 6,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 7,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 8,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 9,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 10,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 11,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 12,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 13,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 14,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 15,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 16,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 17,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 18,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 19,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 20,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 21,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 22,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 23,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 24,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 25,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 26,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 27,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 28,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 29,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 30,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 31,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 32,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 201,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 202,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 203,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 204,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 205,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 206,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 207,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 208,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 209,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 210,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 211,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 212,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 213,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 214,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 215,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 216,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 217,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 218,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 219,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 220,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 221,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 222,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 223,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 224,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 225,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 226,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 227,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 228,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 229,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     }
+    ],
+    "user_daily_mission": [
+     {
+      "i_id": 1,
+      "i_Level": 1,
+      "d_Quantity": 1,
+      "upd_date": "2025-12-30 00:37:17"
+     },
+     {
+      "i_id": 2,
+      "i_Level": 1,
+      "d_Quantity": 23,
+      "upd_date": ""
+     },
+     {
+      "i_id": 3,
+      "i_Level": 1,
+      "d_Quantity": 0,
+      "upd_date": ""
+     },
+     {
+      "i_id": 4,
+      "i_Level": 1,
+      "d_Quantity": 1,
+      "upd_date": ""
+     },
+     {
+      "i_id": 5,
+      "i_Level": 1,
+      "d_Quantity": 902,
+      "upd_date": ""
+     },
+     {
+      "i_id": 6,
+      "i_Level": 1,
+      "d_Quantity": 0,
+      "upd_date": ""
+     }
+    ],
+    "user_follower": [
+     {
+      "i_id": 1,
+      "i_Level": 125,
+      "i_BonusLevel": 5
+     },
+     {
+      "i_id": 2,
+      "i_Level": 48,
+      "i_BonusLevel": 1
+     },
+     {
+      "i_id": 3,
+      "i_Level": 13,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 4,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     }
+    ],
+    "user_music": [
+     {
+      "i_id": 1,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 2,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 3,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 4,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 5,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 6,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 7,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 8,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 9,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 10,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 11,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 12,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 13,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 14,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 15,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 16,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 17,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 18,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 19,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 20,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 21,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 22,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 23,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 24,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 25,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 26,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 201,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 202,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 203,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 204,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 205,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 206,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 207,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 208,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 209,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 210,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 211,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 212,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 213,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 214,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 215,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 216,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 217,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 218,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 219,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 220,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 221,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 222,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 223,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     },
+     {
+      "i_id": 224,
+      "i_Level": 1,
+      "i_BonusLevel": 0,
+      "b_EncoreBonusAppear": 0,
+      "l_EncoreBonusActivateTime": 0,
+      "i_EncoreBonusFollowerId": 0,
+      "i_ChThirdActiveTime": 0
+     }
+    ],
+    "user_prop": [
+     {
+      "i_id": 1,
+      "i_Level": 1
+     },
+     {
+      "i_id": 2,
+      "i_Level": 1
+     }
+    ],
+    "user_unit": [
+     {
+      "i_id": 1,
+      "i_Level": 1
+     }
+    ],
+    "user_skill": [
+     {
+      "i_id": 1,
+      "i_Level": 1,
+      "b_Activate": 0,
+      "l_ActivateOnTicks": 0,
+      "l_ActivateOffTicks": 0
+     },
+     {
+      "i_id": 4,
+      "i_Level": 1,
+      "b_Activate": 0,
+      "l_ActivateOnTicks": 0,
+      "l_ActivateOffTicks": 0
+     }
+    ],
+    "user_shop": [],
+    "user_messenger": [
+     {
+      "i_MessengerChatRoomId": 1,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 2,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 3,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 4,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 5,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 6,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 7,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 8,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 9,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 10,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 11,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 12,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 13,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 14,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 15,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 203,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 204,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 205,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 206,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 207,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 208,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     },
+     {
+      "i_MessengerChatRoomId": 100000,
+      "i_LastConfirmIndex": 9999,
+      "s_UnlockGroupList": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49",
+      "l_UpdateTimeTicks": 639013642974540000
+     }
+    ],
+    "user_guitar": [
+     {
+      "i_id": 1,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 2,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 3,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 4,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 5,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 6,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 7,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 8,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 9,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 10,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 11,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 12,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 13,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 14,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 15,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 16,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 17,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 18,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 19,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 20,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 21,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 22,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 23,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 24,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 25,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 26,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 27,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 28,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 29,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 30,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 31,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 32,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 33,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 34,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 35,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 36,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 37,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 38,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 39,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 40,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 201,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 202,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 203,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 204,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 205,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 206,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 207,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 208,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 209,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 210,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 211,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 212,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 214,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 215,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 216,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 217,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 218,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 219,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 220,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 221,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 222,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 223,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 224,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 225,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 226,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 227,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 228,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 229,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 230,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 231,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 232,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 233,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 234,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 235,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 236,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 237,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 238,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 239,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 240,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 241,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 242,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 243,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 244,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 245,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     },
+     {
+      "i_id": 246,
+      "i_Level": 1,
+      "i_BonusLevel": 0
+     }
+    ],
+    "user_event_point": [
+     {
+      "s_EventType": "Pass",
+      "i_DataID": 5,
+      "i_Point": 3715,
+      "i_Step": 1,
+      "i_ADViewTime": 0,
+      "i_Version": 5
+     }
+    ],
+    "user_subscribe_pass_reward": [
+     {
+      "i_SubscribeID": 5,
+      "i_Type": 0,
+      "i_Step": 0,
+      "i_UpdateTime": 1765734537,
+      "i_Version": 5
+     },
+     {
+      "i_SubscribeID": 5,
+      "i_Type": 0,
+      "i_Step": 1,
+      "i_UpdateTime": 1767114615,
+      "i_Version": 5
+     }
+    ],
+    "user_ticketcollection": [
+     {
+      "i_id": 1
+     },
+     {
+      "i_id": 2
+     },
+     {
+      "i_id": 3
+     },
+     {
+      "i_id": 4
+     },
+     {
+      "i_id": 5
+     },
+     {
+      "i_id": 6
+     },
+     {
+      "i_id": 7
+     },
+     {
+      "i_id": 8
+     },
+     {
+      "i_id": 9
+     },
+     {
+      "i_id": 10
+     },
+     {
+      "i_id": 11
+     },
+     {
+      "i_id": 12
+     },
+     {
+      "i_id": 13
+     }
+    ],
+    "user_follower_profile_reward": [
+     {
+      "i_id": 1,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 1,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 1,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 1,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 1,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 2,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 2,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 2,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 2,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 2,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 3,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 3,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 3,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 3,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 3,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 4,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 4,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 4,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 4,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 4,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 5,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 5,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 5,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 5,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 5,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 6,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 6,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 6,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 6,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 6,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 7,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 7,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 7,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 7,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 7,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 8,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 8,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 8,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 8,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 8,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 9,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 9,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 9,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 9,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 9,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 10,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 10,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 10,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 10,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 10,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 11,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 11,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 11,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 11,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 11,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 12,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 12,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 12,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 12,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 12,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 13,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 13,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 13,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 13,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 13,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 14,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 14,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 14,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 14,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 14,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 15,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 15,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 15,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 15,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 15,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 201,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 201,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 201,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 201,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 201,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 202,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 202,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 202,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 202,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 202,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 203,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 203,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 203,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 203,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 203,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 204,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 204,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 204,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 204,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 204,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 205,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 205,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 205,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 205,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 205,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 206,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 206,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 206,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 206,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 206,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 207,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 207,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 207,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 207,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 207,
+      "i_RewardLevel": 5
+     },
+     {
+      "i_id": 208,
+      "i_RewardLevel": 1
+     },
+     {
+      "i_id": 208,
+      "i_RewardLevel": 2
+     },
+     {
+      "i_id": 208,
+      "i_RewardLevel": 3
+     },
+     {
+      "i_id": 208,
+      "i_RewardLevel": 4
+     },
+     {
+      "i_id": 208,
+      "i_RewardLevel": 5
+     }
+    ],
+    "user_follower_profile": [
+     {
+      "i_id": 1,
+      "i_Level": 3,
+      "d_Exp": 150,
+      "i_AddCandy": 0
+     },
+     {
+      "i_id": 2,
+      "i_Level": 2,
+      "d_Exp": 110,
+      "i_AddCandy": 0
+     },
+     {
+      "i_id": 3,
+      "i_Level": 2,
+      "d_Exp": 70,
+      "i_AddCandy": 0
+     }
+    ],
+    "user_follower_giftitem": [
+     {
+      "i_id": 1,
+      "i_Value": 141
+     }
+    ],
+    "user_tutorial": [
+     {
+      "i_id": 1
+     },
+     {
+      "i_id": 2
+     },
+     {
+      "i_id": 3
+     },
+     {
+      "i_id": 4
+     },
+     {
+      "i_id": 5
+     },
+     {
+      "i_id": 6
+     },
+     {
+      "i_id": 7
+     }
+    ],
+    "user_ad_level": [
+     {
+      "i_id": 210010,
+      "i_Level": 1,
+      "i_EXP": 1
+     }
+    ]
+   }
+  },
+  "maintenance": {}
+ }
+}

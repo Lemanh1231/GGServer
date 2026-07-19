@@ -1,0 +1,152 @@
+{
+ "path": "/main/defaultSettingList/en/",
+ "call": "defaultSettingList",
+ "command": "main.defaultSettingList",
+ "category": "main",
+ "form_fields": {
+  "call": "defaultSettingList",
+  "tapsonic_data": "<160>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 2:08:04 AM:656"
+ },
+ "request_decoded": {
+  "call": "defaultSettingList",
+  "data": {
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "os": 1
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "main.defaultSettingListReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782094084,
+   "datetime": 20260622020804
+  },
+  "mode": "main",
+  "call": "defaultSettingList",
+  "data": {
+   "status": "Y",
+   "setting_list": [
+    {
+     "setting_key": "shop_call_wait",
+     "setting_value": "2"
+    },
+    {
+     "setting_key": "ad_cancel_delay",
+     "setting_value": "5"
+    },
+    {
+     "setting_key": "force_menu_restric",
+     "setting_value": "true"
+    },
+    {
+     "setting_key": "max_bundle_texutre_loading",
+     "setting_value": "1"
+    },
+    {
+     "setting_key": "weather_snow",
+     "setting_value": "true"
+    },
+    {
+     "setting_key": "check_time_cheat",
+     "setting_value": "false"
+    },
+    {
+     "setting_key": "ap_max",
+     "setting_value": "60"
+    },
+    {
+     "setting_key": "ap_time",
+     "setting_value": "300"
+    },
+    {
+     "setting_key": "ap_use",
+     "setting_value": "5"
+    },
+    {
+     "setting_key": "character_exp",
+     "setting_value": "45"
+    },
+    {
+     "setting_key": "ap_shop_id",
+     "setting_value": "31"
+    },
+    {
+     "setting_key": "ap_ad_list_id",
+     "setting_value": "2"
+    },
+    {
+     "setting_key": "ch_third_unlock_follower_id",
+     "setting_value": "5"
+    },
+    {
+     "setting_key": "ch_third_unlock_follower_level",
+     "setting_value": "1"
+    },
+    {
+     "setting_key": "ad_follower_profile_exp_persent",
+     "setting_value": "0.1"
+    },
+    {
+     "setting_key": "follower_profile_bonus_percent",
+     "setting_value": "1"
+    },
+    {
+     "setting_key": "spine_load_max_count",
+     "setting_value": "0"
+    },
+    {
+     "setting_key": "log_flag",
+     "setting_value": "true"
+    },
+    {
+     "setting_key": "weather_cherry_blossom",
+     "setting_value": "false"
+    },
+    {
+     "setting_key": "active_goods_ticket_buff",
+     "setting_value": "true"
+    },
+    {
+     "setting_key": "active_fan_art_costume",
+     "setting_value": "true"
+    },
+    {
+     "setting_key": "pass_goods_sale_start_time",
+     "setting_value": "2022-02-19 00:00"
+    },
+    {
+     "setting_key": "pass_goods_sale_end_time",
+     "setting_value": "2999-02-27 23:59"
+    },
+    {
+     "setting_key": "attendacne_buff_value",
+     "setting_value": "0.01"
+    },
+    {
+     "setting_key": "attendacne_buff_limit_day",
+     "setting_value": "10000"
+    },
+    {
+     "setting_key": "log_flag_unfinished_purchase",
+     "setting_value": "true"
+    },
+    {
+     "setting_key": "jp_laws_flag",
+     "setting_value": "true"
+    }
+   ]
+  },
+  "maintenance": {}
+ }
+}

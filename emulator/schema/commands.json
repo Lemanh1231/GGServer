@@ -1,0 +1,667 @@
+{
+ "music.getReviewPoint": {
+  "return": "music.getReviewPointReturn",
+  "retdata": null,
+  "reqdata": "music.getAlbumDataInfo"
+ },
+ "user.setGameReward": {
+  "return": "user.setGameRewardReturn",
+  "retdata": "user.setGameRewardRetDataInfo",
+  "reqdata": "user.setGameRewardDataInfo"
+ },
+ "tour.getTourList": {
+  "return": "tour.getTourListReturn",
+  "retdata": null,
+  "reqdata": "tour.getTourListDataInfo"
+ },
+ "user.updateScore": {
+  "return": "user.updateScoreReturn",
+  "retdata": "user.updateScoreRetDataInfo",
+  "reqdata": "user.updateScoreDataInfo"
+ },
+ "user.setEventReward": {
+  "return": "user.setEventRewardReturn",
+  "retdata": "user.setEventRewardRetDataInfo",
+  "reqdata": "user.setEventRewardDataInfo"
+ },
+ "user.getPurchaseDiamondLog": {
+  "return": "user.getPurchaseDiamondLogReturn",
+  "retdata": "user.getPurchaseDiamondLogRetDataInfo",
+  "reqdata": "user.getPurchaseDiamondLogDataInfo"
+ },
+ "user.getProfile": {
+  "return": "user.getProfileReturn",
+  "retdata": "user.getProfileRetDataInfo",
+  "reqdata": "user.getProfileDataInfo"
+ },
+ "user.useCoupon": {
+  "return": "user.useCouponReturn",
+  "retdata": "user.useCouponRetDataInfo",
+  "reqdata": "user.useCouponDataInfo"
+ },
+ "store.buyCheck": {
+  "return": "store.buyCheckReturn",
+  "retdata": "store.buyCheckRetDataInfo",
+  "reqdata": "store.buyCheckDataInfo"
+ },
+ "store.itemStoreList": {
+  "return": "store.itemStoreListReturn",
+  "retdata": null,
+  "reqdata": "store.itemStoreListDataInfo"
+ },
+ "main.getNoticeList": {
+  "return": "main.getNoticeListReturn",
+  "retdata": null,
+  "reqdata": "main.getNoticeListDataInfo"
+ },
+ "user.updateAchievement": {
+  "return": "user.updateAchievementReturn",
+  "retdata": "user.updateAchievementRetDataInfo",
+  "reqdata": "user.updateAchievementDataInfo"
+ },
+ "user.getProfileMusic": {
+  "return": "user.getProfileMusicReturn",
+  "retdata": null,
+  "reqdata": "user.getProfileMusicDataInfo"
+ },
+ "user.getMusicReward": {
+  "return": "user.getMusicRewardReturn",
+  "retdata": "user.getMusicRewardRetDataInfo",
+  "reqdata": "user.getMusicRewardDataInfo"
+ },
+ "tour.playCheck": {
+  "return": "tour.playCheckReturn",
+  "retdata": "tour.playCheckRetDataInfo",
+  "reqdata": "tour.playCheckDataInfo"
+ },
+ "user.setAttendance": {
+  "return": "user.setAttendanceReturn",
+  "retdata": "user.setAttendanceRetDataInfo",
+  "reqdata": "user.setAttendanceDataInfo"
+ },
+ "post.getPost": {
+  "return": "post.getPostReturn",
+  "retdata": "post.getPostRetDataInfo",
+  "reqdata": "post.getPostDataInfo"
+ },
+ "music.getMusicList": {
+  "return": "music.getMusicListReturn",
+  "retdata": null,
+  "reqdata": "music.getMusicListDataInfo"
+ },
+ "user.deleteUser": {
+  "return": "user.deleteUserReturn",
+  "retdata": "user.deleteUserRetDataInfo",
+  "reqdata": "user.deleteUserDataInfo"
+ },
+ "main.avatarList": {
+  "return": "main.avatarListReturn",
+  "retdata": null,
+  "reqdata": "main.avatarListDataInfo"
+ },
+ "user.changeUser": {
+  "return": "user.changeUserReturn",
+  "retdata": "user.changeUserRetDataInfo",
+  "reqdata": "user.changeUserDataInfo"
+ },
+ "user.setUserFollowerProfileReward": {
+  "return": "user.setUserFollowerProfileRewardReturn",
+  "retdata": null,
+  "reqdata": "user.setUserFollowerProfileRewardDataInfo"
+ },
+ "music.getCache": {
+  "return": "music.getCacheReturn",
+  "retdata": "music.getCacheRetDataInfo",
+  "reqdata": "music.getCacheDataInfo"
+ },
+ "user.setUserGP": {
+  "return": "user.setUserGPReturn",
+  "retdata": "user.setUserGPRetDataInfo",
+  "reqdata": "user.setUserGPDataInfo"
+ },
+ "user.updateNickName": {
+  "return": "user.updateNickNameReturn",
+  "retdata": "user.updateNickNameRetDataInfo",
+  "reqdata": "user.updateNickNameDataInfo"
+ },
+ "main.main": {
+  "return": "main.mainReturn",
+  "retdata": "main.mainRetDataInfo",
+  "reqdata": "main.mainDataInfo"
+ },
+ "user.setTutorial": {
+  "return": "user.setTutorialReturn",
+  "retdata": "user.setTutorialRetDataInfo",
+  "reqdata": "user.setTutorialDataInfo"
+ },
+ "user.checkPurchased": {
+  "return": "user.checkPurchasedReturn",
+  "retdata": "user.checkPurchasedRetDataInfo",
+  "reqdata": "user.checkPurchasedDataInfo"
+ },
+ "user.getUserInfo": {
+  "return": "user.getUserInfoReturn",
+  "retdata": "user.getUserInfoRetDataInfo",
+  "reqdata": "user.getUserInfoDataInfo"
+ },
+ "main.defaultSettingList": {
+  "return": "main.defaultSettingListReturn",
+  "retdata": "main.defaultSettingListRetDataInfo",
+  "reqdata": "main.defaultSettingListDataInfo"
+ },
+ "eventMode.getSamSeckReward": {
+  "return": "eventMode.getSamSeckRewardReturn",
+  "retdata": "eventMode.getSamSeckRewardRetDataInfo",
+  "reqdata": "eventMode.getSamSeckRewardDataInfo"
+ },
+ "user.buyUserTitle": {
+  "return": "user.buyUserTitleReturn",
+  "retdata": "user.buyUserTitleRetDataInfo",
+  "reqdata": "user.buyUserTitleDataInfo"
+ },
+ "user.userJoin": {
+  "return": "user.userJoinReturn",
+  "retdata": "user.userJoinRetDataInfo",
+  "reqdata": "user.userJoinDataInfo"
+ },
+ "user.useCredit": {
+  "return": "user.useCreditReturn",
+  "retdata": "user.useCreditRetDataInfo",
+  "reqdata": "user.useCreditDataInfo"
+ },
+ "user.getAllPoint": {
+  "return": "user.getAllPointReturn",
+  "retdata": "user.getAllPointRetDataInfo",
+  "reqdata": "user.getAllPointDataInfo"
+ },
+ "user.logCashComplete": {
+  "return": "user.logCashCompleteReturn",
+  "retdata": "user.logCashCompleteRetDataInfo",
+  "reqdata": "user.logCashCompleteDataInfo"
+ },
+ "user.musicPointReview": {
+  "return": "user.musicPointReviewReturn",
+  "retdata": null,
+  "reqdata": "user.musicPointReviewDataInfo"
+ },
+ "rank.getCountryMyRank": {
+  "return": "rank.getCountryMyRankReturn",
+  "retdata": "rank.getCountryMyRankRetDataInfo",
+  "reqdata": "rank.getCountryMyRankDataInfo"
+ },
+ "user.userLogin": {
+  "return": "user.userLoginReturn",
+  "retdata": "user.userLoginRetDataInfo",
+  "reqdata": "user.userLoginDataInfo"
+ },
+ "user.userLoad": {
+  "return": "user.userLoadReturn",
+  "retdata": "user.userLoadRetDataInfo",
+  "reqdata": "user.userLoadDataInfo"
+ },
+ "store.storeNotice": {
+  "return": "store.storeNoticeReturn",
+  "retdata": null,
+  "reqdata": "store.storeNoticeDataInfo"
+ },
+ "rank.getMastersRank": {
+  "return": "rank.getMastersRankReturn",
+  "retdata": "rank.getMastersRankRetDataInfo",
+  "reqdata": "rank.getMastersRankDataInfo"
+ },
+ "user.getDiamondBonus": {
+  "return": "user.getDiamondBonusReturn",
+  "retdata": "user.getDiamondBonusRetDataInfo",
+  "reqdata": "user.getDiamondBonusDataInfo"
+ },
+ "main.getLocalPush": {
+  "return": "main.getLocalPushReturn",
+  "retdata": null,
+  "reqdata": "main.getLocalPushDataInfo"
+ },
+ "user.lastSaveTime": {
+  "return": "user.lastSaveTimeReturn",
+  "retdata": "user.lastSaveTimeRetDataInfo",
+  "reqdata": "user.lastSaveTimeDataInfo"
+ },
+ "user.getTransferId": {
+  "return": "user.getTransferIdReturn",
+  "retdata": "user.getTransferIdRetDataInfo",
+  "reqdata": "user.getTransferIdDataInfo"
+ },
+ "user.userDel": {
+  "return": "user.userDelReturn",
+  "retdata": "user.userDelRetDataInfo",
+  "reqdata": "user.userDelDataInfo"
+ },
+ "user.setBookmark": {
+  "return": "user.setBookmarkReturn",
+  "retdata": null,
+  "reqdata": "user.setBookmarkDataInfo"
+ },
+ "user.setFollowerQuestInfinite": {
+  "return": "user.setFollowerQuestInfiniteReturn",
+  "retdata": "user.setFollowerQuestInfiniteRetDataInfo",
+  "reqdata": "user.setFollowerQuestInfiniteDataInfo"
+ },
+ "user.buyCollectionItem": {
+  "return": "user.buyCollectionItemReturn",
+  "retdata": "user.buyCollectionItemRetDataInfo",
+  "reqdata": "user.buyCollectionItemDataInfo"
+ },
+ "tour.endPlayMusic": {
+  "return": "tour.endPlayMusicReturn",
+  "retdata": "tour.endPlayMusicRetDataInfo",
+  "reqdata": "tour.endPlayMusicDataInfo"
+ },
+ "user.getChThirdStarReward": {
+  "return": "user.getChThirdStarRewardReturn",
+  "retdata": "user.getChThirdStarRewardRetDataInfo",
+  "reqdata": "user.getChThirdStarRewardDataInfo"
+ },
+ "user.playMusic": {
+  "return": "user.playMusicReturn",
+  "retdata": "user.playMusicRetDataInfo",
+  "reqdata": "user.playMusicDataInfo"
+ },
+ "post.providePost": {
+  "return": "post.providePostReturn",
+  "retdata": null,
+  "reqdata": "post.providePostDataInfo"
+ },
+ "main.moreGames": {
+  "return": "main.moreGamesReturn",
+  "retdata": null,
+  "reqdata": "main.moreGamesDataInfo"
+ },
+ "eventMode.eventRewardList": {
+  "return": "eventMode.eventRewardListReturn",
+  "retdata": "eventMode.eventRewardListRetDataInfo",
+  "reqdata": "eventMode.eventRewardListDataInfo"
+ },
+ "user.paidEventPoint": {
+  "return": "user.paidEventPointReturn",
+  "retdata": "user.paidEventPointRetDataInfo",
+  "reqdata": "user.paidEventPointDataInfo"
+ },
+ "user.MoreGamesLog": {
+  "return": "user.MoreGamesLogReturn",
+  "retdata": "user.MoreGamesLogRetDataInfo",
+  "reqdata": "user.MoreGamesLogDataInfo"
+ },
+ "main.getGameDataList": {
+  "return": "main.getGameDataListReturn",
+  "retdata": null,
+  "reqdata": "main.getGameDataListDataInfo"
+ },
+ "user.buyCheck": {
+  "return": "user.buyCheckReturn",
+  "retdata": "user.buyCheckRetDataInfo",
+  "reqdata": "user.buyCheckDataInfo"
+ },
+ "rank.getRankMain": {
+  "return": "rank.getRankMainReturn",
+  "retdata": "rank.getRankMainRetDataInfo",
+  "reqdata": "rank.getRankMainDataInfo"
+ },
+ "main.storeList": {
+  "return": "main.storeListReturn",
+  "retdata": null,
+  "reqdata": "main.storeListDataInfo"
+ },
+ "user.setUserFollowerQuest": {
+  "return": "user.setUserFollowerQuestReturn",
+  "retdata": "user.setUserFollowerQuestRetDataInfo",
+  "reqdata": "user.setUserFollowerQuestDataInfo"
+ },
+ "main.getCollection": {
+  "return": "main.getCollectionReturn",
+  "retdata": null,
+  "reqdata": "main.getCollectionDataInfo"
+ },
+ "user.getChoiceUser": {
+  "return": "user.getChoiceUserReturn",
+  "retdata": "user.getChoiceUserRetDataInfo",
+  "reqdata": "user.getChoiceUserDataInfo"
+ },
+ "main.Request": {
+  "return": null,
+  "retdata": null,
+  "reqdata": "main.initDataInfo"
+ },
+ "user.buyExtraMode": {
+  "return": "user.buyExtraModeReturn",
+  "retdata": "user.buyExtraModeRetDataInfo",
+  "reqdata": "user.buyExtraModeDataInfo"
+ },
+ "user.userSave": {
+  "return": "user.userSaveReturn",
+  "retdata": "user.userSaveRetDataInfo",
+  "reqdata": "user.userSaveDataInfo"
+ },
+ "user.buyCollectionMusic": {
+  "return": "user.buyCollectionMusicReturn",
+  "retdata": "user.buyCollectionMusicRetDataInfo",
+  "reqdata": "user.buyCollectionMusicDataInfo"
+ },
+ "post.readPost": {
+  "return": "post.readPostReturn",
+  "retdata": "post.readPostRetDataInfo",
+  "reqdata": "post.readPostDataInfo"
+ },
+ "user.itemPurchase": {
+  "return": "user.itemPurchaseReturn",
+  "retdata": "user.itemPurchaseRetDataInfo",
+  "reqdata": "user.itemPurchaseDataInfo"
+ },
+ "user.buyPiece": {
+  "return": "user.buyPieceReturn",
+  "retdata": "user.buyPieceRetDataInfo",
+  "reqdata": "user.buyPieceDataInfo"
+ },
+ "user.buyMusic": {
+  "return": "user.buyMusicReturn",
+  "retdata": "user.buyMusicRetDataInfo",
+  "reqdata": "user.buyMusicDataInfo"
+ },
+ "main.getTabList": {
+  "return": "main.getTabListReturn",
+  "retdata": null,
+  "reqdata": "main.initDataInfo"
+ },
+ "user.checkBuyProduct": {
+  "return": "user.checkBuyProductReturn",
+  "retdata": "user.checkBuyProductRetDataInfo",
+  "reqdata": "user.checkBuyProductDataInfo"
+ },
+ "user.updateUserTitle": {
+  "return": "user.updateUserTitleReturn",
+  "retdata": "user.updateUserTitleRetDataInfo",
+  "reqdata": "user.updateUserTitleDataInfo"
+ },
+ "store.storeList": {
+  "return": "store.storeListReturn",
+  "retdata": null,
+  "reqdata": "store.storeListDataInfo"
+ },
+ "user.setTutorialNew": {
+  "return": "user.setTutorialNewReturn",
+  "retdata": "user.setTutorialNewRetDataInfo",
+  "reqdata": "user.setTutorialNewDataInfo"
+ },
+ "user.transferUser": {
+  "return": "user.transferUserReturn",
+  "retdata": "user.transferUserRetDataInfo",
+  "reqdata": "user.transferUserDataInfo"
+ },
+ "post.getPostTime": {
+  "return": "post.getPostTimeReturn",
+  "retdata": "post.getPostTimeRetDataInfo",
+  "reqdata": "post.getPostTimeDataInfo"
+ },
+ "user.buyItem": {
+  "return": "user.buyItemReturn",
+  "retdata": "user.buyItemRetDataInfo",
+  "reqdata": "user.buyItemDataInfo"
+ },
+ "main.getServerTime": {
+  "return": "main.getServerTimeReturn",
+  "retdata": "main.getServerTimeRetDataInfo",
+  "reqdata": "main.mainDataInfo"
+ },
+ "music.getAlbumList": {
+  "return": "music.getAlbumListReturn",
+  "retdata": null,
+  "reqdata": "music.getAlbumListDataInfo"
+ },
+ "user.adViewLog": {
+  "return": "user.adViewLogReturn",
+  "retdata": "user.adViewLogRetDataInfo",
+  "reqdata": "user.adViewLogDataInfo"
+ },
+ "store.buyShop": {
+  "return": "store.buyShopReturn",
+  "retdata": "store.buyShopRetDataInfo",
+  "reqdata": "store.buyShopDataInfo"
+ },
+ "main.titleList": {
+  "return": "main.titleListReturn",
+  "retdata": null,
+  "reqdata": "main.titleListDataInfo"
+ },
+ "store.buyVarietyStore": {
+  "return": "store.buyVarietyStoreReturn",
+  "retdata": "store.buyVarietyStoreRetDataInfo",
+  "reqdata": "store.buyVarietyStoreDataInfo"
+ },
+ "user.setPassReward": {
+  "return": "user.setPassRewardReturn",
+  "retdata": "user.setPassRewardRetDataInfo",
+  "reqdata": "user.setPassRewardDataInfo"
+ },
+ "eventMode.getEventMain": {
+  "return": "eventMode.getEventMainReturn",
+  "retdata": "eventMode.getEventMainRetDataInfo",
+  "reqdata": "eventMode.getEventMainDataInfo"
+ },
+ "user.completeLog": {
+  "return": "user.completeLogReturn",
+  "retdata": "user.completeLogRetDataInfo",
+  "reqdata": "user.completeLogDataInfo"
+ },
+ "music.getAlbumInfoList": {
+  "return": "music.getAlbumInfoListReturn",
+  "retdata": null,
+  "reqdata": "music.getAlbumListDataInfo"
+ },
+ "music.getAlbum": {
+  "return": "music.getAlbumReturn",
+  "retdata": null,
+  "reqdata": "music.getAlbumDataInfo"
+ },
+ "user.updateAvatar": {
+  "return": "user.updateAvatarReturn",
+  "retdata": "user.updateAvatarRetDataInfo",
+  "reqdata": "user.updateAvatarDataInfo"
+ },
+ "tour.playMusic": {
+  "return": "tour.playMusicReturn",
+  "retdata": "tour.playMusicRetDataInfo",
+  "reqdata": "tour.playMusicDataInfo"
+ },
+ "user.getUserCollection": {
+  "return": "user.getUserCollectionReturn",
+  "retdata": null,
+  "reqdata": "user.getUserCollectionDataInfo"
+ },
+ "multi.getServerList": {
+  "return": "multi.getServerListReturn",
+  "retdata": "multi.getServerListRetDataInfo",
+  "reqdata": "multi.getServerListDataInfo"
+ },
+ "rank.getTotalCountryRank": {
+  "return": "rank.getTotalCountryRankReturn",
+  "retdata": "rank.getTotalCountryRankRetDataInfo",
+  "reqdata": "rank.getTotalCountryRankDataInfo"
+ },
+ "music.getMusicInfoList": {
+  "return": "music.getMusicInfoListReturn",
+  "retdata": null,
+  "reqdata": "music.getMusicInfoListDataInfo"
+ },
+ "user.challengeMissionList": {
+  "return": "user.challengeMissionListReturn",
+  "retdata": "user.challengeMissionListRetDataInfo",
+  "reqdata": "user.challengeMissionListDataInfo"
+ },
+ "store.getVarietyStore": {
+  "return": "store.getVarietyStoreReturn",
+  "retdata": null,
+  "reqdata": "store.getVarietyStoreDataInfo"
+ },
+ "user.chThirdStage": {
+  "return": "user.chThirdStageReturn",
+  "retdata": "user.chThirdStageRetDataInfo",
+  "reqdata": "user.chThirdStageDataInfo"
+ },
+ "user.userPurchase": {
+  "return": "user.userPurchaseReturn",
+  "retdata": "user.userPurchaseRetDataInfo",
+  "reqdata": "user.userPurchaseDataInfo"
+ },
+ "user.chThirdStreamStage": {
+  "return": "user.chThirdStreamStageReturn",
+  "retdata": "user.chThirdStreamStageRetDataInfo",
+  "reqdata": "user.chThirdStreamStageDataInfo"
+ },
+ "user.setReviewPopup": {
+  "return": "user.setReviewPopupReturn",
+  "retdata": "user.setReviewPopupRetDataInfo",
+  "reqdata": "user.setReviewPopupDataInfo"
+ },
+ "rank.getMusicRank": {
+  "return": "rank.getMusicRankReturn",
+  "retdata": "rank.getMusicRankRetDataInfo",
+  "reqdata": "rank.getMusicRankDataInfo"
+ },
+ "user.checkUser": {
+  "return": "user.checkUserReturn",
+  "retdata": "user.checkUserRetDataInfo",
+  "reqdata": "user.checkUserDataInfo"
+ },
+ "user.buyVarietyStore": {
+  "return": "user.buyVarietyStoreReturn",
+  "retdata": "user.buyVarietyStoreRetDataInfo",
+  "reqdata": "user.buyVarietyStoreDataInfo"
+ },
+ "user.buyAvatar": {
+  "return": "user.buyAvatarReturn",
+  "retdata": "user.buyAvatarRetDataInfo",
+  "reqdata": "user.buyAvatarDataInfo"
+ },
+ "user.setSelectReward": {
+  "return": "user.setSelectRewardReturn",
+  "retdata": "user.setSelectRewardRetDataInfo",
+  "reqdata": "user.setSelectRewardDataInfo"
+ },
+ "rank.getTotalMusicRank": {
+  "return": "rank.getTotalMusicRankReturn",
+  "retdata": null,
+  "reqdata": "rank.getTotalMusicRankDataInfo"
+ },
+ "user.getChThird": {
+  "return": "user.getChThirdReturn",
+  "retdata": "user.getChThirdRetDataInfo",
+  "reqdata": "user.getChThirdDataInfo"
+ },
+ "user.facebookUserJoin": {
+  "return": null,
+  "retdata": null,
+  "reqdata": "user.facebookUserJoinDataInfo"
+ },
+ "post.deletePost": {
+  "return": "post.deletePostReturn",
+  "retdata": "post.deletePostRetDataInfo",
+  "reqdata": "post.deletePostDataInfo"
+ },
+ "user.setAdReward": {
+  "return": "user.setAdRewardReturn",
+  "retdata": "user.setAdRewardRetDataInfo",
+  "reqdata": "user.setAdRewardDataInfo"
+ },
+ "user.setFollowerProfileGift": {
+  "return": "user.setFollowerProfileGiftReturn",
+  "retdata": "user.setFollowerProfileGiftRetDataInfo",
+  "reqdata": "user.setFollowerProfileGiftDataInfo"
+ },
+ "eventMode.getEventRank": {
+  "return": "eventMode.getEventRankReturn",
+  "retdata": null,
+  "reqdata": "eventMode.getEventRankDataInfo"
+ },
+ "user.userTitleList": {
+  "return": "user.userTitleListReturn",
+  "retdata": "user.userTitleListRetDataInfo",
+  "reqdata": "user.userTitleListDataInfo"
+ },
+ "user.getUserItemInven": {
+  "return": "user.getUserItemInvenReturn",
+  "retdata": "user.getUserItemInvenRetDataInfo",
+  "reqdata": "user.getUserItemInvenDataInfo"
+ },
+ "user.setSubscribe": {
+  "return": "user.setSubscribeReturn",
+  "retdata": "user.setSubscribeRetDataInfo",
+  "reqdata": "user.setSubscribeDataInfo"
+ },
+ "user.buyPackage": {
+  "return": "user.buyPackageReturn",
+  "retdata": "user.buyPackageRetDataInfo",
+  "reqdata": "user.buyPackageDataInfo"
+ },
+ "tour.getPostTime": {
+  "return": "tour.getPostTimeReturn",
+  "retdata": "tour.getPostTimeRetDataInfo",
+  "reqdata": "tour.getPostTimeDataInfo"
+ },
+ "store.buyContents": {
+  "return": "store.buyContentsReturn",
+  "retdata": "store.buyContentsRetDataInfo",
+  "reqdata": "store.buyContentsDataInfo"
+ },
+ "eventMode.getSamSeckList": {
+  "return": "eventMode.getSamSeckListReturn",
+  "retdata": "eventMode.getSamSeckListRetDataInfo",
+  "reqdata": "eventMode.getSamSeckListDataInfo"
+ },
+ "user.userAvatarList": {
+  "return": "user.userAvatarListReturn",
+  "retdata": "user.userAvatarListRetDataInfo",
+  "reqdata": "user.userAvatarListDataInfo"
+ },
+ "user.userPurchaseErrorLog": {
+  "return": "user.userPurchaseErrorLogReturn",
+  "retdata": "user.userPurchaseErrorLogRetDataInfo",
+  "reqdata": "user.userPurchaseErrorLogDataInfo"
+ },
+ "tour.getTourRank": {
+  "return": "tour.getTourRankReturn",
+  "retdata": "tour.getTourRankRetDataInfo",
+  "reqdata": "tour.getTourRankDataInfo"
+ },
+ "user.hibernationLog": {
+  "return": "user.hibernationLogReturn",
+  "retdata": "user.hibernationLogRetDataInfo",
+  "reqdata": "user.hibernationLogDataInfo"
+ },
+ "main.getUpdateTime": {
+  "return": "main.getUpdateTimeReturn",
+  "retdata": "main.getUpdateTimeRetDataInfo",
+  "reqdata": "main.getUpdateTimeDataInfo"
+ },
+ "main.newStoreList": {
+  "return": "main.newStoreListReturn",
+  "retdata": null,
+  "reqdata": "main.newStoreListDataInfo"
+ },
+ "tour.tourMain": {
+  "return": "tour.tourMainReturn",
+  "retdata": "tour.tourMainRetDataInfo",
+  "reqdata": "tour.tourMainDataInfo"
+ },
+ "user.checkBuyShop": {
+  "return": "user.checkBuyShopReturn",
+  "retdata": "user.checkBuyShopRetDataInfo",
+  "reqdata": "user.checkBuyShopDataInfo"
+ },
+ "main.getEventRewardList": {
+  "return": "main.getEventRewardListReturn",
+  "retdata": null,
+  "reqdata": "main.getEventRewardListDataInfo"
+ },
+ "rank.getCountryRank": {
+  "return": "rank.getCountryRankReturn",
+  "retdata": null,
+  "reqdata": "rank.getCountryRankDataInfo"
+ }
+}

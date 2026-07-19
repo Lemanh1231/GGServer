@@ -1,0 +1,5 @@
+{
+ "path": "/store/getVarietyStore/vi/",
+ "call": "getVarietyStore",
+ "static": true
+}

@@ -1,0 +1,46 @@
+{
+ "path": "/main/Request/en/",
+ "call": "Request",
+ "command": "main.Request",
+ "category": "main",
+ "form_fields": {
+  "call": "Request",
+  "tapsonic_data": "<144>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 2:07:44 AM:977"
+ },
+ "request_decoded": {
+  "call": "init",
+  "data": {
+   "type": "real",
+   "os": 1,
+   "ver": 800,
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae"
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "main.initReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782094065,
+   "datetime": 20260622020745
+  },
+  "mode": "main",
+  "call": "Request",
+  "data": {
+   "idx": 253,
+   "game_url": "https://ggserver.kotori.click",
+   "cdn_url": "https://ggserver.kotori.click"
+  },
+  "maintenance": {}
+ }
+}

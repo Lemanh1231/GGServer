@@ -1,0 +1,61 @@
+{
+ "path": "/user/setPassReward/en/",
+ "call": "setPassReward",
+ "command": "user.setPassReward",
+ "category": "user",
+ "form_fields": {
+  "call": "setPassReward",
+  "tapsonic_data": "<216>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 1:57:02 AM:470"
+ },
+ "request_decoded": {
+  "call": "setPassReward",
+  "data": {
+   "u_seq": 100001,
+   "u_id": "guest_100001",
+   "uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "group": 11,
+   "step": 0,
+   "type": 1,
+   "i_Version": 5
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "user.setPassRewardReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782093422,
+   "datetime": 20260622015702
+  },
+  "mode": "user",
+  "call": "setPassReward",
+  "data": {
+   "subscribe_pass_reward": {
+    "i_SubscribeID": 11,
+    "i_Type": 1,
+    "i_Step": 0,
+    "i_UpdateTime": 1782093422,
+    "i_Version": 5
+   },
+   "reward_data": [
+    {
+     "reward_type": 1,
+     "reward_id": 1,
+     "reward_value": 10
+    }
+   ]
+  },
+  "maintenance": {}
+ }
+}

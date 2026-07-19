@@ -1,0 +1,45 @@
+{
+ "path": "/eventMode/getSamSeckList/en/",
+ "call": "getSamSeckList",
+ "command": "eventMode.getSamSeckList",
+ "category": "eventMode",
+ "form_fields": {
+  "call": "getSamSeckList",
+  "tapsonic_data": "<200>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 1:59:10 AM:81"
+ },
+ "request_decoded": {
+  "call": "getSamSeckList",
+  "data": {
+   "u_seq": 100001,
+   "u_id": "guest_100001",
+   "uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae"
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "eventMode.getSamSeckListReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782093550,
+   "datetime": 20260622015910
+  },
+  "mode": "eventMode",
+  "call": "getSamSeckList",
+  "data": {
+   "event_type": "",
+   "rewardList": []
+  },
+  "maintenance": {}
+ }
+}

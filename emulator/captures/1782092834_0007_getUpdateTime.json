@@ -1,0 +1,41 @@
+{
+ "path": "/main/getUpdateTime/vi/",
+ "call": "getUpdateTime",
+ "command": "main.getUpdateTime",
+ "category": "main",
+ "form_fields": {
+  "call": "getUpdateTime",
+  "tapsonic_data": "<152>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "22/06/2026 8:47:14 SA:2"
+ },
+ "request_decoded": {
+  "call": "getUpdateTime",
+  "data": {
+   "device_uuid": "b81c0f9864d7c17f425d175cd31733e9"
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "main.getUpdateTimeReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782092834,
+   "datetime": 20260622014714
+  },
+  "mode": "main",
+  "call": "getUpdateTime",
+  "data": {
+   "upd_time": 1761876067
+  },
+  "maintenance": {}
+ }
+}

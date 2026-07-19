@@ -1,0 +1,25 @@
+[
+ {
+  "ns": "GuitarGirl",
+  "name": "ClientSettings",
+  "fields": [
+   "SettingsAssetName",
+   "SettingsAssetExtension",
+   "serverType",
+   "resourceLoadType",
+   "tableLoadType",
+   "instance"
+  ],
+  "methods": [
+   "ToString",
+   "get_ServerType",
+   "set_ServerType",
+   "get_ResourceLoadType",
+   "set_ResourceLoadType",
+   "get_TableLoadType",
+   "set_TableLoadType",
+   "get_Instance",
+   ".ctor"
+  ]
+ }
+]

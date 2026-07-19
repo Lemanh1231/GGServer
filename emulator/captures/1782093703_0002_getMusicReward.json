@@ -1,0 +1,57 @@
+{
+ "path": "/user/getMusicReward/en/",
+ "call": "getMusicReward",
+ "command": "user.getMusicReward",
+ "category": "user",
+ "form_fields": {
+  "call": "getMusicReward",
+  "tapsonic_data": "<216>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 2:01:43 AM:620"
+ },
+ "request_decoded": {
+  "call": "getMusicReward",
+  "data": {
+   "u_seq": 100001,
+   "u_id": "guest_100001",
+   "uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "i_ids": [
+    4
+   ],
+   "i_levels": [
+    1
+   ]
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "user.getMusicRewardReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782093703,
+   "datetime": 20260622020143
+  },
+  "mode": "user",
+  "call": "getMusicReward",
+  "data": {
+   "total_reward_value": 500,
+   "reward_music_id": [
+    4
+   ],
+   "reward_value": [
+    500
+   ],
+   "user_follower_profile": []
+  },
+  "maintenance": {}
+ }
+}

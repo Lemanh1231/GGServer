@@ -1,0 +1,57 @@
+{
+ "path": "/user/userSave/en/",
+ "call": "userSave",
+ "command": "user.userSave",
+ "category": "user",
+ "form_fields": {
+  "call": "userSave",
+  "tapsonic_data": "<260>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 1:59:10 AM:997"
+ },
+ "request_decoded": {
+  "call": "userSave",
+  "data": {
+   "u_seq": 100001,
+   "u_id": "guest_100001",
+   "uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "type": "character",
+   "user_character": [
+    {
+     "i_id": 1,
+     "i_Level": 501,
+     "i_BonusLevel": 20
+    },
+    {
+     "i_id": 2,
+     "i_Level": 1,
+     "i_BonusLevel": 0
+    }
+   ]
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "user.userSaveReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782093551,
+   "datetime": 20260622015911
+  },
+  "mode": "user",
+  "call": "userSave",
+  "data": {
+   "status": "Y"
+  },
+  "maintenance": {}
+ }
+}

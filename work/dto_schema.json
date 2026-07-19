@@ -1,0 +1,5313 @@
+{
+ "music": {
+  "getReviewPoint": [
+   "_call",
+   "_data"
+  ],
+  "getReviewPointDataInfo": [
+   "_null"
+  ],
+  "getAlbumDataInfo": [
+   "_null"
+  ],
+  "getMusicList": [
+   "_call",
+   "_data"
+  ],
+  "getCache": [
+   "_call",
+   "_data"
+  ],
+  "getReviewPointReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getMusicListDataInfo": [
+   "_country_code"
+  ],
+  "getAlbumReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getAlbumListDataInfo": [],
+  "musicProduct": [
+   "_product_id",
+   "_product_type",
+   "_product_name",
+   "_store_name",
+   "_iapID",
+   "_price",
+   "_prev_price",
+   "_price_str",
+   "_prev_price_str",
+   "_currency",
+   "_image",
+   "_thumbnail",
+   "_main_desc"
+  ],
+  "getAlbumListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getAlbumInfoLanguage": [
+   "_seq",
+   "_album_title",
+   "_company",
+   "_album_artist"
+  ],
+  "getCacheDataInfo": [
+   "_type"
+  ],
+  "getMusicListRetDataInfo": [
+   "_music_idx",
+   "_album_idx",
+   "_genre_idx",
+   "_difficulty1",
+   "_difficulty2",
+   "_difficulty3",
+   "_difficulty4",
+   "_purchaselink_type",
+   "_credit_cnt",
+   "_buy_type",
+   "_free_type",
+   "_price",
+   "_is_extra",
+   "_extra_buy_type1",
+   "_extra_price1",
+   "_extra_buy_type2",
+   "_extra_price2",
+   "_buy_ad",
+   "_music_ver",
+   "_bpm",
+   "_cdn_dir",
+   "_track_type",
+   "_file_type",
+   "_new_status",
+   "_update_time",
+   "_point_average",
+   "_use_movie",
+   "_movie_timing",
+   "_music_product_aos",
+   "_music_product_ios",
+   "_music_product_aos_pack",
+   "_music_product_ios_pack",
+   "_bga_path",
+   "_bg_opacity"
+  ],
+  "getAlbumInfoListDataInfo": [],
+  "getMusicListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getAlbumInfoListRetDataInfo": [
+   "_language"
+  ],
+  "getMusicInfoListDataInfo": [
+   "_country_code"
+  ],
+  "albumListInfo": [
+   "_album_idx",
+   "_country",
+   "_date_issue",
+   "_cdn_dir",
+   "_album_img",
+   "_language"
+  ],
+  "getCacheRetDataInfo": [
+   "_uptime"
+  ],
+  "getAlbumListRetDataInfo": [
+   "_album_idx",
+   "_country",
+   "_date_issue",
+   "_cdn_dir",
+   "_album_img"
+  ],
+  "getAlbumList": [
+   "_call",
+   "_data"
+  ],
+  "getMusicInfoLanguage": [
+   "_seq",
+   "_music_idx",
+   "_music_title",
+   "_artist",
+   "_songwriter",
+   "_lyricist",
+   "_description"
+  ],
+  "getAlbumInfoList": [
+   "_call",
+   "_data"
+  ],
+  "getAlbum": [
+   "_call",
+   "_data"
+  ],
+  "getMusicInfoList": [
+   "_call",
+   "_data"
+  ],
+  "getMusicInfoListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getMusicInfoListRetDataInfo": [
+   "_language"
+  ],
+  "musicListLanguage": [
+   "_title",
+   "_artist",
+   "_songwriter",
+   "_lyricist"
+  ],
+  "getReviewPointRetDataInfo": [
+   "_music_idx",
+   "_difficulty",
+   "_point"
+  ],
+  "getAlbumInfoListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "albumListLanguage": [
+   "_title",
+   "_company",
+   "_album_artist"
+  ],
+  "getAlbumRetDataInfo": [
+   "_album",
+   "_list_info"
+  ],
+  "musicListInfo": [
+   "_music_idx",
+   "_genre_idx",
+   "_difficulty1",
+   "_difficulty2",
+   "_difficulty3",
+   "_difficulty4",
+   "_buy_type",
+   "_free_type",
+   "_price",
+   "_buy_ad",
+   "_music_ver",
+   "_bpm",
+   "_cdn_dir",
+   "_track_type",
+   "_file_type",
+   "_new_status",
+   "_update_time",
+   "_language"
+  ],
+  "getCacheReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ]
+ },
+ "eventMode": {
+  "eventRewardListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getSamSeckListRetDataInfo": [
+   "_event_type",
+   "_rewardList"
+  ],
+  "getEventRankRetDataInfo": [
+   "_u_seq",
+   "_u_nick",
+   "_u_id",
+   "_u_avatar",
+   "_u_country",
+   "_u_title",
+   "_rank",
+   "_score"
+  ],
+  "getEventMainRetDataInfo": [
+   "_idx",
+   "_title",
+   "_img1",
+   "_img2",
+   "_movie",
+   "_utc",
+   "_banner",
+   "_desc_cn",
+   "_desc_en",
+   "_desc_jp",
+   "_server_time",
+   "_start_time",
+   "_end_time",
+   "_my_score",
+   "_my_rank"
+  ],
+  "getSamSeckReward": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "eventRewardListDataInfo": [
+   "_event_idx",
+   "_device_uuid"
+  ],
+  "getEventMainReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "eventRewardList": [
+   "_call",
+   "_data"
+  ],
+  "getEventRankReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "eventRewardListRetDataInfo": [
+   "_event_idx",
+   "_reward_list",
+   "_rank_reward_list"
+  ],
+  "rewardList": [
+   "_i_id",
+   "_i_RewardType",
+   "_i_RewardId",
+   "_d_RewardQuantity"
+  ],
+  "getEventRankDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_event_idx",
+   "_start_rank",
+   "_end_rank"
+  ],
+  "eventRewardListArr": [
+   "_event_idx",
+   "_gain_point",
+   "_reward_type",
+   "_reward_value"
+  ],
+  "getEventMain": [
+   "_call",
+   "_data"
+  ],
+  "getSamSeckListReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "eventRewardListData": [
+   "_gain_point",
+   "_reward_type",
+   "_reward_value"
+  ],
+  "getEventMainDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "getEventRank": [
+   "_call",
+   "_data"
+  ],
+  "getSamSeckRewardRetDataInfo": [
+   "_step"
+  ],
+  "getSamSeckList": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "getSamSeckRewardReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getSamSeckRewardDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_id"
+  ],
+  "getSamSeckListDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "eventRankRewardListData": [
+   "_title",
+   "_desc_cn",
+   "_desc_en",
+   "_desc_jp",
+   "_reward_type",
+   "_reward_value"
+  ],
+  "rewardListData": [
+   "_i_id",
+   "_i_RewardType",
+   "_i_RewardId",
+   "_d_RewardQuantity"
+  ],
+  "eventRankRewardListArr": [
+   "_event_idx",
+   "_title",
+   "_desc_kr",
+   "_desc_en",
+   "_desc_jp",
+   "_reward_type",
+   "_reward_value"
+  ]
+ },
+ "post": {
+  "readPostReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getPostTimeReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "providePostReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "readPostDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx"
+  ],
+  "getPost": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "deletePostReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getPostRetDataInfo": [
+   "_server_time",
+   "_post_list"
+  ],
+  "providePostRetDataInfo": [
+   "_i_RewardType",
+   "_i_RewardId",
+   "_d_RewardQuantity"
+  ],
+  "providePostDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx",
+   "_type"
+  ],
+  "providePost": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "readPostRetDataInfo": [
+   "_idx"
+  ],
+  "itemList": [
+   "_i_RewardType",
+   "_i_RewardId",
+   "_d_RewardQuantity"
+  ],
+  "getPostTimeDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "readPost": [
+   "_call",
+   "_data"
+  ],
+  "getPostReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getPostTime": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "deletePostDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx",
+   "_type"
+  ],
+  "deletePostRetDataInfo": [
+   "_idx"
+  ],
+  "getPostTimeRetDataInfo": [
+   "_time"
+  ],
+  "deletePost": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "getPostDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "getPostList": [
+   "_idx",
+   "_notice_type",
+   "_title_ko",
+   "_memo_ko",
+   "_title_en",
+   "_memo_en",
+   "_title_jp",
+   "_memo_jp",
+   "_title_zh_chs",
+   "_memo_zh_chs",
+   "_title_zh_cht",
+   "_memo_zh_cht",
+   "_title_vi",
+   "_memo_vi",
+   "_title_es",
+   "_memo_es",
+   "_title_it",
+   "_memo_it",
+   "_title_id",
+   "_memo_id",
+   "_title_th",
+   "_memo_th",
+   "_title_pt",
+   "_memo_pt",
+   "_title_hi",
+   "_memo_hi",
+   "_have_reward",
+   "_status",
+   "_unlimit_flg",
+   "_flg",
+   "_create_time",
+   "_del_time",
+   "_item_list",
+   "_url",
+   "_image_resource_name"
+  ]
+ },
+ "user": {
+  "setSelectRewardDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_id"
+  ],
+  "setGameReward": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "updateScore": [
+   "_call",
+   "_data"
+  ],
+  "buyUserTitleRetDataInfo": [
+   "_title_idx",
+   "_u_gold",
+   "_u_cp",
+   "_u_mp"
+  ],
+  "userTicketCollection": [
+   "_i_id"
+  ],
+  "userGuitar": [
+   "_i_id",
+   "_i_Level",
+   "_i_BonusLevel"
+  ],
+  "setEventReward": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "getPurchaseDiamondLog": [
+   "_call",
+   "_data"
+  ],
+  "userItemInvenList": [
+   "_item_list"
+  ],
+  "buyPieceReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getProfile": [
+   "_call",
+   "_data"
+  ],
+  "useCoupon": [
+   "_call",
+   "_data"
+  ],
+  "userDelDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "userCharacter": [
+   "_i_id",
+   "_i_Level",
+   "_i_BonusLevel"
+  ],
+  "buyCollectionMusicRetDataInfo": [
+   "_music_idx",
+   "_buy_datetime"
+  ],
+  "userLoginDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_u_state"
+  ],
+  "buyPackageReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "MoreGamesLogDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_app_id"
+  ],
+  "setGameRewardRetDataInfo": [
+   "_type",
+   "_id",
+   "_level",
+   "_reward_type",
+   "_reward_value",
+   "_status",
+   "_user_follower_profile"
+  ],
+  "itemPurchaseRetDataInfo": [
+   "_item_type",
+   "_item_value",
+   "_pay_id",
+   "_product_id",
+   "_purchase_id"
+  ],
+  "updateAchievement": [
+   "_call",
+   "_data"
+  ],
+  "chThirdStageRetDataInfo": [
+   "_star",
+   "_character_score",
+   "_music_score",
+   "_follower_profile_score",
+   "_bonus_score",
+   "_total_score",
+   "_clear",
+   "_user_ap",
+   "_user_ch_third_stage",
+   "_user_music",
+   "_reward_data",
+   "_bonus_follower_profile_ids",
+   "_user_follower_profile",
+   "_bonus_music_score",
+   "_user_follower_profile_score"
+  ],
+  "getProfileMusic": [
+   "_call",
+   "_data"
+  ],
+  "getMusicReward": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "getAllPointReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getUserItemInvenDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "lastSaveTimeRetDataInfo": [
+   "_last_save_time",
+   "_device_uuid"
+  ],
+  "getProfileRetDataInfo": [
+   "_u_avatar",
+   "_u_id",
+   "_u_nick",
+   "_u_country",
+   "_u_title",
+   "_allper",
+   "_allcom",
+   "_gold",
+   "_silver",
+   "_bronze",
+   "_single_cnt",
+   "_multi_cnt",
+   "_master_cnt",
+   "_single_score",
+   "_multi_score",
+   "_local_rank",
+   "_individual_rank"
+  ],
+  "setAttendance": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "itemPurchaseDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_developer_payload",
+   "_pay_id",
+   "_purchase_token",
+   "_purchase_id",
+   "_os",
+   "_restore"
+  ],
+  "buyVarietyStoreRetDataInfo": [
+   "_u_cp",
+   "_u_candy",
+   "_reward_type",
+   "_reward_id",
+   "_reward_value",
+   "_status"
+  ],
+  "getTransferIdDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "changeUserRetDataInfo": [
+   "_result"
+  ],
+  "buyExtraModeRetDataInfo": [
+   "_music_idx"
+  ],
+  "userSaveDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_type",
+   "_user_info",
+   "_user_area_info",
+   "_user_achievement",
+   "_user_character",
+   "_user_costume",
+   "_user_daily_mission",
+   "_user_follower",
+   "_user_music",
+   "_user_skill",
+   "_user_messenger",
+   "_user_guitar",
+   "_user_event_point",
+   "_user_follower_quest"
+  ],
+  "setBookmarkRetDataInfo": [
+   "_music_idx",
+   "_flag"
+  ],
+  "updateAchievementRetDataInfo": [
+   "_achievement"
+  ],
+  "deleteUser": [
+   "_call",
+   "_data"
+  ],
+  "saveUserCostume": [
+   "_i_id",
+   "_i_Level",
+   "_i_BonusLevel"
+  ],
+  "updateNickNameReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setTutorialDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_step"
+  ],
+  "adViewLogRetDataInfo": [
+   "_status"
+  ],
+  "setReviewPopupDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "userDelRetDataInfo": [
+   "_result"
+  ],
+  "changeUser": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "setUserFollowerProfileReward": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "userData": [
+   "_u_seq",
+   "_u_id",
+   "_u_name",
+   "_u_nick",
+   "_u_cp",
+   "_u_candy",
+   "_u_like",
+   "_u_fans",
+   "_u_fans_grade",
+   "_u_selected_costume_id",
+   "_u_selected_music_id",
+   "_u_retain_continuous_tap",
+   "_u_join_type",
+   "_u_last_login",
+   "_u_last_communication",
+   "_u_save_date",
+   "_u_create_time",
+   "_u_tutorial_step",
+   "_u_review_popup",
+   "_device_uuid",
+   "_u_samseck_step",
+   "_u_free_cp",
+   "_u_charge_cp"
+  ],
+  "userSaveRetDataInfo": [
+   "_status"
+  ],
+  "buyPackageMusic": [
+   "_music_idx"
+  ],
+  "buyCollectionItemReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "userItemList": [
+   "_item_type",
+   "_item_id",
+   "_count"
+  ],
+  "saveUserAchievement": [
+   "_i_id",
+   "_d_Quantity",
+   "_s_Quantity"
+  ],
+  "setUserGP": [
+   "_call",
+   "_data"
+  ],
+  "userPurchaseErrorLogReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "updateNickName": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "getUserInfoReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setFollowerQuestInfiniteReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "adViewLogDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_ad_type",
+   "_ad_name"
+  ],
+  "setTutorial": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "StageFollowerProfileScore": [
+   "_i_id",
+   "_score",
+   "_bonus_score"
+  ],
+  "getTransferIdReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "musicPointReviewRetDataInfo": [
+   "_music_idx",
+   "_point",
+   "_difficulty"
+  ],
+  "userLoginRetDataInfo": [
+   "_user",
+   "_area_data",
+   "_user_contents"
+  ],
+  "checkPurchased": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "getUserInfo": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "musicData": [
+   "_music_idx",
+   "_score1",
+   "_score2",
+   "_score3"
+  ],
+  "getPurchaseDiamondLogRetDataInfo": [
+   "_bonus1",
+   "_bonus2",
+   "_bonus3",
+   "_bonus4",
+   "_bonus5",
+   "_bonus6"
+  ],
+  "setBookmarkDataList": [
+   "_music_idx",
+   "_flag"
+  ],
+  "UserChThirdChapterReward": [
+   "_i_id",
+   "_i_ReceivedReward1",
+   "_i_ReceivedReward2",
+   "_i_ReceivedReward3"
+  ],
+  "buyUserTitle": [
+   "_call",
+   "_data"
+  ],
+  "saveUserAreaInfo": [
+   "_u_area_num",
+   "_d_Like",
+   "_i_UserFanCount",
+   "_i_UserFanGrade",
+   "_i_SelectedCostumeId",
+   "_i_SelectedMusicId",
+   "_i_SelectedGuitarId",
+   "_d_Candy",
+   "_s_TutorialList",
+   "_s_Gp1",
+   "_s_Gp2"
+  ],
+  "getMusicRewardDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_ids",
+   "_i_levels"
+  ],
+  "checkPurchasedReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "userJoin": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "useCredit": [
+   "_call",
+   "_data"
+  ],
+  "userCostume": [
+   "_i_id",
+   "_i_Level",
+   "_i_BonusLevel"
+  ],
+  "getChoiceUserReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getAllPoint": [
+   "_call",
+   "_data",
+   "_sub_mode"
+  ],
+  "setTutorialNewDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_ids"
+  ],
+  "useCouponRetDataInfo": [
+   "_ret"
+  ],
+  "setUserGPDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_gp"
+  ],
+  "logCashComplete": [
+   "_call",
+   "_data"
+  ],
+  "setBookmarkReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "musicPointReview": [
+   "_call",
+   "_data"
+  ],
+  "userLogin": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "useCouponReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "UserFollowerProfile": [
+   "_i_id",
+   "_i_Level",
+   "_d_Exp",
+   "_i_AddCandy"
+  ],
+  "setGameRewardReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "userLoadRetDataInfo": [
+   "_user",
+   "_area_data",
+   "_user_contents"
+  ],
+  "hibernationLogReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "updateUserTitleDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_u_title"
+  ],
+  "buyMusicReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setFollowerProfileGiftReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "userFollower": [
+   "_i_id",
+   "_i_Level",
+   "_i_BonusLevel"
+  ],
+  "getUserItemInvenRetDataInfo": [
+   "_item_inven_list",
+   "_empty"
+  ],
+  "userLoad": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "setAdRewardReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setEventRewardRetDataInfo": [
+   "_u_cp",
+   "_u_candy",
+   "_u_like",
+   "_u_fans",
+   "_reward_type",
+   "_reward_id",
+   "_reward_value",
+   "_status",
+   "_reward_data"
+  ],
+  "updateNickNameDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_nickname"
+  ],
+  "getProfileMusicDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_get_u_seq",
+   "_start_limit",
+   "_end_limit"
+  ],
+  "buyItemReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "UserTutorial": [
+   "_i_id"
+  ],
+  "getAllPointRetDataInfo": [
+   "_u_gold",
+   "_u_cp",
+   "_u_mp",
+   "_u_credit",
+   "_next_credit_time",
+   "_max_credit_time"
+  ],
+  "checkPurchasedRetDataInfo": [
+   "_is_purchased"
+  ],
+  "getChThirdRetDataInfo": [
+   "_u_seq",
+   "_user_ap",
+   "_user_ch_third_stage",
+   "_user_ch_third_chapter_reward"
+  ],
+  "getDiamondBonus": [
+   "_call",
+   "_data"
+  ],
+  "chThirdStageDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_id",
+   "_music_id",
+   "_profile_ids"
+  ],
+  "checkBuyProductDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_product_id"
+  ],
+  "getDiamondBonusDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "setAdRewardDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_id",
+   "_param1",
+   "_param2",
+   "_param3"
+  ],
+  "getTotalMusicMyRank": [
+   "_grade",
+   "_rank",
+   "_score"
+  ],
+  "getProfileDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_get_u_seq"
+  ],
+  "userPurchaseMusicIdx": [
+   "_music_idx"
+  ],
+  "getDiamondBonusRetDataInfo": [
+   "_bonus1",
+   "_bonus2",
+   "_bonus3",
+   "_bonus4",
+   "_bonus5",
+   "_bonus6"
+  ],
+  "lastSaveTime": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "setTutorialNewReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getTransferId": [
+   "_call",
+   "_data"
+  ],
+  "userDel": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "setBookmark": [
+   "_call",
+   "_data"
+  ],
+  "setFollowerQuestInfinite": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "userJoinRetDataInfo": [
+   "_u_seq",
+   "_u_id"
+  ],
+  "buyCollectionItem": [
+   "_call",
+   "_data"
+  ],
+  "userLoadReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setAttendanceReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setSubscribeReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "saveUserFollower": [
+   "_i_id",
+   "_i_Level",
+   "_i_BonusLevel"
+  ],
+  "getChThirdStarReward": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "userJoinDataInfo": [
+   "_os",
+   "_join_type",
+   "_uuid",
+   "_device_uuid",
+   "_device_token",
+   "_sns_id",
+   "_access_token",
+   "_country",
+   "_state"
+  ],
+  "playMusicDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_music_idx"
+  ],
+  "chThirdStageReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "challengeMissionListInfo": [
+   "_music_idx",
+   "_difficulty",
+   "_mission_list"
+  ],
+  "playMusic": [
+   "_call",
+   "_data"
+  ],
+  "adViewLogReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setPassRewardRetDataInfo": [
+   "_subscribe_pass_reward",
+   "_reward_data"
+  ],
+  "userSkill": [
+   "_i_id",
+   "_i_Level",
+   "_b_Activate",
+   "_l_ActivateOnTicks",
+   "_l_ActivateOffTicks"
+  ],
+  "userBuff": [
+   "_i_id",
+   "_i_Level",
+   "_i_ActiveTime",
+   "_i_EndTime"
+  ],
+  "getChoiceUserDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_choice_uuid"
+  ],
+  "useCouponDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_send_ppid",
+   "_coupon"
+  ],
+  "itemPurchaseReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setEventRewardReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getProfileMusicRetDataInfo": [
+   "_music_idx",
+   "_single_cnt",
+   "_multi_cnt",
+   "_master_cnt",
+   "_single_score",
+   "_multi_score"
+  ],
+  "buyCollectionItemRetDataInfo": [
+   "_item_type",
+   "_item_value",
+   "_buy_datetime"
+  ],
+  "getUserCollectionRetDataInfo": [
+   "_music_idx",
+   "_value",
+   "_get_type",
+   "_get_time",
+   "_create_time"
+  ],
+  "setFollowerProfileGiftRetDataInfo": [
+   "_i_gift_type",
+   "_user_follower_giftitem",
+   "_user_follower_profile"
+  ],
+  "musicPointReviewDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_review_point"
+  ],
+  "userProp": [
+   "_i_id",
+   "_i_Level"
+  ],
+  "userLoadDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_type"
+  ],
+  "paidEventPoint": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "MoreGamesLog": [
+   "_call",
+   "_data"
+  ],
+  "setUserGPReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyCheck": [
+   "_call",
+   "_data"
+  ],
+  "userAvatarListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyUserTitleDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx"
+  ],
+  "saveUserDailyMission": [
+   "_i_id",
+   "_d_Quantity"
+  ],
+  "buyPieceDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx",
+   "_cnt"
+  ],
+  "setUserFollowerProfileRewardRetDataInfo": [
+   "_i_id",
+   "_i_level",
+   "_reward_data",
+   "_user_follower_profile"
+  ],
+  "userSubscribePassReward": [
+   "_i_SubscribeID",
+   "_i_Type",
+   "_i_Step",
+   "_i_UpdateTime",
+   "_i_Version"
+  ],
+  "userInfo": [
+   "_u_like",
+   "_u_fans",
+   "_u_fans_grade",
+   "_u_selected_costume_id",
+   "_u_selected_music_id"
+  ],
+  "setUserFollowerQuest": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "userTitleListRetDataInfo": [
+   "_u_seq",
+   "_title"
+  ],
+  "facebookUserJoinDataInfo": [
+   "_access_token"
+  ],
+  "setPassRewardDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_group",
+   "_step",
+   "_type",
+   "_i_Version"
+  ],
+  "playMusicReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyCheckRetDataInfo": [
+   "_result"
+  ],
+  "buyVarietyStoreDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx"
+  ],
+  "getChoiceUser": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "buyPieceRetDataInfo": [
+   "_idx",
+   "_u_gold",
+   "_u_cp",
+   "_u_mp"
+  ],
+  "userSubscribeList": [
+   "_i_SubscribeID",
+   "_i_ActiveTime",
+   "_i_isActive"
+  ],
+  "deleteUserReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyExtraMode": [
+   "_call",
+   "_data"
+  ],
+  "checkBuyShopDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_shop_id"
+  ],
+  "userSave": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "buyCollectionMusic": [
+   "_call",
+   "_data"
+  ],
+  "getTransferIdRetDataInfo": [
+   "_transfer_id"
+  ],
+  "getChThirdReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "UserAdList": [
+   "_i_id",
+   "_i_Count",
+   "_i_TotalCount",
+   "_i_LastViewTime"
+  ],
+  "userPurchaseReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "chThirdStreamStageReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyMusicDataInfo": [
+   "_type",
+   "_idx",
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_purchase_type"
+  ],
+  "UserChThirdStage": [
+   "_i_id",
+   "_i_ChapterId",
+   "_i_StageIndex",
+   "_i_Star"
+  ],
+  "itemPurchase": [
+   "_call",
+   "_data",
+   "_sub_mode"
+  ],
+  "updateUserTitleRetDataInfo": [
+   "_u_title"
+  ],
+  "useCreditRetDataInfo": [
+   "_u_gold",
+   "_u_cp",
+   "_u_mp",
+   "_u_credit"
+  ],
+  "hibernationLogDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "UserApData": [
+   "_i_Ap",
+   "_i_FullApTime",
+   "_i_MaxAp"
+  ],
+  "UserSelectReward": [
+   "_i_GroupId",
+   "_i_RewardGroupId",
+   "_i_AltRewardGroupId"
+  ],
+  "buyPiece": [
+   "_call",
+   "_data"
+  ],
+  "setTutorialNewRetDataInfo": [
+   "_u_seq",
+   "_tutorial"
+  ],
+  "userTitleListDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "buyMusic": [
+   "_call",
+   "_data"
+  ],
+  "getUserCollectionReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "updateAvatarDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_u_avatar"
+  ],
+  "checkBuyProduct": [
+   "_call",
+   "_data"
+  ],
+  "lastSaveTimeDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "updateUserTitle": [
+   "_call",
+   "_data"
+  ],
+  "setTutorialNew": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "setEventRewardDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_event_idx"
+  ],
+  "logCashCompleteDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_shop_id",
+   "_value"
+  ],
+  "transferUser": [
+   "_call",
+   "_data"
+  ],
+  "getChThirdDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "MoreGamesLogRetDataInfo": [
+   "_ret"
+  ],
+  "buyItem": [
+   "_call",
+   "_data"
+  ],
+  "chThirdStreamStageDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_id",
+   "_count"
+  ],
+  "updateAvatarRetDataInfo": [
+   "_u_avatar"
+  ],
+  "userTitleListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setUserGPRetDataInfo": [
+   "_gp"
+  ],
+  "userPurchaseDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_developer_payload",
+   "_pay_id",
+   "_purchase_token",
+   "_purchase_id",
+   "_os",
+   "_restore"
+  ],
+  "userScore": [
+   "_music_idx",
+   "_score1",
+   "_score2",
+   "_score3",
+   "_score4",
+   "_grade1",
+   "_grade2",
+   "_grade3",
+   "_grade4",
+   "_play_cnt1",
+   "_play_cnt2",
+   "_play_cnt3",
+   "_play_cnt4",
+   "_combo_grade1",
+   "_combo_grade2",
+   "_combo_grade3",
+   "_combo_grade4",
+   "_multi_score1",
+   "_multi_score2",
+   "_multi_score3",
+   "_multi_score4",
+   "_multi_play_cnt1",
+   "_multi_play_cnt2",
+   "_multi_play_cnt3",
+   "_multi_play_cnt4",
+   "_multi_combo_grade1",
+   "_multi_combo_grade2",
+   "_multi_combo_grade3",
+   "_multi_combo_grade4",
+   "_purchase_type",
+   "_is_extra",
+   "_review_point",
+   "_rank_list"
+  ],
+  "userLoginReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setReviewPopupReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyMusicRetDataInfo": [
+   "_u_gold",
+   "_u_cp",
+   "_u_mp",
+   "_music"
+  ],
+  "UserFollowerProfileReward": [
+   "_i_id",
+   "_i_RewardLevel"
+  ],
+  "completeLogReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setUserFollowerQuestDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_CurrentID",
+   "_i_SubID",
+   "_d_ConditionValue"
+  ],
+  "buyAvatarReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "updateAvatarReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setTutorialReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setGameRewardDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_type",
+   "_id",
+   "_level",
+   "_quantity",
+   "_s_quantity"
+  ],
+  "transferUserReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "adViewLog": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "hibernationLogRetDataInfo": [
+   "_action"
+  ],
+  "changeUserDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_change_uuid"
+  ],
+  "updateNickNameRetDataInfo": [
+   "_nickname"
+  ],
+  "checkUserDataInfo": [
+   "_uuid",
+   "_device_uuid"
+  ],
+  "UserAdLevel": [
+   "_i_id",
+   "_i_Level",
+   "_i_EXP"
+  ],
+  "setFollowerProfileGiftDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_profile_id",
+   "_gift_id",
+   "_use_gitf_value"
+  ],
+  "saveUserCharacter": [
+   "_i_id",
+   "_i_Level",
+   "_i_BonusLevel"
+  ],
+  "userMessenger": [
+   "_i_MessengerChatRoomId",
+   "_i_LastConfirmIndex",
+   "_s_UnlockGroupList",
+   "_l_UpdateTimeTicks"
+  ],
+  "choiceUserData": [
+   "_u_girl_level",
+   "_u_fans",
+   "_u_fans_grade",
+   "_u_cp",
+   "_u_candy",
+   "_u_like",
+   "_u_last_login"
+  ],
+  "reviewDataList": [
+   "_music_idx",
+   "_point",
+   "_difficulty"
+  ],
+  "updateScoreDataList": [
+   "_music_idx",
+   "_score",
+   "_grade",
+   "_play_cnt",
+   "_difficulty",
+   "_combo_grade",
+   "_collection"
+  ],
+  "useCreditReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "userSaveReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "updateUserTitleReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "saveUserMessenger": [
+   "_i_MessengerChatRoomId",
+   "_i_LastConfirmIndex",
+   "_s_UnlockGroupList",
+   "_l_UpdateTimeTicks"
+  ],
+  "setUserFollowerQuestReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "userPurchaseErrorLogRetDataInfo": [
+   "_ret"
+  ],
+  "logCashCompleteReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyCollectionMusicDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx"
+  ],
+  "musicPointReviewReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "UserFollowerGiftItem": [
+   "_i_id",
+   "_i_Value"
+  ],
+  "saveUserFollowerQuest": [
+   "_i_CurrentID",
+   "_d_ConditionValue1",
+   "_d_ConditionValue2",
+   "_d_ConditionValue3"
+  ],
+  "setSelectRewardInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_id"
+  ],
+  "setPassReward": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "getTotalMusicRankList": [
+   "_rank",
+   "_id",
+   "_nick",
+   "_country",
+   "_score",
+   "_u_avatar"
+  ],
+  "completeLog": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "buyCollectionMusicReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "checkBuyProductReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "userPurchaseErrorLogDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_error_log"
+  ],
+  "saveUserMusic": [
+   "_i_id",
+   "_i_Level",
+   "_i_BonusLevel",
+   "_b_EncoreBonusAppear",
+   "_i_EncoreBonusFollowerId"
+  ],
+  "setUserFollowerQuestRetDataInfo": [
+   "_i_CurrentID",
+   "_i_CompleteID",
+   "_d_ConditionValue1",
+   "_d_ConditionValue2",
+   "_d_ConditionValue3",
+   "_i_RewardReceived1",
+   "_i_RewardReceived2",
+   "_i_RewardReceived3",
+   "_next_flg",
+   "_reward_data"
+  ],
+  "buyPackageDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_store_idx",
+   "_product_id"
+  ],
+  "userAchievement": [
+   "_i_id",
+   "_i_Level",
+   "_d_Quantity",
+   "_s_Quantity"
+  ],
+  "logCashCompleteRetDataInfo": [
+   "_status"
+  ],
+  "updateAvatar": [
+   "_call",
+   "_data"
+  ],
+  "saveUserGuitar": [
+   "_i_id",
+   "_i_Level",
+   "_i_BonusLevel"
+  ],
+  "getUserCollection": [
+   "_call",
+   "_data"
+  ],
+  "setAttendanceDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_type"
+  ],
+  "userAvatarListRetDataInfo": [
+   "_u_seq",
+   "_avatar"
+  ],
+  "setFollowerQuestInfiniteRetDataInfo": [
+   "_u_seq",
+   "_user_follower_quest"
+  ],
+  "scoreDataList": [
+   "_music_idx",
+   "_score",
+   "_grade",
+   "_play_cnt",
+   "_difficulty",
+   "_multiple",
+   "_gp",
+   "_achievement",
+   "_play_type",
+   "_play_datetime",
+   "_mission_clear",
+   "_combo_grade",
+   "_is_credit"
+  ],
+  "userLevel": [
+   "_u_girl_level",
+   "_u_skill_level",
+   "_u_mate_level",
+   "_u_follower_level",
+   "_u_play_level"
+  ],
+  "userDelReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "changeUserReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setTutorialRetDataInfo": [
+   "_step"
+  ],
+  "saveUserInfo": [
+   "_u_like",
+   "_u_fans",
+   "_u_fans_grade",
+   "_u_selected_costume_id",
+   "_u_selected_music_id"
+  ],
+  "setBookmarkDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_bookmark_list"
+  ],
+  "userAreaData": [
+   "_u_area_num",
+   "_d_Candy",
+   "_d_Like",
+   "_i_UserFanCount",
+   "_i_UserFanGrade",
+   "_i_SelectedCostumeId",
+   "_i_SelectedMusicId",
+   "_i_SelectedGuitarId",
+   "_s_TutorialList",
+   "_s_Gp1",
+   "_s_Gp2"
+  ],
+  "deleteUserRetDataInfo": [
+   "_result"
+  ],
+  "challengeMissionList": [
+   "_call",
+   "_data"
+  ],
+  "playMusicRetDataInfo": [
+   "_code",
+   "_album_idx",
+   "_music_idx",
+   "_score1",
+   "_score2",
+   "_score3",
+   "_grade1",
+   "_grade2",
+   "_grade3",
+   "_play_cnt1",
+   "_play_cnt2",
+   "_play_cnt3",
+   "_buy_type",
+   "_price"
+  ],
+  "getPurchaseDiamondLogDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "chThirdStage": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "buyItemDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx"
+  ],
+  "buyPackageRetDataInfo": [
+   "_u_gold",
+   "_u_cp",
+   "_u_mp",
+   "_u_credit",
+   "_music_data"
+  ],
+  "userPurchase": [
+   "_call",
+   "_data",
+   "_sub_mode"
+  ],
+  "getPurchaseDiamondLogReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "MoreGamesLogReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "userMusic": [
+   "_i_id",
+   "_i_Level",
+   "_i_BonusLevel",
+   "_b_EncoreBonusAppear",
+   "_l_EncoreBonusActivateTime",
+   "_i_EncoreBonusFollowerId",
+   "_i_ChThirdActiveTime"
+  ],
+  "chThirdStreamStage": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "userPurchaseRetDataInfo": [
+   "_pay_id",
+   "_product_id",
+   "_purchase_id",
+   "_music_data"
+  ],
+  "getMusicRewardReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setReviewPopup": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "setUserFollowerProfileRewardDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_id",
+   "_s_level"
+  ],
+  "checkUser": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "buyVarietyStore": [
+   "_call",
+   "_data"
+  ],
+  "checkUserRetDataInfo": [
+   "_u_seq",
+   "_u_id"
+  ],
+  "updateScoreDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_score_list"
+  ],
+  "userJoinReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getUserInfoRetDataInfo": [
+   "_u_cp",
+   "_u_candy",
+   "_u_like",
+   "_u_fans"
+  ],
+  "userCandyShop": [
+   "_i_id",
+   "_i_CurrentBuyCount",
+   "_i_TotalBuyCount",
+   "_l_LastBuyTick",
+   "_upd_day"
+  ],
+  "buyAvatarDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx"
+  ],
+  "buyAvatar": [
+   "_call",
+   "_data"
+  ],
+  "checkUserReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "checkBuyShopRetDataInfo": [
+   "_is_owner"
+  ],
+  "bookmark_list": [
+   "_music_idx",
+   "_flag"
+  ],
+  "getUserInfoDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "buyExtraModeDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_music_idx",
+   "_key_flg"
+  ],
+  "setSelectReward": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "getChThird": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "facebookUserJoin": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "setAdReward": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "checkPurchasedDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "completeLogRetDataInfo": [
+   "_status"
+  ],
+  "setFollowerProfileGift": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "setSubscribeRetDataInfo": [
+   "_u_seq",
+   "_user_subscribe_list"
+  ],
+  "updateAchievementDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_achievement"
+  ],
+  "deleteUserDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "buyExtraModeReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "userTitleList": [
+   "_call",
+   "_data"
+  ],
+  "updateScoreRetDataInfo": [
+   "_update_list",
+   "_u_gold",
+   "_u_ep",
+   "_event_flg"
+  ],
+  "getUserItemInven": [
+   "_call",
+   "_data"
+  ],
+  "userAvatarListDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "userEventPoint": [
+   "_s_EventType",
+   "_i_DataID",
+   "_i_Point",
+   "_i_Step",
+   "_i_ADViewTime",
+   "_i_Version"
+  ],
+  "setSubscribe": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "getUserCollectionDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "collectionRetData": [
+   "_music_idx",
+   "_cnt"
+  ],
+  "buyPackage": [
+   "_call",
+   "_data"
+  ],
+  "buyCheckDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx"
+  ],
+  "paidEventPointDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_type",
+   "_i_SubscribeID",
+   "_i_Version"
+  ],
+  "setSubscribeDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_ids"
+  ],
+  "userShop": [
+   "_i_id",
+   "_i_Count",
+   "_i_TotalCount",
+   "_i_PurchaseTime",
+   "_upd_day"
+  ],
+  "setEventRewardItem": [
+   "_item_type",
+   "_item_id",
+   "_count"
+  ],
+  "setSelectRewardReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setReviewPopupRetDataInfo": [
+   "_status"
+  ],
+  "getMusicRewardRetDataInfo": [
+   "_total_reward_value",
+   "_reward_music_id",
+   "_reward_value",
+   "_user_follower_profile",
+   "_error_data"
+  ],
+  "buyItemRetDataInfo": [
+   "_idx",
+   "_u_gold",
+   "_u_cp",
+   "_u_mp",
+   "_u_credit"
+  ],
+  "checkBuyProductRetDataInfo": [
+   "_is_owner"
+  ],
+  "checkBuyShopReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setFollowerQuestInfiniteDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "userDailyMission": [
+   "_i_id",
+   "_i_Level",
+   "_d_Quantity",
+   "_upd_date"
+  ],
+  "setSelectRewardRetDataInfo": [
+   "_u_seq",
+   "_user_select_reward_list"
+  ],
+  "getTotalMusicRankRetDataInfo": [
+   "_total_rank_list",
+   "_rank_list1",
+   "_rank_list2",
+   "_rank_list3",
+   "_my_rank_list"
+  ],
+  "transferUserDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_email"
+  ],
+  "getChThirdStarRewardRetDataInfo": [
+   "_i_id",
+   "_reward_num",
+   "_user_ap",
+   "_reward_data"
+  ],
+  "paidEventPointRetDataInfo": [
+   "_u_cp",
+   "_u_candy",
+   "_i_SubscribeID",
+   "_i_Point",
+   "_i_Version"
+  ],
+  "getChThirdStarRewardReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "challengeMissionListRetDataInfo": [
+   "_music_idx",
+   "_difficulty",
+   "_mission_list"
+  ],
+  "getUserItemInvenReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "challengeMissionListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "userAvatarList": [
+   "_call",
+   "_data"
+  ],
+  "challengeMissionListDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_music_idx",
+   "_difficulty",
+   "_up",
+   "_down"
+  ],
+  "buyAvatarRetDataInfo": [
+   "_avatar_idx",
+   "_u_gold",
+   "_u_cp",
+   "_u_mp"
+  ],
+  "userUnit": [
+   "_i_id",
+   "_i_Level"
+  ],
+  "buyCheckReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getChThirdStarRewardDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_i_id",
+   "_reward_num"
+  ],
+  "userSaveData": [
+   "_u_candy",
+   "_u_like",
+   "_u_fans",
+   "_u_girl_level",
+   "_u_skill_level",
+   "_u_mate_level",
+   "_u_follower_level",
+   "_u_play_level"
+  ],
+  "completeLogDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_type",
+   "_id",
+   "_value"
+  ],
+  "retReward": [
+   "_reward_type",
+   "_reward_id",
+   "_reward_value"
+  ],
+  "saveUserEventPoint": [
+   "_s_EventType",
+   "_i_DataID",
+   "_i_Point",
+   "_i_Step",
+   "_i_Version"
+  ],
+  "setUserFollowerProfileRewardReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "userPurchaseErrorLog": [
+   "_call",
+   "_data"
+  ],
+  "lastSaveTimeReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "useCreditDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_credit"
+  ],
+  "chThirdStreamStageRetDataInfo": [
+   "_i_id",
+   "_user_ap",
+   "_user_follower_profile",
+   "_reward_data"
+  ],
+  "updateAchievementReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setAttendanceRetDataInfo": [
+   "_status",
+   "_user_follower_quest",
+   "_attendance_count",
+   "_attendance_date",
+   "_max_coutinuous_attendance_count"
+  ],
+  "paidEventPointReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "updateScoreReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "setAdRewardRetDataInfo": [
+   "_i_id",
+   "_user_ad_list",
+   "_reward_data",
+   "_user_follower_profile"
+  ],
+  "getDiamondBonusReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyUserTitleReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "hibernationLog": [
+   "_call",
+   "_data"
+  ],
+  "getAllPointDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "getProfileMusicReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getProfileReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyVarietyStoreReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "transferUserRetDataInfo": [
+   "_transfer_id"
+  ],
+  "buyCollectionItemDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_special_music_idx",
+   "_idx"
+  ],
+  "getChoiceUserRetDataInfo": [
+   "_user",
+   "_choice_user"
+  ],
+  "saveUserSkill": [
+   "_i_id",
+   "_b_Activate",
+   "_l_ActivateOnTicks",
+   "_l_ActivateOffTicks"
+  ],
+  "checkBuyShop": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "userFollowerQuest": [
+   "_i_id",
+   "_i_CurrentID",
+   "_i_CompleteID",
+   "_d_ConditionValue1",
+   "_d_ConditionValue2",
+   "_d_ConditionValue3",
+   "_i_RewardReceived1",
+   "_i_RewardReceived2",
+   "_i_RewardReceived3",
+   "_i_isInfinity"
+  ],
+  "userContentsData": [
+   "_user_achievement",
+   "_user_buff",
+   "_user_candy_shop",
+   "_user_character",
+   "_user_costume",
+   "_user_daily_mission",
+   "_user_follower",
+   "_user_music",
+   "_user_prop",
+   "_user_unit",
+   "_user_skill",
+   "_user_shop",
+   "_user_messenger",
+   "_user_guitar",
+   "_user_event_point",
+   "_user_subscribe_list",
+   "_user_subscribe_pass_reward",
+   "_user_ticketcollection",
+   "_user_follower_quest",
+   "_user_follower_profile_reward",
+   "_user_follower_profile",
+   "_user_follower_giftitem",
+   "_user_ad_list",
+   "_user_chthird_stage",
+   "_user_tutorial",
+   "_user_ad_level",
+   "_user_select_reward"
+  ],
+  "setPassRewardReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ]
+ },
+ "tour": {
+  "getTourList": [
+   "_call",
+   "_data"
+  ],
+  "playCheck": [
+   "_call",
+   "_data"
+  ],
+  "getTourRankRetDataInfo": [
+   "_my_rank",
+   "_rank"
+  ],
+  "getPostTimeRetDataInfo": [],
+  "endPlayMusicDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_score",
+   "_medal",
+   "_over_flg"
+  ],
+  "getTourRankData": [
+   "_u_seq",
+   "_u_id",
+   "_u_nick",
+   "_u_avatar",
+   "_u_country",
+   "_rank",
+   "_score",
+   "_medal"
+  ],
+  "playCheckReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "playMusicDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_music_idx",
+   "_difficulty"
+  ],
+  "getTourRankDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_tour_idx",
+   "_track_idx",
+   "_mode",
+   "_start_limit",
+   "_end_limit"
+  ],
+  "trackMyRank": [
+   "_score",
+   "_medal"
+  ],
+  "getTourListRetDataInfo": [
+   "_tour_idx",
+   "_title"
+  ],
+  "getPostTimeDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "tourRankData": [
+   "_track",
+   "_total"
+  ],
+  "tourMainReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "endPlayMusic": [
+   "_call",
+   "_data"
+  ],
+  "endPlayMusicRetDataInfo": [
+   "_code"
+  ],
+  "trackRank": [
+   "_my_score"
+  ],
+  "playMusicRetDataInfo": [
+   "_gp",
+   "_music_idx"
+  ],
+  "totalTopRank": [],
+  "tourMyRank": [
+   "_rank",
+   "_score",
+   "_medal"
+  ],
+  "getTourListDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "tourMainRetDataInfo": [
+   "_idx",
+   "_title",
+   "_start_time",
+   "_end_time",
+   "_server_time",
+   "_mode",
+   "_tour_track",
+   "_tour_rank",
+   "_track_rank",
+   "_utc"
+  ],
+  "playMusic": [
+   "_call",
+   "_data"
+  ],
+  "endPlayMusicReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "trackMyScore": [
+   "_score",
+   "_medal"
+  ],
+  "playMusicReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "trackTopRank": [
+   "_u_seq",
+   "_u_id",
+   "_u_nick",
+   "_u_country",
+   "_rank",
+   "_score"
+  ],
+  "playCheckRetDataInfo": [
+   "_basic",
+   "_pro",
+   "_legend",
+   "_extra",
+   "_server_time"
+  ],
+  "tourMusicList": [
+   "_music_idx"
+  ],
+  "tourMainDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "getTourListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getPostTimeReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getPostTime": [
+   "_call",
+   "_data"
+  ],
+  "getTourRankReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "tourRank": [
+   "_my_rank",
+   "_top_rank"
+  ],
+  "playCheckDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_tour_idx",
+   "_track_idx",
+   "_music_idx"
+  ],
+  "getTourRank": [
+   "_call",
+   "_data"
+  ],
+  "tourTrackList": [
+   "_idx",
+   "_tour_idx",
+   "_my_rank",
+   "_music_idx",
+   "_start_time",
+   "_end_time",
+   "_open_flg",
+   "_difficulty1",
+   "_difficulty2",
+   "_difficulty3",
+   "_difficulty4"
+  ],
+  "tourMain": [
+   "_call",
+   "_data"
+  ]
+ },
+ "main": {
+  "mainRetDataInfo": [
+   "_gameInfo",
+   "_features"
+  ],
+  "getPropData": [
+   "_i_id",
+   "_s_Name_KO",
+   "_s_Name_EN",
+   "_s_Name_JA",
+   "_s_Name_ZH_CHS",
+   "_s_Name_ZH_CHT",
+   "_s_Name_VI",
+   "_s_Name_ES",
+   "_s_Name_IT",
+   "_s_Name_ID",
+   "_s_Name_TH",
+   "_s_Name_PT",
+   "_s_Name_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_s_ResourceName",
+   "_i_RequirementPropId",
+   "_i_Area",
+   "_b_IsActive",
+   "_i_MaxLevel"
+  ],
+  "titleListRetDataInfo": [
+   "_idx",
+   "_resource_name",
+   "_down_status",
+   "_buy_type",
+   "_price",
+   "_buy_type2",
+   "_price2",
+   "_value",
+   "_event_point",
+   "_desc_ko",
+   "_desc_en",
+   "_desc_ja"
+  ],
+  "getNoticeListDataInfo": [
+   "_device_uuid"
+  ],
+  "titleListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getNoticeList": [
+   "_call",
+   "_data"
+  ],
+  "getLocalPushDataInfo": [
+   "_device_uuid"
+  ],
+  "getSystemNotificationData": [
+   "_i_Id",
+   "_s_DescriptionType",
+   "_i_Type",
+   "_s_Factor",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI"
+  ],
+  "getAchievementData": [
+   "_i_id",
+   "_s_Title_KO",
+   "_s_Title_EN",
+   "_s_Title_JA",
+   "_s_Title_ZH_CHS",
+   "_s_Title_ZH_CHT",
+   "_s_Title_VI",
+   "_s_Title_ES",
+   "_s_Title_IT",
+   "_s_Title_ID",
+   "_s_Title_TH",
+   "_s_Title_PT",
+   "_s_Title_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_s_ResourceName",
+   "_s_AchievementConditionType",
+   "_s_RewardType",
+   "_s_RewardDescription_KO",
+   "_s_RewardDescription_EN",
+   "_s_RewardDescription_JA",
+   "_s_RewardDescription_ZH_CHS",
+   "_s_RewardDescription_ZH_CHT",
+   "_s_RewardDescription_VI",
+   "_s_RewardDescription_ES",
+   "_s_RewardDescription_IT",
+   "_s_RewardDescription_ID",
+   "_s_RewardDescription_TH",
+   "_s_RewardDescription_PT",
+   "_s_RewardDescription_HI",
+   "_i_Reward_1",
+   "_i_Reward_2",
+   "_i_Reward_3",
+   "_i_Reward_4",
+   "_i_Reward_5",
+   "_i_Reward_6",
+   "_i_Reward_7",
+   "_i_Reward_8",
+   "_i_Reward_9",
+   "_i_Reward_10",
+   "_i_Area",
+   "_b_IsActive",
+   "_i_Reward_11",
+   "_i_Reward_12",
+   "_i_MaxLevel",
+   "_s_Condition_1",
+   "_s_Condition_2",
+   "_s_Condition_3",
+   "_s_Condition_4",
+   "_s_Condition_5",
+   "_s_Condition_6",
+   "_s_Condition_7",
+   "_s_Condition_8",
+   "_s_Condition_9",
+   "_s_Condition_10",
+   "_s_Condition_11",
+   "_s_Condition_12",
+   "_s_Condition_13",
+   "_s_Condition_14",
+   "_s_Condition_15",
+   "_s_Condition_16",
+   "_s_Condition_17",
+   "_s_Condition_18",
+   "_s_Condition_19",
+   "_s_Condition_20",
+   "_i_Reward_13",
+   "_i_Reward_14",
+   "_i_Reward_15",
+   "_i_Reward_16",
+   "_i_Reward_17",
+   "_i_Reward_18",
+   "_i_Reward_19",
+   "_i_Reward_20"
+  ],
+  "getGameDataListReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getConsumeData": [
+   "_i_id",
+   "_s_ResourceName",
+   "_s_Title_KO",
+   "_s_Title_EN",
+   "_s_Title_JA",
+   "_s_Title_ZH_CHS",
+   "_s_Title_ZH_CHT",
+   "_s_Title_VI",
+   "_s_Title_ES",
+   "_s_Title_IT",
+   "_s_Title_ID",
+   "_s_Title_TH",
+   "_s_Title_PT",
+   "_s_Title_HI",
+   "_s_Limit",
+   "_i_Type",
+   "_s_ExtraValue",
+   "_i_Area",
+   "_b_IsActive"
+  ],
+  "getAdLevelData": [
+   "_i_GroupID",
+   "_i_Level",
+   "_i_RequireEXP",
+   "_i_RewardGroup",
+   "_b_IsActive",
+   "_i_id"
+  ],
+  "newStoreListData": [
+   "_store_idx",
+   "_music_idx"
+  ],
+  "getChThirdScoreData": [
+   "_i_id",
+   "_i_Level",
+   "_i_CharacterScore",
+   "_i_FollowerScore",
+   "_i_MusicScore",
+   "_b_IsActive"
+  ],
+  "getUpdateTimeDataInfo": [
+   "_device_uuid"
+  ],
+  "getLocalPushData": [
+   "_i_id",
+   "_s_LocalPushRegisterType",
+   "_i_TimeForSeconds",
+   "_b_IsMultipleJson",
+   "_s_JsonMessage_KO",
+   "_s_JsonMessage_EN",
+   "_s_JsonMessage_JA",
+   "_s_JsonMessage_ZH_CHS",
+   "_s_JsonMessage_ZH_CHT",
+   "_s_JsonMessage_VI",
+   "_s_JsonMessage_ES",
+   "_s_JsonMessage_IT",
+   "_s_JsonMessage_ID",
+   "_s_JsonMessage_TH",
+   "_s_JsonMessage_PT",
+   "_s_JsonMessage_HI",
+   "_b_IsActive"
+  ],
+  "getShopData": [
+   "_i_id",
+   "_s_ProductID_ios",
+   "_s_ProductID_aos",
+   "_i_ShopCategory",
+   "_i_ProductType",
+   "_s_ResourceName",
+   "_s_Title_KO",
+   "_s_Title_EN",
+   "_s_Title_JA",
+   "_s_Title_ZH_CHS",
+   "_s_Title_ZH_CHT",
+   "_s_Title_VI",
+   "_s_Title_ES",
+   "_s_Title_IT",
+   "_s_Title_ID",
+   "_s_Title_TH",
+   "_s_Title_PT",
+   "_s_Title_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_i_RewardGroup",
+   "_i_Tag",
+   "_i_SellType",
+   "_i_SellValue",
+   "_b_IsActive",
+   "_i_Condition",
+   "_i_ConditionValue",
+   "_s_StorePrice_AOS",
+   "_s_StorePrice_IOS",
+   "_i_SortIndex",
+   "_s_AreaList",
+   "_s_AltResourceName",
+   "_s_AltDescription_KO",
+   "_s_AltDescription_EN",
+   "_s_AltDescription_JA",
+   "_s_AltDescription_ZH_CHS",
+   "_s_AltDescription_ZH_CHT",
+   "_s_AltDescription_VI",
+   "_s_AltDescription_ES",
+   "_s_AltDescription_IT",
+   "_s_AltDescription_ID",
+   "_s_AltDescription_TH",
+   "_s_AltDescription_PT",
+   "_s_AltDescription_HI",
+   "_s_Kor_StorePrice_AOS",
+   "_s_Kor_StorePrice_IOS",
+   "_b_IsLimitTime",
+   "_s_UIStartTime",
+   "_s_StartTime",
+   "_s_EndTime"
+  ],
+  "getCollectionDataInfo": [],
+  "getBuffData": [
+   "_i_id",
+   "_s_ResourceName",
+   "_s_Title_KO",
+   "_s_Title_EN",
+   "_s_Title_JA",
+   "_s_Title_ZH_CHS",
+   "_s_Title_ZH_CHT",
+   "_s_Title_VI",
+   "_s_Title_ES",
+   "_s_Title_IT",
+   "_s_Title_ID",
+   "_s_Title_TH",
+   "_s_Title_PT",
+   "_s_Title_HI",
+   "_s_Buff_Desc_KO",
+   "_s_Buff_Desc_EN",
+   "_s_Buff_Desc_JA",
+   "_s_Buff_Desc_ZH_CHS",
+   "_s_Buff_Desc_ZH_CHT",
+   "_s_Buff_Desc_VI",
+   "_s_Buff_Desc_ES",
+   "_s_Buff_Desc_IT",
+   "_s_Buff_Desc_ID",
+   "_s_Buff_Desc_TH",
+   "_s_Buff_Desc_PT",
+   "_s_Buff_Desc_HI",
+   "_i_Type",
+   "_i_Retention_Time"
+  ],
+  "avatarList": [
+   "_call",
+   "_data"
+  ],
+  "getUnitData": [
+   "_i_id",
+   "_s_Name_KO",
+   "_s_Name_EN",
+   "_s_Name_JA",
+   "_s_Name_ZH_CHS",
+   "_s_Name_ZH_CHT",
+   "_s_Name_VI",
+   "_s_Name_ES",
+   "_s_Name_IT",
+   "_s_Name_ID",
+   "_s_Name_TH",
+   "_s_Name_PT",
+   "_s_Name_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_s_ResourceName",
+   "_i_MaxLevel",
+   "_s_GoodsType",
+   "_i_Cost",
+   "_f_CostIncreaseValue",
+   "_f_Value",
+   "_f_IncreaseValue",
+   "_i_UnlockLevel",
+   "_i_UnlockCost",
+   "_i_RequirementUnitId_1",
+   "_i_RequirementUnitId_2",
+   "_i_RequirementFollowerId_1",
+   "_i_RequirementFollowerId_2",
+   "_i_RequirementPropId_1",
+   "_i_RequirementPropId_2",
+   "_i_RequirementPropCount",
+   "_i_Area",
+   "_b_IsActive"
+  ],
+  "getPropLevelData": [
+   "_i_id",
+   "_i_PropId",
+   "_i_Level",
+   "_d_Cost",
+   "_i_PerksId",
+   "_d_PerksValue",
+   "_b_IsActive"
+  ],
+  "getDefaultSettingRetDataInfo": [
+   "_ad_count",
+   "_ad_probability",
+   "_challenge_mission",
+   "_seed_value",
+   "_rank_up_limit",
+   "_rank_down_limit",
+   "_reward_rate",
+   "_tour_btn_name",
+   "_event_btn_name",
+   "_event_rank_url",
+   "_tour_intro_movie",
+   "_tour_bg_movie",
+   "_event_bg_movie"
+  ],
+  "initDataInfo": [
+   "_type",
+   "_os",
+   "_ver",
+   "_device_uuid"
+  ],
+  "main": [
+   "_call",
+   "_data",
+   "_sub_mode"
+  ],
+  "tabListData": [
+   "_tap_idx",
+   "_music_idx"
+  ],
+  "defaultSettingListReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "defaultSettingList": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "getCostumeData": [
+   "_i_id",
+   "_s_Name_KO",
+   "_s_Name_EN",
+   "_s_Name_JA",
+   "_s_Name_ZH_CHS",
+   "_s_Name_ZH_CHT",
+   "_s_Name_VI",
+   "_s_Name_ES",
+   "_s_Name_IT",
+   "_s_Name_ID",
+   "_s_Name_TH",
+   "_s_Name_PT",
+   "_s_Name_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_s_ResourceName",
+   "_s_CostumeName",
+   "_i_MaxLevel",
+   "_s_GoodsType",
+   "_s_Cost",
+   "_f_CostIncreaseRate",
+   "_s_Operation",
+   "_d_Amount",
+   "_f_AmountIncreaseRate",
+   "_s_BonusOperation",
+   "_d_BonusAmount",
+   "_f_BonusAmountIncreaseRate",
+   "_i_UnlockLevel",
+   "_i_RequirementFollowerId_1",
+   "_i_RequirementFollowerId_2",
+   "_i_RequirementPropId_1",
+   "_i_RequirementPropId_2",
+   "_i_RequirementPropCount",
+   "_i_SortOrder",
+   "_f_FanMultiply",
+   "_i_AcquisitionType",
+   "_i_AcquisitionId",
+   "_b_IsActive",
+   "_i_Area",
+   "_i_DownloadType",
+   "_s_AltCostumeName",
+   "_s_AltCostumeStartTime",
+   "_s_AltCostumeEndTime"
+  ],
+  "defaultSettingListRetDataInfo": [
+   "_status",
+   "_setting_list"
+  ],
+  "mainFeatures": [
+   "_album_idx",
+   "_f_type",
+   "_buy_type",
+   "_new_status",
+   "_discount",
+   "_price",
+   "_banner_url",
+   "_location_url"
+  ],
+  "getSkillData": [
+   "_i_id",
+   "_i_Area",
+   "_s_Name_KO",
+   "_s_Name_EN",
+   "_s_Name_JA",
+   "_s_Name_ZH_CHS",
+   "_s_Name_ZH_CHT",
+   "_s_Name_VI",
+   "_s_Name_ES",
+   "_s_Name_IT",
+   "_s_Name_ID",
+   "_s_Name_TH",
+   "_s_Name_PT",
+   "_s_Name_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_s_ResourceName",
+   "_i_MaxLevel",
+   "_s_GoodsType",
+   "_i_Cost",
+   "_f_CostIncreaseValue",
+   "_f_SkillValue",
+   "_f_SkillIncreaseValue",
+   "_f_SkillTime",
+   "_f_SkillTimeIncreaseValue",
+   "_f_Cooltime",
+   "_i_UnlockLevel",
+   "_i_UnlockCost",
+   "_i_RequirementSkillId_1",
+   "_i_RequirementSkillId_2",
+   "_i_RequirementFollowerId_1",
+   "_i_RequirementFollowerId_2",
+   "_i_RequirementPropId_1",
+   "_i_RequirementPropId_2",
+   "_i_RequirementPropCount"
+  ],
+  "newStoreProduct": [
+   "_product_id",
+   "_product_type",
+   "_product_name",
+   "_store_name",
+   "_iapID",
+   "_price",
+   "_prev_price",
+   "_price_str",
+   "_prev_price_str",
+   "_currency",
+   "_image",
+   "_thumbnail",
+   "_main_desc"
+  ],
+  "getGameDataListRetDataInfo": [
+   "_consume",
+   "_music",
+   "_costume",
+   "_prop",
+   "_follower",
+   "_buff",
+   "_unit",
+   "_skill",
+   "_achievement",
+   "_daily_mission",
+   "_music_level",
+   "_shop",
+   "_reward_group",
+   "_Fan",
+   "_SystemNotification",
+   "_SystemString",
+   "_SubscribeList",
+   "_SubscribePassReward",
+   "_SubscribePass",
+   "_Guitar",
+   "_SubscribePassRewardInformation",
+   "_ticketcollection",
+   "_character",
+   "_samseckevent",
+   "_localpush",
+   "_followerquest",
+   "_proplevel",
+   "_follower_profile",
+   "_passgoodsshop",
+   "_followergiftitem",
+   "_followerprofilelevel",
+   "_ad_list",
+   "_chthird_stage",
+   "_chthird_score",
+   "_chthird_chapter",
+   "_percent",
+   "_ad_level",
+   "_event_list",
+   "_select_reward"
+  ],
+  "getFanData": [
+   "_i_Area",
+   "_i_Grade",
+   "_i_FanCount",
+   "_i_BonusRate",
+   "_i_BonusRateUI"
+  ],
+  "getEventRewardListReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getLocalPush": [
+   "_call",
+   "_data"
+  ],
+  "mainDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_country_code"
+  ],
+  "getAdListData": [
+   "_i_id",
+   "_i_Category",
+   "_s_ConditionType1",
+   "_s_ConditionValue1",
+   "_s_ConditionType2",
+   "_s_ConditionValue2",
+   "_s_ResourceName",
+   "_s_Name_KO",
+   "_s_Name_EN",
+   "_s_Name_JA",
+   "_s_Name_ZH_CHS",
+   "_s_Name_ZH_CHT",
+   "_s_Name_VI",
+   "_s_Name_ES",
+   "_s_Name_IT",
+   "_s_Name_ID",
+   "_s_Name_TH",
+   "_s_Name_PT",
+   "_s_Name_HI",
+   "_b_IsActive",
+   "_s_RewardType",
+   "_i_RewardGroup",
+   "_s_ExtraValue",
+   "_s_AdType"
+  ],
+  "getSelectRewardData": [
+   "_i_id",
+   "_i_GroupId",
+   "_i_RewardGroupId",
+   "_i_AltRewardGroupId",
+   "_b_IsActive"
+  ],
+  "titleListDataInfo": [
+   "_type"
+  ],
+  "moreGames": [
+   "_call",
+   "_data"
+  ],
+  "getGameDataList": [
+   "_call",
+   "_data",
+   "_sub_mode",
+   "_common_data"
+  ],
+  "storeList": [
+   "_call",
+   "_data"
+  ],
+  "initReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getMusicLevelData": [
+   "_i_Level",
+   "_f_EncoreBonusAppearRate",
+   "_i_EncoreBonusAppearPercent",
+   "_f_EncoreBonusAppearCooltime_Sec",
+   "_f_EncoreBonusAppearCooltime_Hour",
+   "_i_EncoreBonusGiftAmount",
+   "_i_EncoreFollowerProfileExp",
+   "_i_ChThirdCoolTime"
+  ],
+  "getSubscribePassRewardInformation": [
+   "_i_id",
+   "_s_ResourceName",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_b_IsActive"
+  ],
+  "maintenanceList": [
+   "_idx",
+   "_title",
+   "_start_datetime",
+   "_end_datetime",
+   "_view_flg"
+  ],
+  "moreGamesRetDataInfo": [
+   "_app_id",
+   "_material_id",
+   "_material_type",
+   "_material_category",
+   "_material_name",
+   "_material_link",
+   "_link_text",
+   "_link_url_aos",
+   "_link_url_ios",
+   "_thumbnail_url",
+   "_icon_url",
+   "_update_date"
+  ],
+  "newStoreListDataInfo": [
+   "_os",
+   "_type",
+   "_country_code",
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "getLocalPushReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getGameDataListDataInfo": [
+   "_game_type",
+   "_device_uuid"
+  ],
+  "getCollection": [
+   "_call",
+   "_data"
+  ],
+  "initRetDataInfo": [
+   "_idx",
+   "_game_url",
+   "_cdn_url"
+  ],
+  "defaultSettingListDataInfo": [
+   "_device_uuid",
+   "_os"
+  ],
+  "Request": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "getCollectionReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "newStoreListRetDataInfo": [
+   "_store_idx",
+   "_store_type",
+   "_buy_type",
+   "_prev_price",
+   "_price",
+   "_title",
+   "_sub_title",
+   "_img_url",
+   "_store_list",
+   "_product_data",
+   "_is_sale"
+  ],
+  "getEventRewardListRetDataInfo": [
+   "_reward_list",
+   "_group_idx"
+  ],
+  "getGuitarData": [
+   "_i_id",
+   "_i_Area",
+   "_s_Title_KO",
+   "_s_Title_EN",
+   "_s_Title_JA",
+   "_s_Title_ZH_CHS",
+   "_s_Title_ZH_CHT",
+   "_s_Title_VI",
+   "_s_Title_ES",
+   "_s_Title_IT",
+   "_s_Title_ID",
+   "_s_Title_TH",
+   "_s_Title_PT",
+   "_s_Title_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_s_ResourceName",
+   "_s_GuitarName",
+   "_i_GuitarType",
+   "_s_GoodsType",
+   "_s_Cost",
+   "_i_RequirementCharacterLevel",
+   "_d_IncrementValue",
+   "_i_AcquisitionType",
+   "_i_AcquisitionId",
+   "_i_SortOrder",
+   "_b_IsActive",
+   "_i_DownloadType"
+  ],
+  "getEventRewardListData": [
+   "_idx",
+   "_event_name",
+   "_event_type",
+   "_reward_idx",
+   "_reward_num",
+   "_reward_type",
+   "_reward_id",
+   "_reward_value",
+   "_reward_flg",
+   "_get_date",
+   "_s_CustomIconType",
+   "_s_CustomIconSprite"
+  ],
+  "getChThirdChapterData": [
+   "_i_id",
+   "_i_unlockLevel",
+   "_i_RewardGroupID1",
+   "_i_GoalStar1",
+   "_i_RewardGroupID2",
+   "_i_GoalStar2",
+   "_i_RewardGroupID3",
+   "_i_GoalStar3",
+   "_s_Name_KO",
+   "_s_Name_EN",
+   "_s_Name_JA",
+   "_s_Name_ZH_CHS",
+   "_s_Name_ZH_CHT",
+   "_s_Name_VI",
+   "_s_Name_ES",
+   "_s_Name_IT",
+   "_s_Name_ID",
+   "_s_Name_TH",
+   "_s_Name_PT",
+   "_s_Name_HI",
+   "_b_IsActive"
+  ],
+  "getTabList": [
+   "_call",
+   "_data"
+  ],
+  "getFollowerQuestData": [
+   "_i_id",
+   "_i_UnlockFollowerID",
+   "_i_UnlockFollowerLevel",
+   "_s_ConditionType1",
+   "_d_Condition1_1",
+   "_d_Condition1_2",
+   "_s_ConditionType2",
+   "_d_Condition2_1",
+   "_d_Condition2_2",
+   "_s_ConditionType3",
+   "_d_Condition3_1",
+   "_d_Condition3_2",
+   "_i_RewardGroup1",
+   "_i_RewardGroup2",
+   "_i_RewardGroup3",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_JA",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_b_IsActive",
+   "_i_Type"
+  ],
+  "getChThirdStageData": [
+   "_i_id",
+   "_i_Chapter",
+   "_i_StageIndex",
+   "_i_RewardGroupID",
+   "_i_GoalScore1",
+   "_i_GoalScore2",
+   "_i_GoalScore3",
+   "_s_BonusProfileID",
+   "_s_Name_KO",
+   "_s_Name_EN",
+   "_s_Name_JA",
+   "_s_Name_ZH_CHS",
+   "_s_Name_ZH_CHT",
+   "_s_Name_VI",
+   "_s_Name_ES",
+   "_s_Name_IT",
+   "_s_Name_ID",
+   "_s_Name_TH",
+   "_s_Name_PT",
+   "_s_Name_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_b_IsActive",
+   "_s_StageType",
+   "_i_StoryID",
+   "_i_BonusMusicID",
+   "_s_PercentRewardGroupID"
+  ],
+  "getFollowerProfileData": [
+   "_i_id",
+   "_s_Name_KO",
+   "_s_Name_EN",
+   "_s_Name_JA",
+   "_s_Name_ZH_CHS",
+   "_s_Name_ZH_CHT",
+   "_s_Name_VI",
+   "_s_Name_ES",
+   "_s_Name_IT",
+   "_s_Name_ID",
+   "_s_Name_TH",
+   "_s_Name_PT",
+   "_s_Name_HI",
+   "_b_IsActive",
+   "_s_GiftItemID",
+   "_b_IsVisible",
+   "_s_BackgroundColor"
+  ],
+  "moreGamesDataInfo": [
+   "_locale",
+   "_adset_type",
+   "_uuid"
+  ],
+  "getServerTimeRetDataInfo": [
+   "_time",
+   "_datetime"
+  ],
+  "getServerTime": [
+   "_call",
+   "_data",
+   "_sub_mode",
+   "_common_data"
+  ],
+  "getFollowerGiftItemData": [
+   "_i_id",
+   "_i_GiftType",
+   "_d_Value",
+   "_i_Limit",
+   "_s_ResourceName",
+   "_s_Name_KO",
+   "_s_Name_EN",
+   "_s_Name_JA",
+   "_s_Name_ZH_CHS",
+   "_s_Name_ZH_CHT",
+   "_s_Name_VI",
+   "_s_Name_ES",
+   "_s_Name_IT",
+   "_s_Name_ID",
+   "_s_Name_TH",
+   "_s_Name_PT",
+   "_s_Name_HI",
+   "_b_IsActive"
+  ],
+  "newStoreListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getTicketCollectionData": [
+   "_i_id",
+   "_s_TicketType",
+   "_s_Title_KO",
+   "_s_Title_EN",
+   "_s_Title_JA",
+   "_s_Title_ZH_CHS",
+   "_s_Title_ZH_CHT",
+   "_s_Title_VI",
+   "_s_Title_ES",
+   "_s_Title_IT",
+   "_s_Title_ID",
+   "_s_Title_TH",
+   "_s_Title_PT",
+   "_s_Title_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_s_ResourceName",
+   "_s_ResourceName_Big",
+   "_i_Season",
+   "_s_PassUIBundleName",
+   "_s_BackgroundColor",
+   "_s_LabelColor",
+   "_s_SeasonLabelColor",
+   "_s_SeasonBackColor",
+   "_i_SortOrder",
+   "_b_IsActive"
+  ],
+  "getTabListDataInfo": [
+   "_type",
+   "_device_uuid"
+  ],
+  "avatarListRetDataInfo": [
+   "_idx",
+   "_resource_name",
+   "_down_status",
+   "_buy_type",
+   "_price",
+   "_buy_type2",
+   "_price2",
+   "_value",
+   "_event_point"
+  ],
+  "mainGameInfo": [
+   "_album_list",
+   "_music_list",
+   "_album_language",
+   "_music_language",
+   "_tab",
+   "_notice",
+   "_default_setting"
+  ],
+  "getPassGoodsShopData": [
+   "_i_id",
+   "_i_TicketID",
+   "_i_GoodsTicketID",
+   "_i_ShopID",
+   "_b_IsActive",
+   "_i_SaleShopID"
+  ],
+  "titleList": [
+   "_call",
+   "_data"
+  ],
+  "storeListRetDataInfo": [
+   "_store_idx",
+   "_store_type",
+   "_title",
+   "_sub_title",
+   "_img_url",
+   "_store_list"
+  ],
+  "getSubscribePassReward": [
+   "_i_id",
+   "_i_Group",
+   "_i_Step",
+   "_i_Goal",
+   "_i_FreeRewardGroup",
+   "_i_PaidRewardGroup"
+  ],
+  "getRewardGroupData": [
+   "_i_id",
+   "_i_Group",
+   "_i_RewardType",
+   "_i_RewardID",
+   "_l_RewardQuantity",
+   "_i_BuyFirstQuantity"
+  ],
+  "getSubscribeList": [
+   "_i_id",
+   "_i_Area",
+   "_s_Type",
+   "_i_TimeLimit",
+   "_i_StartYear",
+   "_i_RepeatMonth",
+   "_i_MonthGroupIndex",
+   "_b_IsActive"
+  ],
+  "getNoticeListReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getTabListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getFollowerProfileLevelData": [
+   "_i_id",
+   "_i_ProfileID",
+   "_i_Level",
+   "_d_RequireEXP",
+   "_i_RewardGroup",
+   "_s_UnlockInformation",
+   "_i_AddCandy",
+   "_i_UnlockStoryID",
+   "_b_IsActive"
+  ],
+  "getDailyMissionData": [
+   "_i_id",
+   "_s_Title_KO",
+   "_s_Title_EN",
+   "_s_Title_JA",
+   "_s_Title_ZH_CHS",
+   "_s_Title_ZH_CHT",
+   "_s_Title_VI",
+   "_s_Title_ES",
+   "_s_Title_IT",
+   "_s_Title_ID",
+   "_s_Title_TH",
+   "_s_Title_PT",
+   "_s_Title_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_s_ResourceName",
+   "_s_DailyMissionConditionType",
+   "_d_Condition_1",
+   "_s_RewardType",
+   "_s_RewardDescription_KO",
+   "_s_RewardDescription_EN",
+   "_s_RewardDescription_JA",
+   "_s_RewardDescription_ZH_CHS",
+   "_s_RewardDescription_ZH_CHT",
+   "_s_RewardDescription_VI",
+   "_s_RewardDescription_ES",
+   "_s_RewardDescription_IT",
+   "_s_RewardDescription_ID",
+   "_s_RewardDescription_TH",
+   "_s_RewardDescription_PT",
+   "_s_RewardDescription_HI",
+   "_i_Reward_1",
+   "_i_Area",
+   "_b_IsActive"
+  ],
+  "getSystemStringData": [
+   "_i_StringID",
+   "_s_Category",
+   "_s_UIType",
+   "_s_Key",
+   "_s_KO",
+   "_s_EN",
+   "_s_JA",
+   "_s_ZH_CHS",
+   "_s_ZH_CHT",
+   "_s_ID",
+   "_s_PT",
+   "_s_ES",
+   "_s_RU",
+   "_s_DE",
+   "_s_AR_XA",
+   "_s_VI",
+   "_s_IT",
+   "_s_TH",
+   "_s_HI"
+  ],
+  "getEventRewardListDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_event_idx"
+  ],
+  "getSamSeckEventData": [
+   "_i_id",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_s_ConditionType",
+   "_d_Condition",
+   "_i_MailRewardID",
+   "_b_IsActive"
+  ],
+  "getFollowerData": [
+   "_i_id",
+   "_s_Name_KO",
+   "_s_Name_EN",
+   "_s_Name_JA",
+   "_s_Name_ZH_CHS",
+   "_s_Name_ZH_CHT",
+   "_s_Name_VI",
+   "_s_Name_ES",
+   "_s_Name_IT",
+   "_s_Name_ID",
+   "_s_Name_TH",
+   "_s_Name_PT",
+   "_s_Name_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_s_ResourceName",
+   "_i_MaxLevel",
+   "_d_LevelRate",
+   "_d_LateCost",
+   "_d_Cost",
+   "_d_CostIncreaseValue",
+   "_d_CostValueConstant",
+   "_d_Amount",
+   "_d_AmountIncreaseValue",
+   "_d_AmountValueConstant",
+   "_d_BonusAmountIncreaseRate",
+   "_i_UnlockLevel",
+   "_d_UnlockCost",
+   "_i_RequirementFollowerId_1",
+   "_i_RequirementFollowerId_2",
+   "_i_RequirementPropId_1",
+   "_i_RequirementPropId_2",
+   "_i_RequirementPropCount",
+   "_b_IsActive",
+   "_i_Area",
+   "_i_DownloadType",
+   "_i_ProfileID"
+  ],
+  "defaultSettingDataList": [
+   "_setting_key",
+   "_setting_value"
+  ],
+  "getServerTimeReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "avatarListDataInfo": [
+   "_type"
+  ],
+  "storeListDataInfo": [
+   "_type"
+  ],
+  "getCollectionRetDataInfo": [
+   "_idx",
+   "_buy_type",
+   "_price",
+   "_item"
+  ],
+  "storeListData": [
+   "_store_idx",
+   "_music_idx"
+  ],
+  "moreGamesReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getCollectionItem": [
+   "_special_music_idx",
+   "_idx",
+   "_item_type",
+   "_item_value",
+   "_buy_cnt"
+  ],
+  "getLocalPushRetDataInfo": [
+   "_i_LocalPushID",
+   "_s_LocalPushRegisterType",
+   "_i_TimeForSeconds",
+   "_s_JsonMessage_ko",
+   "_s_JsonMessage_en",
+   "_s_JsonMessage_ja"
+  ],
+  "getSubscribePass": [
+   "_i_id",
+   "_i_SubscribeID",
+   "_s_AcquireList",
+   "_i_PointPrice",
+   "_i_PaidPoint",
+   "_i_ActiveBuffID",
+   "_i_HiddenStep",
+   "_i_ADPoint",
+   "_i_ADCoolTime",
+   "_i_TicketCollectionId"
+  ],
+  "getNoticeListRetDataInfo": [
+   "_seq",
+   "_notice_name",
+   "_location_url",
+   "_img_url"
+  ],
+  "getCharacterData": [
+   "_i_id",
+   "_i_Area",
+   "_s_BundleName",
+   "_s_Name_KO",
+   "_s_Name_EN",
+   "_s_Name_JA",
+   "_s_Name_ZH_CHS",
+   "_s_Name_ZH_CHT",
+   "_s_Name_VI",
+   "_s_Name_ES",
+   "_s_Name_IT",
+   "_s_Name_ID",
+   "_s_Name_TH",
+   "_s_Name_PT",
+   "_s_Name_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_s_ResourceName",
+   "_i_MaxLevel",
+   "_d_LevelRate",
+   "_d_LateCost",
+   "_d_Cost",
+   "_d_CostIncreaseValue",
+   "_d_CostValueConstant",
+   "_d_Amount",
+   "_d_AmountIncreaseValue",
+   "_d_AmountValueConstant",
+   "_d_BonusAmountIncreaseRate",
+   "_i_UnlockLevel",
+   "_d_UnlockCost",
+   "_i_RequirementFollowerId_1",
+   "_i_RequirementFollowerId_2",
+   "_i_RequirementPropId_1",
+   "_i_RequirementPropId_2",
+   "_i_RequirementPropCount",
+   "_b_IsActive"
+  ],
+  "mainReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getUpdateTimeReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getEventListData": [
+   "_idx",
+   "_event_type",
+   "_start_date",
+   "_end_date",
+   "_b_IsActive"
+  ],
+  "getServerTimeDataInfo": [
+   "_device_uuid"
+  ],
+  "getTabListRetDataInfo": [
+   "_tab_list"
+  ],
+  "getUpdateTimeRetDataInfo": [
+   "_upd_time"
+  ],
+  "getUpdateTime": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "storeListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "newStoreList": [
+   "_call",
+   "_data"
+  ],
+  "getPercentData": [
+   "_i_GroupID",
+   "_i_RewardType",
+   "_i_RewardID",
+   "_l_RewardQuantity",
+   "_b_IsActive",
+   "_i_id"
+  ],
+  "getEventRewardList": [
+   "_call",
+   "_data",
+   "_sub_mode",
+   "_common_data"
+  ],
+  "getMusicData": [
+   "_i_id",
+   "_s_Title_KO",
+   "_s_Title_EN",
+   "_s_Title_JA",
+   "_s_Title_ZH_CHS",
+   "_s_Title_ZH_CHT",
+   "_s_Title_VI",
+   "_s_Title_ES",
+   "_s_Title_IT",
+   "_s_Title_ID",
+   "_s_Title_TH",
+   "_s_Title_PT",
+   "_s_Title_HI",
+   "_s_Description_1_KO",
+   "_s_Description_1_EN",
+   "_s_Description_1_JA",
+   "_s_Description_1_ZH_CHS",
+   "_s_Description_1_ZH_CHT",
+   "_s_Description_1_VI",
+   "_s_Description_1_ES",
+   "_s_Description_1_IT",
+   "_s_Description_1_ID",
+   "_s_Description_1_TH",
+   "_s_Description_1_PT",
+   "_s_Description_1_HI",
+   "_s_ResourceName",
+   "_s_MusicFileName",
+   "_i_MaxLevel",
+   "_d_LevelRate",
+   "_d_LateCost",
+   "_d_Cost",
+   "_d_CostIncreaseValue",
+   "_d_CostValueConstant",
+   "_d_Amount",
+   "_d_AmountIncreaseValue",
+   "_d_AmountValueConstant",
+   "_d_BonusAmountIncreaseRate",
+   "_i_UnlockLevel",
+   "_d_UnlockCost",
+   "_i_RequirementFollowerId_1",
+   "_i_RequirementFollowerId_2",
+   "_i_RequirementMusicId_1",
+   "_i_RequirementMusicId_2",
+   "_i_RequirementMusicCount",
+   "_s_GoodsType",
+   "_i_SortOrder",
+   "_i_AcquisitionType",
+   "_i_AcquisitionId",
+   "_b_IsActive",
+   "_i_Area",
+   "_i_DownloadType_img",
+   "_i_DownloadType_file"
+  ],
+  "avatarListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ]
+ },
+ "store": {
+  "buyCheckReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyCheck": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "itemStoreList": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "itemStoreListDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_store_type"
+  ],
+  "buyVarietyStoreDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx"
+  ],
+  "getVarietyStoreReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyVarietyStoreReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "storeListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "storeNotice": [
+   "_call",
+   "_data"
+  ],
+  "buyContentsRetDataInfo": [
+   "_u_cp",
+   "_u_candy",
+   "_user_skill",
+   "_user_unit"
+  ],
+  "itemStoreListRetDataInfo": [
+   "_bonus",
+   "_idx",
+   "_pp_idx",
+   "_title_cn",
+   "_title_en",
+   "_title_jp",
+   "_desc_cn",
+   "_desc_en",
+   "_desc_jp",
+   "_img_url",
+   "_buy_type",
+   "_item_type",
+   "_prev_price",
+   "_price",
+   "_str_prev_price",
+   "_str_price",
+   "_item_value",
+   "_sale_status",
+   "_aos_pp_product_id",
+   "_ios_pp_product_id"
+  ],
+  "getVarietyStoreDataInfo": [
+   "_device_uuid"
+  ],
+  "storeListRetDataInfo": [
+   "_idx",
+   "_store_type",
+   "_music_idx",
+   "_banner_img_url",
+   "_location_url",
+   "_album_idx",
+   "_difficulty1",
+   "_difficulty2",
+   "_difficulty3",
+   "_buy_type",
+   "_buy_ad",
+   "_price",
+   "_cdn_dir",
+   "_new_status",
+   "_share_game1",
+   "_share_game2",
+   "_share_game3",
+   "_share_game4",
+   "_share_game5",
+   "_share_game6",
+   "_share_game7",
+   "_share_game8",
+   "_share_game9",
+   "_music_title",
+   "_artist",
+   "_songwriter",
+   "_lyricist",
+   "_description"
+  ],
+  "getVarietyStoreRetDataInfo": [
+   "_i_id",
+   "_s_ResourceName",
+   "_s_Title_KO",
+   "_s_Title_EN",
+   "_s_Title_JA",
+   "_s_Title_ZH_CHS",
+   "_s_Title_ZH_CHT",
+   "_s_Title_VI",
+   "_s_Title_ES",
+   "_s_Title_IT",
+   "_s_Title_ID",
+   "_s_Title_TH",
+   "_s_Title_PT",
+   "_s_Title_HI",
+   "_s_Description_KO",
+   "_s_Description_EN",
+   "_s_Description_JA",
+   "_s_Description_ZH_CHS",
+   "_s_Description_ZH_CHT",
+   "_s_Description_VI",
+   "_s_Description_ES",
+   "_s_Description_IT",
+   "_s_Description_ID",
+   "_s_Description_TH",
+   "_s_Description_PT",
+   "_s_Description_HI",
+   "_i_Cost",
+   "_i_RewardType",
+   "_i_RewardId",
+   "_i_RewardQuantity"
+  ],
+  "buyCheckRetDataInfo": [
+   "_result"
+  ],
+  "storeList": [
+   "_call",
+   "_data"
+  ],
+  "buyShopRetDataInfo": [
+   "_u_cp",
+   "_u_candy",
+   "_reward_data",
+   "_user_ad_level"
+  ],
+  "buyContentsDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_type",
+   "_idx"
+  ],
+  "storeNoticeRetDataInfo": [
+   "_idx",
+   "_product_id_aos",
+   "_product_id_ios",
+   "_front_img_url",
+   "_back_img_url",
+   "_main_desc",
+   "_sub_desc"
+  ],
+  "buyShop": [
+   "_call",
+   "_data",
+   "_sub_mode",
+   "_common_data"
+  ],
+  "storeNoticeReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyVarietyStore": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "buyCheckDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx"
+  ],
+  "getVarietyStore": [
+   "_call",
+   "_data",
+   "_common_data"
+  ],
+  "buyShopDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_idx",
+   "_developer_payload",
+   "_pay_id",
+   "_purchase_token",
+   "_purchase_id",
+   "_os",
+   "_app_id",
+   "_member_id"
+  ],
+  "storeNoticeDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "buyShopReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyContents": [
+   "_call",
+   "_data",
+   "_sub_mode",
+   "_common_data"
+  ],
+  "storeListDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid"
+  ],
+  "buyVarietyStoreRetDataInfo": [
+   "_u_cp",
+   "_u_candy",
+   "_reward_type",
+   "_reward_id",
+   "_reward_value",
+   "_status"
+  ],
+  "itemStoreListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "buyContentsReturn": [
+   "_error",
+   "_server_time",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "retReward": [
+   "_reward_type",
+   "_reward_id",
+   "_reward_value"
+  ]
+ },
+ "rank": {
+  "getCountryUserRankRet": [
+   "_g",
+   "_s",
+   "_b",
+   "_total_score",
+   "_u_avatar",
+   "_u_id",
+   "_u_nick",
+   "_u_seq"
+  ],
+  "getTotalMusicRankDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_music_idx",
+   "_start_limit",
+   "_end_limit"
+  ],
+  "getTotalMusicRankList2": [
+   "_rank",
+   "_id",
+   "_score"
+  ],
+  "getTotalMusicRankRetDataInfo": [
+   "_total_rank_list",
+   "_rank_list1",
+   "_rank_list2",
+   "_rank_list3",
+   "_my_rank_list",
+   "_music_idx"
+  ],
+  "getTotalMusicRankList": [
+   "_rank",
+   "_id",
+   "_nick",
+   "_country",
+   "_score"
+  ],
+  "getTotalCountryRankDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_start_limit",
+   "_end_limit"
+  ],
+  "getTotalMastersRankRet": [
+   "_all_per",
+   "_all_com",
+   "_score",
+   "_u_avatar",
+   "_u_id",
+   "_u_nick",
+   "_u_country"
+  ],
+  "getCountryMyRank": [
+   "_call",
+   "_data"
+  ],
+  "getMastersRank": [
+   "_call",
+   "_data"
+  ],
+  "getRankMainDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid"
+  ],
+  "getTotalCountryRankRet": [
+   "_g",
+   "_s",
+   "_b",
+   "_total_score",
+   "_u_avatar",
+   "_u_id",
+   "_u_nick",
+   "_u_country",
+   "_rank"
+  ],
+  "getTotalMusicRankReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getCountryRankDataInfo": [],
+  "getMusicRankReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getTotalMusicRankList3": [
+   "_rank",
+   "_id",
+   "_score"
+  ],
+  "getCountryRankRetDataInfo": [
+   "_rank",
+   "_country",
+   "_gold",
+   "_silver",
+   "_bronze",
+   "_total_score"
+  ],
+  "getRankMainRetDataInfo": [
+   "_my_country_rank",
+   "_total_country_my_rank",
+   "_country_rank",
+   "_masters_rank"
+  ],
+  "getMastersRankReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getRankMain": [
+   "_call",
+   "_data"
+  ],
+  "getTotalCountryRankReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getMusicRankRetDataInfo": [
+   "_id",
+   "_score"
+  ],
+  "getTotalCountryRankRetDataInfo": [
+   "_start_limit",
+   "_end_limit",
+   "_my_rank",
+   "_rank_list"
+  ],
+  "getCountryMyRankReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getCountryRankReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getTotalMusicMyRank": [
+   "_grade",
+   "_rank",
+   "_score",
+   "_lowrank"
+  ],
+  "getCountryMyRankDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_country",
+   "_start_limit",
+   "_end_limit"
+  ],
+  "getTotalMusicRankRetData": [
+   "_total_rank_list",
+   "_rank_list1",
+   "_rank_list2",
+   "_rank_list3",
+   "_my_rank_list"
+  ],
+  "getCountryUserRank": [
+   "_g",
+   "_s",
+   "_b",
+   "_total_score",
+   "_u_avatar",
+   "_u_nick",
+   "_u_seq"
+  ],
+  "getTotalCountryRank": [
+   "_call",
+   "_data"
+  ],
+  "getMastersRankRet": [
+   "_all_per",
+   "_all_com",
+   "_score",
+   "_u_avatar",
+   "_u_id",
+   "_u_nick",
+   "_u_country",
+   "_rank"
+  ],
+  "getTotalCountryUserRankRet": [
+   "_g",
+   "_s",
+   "_b",
+   "_total_score",
+   "_u_avatar",
+   "_u_id",
+   "_u_nick",
+   "_u_country"
+  ],
+  "getTotalMusicRankList1": [
+   "_rank",
+   "_id",
+   "_score"
+  ],
+  "getMusicRank": [
+   "_call",
+   "_data"
+  ],
+  "getTotalMusicRank": [
+   "_call",
+   "_data"
+  ],
+  "getRankMainReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getCountryMyRankRet": [
+   "_g",
+   "_s",
+   "_b",
+   "_total_score",
+   "_u_avatar",
+   "_u_id",
+   "_u_nick",
+   "_u_seq",
+   "_u_country",
+   "_rank"
+  ],
+  "getCountryMyRankRetDataInfo": [
+   "_select_country",
+   "_start_limit",
+   "_end_limit",
+   "_my_rank",
+   "_rank_list"
+  ],
+  "getMusicRankDataInfo": [
+   "_music_idx"
+  ],
+  "getMastersRankDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_start_limit",
+   "_end_limit"
+  ],
+  "getMastersRankRetDataInfo": [
+   "_start_limit",
+   "_end_limit",
+   "_my_rank",
+   "_rank_list"
+  ],
+  "getCountryRank": [
+   "_call",
+   "_data"
+  ]
+ },
+ "multi": {
+  "channelList": [
+   "_channel",
+   "_url",
+   "_port",
+   "_flg",
+   "_maintenance_cn",
+   "_maintenance_en",
+   "_maintenance_jp"
+  ],
+  "userData": [
+   "_u_seq",
+   "_u_mp"
+  ],
+  "getServerListRetDataInfo": [
+   "_user_data",
+   "_channel_list"
+  ],
+  "getServerListReturn": [
+   "_error",
+   "_mode",
+   "_call",
+   "_data",
+   "_maintenance"
+  ],
+  "getServerListDataInfo": [
+   "_u_seq",
+   "_u_id",
+   "_uuid",
+   "_device_uuid",
+   "_type"
+  ],
+  "getServerList": [
+   "_call",
+   "_data"
+  ]
+ }
+}

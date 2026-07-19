@@ -1,0 +1,73 @@
+{
+ "path": "/user/userSave/en/",
+ "call": "userSave",
+ "command": "user.userSave",
+ "category": "user",
+ "form_fields": {
+  "call": "userSave",
+  "tapsonic_data": "<348>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 2:08:43 AM:764"
+ },
+ "request_decoded": {
+  "call": "userSave",
+  "data": {
+   "u_seq": 100001,
+   "u_id": "guest_100001",
+   "uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "type": "area_info",
+   "user_area_info": [
+    {
+     "u_area_num": 1,
+     "d_Like": 0.0,
+     "i_UserFanCount": 135315,
+     "i_UserFanGrade": 4,
+     "i_SelectedCostumeId": 1,
+     "i_SelectedMusicId": 10,
+     "i_SelectedGuitarId": 1,
+     "d_Candy": 0.0,
+     "s_TutorialList": "",
+     "s_Gp1": "3408994998844111233380",
+     "s_Gp2": "0"
+    },
+    {
+     "u_area_num": 2,
+     "d_Like": 0.0,
+     "i_UserFanCount": 0,
+     "i_UserFanGrade": 1,
+     "i_SelectedCostumeId": 201,
+     "i_SelectedMusicId": 201,
+     "i_SelectedGuitarId": 201,
+     "d_Candy": 0.0,
+     "s_TutorialList": "",
+     "s_Gp1": "0",
+     "s_Gp2": "0"
+    }
+   ]
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "user.userSaveReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782094123,
+   "datetime": 20260622020843
+  },
+  "mode": "user",
+  "call": "userSave",
+  "data": {
+   "status": "Y"
+  },
+  "maintenance": {}
+ }
+}

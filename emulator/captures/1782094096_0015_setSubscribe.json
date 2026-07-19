@@ -1,0 +1,561 @@
+{
+ "path": "/user/setSubscribe/en/",
+ "call": "setSubscribe",
+ "command": "user.setSubscribe",
+ "category": "user",
+ "form_fields": {
+  "call": "setSubscribe",
+  "tapsonic_data": "<228>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 2:08:16 AM:225"
+ },
+ "request_decoded": {
+  "call": "setSubscribe",
+  "data": {
+   "u_seq": 100001,
+   "u_id": "guest_100001",
+   "uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "i_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13
+   ]
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "user.setSubscribeReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782094096,
+   "datetime": 20260622020816
+  },
+  "mode": "user",
+  "call": "setSubscribe",
+  "data": {
+   "u_seq": 100001,
+   "user_subscribe_list": [
+    {
+     "i_SubscribeID": 1,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 2,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 3,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 4,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 5,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 6,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 7,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 8,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 9,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 10,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 11,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 12,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 13,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 14,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 15,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 16,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 17,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 18,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 19,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 20,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 21,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 22,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 23,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 24,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 25,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 26,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 27,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 28,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 29,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 30,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 31,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 32,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 33,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 34,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 35,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 36,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 37,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 38,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 39,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 40,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 41,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 42,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 43,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 44,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 45,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 46,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 47,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 48,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 49,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 50,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 51,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 52,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 53,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 54,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 55,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 56,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 57,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 58,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 59,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 60,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 61,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 62,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 63,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 64,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 65,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 66,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 67,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 68,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 69,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 70,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 71,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 72,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 73,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 74,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 75,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 76,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 77,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 78,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 79,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 80,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 81,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 82,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 83,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 84,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 85,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 86,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 87,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 88,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 89,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 90,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 91,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 92,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 93,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 94,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 95,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 96,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 97,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 98,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 99,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    },
+    {
+     "i_SubscribeID": 100,
+     "i_ActiveTime": 1782094096,
+     "i_isActive": 1
+    }
+   ]
+  },
+  "maintenance": {}
+ }
+}

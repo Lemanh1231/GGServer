@@ -1,0 +1,42 @@
+{
+ "path": "/main/getServerTime/en/",
+ "call": "getServerTime",
+ "command": "main.getServerTime",
+ "category": "main",
+ "form_fields": {
+  "call": "getServerTime",
+  "tapsonic_data": "<156>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 1:52:53 AM:935"
+ },
+ "request_decoded": {
+  "call": "getServerTime",
+  "data": {
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae"
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "main.getServerTimeReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782093174,
+   "datetime": 20260622015254
+  },
+  "mode": "main",
+  "call": "getServerTime",
+  "data": {
+   "time": 1782093174,
+   "datetime": 20260622105254
+  },
+  "maintenance": {}
+ }
+}

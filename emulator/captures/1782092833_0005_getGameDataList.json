@@ -1,0 +1,5 @@
+{
+ "path": "/main/getGameDataList/en/",
+ "call": "getGameDataList",
+ "static": true
+}

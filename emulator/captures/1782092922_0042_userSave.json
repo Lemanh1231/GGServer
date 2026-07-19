@@ -1,0 +1,183 @@
+{
+ "path": "/user/userSave/en/",
+ "call": "userSave",
+ "command": "user.userSave",
+ "category": "user",
+ "form_fields": {
+  "call": "userSave",
+  "tapsonic_data": "<560>",
+  "access_token": "tapsonicbeat-editor_login_accesstoken",
+  "Cache-Control": "no-cache",
+  "current_time": "6/22/2026 1:48:42 AM:29"
+ },
+ "request_decoded": {
+  "call": "userSave",
+  "data": {
+   "u_seq": 100001,
+   "u_id": "guest_100001",
+   "uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "device_uuid": "b536a82f94e7b9cc7bb2bcccab5c95ae",
+   "type": "ALL",
+   "user_area_info": [
+    {
+     "u_area_num": 1,
+     "d_Like": 0.0,
+     "i_UserFanCount": 85875,
+     "i_UserFanGrade": 2,
+     "i_SelectedCostumeId": 1,
+     "i_SelectedMusicId": 1,
+     "i_SelectedGuitarId": 1,
+     "d_Candy": 0.0,
+     "s_TutorialList": "",
+     "s_Gp1": "200092719402380244",
+     "s_Gp2": "0"
+    },
+    {
+     "u_area_num": 2,
+     "d_Like": 0.0,
+     "i_UserFanCount": 0,
+     "i_UserFanGrade": 1,
+     "i_SelectedCostumeId": 201,
+     "i_SelectedMusicId": 201,
+     "i_SelectedGuitarId": 201,
+     "d_Candy": 0.0,
+     "s_TutorialList": "",
+     "s_Gp1": "0",
+     "s_Gp2": "0"
+    }
+   ],
+   "user_achievement": [
+    {
+     "i_id": 1,
+     "d_Quantity": 1.0,
+     "s_Quantity": "401"
+    },
+    {
+     "i_id": 2,
+     "d_Quantity": 1.0,
+     "s_Quantity": "1"
+    },
+    {
+     "i_id": 3,
+     "d_Quantity": 1.0,
+     "s_Quantity": "200092719402380244"
+    },
+    {
+     "i_id": 4,
+     "d_Quantity": 1.0,
+     "s_Quantity": "85875"
+    },
+    {
+     "i_id": 5,
+     "d_Quantity": 1.0,
+     "s_Quantity": "1"
+    },
+    {
+     "i_id": 6,
+     "d_Quantity": 1.0,
+     "s_Quantity": "7"
+    },
+    {
+     "i_id": 7,
+     "d_Quantity": 1.0,
+     "s_Quantity": "1"
+    },
+    {
+     "i_id": 8,
+     "d_Quantity": 1.0,
+     "s_Quantity": "3"
+    },
+    {
+     "i_id": 9,
+     "d_Quantity": 1.0,
+     "s_Quantity": "1"
+    },
+    {
+     "i_id": 10,
+     "d_Quantity": 1.0,
+     "s_Quantity": "1"
+    }
+   ],
+   "user_character": [
+    {
+     "i_id": 1,
+     "i_Level": 401,
+     "i_BonusLevel": 16
+    },
+    {
+     "i_id": 2,
+     "i_Level": 1,
+     "i_BonusLevel": 0
+    }
+   ],
+   "user_daily_mission": [
+    {
+     "i_id": 1,
+     "d_Quantity": 1
+    },
+    {
+     "i_id": 2,
+     "d_Quantity": 29
+    },
+    {
+     "i_id": 3,
+     "d_Quantity": 0
+    },
+    {
+     "i_id": 4,
+     "d_Quantity": 3
+    },
+    {
+     "i_id": 5,
+     "d_Quantity": 935
+    },
+    {
+     "i_id": 6,
+     "d_Quantity": 0
+    }
+   ],
+   "user_skill": [
+    {
+     "i_id": 1,
+     "b_Activate": 0,
+     "l_ActivateOnTicks": 639177220652470000,
+     "l_ActivateOffTicks": 639177220952470000
+    },
+    {
+     "i_id": 4,
+     "b_Activate": 0,
+     "l_ActivateOnTicks": 0,
+     "l_ActivateOffTicks": 0
+    },
+    {
+     "i_id": 2,
+     "b_Activate": 0,
+     "l_ActivateOnTicks": 639177220648810000,
+     "l_ActivateOffTicks": 639177220648810000
+    }
+   ]
+  },
+  "common_data": {
+   "client_ver": 800,
+   "type": "real",
+   "os": 1
+  }
+ },
+ "response_dto": "user.userSaveReturn",
+ "response": {
+  "error": {
+   "code": 0,
+   "errmsg": ""
+  },
+  "server_time": {
+   "time": 1782092922,
+   "datetime": 20260622014842
+  },
+  "mode": "user",
+  "call": "userSave",
+  "data": {
+   "status": "Y"
+  },
+  "maintenance": {}
+ }
+}

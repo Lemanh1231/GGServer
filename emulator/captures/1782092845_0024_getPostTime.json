@@ -1,0 +1,5 @@
+{
+ "path": "/post/getPostTime/vi/",
+ "call": "getPostTime",
+ "static": true
+}
