@@ -7,13 +7,13 @@ from server.handlers.registry import cmd, OK, _payload
 #   table 3  = costumes (trang phục)   table 20 = guitars (đàn)   table 2 = music discs (đĩa nhạc)
 # We expose every catalogued id on login so all costumes/guitars/music show up as owned.
 _GAMEDATA_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'gamedata', 'game_data.json')
-_CATALOG = None  # {'costume': [...ids], 'guitar': [...ids], 'music': [...ids]}
+_CATALOG = None  # {'costume': [...], 'guitar': [...], 'music': [...], 'subscribe': [...]}
 
 def _catalog():
     global _CATALOG
     if _CATALOG is not None:
         return _CATALOG
-    cat = {'costume': [], 'guitar': [], 'music': []}
+    cat = {'costume': [], 'guitar': [], 'music': [], 'subscribe': []}
     try:
         with open(_GAMEDATA_PATH, encoding='utf-8') as f:
             gd = json.load(f)
@@ -24,7 +24,10 @@ def _catalog():
                 if isinstance(i, int) and i not in seen:
                     seen.append(i)
             return sorted(seen)
-        cat = {'costume': ids('3'), 'guitar': ids('20'), 'music': ids('2')}
+        # Table 17 is SubscribeList.  Its 13 ids are the real Star Passes;
+        # they are not the 100 fabricated ids the old setSubscribe returned.
+        cat = {'costume': ids('3'), 'guitar': ids('20'), 'music': ids('2'),
+               'subscribe': ids('17')}
     except Exception:
         pass  # fall back to whatever the user already owns
     _CATALOG = cat
@@ -41,6 +44,39 @@ def _all_music():
              'l_EncoreBonusActivateTime': 0, 'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0}
             for i in _catalog()['music']]
 
+
+def _all_subscriptions():
+    # The Free Star Pass does not need a SubscribeList entry.  Such entries
+    # represent the paid/gold Star Card entitlement and must never be granted
+    # by the offline server.
+    return []
+
+
+def _remove_legacy_paid_subscriptions(user):
+    """Remove the former unlock-all Gold Star Card seed from existing saves."""
+    if not user.get('user_subscribe_list'):
+        return
+    user['user_subscribe_list'] = []
+    state.save_user(user)
+
+
+def _remove_legacy_currency_grant(user):
+    """Remove the old 1,000,000 CP/100,000 Candy starter grant once.
+
+    u_free_cp was never a real purchase balance in this emulator, so its old
+    sentinel value reliably identifies profiles created by the previous seed.
+    Keeping the marker at zero makes the migration idempotent and preserves all
+    currency earned after the next login.
+    """
+    ud = user.get('userdata', {})
+    if int(ud.get('u_free_cp', 0) or 0) != 1_000_000:
+        return
+    ud['u_free_cp'] = 0
+    ud['u_cp'] = 0
+    ud['u_candy'] = 0.0
+    state.set_currency(user.get('uuid'), cp=0, candy=0.0)
+    state.save_user(user)
+
 @cmd('userJoin')
 def h_user_join(req, player, ctx):
     p = _payload(req)
@@ -51,6 +87,23 @@ def h_user_join(req, player, ctx):
     return {'u_seq': ud['u_seq'], 'u_id': ud['u_id']}, OK
 
 def _user_contents(user):
+    # Skill 4 used to be injected into every profile at level 1.  That bypassed
+    # the intended progression gate.  Keep the starter skill only until the
+    # player's character reaches level 10, then expose the gated skill.
+    skills = user.setdefault('user_skill', [
+        {'i_id': 1, 'i_Level': 1, 'b_Activate': 0,
+         'l_ActivateOnTicks': 0, 'l_ActivateOffTicks': 0},
+    ])
+    character_level = max(
+        (int(c.get('i_Level', 0) or 0) for c in user.get('characters', [])),
+        default=0,
+    )
+    if character_level < 10:
+        skills[:] = [skill for skill in skills if skill.get('i_id') != 4]
+    elif not any(skill.get('i_id') == 4 for skill in skills):
+        skills.append({'i_id': 4, 'i_Level': 1, 'b_Activate': 0,
+                       'l_ActivateOnTicks': 0, 'l_ActivateOffTicks': 0})
+
     return {
         'user_achievement': user.get('achievements', []),
         'user_candy_shop': [
@@ -78,10 +131,7 @@ def _user_contents(user):
         'user_music': _all_music(),
         'user_prop': user.setdefault('user_prop', [{'i_id': 1, 'i_Level': 1}, {'i_id': 2, 'i_Level': 1}]),
         'user_unit': user.setdefault('user_unit', [{'i_id': 1, 'i_Level': 1}]),
-        'user_skill': user.setdefault('user_skill', [
-            {'i_id': 1, 'i_Level': 1, 'b_Activate': 0, 'l_ActivateOnTicks': 0, 'l_ActivateOffTicks': 0},
-            {'i_id': 4, 'i_Level': 1, 'b_Activate': 0, 'l_ActivateOnTicks': 0, 'l_ActivateOffTicks': 0},
-        ]),
+        'user_skill': skills,
         'user_shop': user.setdefault('user_shop', []),
         'user_messenger': [
             {'i_MessengerChatRoomId': i, 'i_LastConfirmIndex': 9999, 's_UnlockGroupList': ','.join(map(str, range(1, 50))), 'l_UpdateTimeTicks': 639013642974540000} 
@@ -93,6 +143,9 @@ def _user_contents(user):
         'user_event_point': user.setdefault('user_event_point', [
             {'s_EventType': 'Pass', 'i_DataID': 5, 'i_Point': 0, 'i_Step': 0, 'i_ADViewTime': 0, 'i_Version': 5},
         ]),
+        # Keep this empty: Free Pass rewards are available without a card,
+        # while a populated list unlocks the paid/gold Star Pass track.
+        'user_subscribe_list': user.setdefault('user_subscribe_list', _all_subscriptions()),
         'user_subscribe_pass_reward': user.setdefault('user_subscribe_pass_reward', []),
         'user_ticketcollection': [{'i_id': i} for i in range(1, 14)],
         'user_follower_profile_reward': [
@@ -119,6 +172,8 @@ def h_user_login(req, player, ctx):
         user = state.create_user(uuid, p.get('device_uuid', ''))
     u_seq_req = p.get('u_seq', 0) or 0
     if u_seq_req != 0:
+        _remove_legacy_currency_grant(user)
+        _remove_legacy_paid_subscriptions(user)
         area_map = {int(k): v for k, v in user.get('areas', {}).items()}
         ud = user['userdata']
         ct = str(ud.get('u_create_time', ''))
@@ -162,6 +217,12 @@ def h_user_load(req, player, ctx):
 @cmd('setSubscribe')
 def h_set_subscribe(req, player, ctx):
     p = _payload(req)
-    now = int(time.time())
-    subs = [{'i_SubscribeID': i + 1, 'i_ActiveTime': now, 'i_isActive': 1} for i in range(100)]
+    uuid = p.get('uuid') or ctx.get('uuid')
+    user = state.get_user(uuid)
+    # Never turn a client-side list of Star Pass ids into a paid entitlement.
+    # The Free track is available independently of this response.
+    subs = []
+    if user:
+        user['user_subscribe_list'] = subs
+        state.save_user(user)
     return {'u_seq': p.get('u_seq', 0), 'user_subscribe_list': subs}, OK

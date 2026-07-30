@@ -116,7 +116,7 @@ def _default_userdata(u_seq, u_id, uuid, device_uuid):
         'u_last_communication': _now_str(), 'u_save_date': _now_str(), 
         'u_create_time': time.strftime('%Y%m%d'), 'u_tutorial_step': 0,
         'u_review_popup': 'N', 'device_uuid': device_uuid, 'u_samseck_step': 0,
-        'u_free_cp': 1000000, 'u_charge_cp': 0,
+        'u_free_cp': 0, 'u_charge_cp': 0,
     }
 
 def _default_areas():
@@ -205,8 +205,10 @@ def create_user(uuid, device_uuid):
             'costumes': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}],
         }
         
-        u_cp = 1000000
-        u_candy = 100000.0
+        # A new profile starts empty.  The old seeded values (1,000,000 CP and
+        # 100,000 Candy) made every purchase effectively free.
+        u_cp = 0
+        u_candy = 0.0
         u_like = 0.0
         u_fans = 0
         att_count = 0
@@ -235,14 +237,17 @@ def save_user(user):
         uuid = user.get('uuid')
         if not uuid: return
         ud = user.get('userdata', {})
-        
-        # Pop volatile state so it's not saved in JSON
-        u_cp = ud.pop('u_cp', 0)
-        u_candy = ud.pop('u_candy', 0.0)
-        u_like = ud.pop('u_like', 0.0)
-        u_fans = ud.pop('u_fans', 0)
-        att_count = ud.pop('attendance_count', 0)
-        att_date = ud.pop('attendance_date', 0)
+
+        # Keep the caller's object intact.  Handlers often place one of these
+        # inventory objects in the response before calling save_user(); popping
+        # fields from it here encoded an empty response, so upgrades looked as
+        # though they had failed on the client.
+        stored = dict(user)
+        stored_ud = dict(ud)
+        for key in ('u_cp', 'u_candy', 'u_like', 'u_fans',
+                    'attendance_count', 'attendance_date'):
+            stored_ud.pop(key, None)
+        stored['userdata'] = stored_ud
         
         conn = get_db()
         
@@ -258,14 +263,18 @@ def save_user(user):
         }
         
         for jkey, itype in key_map.items():
-            lst = user.pop(jkey, [])
+            # Store inventory separately without mutating the in-memory lists.
+            lst = stored.pop(jkey, [])
             for item in lst:
-                item_id = item.pop('i_id', 0)
-                level = item.pop('i_Level', 1)
-                active_time = item.pop('i_ActiveTime', 0)
-                bonus_level = item.pop('i_BonusLevel', 0)
-                value = item.pop('i_Value', 0)
-                extra_json = json.dumps(item) if item else None
+                item_id = item.get('i_id', 0)
+                level = item.get('i_Level', 1)
+                active_time = item.get('i_ActiveTime', 0)
+                bonus_level = item.get('i_BonusLevel', 0)
+                value = item.get('i_Value', 0)
+                extra = {k: v for k, v in item.items()
+                         if k not in ('i_id', 'i_Level', 'i_ActiveTime',
+                                      'i_BonusLevel', 'i_Value')}
+                extra_json = json.dumps(extra) if extra else None
                 
                 conn.execute('''
                     INSERT INTO user_inventory
@@ -280,17 +289,9 @@ def save_user(user):
             UPDATE user_data 
             SET user_contents_json = ? 
             WHERE uuid = ?
-        ''', (json.dumps(user, ensure_ascii=False), uuid))
+        ''', (json.dumps(stored, ensure_ascii=False), uuid))
         conn.commit()
         conn.close()
-        
-        # Restore for memory representation
-        ud['u_cp'] = u_cp
-        ud['u_candy'] = u_candy
-        ud['u_like'] = u_like
-        ud['u_fans'] = u_fans
-        ud['attendance_count'] = att_count
-        ud['attendance_date'] = att_date
 
 def increment_currency(uuid, cp=0, candy=0.0, like=0.0, fans=0):
     with _LOCK:
@@ -302,6 +303,19 @@ def increment_currency(uuid, cp=0, candy=0.0, like=0.0, fans=0):
                 SET u_cp = u_cp + ?, u_candy = u_candy + ?, u_like = u_like + ?, u_fans = u_fans + ?
                 WHERE uuid = ?
             ''', (cp, candy, like, fans, ruuid))
+            conn.commit()
+        conn.close()
+
+
+def set_currency(uuid, *, cp, candy):
+    """Set the two spendable currencies for a one-time data migration."""
+    with _LOCK:
+        conn = get_db()
+        ruuid = _resolve_uuid(conn, uuid)
+        if ruuid is not None:
+            conn.execute('''
+                UPDATE user_data SET u_cp = ?, u_candy = ? WHERE uuid = ?
+            ''', (cp, candy, ruuid))
             conn.commit()
         conn.close()
 
@@ -317,4 +331,3 @@ def update_attendance(uuid, count, date):
             ''', (count, date, ruuid))
             conn.commit()
         conn.close()
-

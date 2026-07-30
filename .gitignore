@@ -17,3 +17,9 @@ scratch11.py
 README_SHOP_FIX.txt
 ref/
 out/
+
+# Runtime player state and decoded traffic are local-only.
+emulator/captures/
+emulator/data/database.db
+emulator/data/database.db-wal
+emulator/data/database.db-shm

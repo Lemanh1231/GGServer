@@ -3,6 +3,46 @@ from server import state
 from server.handlers.registry import cmd, OK, _payload
 
 EVENT_REWARDS = None
+
+# game_data.json is the decoded getGameDataList payload.  These three tables
+# describe exactly which Free/Paid reward belongs to each Star Pass group/step.
+_PASS_REWARD_DATA = None
+
+
+def _pass_rewards(group, step, reward_type):
+    """Return the actual rewards for a Star Pass claim.
+
+    Table 18 (SubscribePassReward) maps (group, step, type) to a reward group;
+    table 13 (reward_group) expands that group to one or more retReward items.
+    """
+    global _PASS_REWARD_DATA
+    if _PASS_REWARD_DATA is None:
+        _PASS_REWARD_DATA = ({}, {})
+        try:
+            path = os.path.join(os.path.dirname(__file__), '..', '..', 'gamedata', 'game_data.json')
+            with open(path, encoding='utf-8') as f:
+                data = json.load(f)
+            pass_rows = {
+                (int(row.get('2', 0)), int(row.get('3', 0))): row
+                for row in data.get('18', [])
+            }
+            groups = {}
+            for row in data.get('13', []):
+                groups.setdefault(int(row.get('2', 0)), []).append({
+                    'reward_type': int(row.get('3', 0)),
+                    'reward_id': int(row.get('4', 0)),
+                    'reward_value': int(row.get('5', 0)),
+                })
+            _PASS_REWARD_DATA = (pass_rows, groups)
+        except Exception:
+            pass
+
+    pass_rows, groups = _PASS_REWARD_DATA
+    row = pass_rows.get((int(group), int(step)))
+    if not row:
+        return []
+    reward_group = int(row.get('6' if int(reward_type) else '5', 0))
+    return list(groups.get(reward_group, []))
 def _get_event_rewards():
     global EVENT_REWARDS
     if EVENT_REWARDS is not None: return EVENT_REWARDS
@@ -115,62 +155,52 @@ def _give_reward(user, rew):
 
 @cmd('setAttendance')
 def h_set_attendance(req, player, ctx):
-    # The client's entry flow (InGameEntryProcess -> AddAttendanceState ->
-    # STM_ConsecutiveAttendance) sends type="check" on login and auto-opens the 7-day login
-    # popup whenever that check reports attendance is still AVAILABLE (status "Y"); it then
-    # fires type="add" to claim. The popup is gated on `status`, NOT on attendance_date -- so
-    # stamping today's date alone never stopped it.
-    #
-    # We suppress the auto-popup by answering the "check" with status "N" ("nothing to claim
-    # today"). The "add" path still reports "Y" in case the client ever calls it directly. The
-    # attendance board stays reachable from the event menu (getEventRewardList + setEventReward),
-    # which keeps its own per-day claim state.
+    """Serve the daily-login event through the client's normal check/add flow.
+
+    `check` controls whether the login-event popup is visible.  The former
+    emulator always returned N and auto-claimed the prize while building the
+    event list, which hid the event and made its button unusable.  Now a reward
+    remains available until the client explicitly sends `add` (or claims it
+    from the event board through setEventReward).
+    """
     p = _payload(req)
     uuid = p.get('uuid') or ctx.get('uuid')
     rtype = p.get('type', 'check')
     user = state.get_user(uuid)
     today = _today_ymd()
-    cur = 1
+    cur = 0
+    added = False
     if user:
         st = _att_state(user, 1)
-        cur = max(1, st.get('day', 0))   # last claimed day, not the next claimable one
+        cur = st.get('day', 0)
+        if rtype == 'add' and st.get('ymd') != today:
+            rewards = _get_event_rewards().get('1', {})
+            max_day = len(rewards) or 7
+            day = cur + 1
+            if day > max_day:
+                day = 1
+            rew = rewards.get(str(day)) or {
+                'reward_type': 1, 'reward_id': 1, 'reward_value': 100,
+            }
+            _give_reward(user, rew)
+            st['day'] = day
+            st['ymd'] = today
+            cur = day
+            ud = user['userdata']
+            ud['attendance_count'] = day
+            ud['attendance_date'] = today
+            state.update_attendance(user.get('uuid'), day, today)
+            state.save_user(user)
+            added = True
+        claimed_today = st.get('ymd') == today
+    else:
+        claimed_today = False
     return {
-        'status': 'N' if rtype == 'check' else 'Y',
+        'status': 'Y' if added else ('N' if claimed_today else 'Y'),
         'attendance_count': cur,
-        'attendance_date': today,     # = today -> any date-based check also treats it as done
+        'attendance_date': today if claimed_today else 0,
         'max_coutinuous_attendance_count': cur,
     }, OK
-
-# event_idx of the daily check-in boards that should auto-claim on login.
-# 1 = 출석부 (daily reward), 3 = 상시 출석부 (daily attendance). The others (2 = anniversary,
-# 202110/202111 = expired 2021 login events) are left alone.
-DAILY_BOARDS = ('1', '3')
-
-def _auto_claim_daily(user, eidx, today):
-    """Auto-claim today's reward for a daily attendance board so the client never has a pending
-    claim (the popup only has a 'Close' button -- it never fires setEventReward itself, so without
-    this the board would re-open every login forever). Advances one day per calendar day, credits
-    the reward, and stamps the claim date = today. No-op if already claimed today."""
-    if not user:
-        return
-    st = _att_state(user, eidx)
-    if st.get('ymd') == today:
-        return  # already claimed today
-    rewards = _get_event_rewards().get(str(eidx), {})
-    max_day = len(rewards) or 7
-    day = st.get('day', 0) + 1
-    if day > max_day:
-        day = 1
-    rew = rewards.get(str(day)) or {'reward_type': 1, 'reward_id': 1, 'reward_value': 100}
-    _give_reward(user, rew)
-    st['day'] = day
-    st['ymd'] = today
-    if str(eidx) == '1':
-        ud = user['userdata']
-        ud['attendance_count'] = day
-        ud['attendance_date'] = today
-        state.update_attendance(user.get('uuid'), day, today)
-    state.save_user(user)
 
 @cmd('getEventRewardList')
 def h_get_event_reward_list(req, player, ctx):
@@ -180,17 +210,11 @@ def h_get_event_reward_list(req, player, ctx):
     # claim date} via setEventReward. We overlay that here:
     #   - days already claimed (reward_num <= day)  -> reward_flg='N' + get_date=<claim date>
     #   - days not yet claimed                      -> left as the template (reward_flg='Y')
-    # so the client greys out claimed days, stops auto-opening the popup once today's reward is
-    # taken (last claimed day has get_date == today), and lets the next day be claimed tomorrow.
+    # so the client greys out claimed days and lets the next day be claimed tomorrow.
     p = _payload(req)
     uuid = p.get('uuid') or ctx.get('uuid')
     user = state.get_user(uuid)
     today = _today_ymd()
-    # auto-claim today's daily-board rewards before rendering, so claimed days show as received
-    # (get_date == today) and the client stops re-opening the attendance popup.
-    if user:
-        for _b in DAILY_BOARDS:
-            _auto_claim_daily(user, _b, today)
     template = _get_event_template()
     data = {}
     for eidx, board in template.items():
@@ -333,31 +357,53 @@ def h_set_pass_reward(req, player, ctx):
     step = p.get('step', 0)
     ptype = p.get('type', 0)
     
-    # Just a mock reward: 10 Chocolate
-    rew = {'reward_type': 1, 'reward_id': 1, 'reward_value': 10}
+    group = int(group)
+    step = int(step)
+    ptype = int(ptype)
+    version = p.get('i_Version', 5)
+    now = int(time.time())
+    claim = {
+        'i_SubscribeID': group,
+        'i_Type': ptype,
+        'i_Step': step,
+        'i_UpdateTime': now,
+        'i_Version': version,
+    }
+    rewards = _pass_rewards(group, step, ptype)
+
     if user:
-        _give_reward(user, rew)
+        # type 0 is the Free Star Pass track.  type 1 is the paid/gold track
+        # and may only be claimed when a real entitlement is present.  The
+        # emulator deliberately never creates that entitlement.
+        paid_active = any(item.get('i_SubscribeID') == group
+                          and item.get('i_isActive') for item
+                          in user.get('user_subscribe_list', []))
+        if ptype == 1 and not paid_active:
+            rewards = []
+            return {
+                'subscribe_pass_reward': claim,
+                'reward_data': rewards,
+            }, OK
         lst = user.setdefault('user_subscribe_pass_reward', [])
-        # We don't actually manage the full list perfectly, but we can append the progress
-        # to prevent the client from requesting it again.
-        lst.append({
-            'i_SubscribeID': group,
-            'i_Type': ptype,
-            'i_Step': step,
-            'i_UpdateTime': int(time.time()),
-            'i_Version': p.get('i_Version', 5)
-        })
-        state.save_user(user)
-        
+        existing = next((item for item in lst
+                         if item.get('i_SubscribeID') == group
+                         and item.get('i_Type') == ptype
+                         and item.get('i_Step') == step
+                         and item.get('i_Version', version) == version), None)
+        if existing:
+            # A retry must not duplicate the reward.  Echo the original claim
+            # so the client can still reconcile its local state.
+            claim = existing
+            rewards = []
+        else:
+            for reward in rewards:
+                _give_reward(user, reward)
+            lst.append(claim)
+            state.save_user(user)
+
     return {
-        'subscribe_pass_reward': {
-            'i_SubscribeID': group,
-            'i_Type': ptype,
-            'i_Step': step,
-            'i_UpdateTime': int(time.time()),
-            'i_Version': p.get('i_Version', 5)
-        },
-        'reward_data': [rew]
+        'subscribe_pass_reward': claim,
+        'reward_data': rewards,
     }, OK
 
 @cmd('setAdReward')
