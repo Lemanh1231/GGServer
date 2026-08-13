@@ -13,10 +13,12 @@ def h_buy_variety(req, player, ctx):
     user = state.get_user(uuid)
     
     idx = p.get('idx', 1)
-    currency, price = _get_price(30, idx, 2, 3) 
+    currency, price = _get_variety_price(idx)
     
+    paid = False
     if user:
-        _deduct_currency(uuid, user, currency, price)
+        paid = _deduct_currency(uuid, user, currency, price)
+    if paid:
         lst = user.setdefault('user_shop', [])
         
         import time
@@ -34,7 +36,8 @@ def h_buy_variety(req, player, ctx):
 
     ud = user['userdata'] if user else {'u_cp': 0, 'u_candy': 0.0}
     return {'u_cp': ud.get('u_cp', 0), 'u_candy': ud.get('u_candy', 0.0),
-            'reward_type': 4, 'reward_id': idx, 'reward_value': 1, 'status': 'Y'}, OK
+            'reward_type': 4, 'reward_id': idx, 'reward_value': 1,
+            'status': 'Y' if paid else 'N'}, OK
 
 @cmd('buyCheck')
 def h_buy_check(req, player, ctx):
@@ -49,19 +52,42 @@ def _get_price(table_id, item_id, currency_col, price_col):
                 if str(row.get('1')) == str(item_id):
                     currency = str(row.get(str(currency_col), ''))
                     price = int(row.get(str(price_col), 0))
+                    if price < 0:
+                        return None, None
                     return currency, price
-    except:
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
         pass
-    return 'GP', 100
+    return None, None
+
+def _get_variety_price(item_id):
+    # Table 30 column 3 is the Candy/GP price.  Column 2 is an item category,
+    # not a currency, and column 4 is unrelated data (previously used as price).
+    _, price = _get_price(30, item_id, 2, 3)
+    return 'GP', price
 
 def _deduct_currency(uuid, user, currency, price):
-    if not user or price <= 0: return
-    if 'CP' in currency:
-        state.increment_currency(uuid, cp=-price)
-        user['userdata']['u_cp'] = user['userdata'].get('u_cp', 0) - price
+    if not user or not currency or price is None:
+        return False
+    try:
+        price = int(price)
+    except (TypeError, ValueError):
+        return False
+    if price < 0:
+        return False
+    currency = str(currency).upper()
+    if currency not in ('CP', 'GP'):
+        # Package/real-money and malformed catalogue rows must not be charged
+        # as Candy by an offline purchase endpoint.
+        return False
+    is_cp = currency == 'CP'
+    if not state.spend_currency(uuid, currency='cp' if is_cp else 'candy', amount=price):
+        return False
+    ud = user.setdefault('userdata', {})
+    if is_cp:
+        ud['u_cp'] = int(ud.get('u_cp', 0) or 0) - price
     else:
-        state.increment_currency(uuid, candy=-price)
-        user['userdata']['u_candy'] = user['userdata'].get('u_candy', 0.0) - price
+        ud['u_candy'] = float(ud.get('u_candy', 0.0) or 0.0) - price
+    return True
 
 @cmd('buyMusic')
 def h_buy_music(req, player, ctx):
@@ -72,8 +98,11 @@ def h_buy_music(req, player, ctx):
     idx = p.get('idx', 1)
     currency, price = _get_price(2, idx, 45, 46)
     
-    if user:
-        _deduct_currency(uuid, user, currency, price)
+    paid = False
+    already_owned = user and any(x.get('i_id') == idx for x in user.get('user_music', []))
+    if user and not already_owned:
+        paid = _deduct_currency(uuid, user, currency, price)
+    if paid:
         lst = user.setdefault('user_music', [])
         if not any(x.get('i_id') == idx for x in lst):
             lst.append({'i_id': idx, 'i_Level': 1, 'i_BonusLevel': 0, 'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0, 'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0})
@@ -84,7 +113,7 @@ def h_buy_music(req, player, ctx):
         'u_gold': ud.get('u_candy', 0),
         'u_cp': ud.get('u_cp', 0),
         'u_mp': 0,
-        'music': {'i_id': idx, 'i_Level': 1, 'i_BonusLevel': 0}
+        'music': {'i_id': idx, 'i_Level': 1, 'i_BonusLevel': 0} if paid else {}
     }, OK
 
 @cmd('buyAvatar')
@@ -94,10 +123,13 @@ def h_buy_avatar(req, player, ctx):
     user = state.get_user(uuid)
     
     idx = p.get('idx', 1)
-    currency, price = _get_price(3, idx, 29, 44)
+    currency, price = _get_price(3, idx, 29, 30)
     
-    if user:
-        _deduct_currency(uuid, user, currency, price)
+    paid = False
+    already_owned = user and any(x.get('i_id') == idx for x in user.get('costumes', []))
+    if user and not already_owned:
+        paid = _deduct_currency(uuid, user, currency, price)
+    if paid:
         lst = user.setdefault('costumes', [])
         if not any(x.get('i_id') == idx for x in lst):
             lst.append({'i_id': idx, 'i_Level': 1, 'i_BonusLevel': 0})
@@ -118,10 +150,12 @@ def h_buy_item(req, player, ctx):
     user = state.get_user(uuid)
     
     idx = p.get('idx', 1)
-    currency, price = _get_price(30, idx, 3, 4) # fallback
+    currency, price = _get_variety_price(idx)
     
+    paid = False
     if user:
-        _deduct_currency(uuid, user, currency, price)
+        paid = _deduct_currency(uuid, user, currency, price)
+    if paid:
         state.save_user(user)
         
     ud = user['userdata'] if user else {}
@@ -166,13 +200,13 @@ def h_buy_contents(req, player, ctx):
             cur_lvl = item.get('i_Level', 1) if item else 1
             cur, price = _get_upgrade_cost(7, idx, cur_lvl)
             
-            _deduct_currency(uuid, user, cur, price)
-            if item:
-                item['i_Level'] = cur_lvl + 1
-            else:
-                item = {'i_id': idx, 'i_Level': 2}
-                lst.append(item)
-            ret['user_unit'] = item
+            if _deduct_currency(uuid, user, cur, price):
+                if item:
+                    item['i_Level'] = cur_lvl + 1
+                else:
+                    item = {'i_id': idx, 'i_Level': 2}
+                    lst.append(item)
+                ret['user_unit'] = item
             
         elif ctype == 'skill':
             lst = user.setdefault('user_skill', [])
@@ -180,13 +214,13 @@ def h_buy_contents(req, player, ctx):
             cur_lvl = item.get('i_Level', 1) if item else 1
             cur, price = _get_upgrade_cost(8, idx, cur_lvl)
             
-            _deduct_currency(uuid, user, cur, price)
-            if item:
-                item['i_Level'] = cur_lvl + 1
-            else:
-                item = {'i_id': idx, 'i_Level': 2, 'i_ActiveTime': 0}
-                lst.append(item)
-            ret['user_skill'] = item
+            if _deduct_currency(uuid, user, cur, price):
+                if item:
+                    item['i_Level'] = cur_lvl + 1
+                else:
+                    item = {'i_id': idx, 'i_Level': 2, 'i_ActiveTime': 0}
+                    lst.append(item)
+                ret['user_skill'] = item
             
         state.save_user(user)
         ret['u_cp'] = ud.get('u_cp', 0)

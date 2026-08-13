@@ -1,0 +1,34 @@
+{
+  "paid_star_card": {
+    "name": "Thẻ Sao Gold trả tiền",
+    "enabled": false,
+    "price": 0
+  },
+  "events": {
+    "1": {
+      "name": "Điểm danh 7 ngày",
+      "state": "disabled",
+      "enabled": false
+    },
+    "2": {
+      "name": "Điểm danh kỷ niệm 1 năm",
+      "state": "ended",
+      "enabled": false
+    },
+    "3": {
+      "name": "Điểm danh hằng ngày",
+      "state": "disabled",
+      "enabled": false
+    },
+    "202110": {
+      "name": "Sự kiện đăng nhập tháng 10/2021",
+      "state": "ended",
+      "enabled": false
+    },
+    "202111": {
+      "name": "Sự kiện đăng nhập tháng 11/2021",
+      "state": "ended",
+      "enabled": false
+    }
+  }
+}

@@ -3,6 +3,31 @@ from server import state
 from server.handlers.registry import cmd, OK, _payload
 
 EVENT_REWARDS = None
+_EVENT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'event_config.json')
+
+def _event_settings():
+    """Read operator-controlled event availability on every request.
+
+    This intentionally is not cached: changing `event_config.json` opens or
+    closes an event immediately, without modifying player data or restarting
+    the server.
+    """
+    try:
+        with open(_EVENT_CONFIG_PATH, encoding='utf-8') as f:
+            config = json.load(f)
+        return config if isinstance(config, dict) else {}
+    except (OSError, ValueError, TypeError):
+        return {'events': {'1': {'enabled': True}}}
+
+def _event_config():
+    return _event_settings().get('events', {})
+
+def _event_enabled(event_idx):
+    event = _event_config().get(str(event_idx), {})
+    return bool(event.get('enabled', False))
+
+def _paid_star_card_enabled():
+    return bool(_event_settings().get('paid_star_card', {}).get('enabled', False))
 
 # game_data.json is the decoded getGameDataList payload.  These three tables
 # describe exactly which Free/Paid reward belongs to each Star Pass group/step.
@@ -170,6 +195,11 @@ def h_set_attendance(req, player, ctx):
     today = _today_ymd()
     cur = 0
     added = False
+    if not _event_enabled(1):
+        return {
+            'status': 'N', 'attendance_count': 0, 'attendance_date': 0,
+            'max_coutinuous_attendance_count': 0,
+        }, OK
     if user:
         st = _att_state(user, 1)
         cur = st.get('day', 0)
@@ -218,6 +248,8 @@ def h_get_event_reward_list(req, player, ctx):
     template = _get_event_template()
     data = {}
     for eidx, board in template.items():
+        if not _event_enabled(eidx):
+            continue
         st = _att_state(user, eidx) if user else {'day': 0, 'ymd': 0}
         claimed_day = st.get('day', 0)
         claim_ymd = st.get('ymd', 0)
@@ -227,6 +259,13 @@ def h_get_event_reward_list(req, player, ctx):
             if claimed_day and r2.get('reward_num', 0) <= claimed_day:
                 r2['reward_flg'] = 'N'                      # already received
                 r2['get_date'] = claim_ymd or r2.get('get_date', 0)
+            else:
+                # The captured template is a retired live-event response and
+                # carries its original 2024/2025 get_date values.  They are
+                # not this player's history; the client interprets them as
+                # already-passed attendance days and paints several seals on
+                # a fresh account.  An unclaimed reward has no claim date.
+                r2['get_date'] = 0
             rl.append(r2)
         data[eidx] = {'reward_list': rl, 'group_idx': board.get('group_idx', 0)}
     return data, OK
@@ -237,6 +276,8 @@ def h_set_event_reward(req, player, ctx):
     uuid = p.get('uuid') or ctx.get('uuid')
     user = state.get_user(uuid)
     event_idx = str(p.get('event_idx', 1))
+    if not _event_enabled(event_idx):
+        return _event_resp({}, None, 'N'), OK
     rewards = _get_event_rewards().get(event_idx, {})
     max_day = len(rewards) or 7
 
@@ -271,34 +312,21 @@ def h_set_game_reward(req, player, ctx):
     p = _payload(req)
     uuid = p.get('uuid') or ctx.get('uuid')
     user = state.get_user(uuid)
-    
     req_type = p.get('type', 'daily_mission')
     item_id = str(p.get('id', 1))
-    level = int(p.get('level', 1))
-    
-    # --- check if already claimed today ---
+    try:
+        level = int(p.get('level', 1))
+    except (TypeError, ValueError):
+        level = 0
+
     today = str(_today_ymd())
-    claim_key = f'{req_type}:{item_id}:{level}'
-    if user:
-        claimed = user.setdefault('claimed_rewards', {})
-        today_claims = claimed.get(today, {})
-        if claim_key in today_claims:
-            # already claimed today → tell client "nothing to claim"
-            return {
-                'type': req_type, 'id': int(item_id), 'level': level,
-                'reward_type': '0', 'reward_value': 0,
-                'status': 'N', 'user_follower_profile': {}
-            }, OK
-    
-    rtype = 1
-    rid = 2
-    rval = 10
-    
+    claim_key = f'{item_id}:{level}'
+    rtype = rid = rval = None
     try:
         _gd_path = os.path.join(os.path.dirname(__file__), '..', '..', 'gamedata', 'game_data.json')
         with open(_gd_path, 'r', encoding='utf-8') as f:
             gamedata = json.load(f)
-            
+
         if req_type == 'daily_mission':
             for row in gamedata.get('10', []):
                 if str(row.get('1')) == item_id:
@@ -310,32 +338,54 @@ def h_set_game_reward(req, player, ctx):
                         if 'CP' in currency: rid = 2
                         elif 'CHOCO' in currency: rid = 1
                     break
-                    
         elif req_type == 'achievement':
             for row in gamedata.get('9', []):
                 if str(row.get('1')) == item_id:
-                    rtype = 1
-                    rid = 1
+                    # Rows with production multipliers are not currency
+                    # rewards.  The old handler mistook them for Candy.
+                    if str(row.get('28', '')).upper() != 'CP':
+                        break
                     val_key = str(40 + level)
-                    rval = int(row.get(val_key, 10))
+                    if level < 1 or val_key not in row:
+                        break
+                    rtype, rid, rval = 1, 2, int(row[val_key])
                     break
-    except Exception as e:
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
         pass
-        
+
+    def denied():
+        return {
+            'type': req_type, 'id': int(item_id) if item_id.isdigit() else 0,
+            'level': level, 'reward_type': '0', 'reward_value': 0,
+            'status': 'N', 'user_follower_profile': {}
+        }, OK
+
+    if req_type not in ('daily_mission', 'achievement') or None in (rtype, rid, rval):
+        return denied()
+
     if user:
+        if req_type == 'daily_mission':
+            # Daily rewards reset by calendar date.
+            claims = user.setdefault('claimed_daily_rewards', {})
+            today_claims = claims.setdefault(today, {})
+            if claim_key in today_claims:
+                return denied()
+            for old_day in [day for day in claims if day != today]:
+                del claims[old_day]
+            today_claims[claim_key] = int(time.time())
+        else:
+            # Achievement milestones are permanent claims.
+            claims = user.setdefault('claimed_achievement_rewards', {})
+            if claim_key in claims:
+                return denied()
+            claims[claim_key] = int(time.time())
+
         rew = {'reward_type': rtype, 'reward_id': rid, 'reward_value': rval}
         _give_reward(user, rew)
-        # stamp this claim so it can't be repeated today
-        claimed = user.setdefault('claimed_rewards', {})
-        today_claims = claimed.setdefault(today, {})
-        today_claims[claim_key] = int(time.time())
-        # prune old days (keep only today)
-        for old_day in [d for d in claimed if d != today]:
-            del claimed[old_day]
         state.save_user(user)
 
     return {
-        'type': req_type, 'id': int(item_id), 'level': level,
+        'type': req_type, 'id': int(item_id) if item_id.isdigit() else 0, 'level': level,
         'reward_type': str(rtype), 'reward_value': rval,
         'status': 'Y', 'user_follower_profile': {}
     }, OK
@@ -411,20 +461,95 @@ def h_set_ad_reward(req, player, ctx):
     p = _payload(req)
     uuid = p.get('uuid') or ctx.get('uuid')
     user = state.get_user(uuid)
-    i_id = p.get('i_id', 0)
-    
-    # Ads typically give Chocolate (1) or Candy (2)
-    # Here we mock 50 Chocolate
-    rew = {'reward_type': 1, 'reward_id': 1, 'reward_value': 50}
-    
-    if user:
-        _give_reward(user, rew)
-        state.save_user(user)
-        
+    try:
+        i_id = int(p.get('i_id', 0))
+        profile_id = int(p.get('param1', 0))
+    except (TypeError, ValueError):
+        return {}, OK
+
+    # Capture: adViewLog(ad_profile_free_gift), followed by
+    # setAdReward(i_id=1, param1=<profile id>).  Game table 32 configures
+    # this as PROFILE_EXP: 300 hearts/EXP, 10-minute cooldown, 5 per day.
+    # It is not the generic 50-Candy ad reward this emulator used before.
+    if i_id == 1 and profile_id > 0 and user:
+        now = int(time.time())
+        today = _today_ymd()
+        ad_state = user.setdefault('follower_profile_ad_rewards', {})
+        slot = ad_state.setdefault(str(profile_id), {
+            'i_Count': 0, 'i_TotalCount': 0, 'i_LastViewTick': 0, 'upd_day': today,
+        })
+        if int(slot.get('upd_day', 0) or 0) != today:
+            slot['i_Count'] = 0
+            slot['upd_day'] = today
+
+        allowed = (int(slot.get('i_Count', 0) or 0) < 5
+                   and now - int(slot.get('i_LastViewTick', 0) or 0) >= 600)
+        profile = next((row for row in user.setdefault('user_follower_profile', [
+            {'i_id': 1, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0},
+        ]) if int(row.get('i_id', 0) or 0) == profile_id), None)
+        if not profile:
+            return {'i_id': i_id, 'reward_data': []}, OK
+
+        if allowed:
+            from server.handlers.follower import _apply_profile_exp, _follower_data
+            _, _, level_data = _follower_data()
+            _apply_profile_exp(profile, level_data.get(profile_id, {}), 300)
+            slot['i_Count'] = int(slot.get('i_Count', 0) or 0) + 1
+            slot['i_TotalCount'] = int(slot.get('i_TotalCount', 0) or 0) + 1
+            slot['i_LastViewTick'] = now
+
+            followers = user.setdefault('user_follower', [])
+            follower = next((row for row in followers
+                             if int(row.get('i_id', 0) or 0) == profile_id), None)
+            if follower is None:
+                follower = {'i_id': profile_id, 'i_Level': 1, 'i_BonusLevel': 0}
+                followers.append(follower)
+            follower['i_Level'] = int(profile['i_Level'])
+            state.save_user(user)
+
+        return {
+            'i_id': i_id,
+            'user_ad_list': {'i_id': i_id, **slot},
+            'user_follower_profile': profile,
+            # This is profile EXP rather than a currency/inventory item.
+            'reward_data': ([{'reward_type': 0, 'reward_id': 0, 'reward_value': 300}]
+                            if allowed else []),
+        }, OK
+
+    # Game table 32: ad_ap.  It is a separate ad slot from the follower
+    # profile ad: five views per day, no cooldown, reward group 1011 =
+    # 25 Cookie (Chapter 3 AP).  The client adds the returned reward locally
+    # and will receive the authoritative AP value on its next getChThird.
+    if i_id == 2 and user:
+        from server.handlers.ch_third import _add_ap
+        today = _today_ymd()
+        ad_state = user.setdefault('chapter_ap_ad_rewards', {})
+        slot = ad_state.setdefault('2', {
+            'i_Count': 0, 'i_TotalCount': 0, 'i_LastViewTime': 0, 'upd_day': today,
+        })
+        if int(slot.get('upd_day', 0) or 0) != today:
+            slot['i_Count'] = 0
+            slot['upd_day'] = today
+        allowed = int(slot.get('i_Count', 0) or 0) < 5
+        if allowed:
+            _add_ap(user, 25)
+            slot['i_Count'] = int(slot.get('i_Count', 0) or 0) + 1
+            slot['i_TotalCount'] = int(slot.get('i_TotalCount', 0) or 0) + 1
+            slot['i_LastViewTime'] = int(time.time())
+            state.save_user(user)
+        return {
+            'i_id': i_id,
+            'user_ad_list': slot,
+            'reward_data': ([{'reward_type': 1, 'reward_id': 11, 'reward_value': 25}]
+                            if allowed else []),
+        }, OK
+
+    # Preserve a neutral response for ad slots that have not been captured.
     return {
         'i_id': i_id,
-        'user_ad_list': {'i_id': i_id, 'i_Count': 1, 'i_TotalCount': 1, 'i_LastViewTick': int(time.time()), 'upd_day': _today_ymd()},
-        'reward_data': [rew]
+        'user_ad_list': {'i_id': i_id, 'i_Count': 0, 'i_TotalCount': 0,
+                         'i_LastViewTick': 0, 'upd_day': _today_ymd()},
+        'reward_data': [],
     }, OK
 
 @cmd('paidEventPoint')
@@ -437,6 +562,15 @@ def h_paid_event_point(req, player, ctx):
     version = p.get('i_Version', 5)
     # point_price comes from getSubscribePass table; default 10 CP per point batch
     points_to_add = 100
+
+    # Gold Star Card / paid point top-up is deliberately disabled in this
+    # offline emulator.  Never deduct a currency or grant points for it.
+    if not _paid_star_card_enabled():
+        ud = user.get('userdata', {}) if user else {}
+        return {
+            'u_cp': ud.get('u_cp', 0), 'u_candy': ud.get('u_candy', 0.0),
+            'i_SubscribeID': sub_id, 'i_Point': 0, 'i_Version': version,
+        }, OK
 
     if user:
         ud = user['userdata']

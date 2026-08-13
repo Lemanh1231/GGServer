@@ -15,19 +15,25 @@ def h_server_time(req, player, ctx):
 
 @cmd('getUpdateTime')
 def h_update_time(req, player, ctx):
-    return {'upd_time': 1761876067}, OK
+    # The client uses this timestamp to validate its clock.  Returning the
+    # old baked-in release timestamp makes it detect a time cheat and locks
+    # time-gated UI such as the day-7 attendance reward.
+    return {'upd_time': int(time.time())}, OK
 
 @cmd('defaultSettingList')
 def h_default_settings(req, player, ctx):
     settings = [
         ('shop_call_wait', '2'), ('ad_cancel_delay', '5'), ('force_menu_restric', 'true'),
         ('max_bundle_texutre_loading', '1'), ('weather_snow', 'true'), ('check_time_cheat', 'false'),
-        ('ap_max', '60'), ('ap_time', '300'), ('ap_use', '5'), ('character_exp', '45'),
+        ('ap_max', '70'), ('ap_time', '300'), ('ap_use', '5'), ('character_exp', '45'),
         ('ap_shop_id', '31'), ('ap_ad_list_id', '2'), ('ch_third_unlock_follower_id', '5'),
         ('ch_third_unlock_follower_level', '1'), ('ad_follower_profile_exp_persent', '0.1'),
         ('follower_profile_bonus_percent', '1'), ('spine_load_max_count', '0'), ('log_flag', 'true'),
         ('weather_cherry_blossom', 'false'), ('active_goods_ticket_buff', 'true'),
-        ('active_fan_art_costume', 'true'), ('pass_goods_sale_start_time', '2022-02-19 00:00'),
+        ('active_fan_art_costume', 'true'),
+        # Keep the sale UI visible for testing.  Actual paid-card purchase and
+        # point top-up remain blocked by paid_star_card.enabled=false.
+        ('pass_goods_sale_start_time', '2022-02-19 00:00'),
         ('pass_goods_sale_end_time', '2999-02-27 23:59'), ('attendacne_buff_value', '0.01'),
         ('attendacne_buff_limit_day', '10000'), ('log_flag_unfinished_purchase', 'true'),
         ('jp_laws_flag', 'true'),

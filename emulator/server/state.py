@@ -137,6 +137,7 @@ def _reconstruct_user(row):
         'unit': 'user_unit',
         'skill': 'user_skill',
         'music': 'user_music',
+        'guitar': 'user_guitar',
         'costume': 'costumes',
         'prop': 'user_prop',
         'follower': 'user_follower',
@@ -191,7 +192,12 @@ def get_user(uuid):
 
 def create_user(uuid, device_uuid):
     with _LOCK:
-        existing = get_user(uuid)
+        # The app creates a fresh local UUID after Clear data, while its
+        # device UUID remains stable.  Prefer that stable identifier so a
+        # clear cannot create a second account and re-grant starter rewards.
+        existing = get_user(device_uuid) if device_uuid else None
+        if not existing:
+            existing = get_user(uuid)
         if existing: return existing
         
         seq = _next_seq()
@@ -203,6 +209,15 @@ def create_user(uuid, device_uuid):
             'achievements': [{'i_id': i, 'i_Level': 1, 'd_Quantity': 1.0, 's_Quantity': ''} for i in range(1, 11)],
             'characters': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}],
             'costumes': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}],
+            'user_music': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0,
+                            'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
+                            'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0}],
+            'user_guitar': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}],
+            'user_follower': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}],
+            'user_follower_profile': [
+                {'i_id': 1, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0},
+            ],
+            'user_follower_giftitem': [{'i_id': 1, 'i_Value': 141}],
         }
         
         # A new profile starts empty.  The old seeded values (1,000,000 CP and
@@ -255,6 +270,7 @@ def save_user(user):
             'user_unit': 'unit',
             'user_skill': 'skill',
             'user_music': 'music',
+            'user_guitar': 'guitar',
             'costumes': 'costume',
             'user_prop': 'prop',
             'user_follower': 'follower',
@@ -264,7 +280,14 @@ def save_user(user):
         
         for jkey, itype in key_map.items():
             # Store inventory separately without mutating the in-memory lists.
-            lst = stored.pop(jkey, [])
+            if jkey not in stored:
+                continue
+            lst = stored.pop(jkey)
+            # save_user receives a full inventory snapshot.  Without removing
+            # rows omitted from that snapshot, old unlock-all entries survive
+            # forever in SQLite and are merged back on the next login.
+            conn.execute('DELETE FROM user_inventory WHERE uuid = ? AND item_type = ?',
+                         (uuid, itype))
             for item in lst:
                 item_id = item.get('i_id', 0)
                 level = item.get('i_Level', 1)
@@ -305,6 +328,32 @@ def increment_currency(uuid, cp=0, candy=0.0, like=0.0, fans=0):
             ''', (cp, candy, like, fans, ruuid))
             conn.commit()
         conn.close()
+
+def spend_currency(uuid, *, currency, amount):
+    """Atomically spend a positive amount only when the balance covers it."""
+    try:
+        amount = int(amount) if currency == 'cp' else float(amount)
+    except (TypeError, ValueError):
+        return False
+    if amount < 0:
+        return False
+    if amount == 0:
+        return True
+    column = 'u_cp' if currency == 'cp' else 'u_candy'
+    with _LOCK:
+        conn = get_db()
+        ruuid = _resolve_uuid(conn, uuid)
+        if ruuid is None:
+            conn.close()
+            return False
+        cursor = conn.execute(
+            f'UPDATE user_data SET {column} = {column} - ? '
+            f'WHERE uuid = ? AND {column} >= ?',
+            (amount, ruuid, amount),
+        )
+        conn.commit()
+        conn.close()
+        return cursor.rowcount == 1
 
 
 def set_currency(uuid, *, cp, candy):

@@ -1,56 +1,6 @@
-import time, os, json
+import time
 from server import state
 from server.handlers.registry import cmd, OK, _payload
-
-# --- "unlock everything" catalogue, loaded once from game_data.json -----------------------------
-# game_data.json is a {table_id: [rows]} map; each row's column "1" is the item id.
-#   table 3  = costumes (trang phục)   table 20 = guitars (đàn)   table 2 = music discs (đĩa nhạc)
-# We expose every catalogued id on login so all costumes/guitars/music show up as owned.
-_GAMEDATA_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'gamedata', 'game_data.json')
-_CATALOG = None  # {'costume': [...], 'guitar': [...], 'music': [...], 'subscribe': [...]}
-
-def _catalog():
-    global _CATALOG
-    if _CATALOG is not None:
-        return _CATALOG
-    cat = {'costume': [], 'guitar': [], 'music': [], 'subscribe': []}
-    try:
-        with open(_GAMEDATA_PATH, encoding='utf-8') as f:
-            gd = json.load(f)
-        def ids(table_id):
-            seen = []
-            for row in gd.get(table_id, []):
-                i = row.get('1')
-                if isinstance(i, int) and i not in seen:
-                    seen.append(i)
-            return sorted(seen)
-        # Table 17 is SubscribeList.  Its 13 ids are the real Star Passes;
-        # they are not the 100 fabricated ids the old setSubscribe returned.
-        cat = {'costume': ids('3'), 'guitar': ids('20'), 'music': ids('2'),
-               'subscribe': ids('17')}
-    except Exception:
-        pass  # fall back to whatever the user already owns
-    _CATALOG = cat
-    return _CATALOG
-
-def _all_costumes():
-    return [{'i_id': i, 'i_Level': 1, 'i_BonusLevel': 0} for i in _catalog()['costume']]
-
-def _all_guitars():
-    return [{'i_id': i, 'i_Level': 1, 'i_BonusLevel': 0} for i in _catalog()['guitar']]
-
-def _all_music():
-    return [{'i_id': i, 'i_Level': 1, 'i_BonusLevel': 0, 'b_EncoreBonusAppear': 0,
-             'l_EncoreBonusActivateTime': 0, 'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0}
-            for i in _catalog()['music']]
-
-
-def _all_subscriptions():
-    # The Free Star Pass does not need a SubscribeList entry.  Such entries
-    # represent the paid/gold Star Card entitlement and must never be granted
-    # by the offline server.
-    return []
-
 
 def _remove_legacy_paid_subscriptions(user):
     """Remove the former unlock-all Gold Star Card seed from existing saves."""
@@ -77,6 +27,18 @@ def _remove_legacy_currency_grant(user):
     state.set_currency(user.get('uuid'), cp=0, candy=0.0)
     state.save_user(user)
 
+def _remove_legacy_unlock_all(user):
+    """Replace the former synthetic full catalogue with starter ownership."""
+    if user.get('legacy_unlock_all_migrated'):
+        return
+    user['costumes'] = [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}]
+    user['user_music'] = [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0,
+                           'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
+                           'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0}]
+    user['user_guitar'] = [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}]
+    user['legacy_unlock_all_migrated'] = True
+    state.save_user(user)
+
 @cmd('userJoin')
 def h_user_join(req, player, ctx):
     p = _payload(req)
@@ -86,10 +48,87 @@ def h_user_join(req, player, ctx):
     ud = user['userdata']
     return {'u_seq': ud['u_seq'], 'u_id': ud['u_id']}, OK
 
+
+def _normalise_achievements(user, incoming=None):
+    """Keep the server-owned achievement tier when Unity omits it on save.
+
+    The client sends only the counters for most ``userSave`` calls.  Replacing
+    the records verbatim used to erase ``i_Level``; a missing tier is decoded
+    by the UI as tier 0 and makes almost the entire achievement page vanish.
+    """
+    old = {int(x.get('i_id', 0) or 0): x
+           for x in user.get('achievements', []) if int(x.get('i_id', 0) or 0)}
+    sent = {int(x.get('i_id', 0) or 0): x
+            for x in (incoming if incoming is not None else user.get('achievements', []))
+            if int(x.get('i_id', 0) or 0)}
+    result = []
+    for item_id in range(1, 11):
+        previous = old.get(item_id, {})
+        update = sent.get(item_id, {})
+        level = update.get('i_Level', previous.get('i_Level', 1))
+        try:
+            level = max(1, int(level or 1))
+        except (TypeError, ValueError):
+            level = 1
+        result.append({
+            'i_id': item_id,
+            'i_Level': level,
+            'd_Quantity': update.get('d_Quantity', previous.get('d_Quantity', 0)),
+            's_Quantity': update.get('s_Quantity', previous.get('s_Quantity', '')),
+        })
+    user['achievements'] = result
+    return result
+
+
+def _normalise_daily_missions(user, incoming=None):
+    """Restore fields omitted by the compact daily-mission userSave payload."""
+    old = {int(x.get('i_id', 0) or 0): x
+           for x in user.get('user_daily_mission', []) if int(x.get('i_id', 0) or 0)}
+    sent = {int(x.get('i_id', 0) or 0): x
+            for x in (incoming if incoming is not None else user.get('user_daily_mission', []))
+            if int(x.get('i_id', 0) or 0)}
+    result = []
+    for item_id in range(1, 7):
+        previous = old.get(item_id, {})
+        update = sent.get(item_id, {})
+        level = update.get('i_Level', previous.get('i_Level', 1))
+        try:
+            level = max(1, int(level or 1))
+        except (TypeError, ValueError):
+            level = 1
+        result.append({
+            'i_id': item_id,
+            'i_Level': level,
+            'd_Quantity': update.get('d_Quantity', previous.get('d_Quantity', 0)),
+            'upd_date': update.get('upd_date', previous.get('upd_date', '')),
+        })
+    user['user_daily_mission'] = result
+    return result
+
+
+def _active_buffs(user):
+    """Return timed buffs which have not expired, using server time only."""
+    now = int(time.time())
+    buffs = []
+    for buff in user.get('user_buff', []):
+        try:
+            if int(buff.get('i_EndTime', 0) or 0) <= now:
+                continue
+            buffs.append({
+                'i_id': int(buff.get('i_id', 0) or 0),
+                'i_Level': max(1, int(buff.get('i_Level', 1) or 1)),
+                'i_ActiveTime': int(buff.get('i_ActiveTime', now) or now),
+                'i_EndTime': int(buff['i_EndTime']),
+            })
+        except (TypeError, ValueError):
+            continue
+    user['user_buff'] = buffs
+    return buffs
+
 def _user_contents(user):
-    # Skill 4 used to be injected into every profile at level 1.  That bypassed
-    # the intended progression gate.  Keep the starter skill only until the
-    # player's character reaches level 10, then expose the gated skill.
+    # Do not expose skills before their character-level gates.  The game-data
+    # table defines the three Guitar Girl skills at Lv. 100 / 300 / 500; the
+    # separate cooldown-reset skill unlocks at Lv. 10.
     skills = user.setdefault('user_skill', [
         {'i_id': 1, 'i_Level': 1, 'b_Activate': 0,
          'l_ActivateOnTicks': 0, 'l_ActivateOffTicks': 0},
@@ -98,68 +137,60 @@ def _user_contents(user):
         (int(c.get('i_Level', 0) or 0) for c in user.get('characters', [])),
         default=0,
     )
-    if character_level < 10:
-        skills[:] = [skill for skill in skills if skill.get('i_id') != 4]
-    elif not any(skill.get('i_id') == 4 for skill in skills):
-        skills.append({'i_id': 4, 'i_Level': 1, 'b_Activate': 0,
-                       'l_ActivateOnTicks': 0, 'l_ActivateOffTicks': 0})
+    skill_unlock_levels = {1: 100, 2: 300, 3: 500, 4: 10}
+    skills[:] = [
+        skill for skill in skills
+        if character_level >= skill_unlock_levels.get(skill.get('i_id'), 0)
+    ]
+    for skill_id, unlock_level in skill_unlock_levels.items():
+        if (character_level >= unlock_level
+                and not any(skill.get('i_id') == skill_id for skill in skills)):
+            skills.append({'i_id': skill_id, 'i_Level': 1, 'b_Activate': 0,
+                           'l_ActivateOnTicks': 0, 'l_ActivateOffTicks': 0})
 
     return {
-        'user_achievement': user.get('achievements', []),
+        'user_achievement': _normalise_achievements(user),
+        'user_buff': _active_buffs(user),
         'user_candy_shop': [
             {'i_id': 1, 'i_CurrentBuyCount': 1, 'i_TotalBuyCount': 1, 'l_LastBuyTick': 1767022695, 'upd_day': 20251230},
             {'i_id': 2, 'i_CurrentBuyCount': 1, 'i_TotalBuyCount': 1, 'l_LastBuyTick': 1767114498, 'upd_day': 20251231},
         ],
         'user_character': user.get('characters', []),
-        # unlock-all: every costume in the catalogue (table 3), not just the ones the user bought
-        'user_costume': _all_costumes(),
-        'user_daily_mission': user.setdefault('user_daily_mission', [
-            {'i_id': 1, 'i_Level': 1, 'd_Quantity': 1, 'upd_date': ''},
-            {'i_id': 2, 'i_Level': 1, 'd_Quantity': 0, 'upd_date': ''},
-            {'i_id': 3, 'i_Level': 1, 'd_Quantity': 0, 'upd_date': ''},
-            {'i_id': 4, 'i_Level': 1, 'd_Quantity': 0, 'upd_date': ''},
-            {'i_id': 5, 'i_Level': 1, 'd_Quantity': 0, 'upd_date': ''},
-            {'i_id': 6, 'i_Level': 1, 'd_Quantity': 0, 'upd_date': ''},
-        ]),
+        'user_costume': user.setdefault('costumes', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}]),
+        'user_daily_mission': _normalise_daily_missions(user),
         'user_follower': user.setdefault('user_follower', [
-            {'i_id': 1, 'i_Level': 125, 'i_BonusLevel': 5},
-            {'i_id': 2, 'i_Level': 48, 'i_BonusLevel': 1},
-            {'i_id': 3, 'i_Level': 13, 'i_BonusLevel': 0},
-            {'i_id': 4, 'i_Level': 1, 'i_BonusLevel': 0},
+            {'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0},
         ]),
-        # unlock-all: every music disc in the catalogue (table 2)
-        'user_music': _all_music(),
+        'user_music': user.setdefault('user_music', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0,
+                                                       'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
+                                                       'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0}]),
         'user_prop': user.setdefault('user_prop', [{'i_id': 1, 'i_Level': 1}, {'i_id': 2, 'i_Level': 1}]),
         'user_unit': user.setdefault('user_unit', [{'i_id': 1, 'i_Level': 1}]),
         'user_skill': skills,
         'user_shop': user.setdefault('user_shop', []),
-        'user_messenger': [
-            {'i_MessengerChatRoomId': i, 'i_LastConfirmIndex': 9999, 's_UnlockGroupList': ','.join(map(str, range(1, 50))), 'l_UpdateTimeTicks': 639013642974540000} 
-            for i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 203, 204, 205, 206, 207, 208, 100000]
-        ],
-        # unlock-all: every guitar in the catalogue (table 20)
-        'user_guitar': _all_guitars(),
+        # Chat rooms and album/ticket images are progression rewards.  Do not
+        # fabricate them for a new profile.
+        'user_messenger': user.setdefault('user_messenger', []),
+        'user_guitar': user.setdefault('user_guitar', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}]),
         # Star Pass: read from persisted user data, default to fresh start
         'user_event_point': user.setdefault('user_event_point', [
             {'s_EventType': 'Pass', 'i_DataID': 5, 'i_Point': 0, 'i_Step': 0, 'i_ADViewTime': 0, 'i_Version': 5},
         ]),
         # Keep this empty: Free Pass rewards are available without a card,
         # while a populated list unlocks the paid/gold Star Pass track.
-        'user_subscribe_list': user.setdefault('user_subscribe_list', _all_subscriptions()),
+        # A non-empty list represents the paid/gold Star Card entitlement.
+        'user_subscribe_list': user.setdefault('user_subscribe_list', []),
         'user_subscribe_pass_reward': user.setdefault('user_subscribe_pass_reward', []),
-        'user_ticketcollection': [{'i_id': i} for i in range(1, 14)],
-        'user_follower_profile_reward': [
-            {'i_id': f, 'i_RewardLevel': lvl} 
-            for f in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 201, 202, 203, 204, 205, 206, 207, 208] 
-            for lvl in range(1, 6)
-        ],
+        'user_ticketcollection': user.setdefault('user_ticketcollection', []),
+        'user_follower_profile_reward': user.setdefault('user_follower_profile_reward', []),
         'user_follower_profile': user.setdefault('user_follower_profile', [
-            {'i_id': 1, 'i_Level': 3, 'd_Exp': 150, 'i_AddCandy': 0},
-            {'i_id': 2, 'i_Level': 2, 'd_Exp': 110, 'i_AddCandy': 0},
-            {'i_id': 3, 'i_Level': 2, 'd_Exp': 70, 'i_AddCandy': 0},
+            {'i_id': 1, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0},
         ]),
         'user_follower_giftitem': user.setdefault('user_follower_giftitem', [{'i_id': 1, 'i_Value': 141}]),
-        'user_tutorial': [{'i_id': i} for i in range(1, 8)],
+        # This is server-owned progress.  In particular tutorial 14 is the
+        # Chapter 3 introduction; returning only a fabricated 1..7 list made
+        # the client replay it every time the chapter was opened.
+        'user_tutorial': user.setdefault('user_tutorial', [{'i_id': i} for i in range(1, 8)]),
         'user_ad_level': [{'i_id': 210010, 'i_Level': 1, 'i_EXP': 1}],
     }
 
@@ -174,11 +205,15 @@ def h_user_login(req, player, ctx):
     if u_seq_req != 0:
         _remove_legacy_currency_grant(user)
         _remove_legacy_paid_subscriptions(user)
+        _remove_legacy_unlock_all(user)
         area_map = {int(k): v for k, v in user.get('areas', {}).items()}
         ud = user['userdata']
         ct = str(ud.get('u_create_time', ''))
         if not ct.lstrip('-').isdigit():
             ud['u_create_time'] = str(int(time.time()))
+        # Persist migrations of compact userSave records before the client
+        # receives them, otherwise a subsequent login would lose their tiers.
+        state.save_user(user)
         return {
             'user': ud,
             'area_data': area_map,
@@ -193,11 +228,16 @@ def h_user_save(req, player, ctx):
     uuid = p.get('uuid') or ctx.get('uuid')
     user = state.get_user(uuid)
     if user:
-        if 'user_achievement' in p: user['achievements'] = p['user_achievement']
+        if 'user_achievement' in p: _normalise_achievements(user, p['user_achievement'])
         if 'user_character' in p:   user['characters'] = p['user_character']
         if 'user_costume' in p:     user['costumes'] = p['user_costume']
+        if 'user_music' in p:       user['user_music'] = p['user_music']
+        if 'user_guitar' in p:      user['user_guitar'] = p['user_guitar']
+        if 'user_follower' in p:    user['user_follower'] = p['user_follower']
+        if 'user_messenger' in p:   user['user_messenger'] = p['user_messenger']
+        if 'user_ticketcollection' in p: user['user_ticketcollection'] = p['user_ticketcollection']
         if 'user_event_point' in p: user['user_event_point'] = p['user_event_point']
-        if 'user_daily_mission' in p: user['user_daily_mission'] = p['user_daily_mission']
+        if 'user_daily_mission' in p: _normalise_daily_missions(user, p['user_daily_mission'])
         for area in (p.get('user_area_info') or []):
             n = area.get('u_area_num')
             if n is not None:
@@ -213,6 +253,26 @@ def h_user_load(req, player, ctx):
     if p.get('type') == 'shop' and user:
         return {'user_contents': {'user_shop': user.get('user_shop', [])}}, OK
     return {}, OK
+
+@cmd('setTutorialNew')
+def h_set_tutorial_new(req, player, ctx):
+    """Persist completed tutorial IDs instead of acknowledging them only."""
+    p = _payload(req)
+    user = state.get_user(p.get('uuid') or ctx.get('uuid'))
+    if not user:
+        return {}, OK
+    tutorials = user.setdefault('user_tutorial', [{'i_id': i} for i in range(1, 8)])
+    known = {int(row.get('i_id', 0) or 0) for row in tutorials}
+    for tutorial_id in p.get('i_ids') or []:
+        try:
+            tutorial_id = int(tutorial_id)
+        except (TypeError, ValueError):
+            continue
+        if tutorial_id > 0 and tutorial_id not in known:
+            tutorials.append({'i_id': tutorial_id})
+            known.add(tutorial_id)
+    state.save_user(user)
+    return {'u_seq': user['userdata']['u_seq'], 'tutorial': tutorials}, OK
 
 @cmd('setSubscribe')
 def h_set_subscribe(req, player, ctx):
