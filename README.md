@@ -5,7 +5,7 @@ Private/offline revival server for the EOS Android game **Guitar Girl**. It serv
 ## Run
 
 ```bash
-cd /home/leman/debug/GGServer/emulator
+cd /home/user/debug/GGServer/emulator
 python3 run.py
 ```
 
