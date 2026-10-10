@@ -1,0 +1,50 @@
+[
+  {
+    "idx": 101,
+    "notice_type": 1,
+    "title_ko": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_ko": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "title_en": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_en": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "title_jp": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_jp": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "title_zh_chs": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_zh_chs": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "title_zh_cht": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_zh_cht": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "title_vi": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_vi": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "title_es": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_es": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "title_it": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_it": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "title_id": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_id": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "title_th": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_th": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "title_pt": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_pt": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "title_hi": "Thông báo thử nghiệm & Cập nhật máy chủ",
+    "memo_hi": "Máy chủ GGServer đã mở lại thành công! Tặng bạn 500 Socola và 100 Kẹo để trải nghiệm game.",
+    "have_reward": 1,
+    "status": 0,
+    "unlimit_flg": 0,
+    "flg": 0,
+    "create_time": 1791633416,
+    "del_time": 1794225416,
+    "item_list": [
+      {
+        "i_RewardType": 1,
+        "i_RewardId": 1,
+        "d_RewardQuantity": 500.0
+      },
+      {
+        "i_RewardType": 1,
+        "i_RewardId": 2,
+        "d_RewardQuantity": 100.0
+      }
+    ],
+    "url": "",
+    "image_resource_name": ""
+  }
+]

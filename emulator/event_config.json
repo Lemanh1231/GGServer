@@ -7,8 +7,8 @@
   "events": {
     "1": {
       "name": "Điểm danh 7 ngày",
-      "state": "disabled",
-      "enabled": false
+      "state": "active",
+      "enabled": true
     },
     "2": {
       "name": "Điểm danh kỷ niệm 1 năm",
@@ -17,8 +17,8 @@
     },
     "3": {
       "name": "Điểm danh hằng ngày",
-      "state": "disabled",
-      "enabled": false
+      "state": "active",
+      "enabled": true
     },
     "202110": {
       "name": "Sự kiện đăng nhập tháng 10/2021",

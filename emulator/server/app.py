@@ -32,10 +32,10 @@ CONFIG = {
 
 # precompiled static responses (verbatim base64 bodies)
 STATIC_RESPONSES = {}
-# NOTE: getEventRewardList is intentionally NOT static -- it is built per-user by
-# handlers/reward.py so the attendance board reflects which days the player already claimed
-# (otherwise the daily/7-day popup re-opens every login and claims never "stick").
-for _name in ('getGameDataList', 'getVarietyStore', 'getPostTime'):
+# NOTE: getPostTime and getEventRewardList are intentionally NOT static --
+# getPostTime is handled dynamically by handlers/post.py so the client checks
+# for new mailbox rewards and triggers red dot notifications on unread mail.
+for _name in ('getGameDataList', 'getVarietyStore'):
     _f = os.path.join(GAMEDATA_DIR, _name + '.b64')
     if os.path.exists(_f):
         STATIC_RESPONSES[_name] = open(_f).read().strip()

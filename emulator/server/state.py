@@ -216,8 +216,18 @@ def create_user(uuid, device_uuid):
             'user_follower': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}],
             'user_follower_profile': [
                 {'i_id': 1, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0},
+                {'i_id': 100000, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0},
             ],
+            'user_follower_profile_reward': [],
             'user_follower_giftitem': [{'i_id': 1, 'i_Value': 141}],
+            'user_messenger': [
+                {
+                    'i_MessengerChatRoomId': 1,
+                    'i_LastConfirmIndex': -1,
+                    's_UnlockGroupList': '1',
+                    'l_UpdateTimeTicks': 0,
+                }
+            ],
         }
         
         # A new profile starts empty.  The old seeded values (1,000,000 CP and

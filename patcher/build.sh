@@ -10,13 +10,17 @@
 # Any URL length is supported (the patcher grows the metadata heap when needed).
 set -e
 HERE="$(cd "$(dirname "$0")" && pwd)"
-APK_DIR="${GG_APK_DIR:-/Users/furiri/Downloads/Guitar+Girl_8.0.0_APKPure}"
+DEFAULT_APK_DIR="$HERE/../orig_apk"
+if [ ! -d "$DEFAULT_APK_DIR" ]; then
+  DEFAULT_APK_DIR="/Users/furiri/Downloads/Guitar+Girl_8.0.0_APKPure"
+fi
+APK_DIR="${GG_APK_DIR:-$DEFAULT_APK_DIR}"
 OUT="${GG_OUT:-$HERE/../out/patched-apks}"
 
 ARG="$1"
 if [ -z "$ARG" ]; then
-  IP="$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || true)"
-  [ -z "$IP" ] && { echo "Could not detect LAN IP; pass a base URL: ./build.sh http://192.168.1.50:8080"; exit 1; }
+  IP="$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || curl -s -m 5 https://ifconfig.me 2>/dev/null || hostname -I 2>/dev/null | awk '{print $1}')"
+  [ -z "$IP" ] && { echo "Could not detect IP; pass a base URL: ./build.sh http://192.168.1.50:8080"; exit 1; }
   TARGET="http://$IP:8080"
 elif [[ "$ARG" == http://* || "$ARG" == https://* ]]; then
   TARGET="$ARG"
@@ -26,7 +30,9 @@ else
 fi
 TARGET="${TARGET%/}"
 
-export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
+if command -v brew >/dev/null 2>&1; then
+  export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
+fi
 echo "Target base URL: $TARGET"
 echo "APK dir:         $APK_DIR"
 echo "Output:          $OUT"

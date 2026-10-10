@@ -17,9 +17,28 @@ scratch11.py
 README_SHOP_FIX.txt
 ref/
 out/
+orig_apk/
 
 # Runtime player state and decoded traffic are local-only.
 emulator/captures/
 emulator/data/database.db
 emulator/data/database.db-wal
 emulator/data/database.db-shm
+emulator/data/database.db.bak*
+emulator/data/database.db.backup*
+
+# Backup & temporary files
+*.bak
+*.orig
+emulator/gamedata/*.bak
+emulator/gamedata/*.orig
+work/bin/
+
+# Python cache & compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Test files
+test_*.py
+emulator/test_*.py

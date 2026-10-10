@@ -134,6 +134,20 @@ def build_return(cmd_full, ret_data, *, call=None, category='', error=None):
     if 'mode' in names:        env['mode'] = category or SCHEMA[cmd_full]['ns']
     if 'call' in names:        env['call'] = call or SCHEMA[cmd_full]['name']
     if 'data' in names and error.get('code', 0) == 0:
-        env['data'] = ret_data if ret_data is not None else {}
+        f_data = next((f for f in spec['fields'] if f['name'] == 'data'), None)
+        dtype = f_data.get('type') if f_data else 'STRUCT'
+        if dtype in ('LIST', 'SET'):
+            if ret_data is None:
+                env['data'] = []
+            elif isinstance(ret_data, (list, tuple, set)):
+                env['data'] = list(ret_data)
+            elif isinstance(ret_data, dict):
+                env['data'] = [ret_data] if ret_data else []
+            else:
+                env['data'] = [ret_data]
+        elif dtype == 'MAP':
+            env['data'] = ret_data if isinstance(ret_data, dict) else {}
+        else:
+            env['data'] = ret_data if isinstance(ret_data, dict) else {}
     if 'maintenance' in names: env['maintenance'] = {}      # empty struct = no maintenance
     return rdto, env

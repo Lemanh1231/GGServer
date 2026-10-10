@@ -10,6 +10,7 @@
 HERE="$(cd "$(dirname "$0")" && pwd)"
 PORT="${PORT:-8080}"
 LOG="${GG_LOG:-/tmp/gg_server.log}"
+GG_PUBLIC_BASE="${GG_PUBLIC_BASE:-https://kotori.click}"
 
 # PID nghe trên cổng PORT (chắc chắn đúng tiến trình, không khớp nhầm shell như pgrep)
 listen_pid() { ss -ltnp 2>/dev/null | grep ":${PORT} " | grep -oP 'pid=\K[0-9]+' | head -1; }
@@ -17,10 +18,10 @@ listen_pid() { ss -ltnp 2>/dev/null | grep ":${PORT} " | grep -oP 'pid=\K[0-9]+'
 start() {
   if [ -n "$(listen_pid)" ]; then echo "đã chạy sẵn (pid $(listen_pid)) trên cổng ${PORT}"; return 0; fi
   cd "$HERE"
-  nohup python3 run.py --port "$PORT" >"$LOG" 2>&1 & disown
+  setsid env GG_PUBLIC_BASE="$GG_PUBLIC_BASE" python3 -u run.py --port "$PORT" </dev/null >"$LOG" 2>&1 &
   sleep 2
   if [ -n "$(listen_pid)" ]; then
-    echo "started (pid $(listen_pid)) -> http://0.0.0.0:${PORT}  log: $LOG"
+    echo "started (pid $(listen_pid)) -> http://0.0.0.0:${PORT} (public: $GG_PUBLIC_BASE)  log: $LOG"
   else
     echo "KHỞI ĐỘNG THẤT BẠI — log cuối:"; tail -n 20 "$LOG"; return 1
   fi

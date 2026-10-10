@@ -65,6 +65,17 @@ class Reader:
         return out
 
 
+def _safe_int(v, default=0):
+    if v is None: return default
+    try: return int(v)
+    except (ValueError, TypeError): return default
+
+def _safe_float(v, default=0.0):
+    if v is None: return default
+    try: return float(v)
+    except (ValueError, TypeError): return default
+
+
 class Writer:
     def __init__(self): self.o=bytearray()
     def byte(self,v): self.o.append(v & 0xff)
@@ -73,33 +84,48 @@ class Writer:
     def i64(self,v): self.o+=struct.pack('>q', v)
     def dbl(self,v): self.o+=struct.pack('>d', float(v))
     def string(self,v):
-        raw=v.encode('utf-8') if isinstance(v,str) else bytes(v)
+        if v is None:
+            raw = b''
+        elif isinstance(v, (bytes, bytearray)):
+            raw = bytes(v)
+        elif isinstance(v, str):
+            raw = v.encode('utf-8')
+        else:
+            raw = str(v).encode('utf-8')
         self.i32(len(raw)); self.o+=raw
     def field_begin(self,t,fid): self.byte(t); self.i16(fid)
     def field_stop(self): self.byte(STOP)
 
     def value(self, t, v, fieldspec=None):
         if t==BOOL: self.byte(1 if v else 0)
-        elif t==BYTE: self.byte(v & 0xff)
-        elif t==DOUBLE: self.dbl(v)
-        elif t==I16: self.i16(int(v))
-        elif t==I32: self.i32(int(v))
-        elif t==I64: self.i64(int(v))
-        elif t==STRING: self.string(v if v is not None else "")
+        elif t==BYTE: self.byte(_safe_int(v) & 0xff)
+        elif t==DOUBLE: self.dbl(_safe_float(v))
+        elif t==I16: self.i16(_safe_int(v))
+        elif t==I32: self.i32(_safe_int(v))
+        elif t==I64: self.i64(_safe_int(v))
+        elif t==STRING: self.string(v)
         elif t==STRUCT:
             sub=(fieldspec or {}).get('struct')
-            self.struct(v or {}, sub)
+            self.struct(v if isinstance(v, dict) else {}, sub)
         elif t in (LIST,SET):
             es=(fieldspec or {}).get('elem') or {'type':'STRING'}
-            et=NAME2ID[es['type']]
-            v=v or []
-            self.byte(et); self.i32(len(v))
-            for it in v: self.value(et, it, es)
+            et=NAME2ID.get(es.get('type', 'STRING'), STRING)
+            if v is None:
+                items = []
+            elif isinstance(v, (list, tuple, set)):
+                items = list(v)
+            elif isinstance(v, dict):
+                items = [v] if v else []
+            else:
+                items = [v]
+            self.byte(et); self.i32(len(items))
+            for it in items: self.value(et, it, es)
         elif t==MAP:
             ks=(fieldspec or {}).get('key') or {'type':'I32'}
             vs=(fieldspec or {}).get('val') or {'type':'STRING'}
-            kt=NAME2ID[ks['type']]; vt=NAME2ID[vs['type']]
-            v=v or {}
+            kt=NAME2ID.get(ks.get('type', 'I32'), I32)
+            vt=NAME2ID.get(vs.get('type', 'STRING'), STRING)
+            if not isinstance(v, dict): v = {}
             self.byte(kt); self.byte(vt); self.i32(len(v))
             for k,val in v.items():
                 self.value(kt, k, ks); self.value(vt, val, vs)
@@ -108,16 +134,20 @@ class Writer:
 
     def struct(self, data, struct_name=None):
         """data: dict keyed by field NAME or id. schema looked up via SCHEMA registry."""
+        if not isinstance(data, dict):
+            self.field_stop()
+            return
         spec = SCHEMA.get(struct_name) if struct_name else None
         if spec is None:
             # no schema: data must be {id:(typename,value)} or already-id dict of plain values -> can't infer types
             # Expect caller to provide schema; fall back to writing by guessing from python type.
-            for fid, val in (data or {}).items():
-                t=_guess_type(val); self.field_begin(t, int(fid)); self.value(t, val)
+            for fid, val in data.items():
+                try: ifid = int(fid)
+                except (ValueError, TypeError): continue
+                t=_guess_type(val); self.field_begin(t, ifid); self.value(t, val)
             self.field_stop(); return
         for f in spec['fields']:
-            name=f['name']; fid=f['id']; t=NAME2ID[f['type']]
-            if data is None: break
+            name=f['name']; fid=f['id']; t=NAME2ID.get(f['type'], STRING)
             if name in data: val=data[name]
             elif fid in data: val=data[fid]
             else: continue  # field not set -> omit (Thrift optional)

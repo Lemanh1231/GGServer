@@ -23,7 +23,7 @@ def h_update_time(req, player, ctx):
 @cmd('defaultSettingList')
 def h_default_settings(req, player, ctx):
     settings = [
-        ('shop_call_wait', '2'), ('ad_cancel_delay', '5'), ('force_menu_restric', 'true'),
+        ('shop_call_wait', '2'), ('ad_cancel_delay', '0'), ('force_menu_restric', 'true'),
         ('max_bundle_texutre_loading', '1'), ('weather_snow', 'true'), ('check_time_cheat', 'false'),
         ('ap_max', '70'), ('ap_time', '300'), ('ap_use', '5'), ('character_exp', '45'),
         ('ap_shop_id', '31'), ('ap_ad_list_id', '2'), ('ch_third_unlock_follower_id', '5'),

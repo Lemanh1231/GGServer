@@ -22,6 +22,16 @@ def _stage_config(stage_id):
         return None
 
 
+def _score_config():
+    """Read Table 34 (chthird_score) from game data."""
+    try:
+        with open(_GAME_DATA_PATH, encoding='utf-8') as f:
+            rows = json.load(f).get('34', [])
+        return {int(row.get('2', 0) or 0): row for row in rows}
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return {}
+
+
 def _stage_rewards(stage):
     """Expand the stage's reward groups into its actual follower-gift drops."""
     if not stage:
@@ -170,51 +180,115 @@ def h_ch_third_stage(req, player, ctx):
     if not user:
         return {}, OK
     stage_id = int(p.get('i_id', 0) or 0)
-    spent, ap = _spend_ap(user)
-    if not spent:
-        return {'clear': 0, 'user_ap': ap}, {'code': 1, 'errmsg': 'Not enough Cookie'}
-
-    stages = user.setdefault('user_ch_third_stage', [])
-    stage = next((x for x in stages if int(x.get('i_id', 0)) == stage_id), None)
     config = _stage_config(stage_id) or {}
+    is_story = (config.get('34') == 'Story')
+
+    if not is_story:
+        spent, ap = _spend_ap(user)
+        if not spent:
+            return {'clear': 0, 'user_ap': ap}, {'code': 1, 'errmsg': 'Not enough Cookie'}
+    else:
+        ap = _user_ap(user)
+
+    stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage')
+    if not stages:
+        stages = [{'i_id': 1001, 'i_ChapterId': 1, 'i_StageIndex': 1, 'i_Star': 3}]
+    user['user_ch_third_stage'] = stages
+    user['user_chthird_stage'] = stages
+    stage = next((x for x in stages if int(x.get('i_id', 0)) == stage_id), None)
+
+    if is_story:
+        if stage is None:
+            stage = {'i_id': stage_id, 'i_ChapterId': stage_id // 1000,
+                     'i_StageIndex': stage_id % 1000, 'i_Star': 0}
+            stages.append(stage)
+        state.save_user(user)
+        return {
+            'star': 0, 'character_score': 0, 'music_score': 0,
+            'follower_profile_score': 0, 'bonus_score': 0, 'total_score': 0,
+            'clear': 1, 'user_ap': ap, 'user_ch_third_stage': stage,
+            'user_music': None, 'reward_data': [],
+            'bonus_follower_profile_ids': [],
+            'user_follower_profile_score': [],
+        }, OK
+
     one_star = int(config.get('5', 1) or 1)
     two_star = int(config.get('6', one_star) or one_star)
     three_star = int(config.get('7', two_star) or two_star)
 
-    # Each contributor supplies at most a third of the stage's three-star
-    # target.  Consequently an empty slot cannot be disguised as a full score.
-    third = three_star / 3.0
+    score_table = _score_config()
+    max_level = max(score_table.keys()) if score_table else 50
+
+    # Character score from Table 34 column 3
     character_level = max((int(row.get('i_Level', 0) or 0)
-                           for row in user.get('characters', [])), default=0)
-    character_score = round(third * min(1.0, character_level / 100.0))
+                           for row in user.get('characters', [])), default=1)
+    char_row = score_table.get(min(max(1, character_level), max_level), {})
+    char_score = int(char_row.get('3', 50) or 50)
+
     selected_profile_ids = []
     for value in str(p.get('profile_ids', '')).split(','):
         try:
             selected_profile_ids.append(int(value.strip()))
         except (TypeError, ValueError):
             continue
+
+    # Music multiplier & bonus from Table 34 column 5
     music_id = int(p.get('music_id', 0) or 0)
     selected_music = next((row for row in user.get('user_music', [])
                            if int(row.get('i_id', 0) or 0) == music_id), None)
-    music_score = round(third * min(1.0, int((selected_music or {}).get('i_Level', 0) or 0) / 50.0))
+    music_level = int((selected_music or {}).get('i_Level', 1) or 1)
+    music_row = score_table.get(min(max(1, music_level), max_level), {})
+    music_mult = (int(music_row.get('5', 550) or 550)) / 1000.0
+
+    rec_music_id = int(config.get('33', 0) or 0)
+    is_bonus_music = (music_id > 0 and music_id == rec_music_id)
+    bonus_mult = 0.2 if is_bonus_music else 0.0
+
+    char_music_score = round(char_score * (music_mult + bonus_mult))
+    music_score = round(char_score * music_mult)
+    bonus_music_score = round(char_score * bonus_mult) if is_bonus_music else 0
+
+    # Follower profiles score & bonus from Table 34 column 4
     profile_levels = {int(row.get('i_id', 0) or 0): int(row.get('i_Level', 0) or 0)
                       for row in user.get('user_follower_profile', [])}
-    profile_ratio = (sum(min(1.0, profile_levels.get(profile_id, 0) / 20.0)
-                         for profile_id in selected_profile_ids) / len(selected_profile_ids)
-                     if selected_profile_ids else 0.0)
-    follower_score = round(third * profile_ratio)
-    total_score = character_score + music_score + follower_score
-    star = 3 if total_score >= three_star else (2 if total_score >= two_star else (1 if total_score >= one_star else 0))
-    clear = 1 if star else 0
-    profile_scores = [{'i_id': profile_id,
-                       'score': int(follower_score / len(selected_profile_ids)), 'bonus_score': 0}
-                      for profile_id in selected_profile_ids]
-    # Earlier versions stamped i_Star=3 regardless of the real score.  Clear
-    # only those bad cached values once, then retain genuine best results.
-    if not user.get('ch_third_score_fix_v1'):
-        for saved_stage in stages:
-            saved_stage['i_Star'] = 0
-        user['ch_third_score_fix_v1'] = True
+    rec_profile_ids = [int(x.strip()) for x in str(config.get('8', '')).split(',')
+                       if x.strip().isdigit()]
+
+    profile_scores = []
+    bonus_follower_profile_ids = []
+    total_follower_score = 0
+    bonus_follower_score = 0
+
+    for pid in selected_profile_ids:
+        plv = profile_levels.get(pid, 1)
+        fol_row = score_table.get(min(max(1, plv), max_level), {})
+        base_fol = int(fol_row.get('4', 100) or 100)
+        is_bonus_fol = (pid in rec_profile_ids)
+        b_fol = round(base_fol * 0.2) if is_bonus_fol else 0
+        if is_bonus_fol:
+            bonus_follower_profile_ids.append(pid)
+            bonus_follower_score += b_fol
+        profile_scores.append({
+            'i_id': pid,
+            'score': base_fol,
+            'bonus_score': b_fol,
+        })
+        total_follower_score += base_fol
+
+    bonus_score = bonus_music_score + bonus_follower_score
+    follower_score = total_follower_score
+    total_score = char_music_score + total_follower_score + bonus_follower_score
+
+    # Stage 1-1 (1001) is the Chapter 3 tutorial stage and must always clear with 3 stars!
+    is_tutorial = (stage_id == 1001)
+    if is_tutorial:
+        star = 3
+        clear = 1
+        total_score = max(total_score, three_star if three_star > 0 else 180)
+    else:
+        star = 3 if total_score >= three_star else (2 if total_score >= two_star else (1 if total_score >= one_star else 0))
+        clear = 1 if star > 0 else 0
+
     if stage is None:
         stage = {'i_id': stage_id, 'i_ChapterId': stage_id // 1000,
                  'i_StageIndex': stage_id % 1000, 'i_Star': star}
@@ -225,10 +299,11 @@ def h_ch_third_stage(req, player, ctx):
     _grant_gift_rewards(user, rewards)
     state.save_user(user)
     return {
-        'star': star, 'character_score': character_score, 'music_score': music_score,
-        'follower_profile_score': follower_score, 'bonus_score': 0, 'total_score': total_score,
+        'star': star, 'character_score': char_score, 'music_score': music_score,
+        'follower_profile_score': follower_score, 'bonus_score': bonus_score, 'total_score': total_score,
         'clear': clear, 'user_ap': ap, 'user_ch_third_stage': stage,
-        'user_music': selected_music, 'reward_data': rewards, 'bonus_follower_profile_ids': [],
+        'user_music': selected_music, 'reward_data': rewards,
+        'bonus_follower_profile_ids': bonus_follower_profile_ids,
         'user_follower_profile_score': profile_scores,
     }, OK
 
