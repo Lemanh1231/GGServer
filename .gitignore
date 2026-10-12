@@ -39,6 +39,29 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Security, Keys & Certificates (Local only, NEVER push to GitHub)
+*.pem
+*.key
+*.keystore
+*.jks
+*.crt
+*.p12
+*.pfx
+emulator/data/*.pem
+patcher/*.keystore
+
+# Android Packages & APK builds (prevent uploading original game APK)
+*.apk
+*.xapk
+*.apks
+*.aab
+
+# OS metadata
+.DS_Store
+*/.DS_Store
+**/.DS_Store
+Thumbs.db
+
 # Test files
 test_*.py
 emulator/test_*.py
