@@ -94,7 +94,7 @@ def h_buy_variety(req, player, ctx):
                 ud['u_fans'] = ud.get('u_fans', 0) + int(rval)
                 state.increment_currency(uuid, fans=int(rval))
             elif rid == 11:  # Cookie (Bánh quy)
-                user['user_ap'] = min(70, int(user.get('user_ap', 70) or 70) + int(rval))
+                state.add_ap(user, int(rval))
 
         state.save_user(user)
 
@@ -132,6 +132,12 @@ def _check_purchase_eligibility(user, idx):
         shop_list = user.get('user_shop', [])
         pack_ids = {2000 + season_num, 3000 + season_num}
         if any(int(item.get('i_id', 0) or 0) in pack_ids and int(item.get('i_Count', item.get('i_TotalCount', 0)) or 0) > 0 for item in shop_list):
+            return False, 'Bạn đã sở hữu gói vật phẩm này rồi!'
+        tickets = user.get('user_ticketcollection', [])
+        if any(int(t.get('i_id', 0) or 0) == (1000 + season_num) for t in tickets):
+            return False, 'Bạn đã sở hữu gói vật phẩm này rồi!'
+        sub_list = user.get('user_subscribe_list', [])
+        if any(int(s.get('i_SubscribeID', 0) or 0) == (1000 + season_num) and int(s.get('i_isActive', 1) or 0) == 1 for s in sub_list):
             return False, 'Bạn đã sở hữu gói vật phẩm này rồi!'
 
     # Check Table 12 limits (col 35 limit_type, col 36 limit_count)
@@ -246,7 +252,7 @@ def h_buy_shop(req, player, ctx):
                 ud['u_fans'] = ud.get('u_fans', 0) + int(rval)
                 state.increment_currency(uuid, fans=int(rval))
             elif rid == 11: # Cookie (Bánh quy)
-                user['user_ap'] = min(70, int(user.get('user_ap', 70) or 70) + int(rval))
+                state.add_ap(user, int(rval))
         elif rtype == 2: # Music
             musics = user.setdefault('user_music', [])
             if not any(int(m.get('i_id', 0) or 0) == rid for m in musics):
@@ -273,19 +279,27 @@ def h_buy_shop(req, player, ctx):
             for pid in {rid, season_num, 1000 + season_num}:
                 if not any(int(s.get('i_SubscribeID', 0) or 0) == pid for s in sub_list):
                     sub_list.append({'i_SubscribeID': pid, 'i_ActiveTime': now_ts, 'i_isActive': 1})
+            tickets = user.setdefault('user_ticketcollection', [])
+            for tid in {rid, season_num, 1000 + season_num}:
+                if not any(int(t.get('i_id', 0) or 0) == tid for t in tickets):
+                    tickets.append({'i_id': tid})
 
     # Direct purchase of Star Pass or Star Pass merchandise packs
     season_num = idx % 1000
     if 1 <= season_num <= 13 and (1000 <= idx <= 3020):
         sub_list = user.setdefault('user_subscribe_list', [])
         now_ts = int(time.time())
-        for pid in {season_num, 1000 + season_num}:
+        is_merch_pack = (2000 <= idx <= 3020)
+        pids_to_sub = {season_num, 1000 + season_num} if is_merch_pack else {season_num}
+        for pid in pids_to_sub:
             if not any(int(s.get('i_SubscribeID', 0) or 0) == pid for s in sub_list):
                 sub_list.append({'i_SubscribeID': pid, 'i_ActiveTime': now_ts, 'i_isActive': 1})
         tickets = user.setdefault('user_ticketcollection', [])
-        if not any(int(t.get('i_id', 0) or 0) == season_num for t in tickets):
-            tickets.append({'i_id': season_num})
-        if not any(rew.get('reward_type') == 10 for rew in rewards):
+        tids_to_add = {season_num, 1000 + season_num} if is_merch_pack else {season_num}
+        for tid in tids_to_add:
+            if not any(int(t.get('i_id', 0) or 0) == tid for t in tickets):
+                tickets.append({'i_id': tid})
+        if is_merch_pack and not any(rew.get('reward_type') == 10 for rew in rewards):
             rewards.append({'reward_type': 10, 'reward_id': 1000 + season_num, 'reward_value': 1})
 
     lst = user.setdefault('user_shop', [])
@@ -304,6 +318,8 @@ def h_buy_shop(req, player, ctx):
             item['upd_day'] = now
         else:
             lst.append({'i_id': it_id, 'i_Level': 1, 'i_Count': 1, 'i_TotalCount': 1, 'i_PurchaseTime': now, 'upd_day': now})
+    from server.handlers.auth import _normalise_ticketcollection
+    _normalise_ticketcollection(user)
     state.save_user(user)
 
     return {
@@ -369,16 +385,16 @@ def h_buy_music(req, player, ctx):
     uuid = p.get('uuid') or ctx.get('uuid')
     user = state.get_user(uuid)
     
-    idx = p.get('idx', 1)
-    currency, price = _get_price(2, idx, 45, 46)
+    idx = int(p.get('idx', 1) or 1)
+    currency, price = _get_price(2, idx, 45, 39)
     
     paid = False
-    already_owned = user and any(x.get('i_id') == idx for x in user.get('user_music', []))
+    already_owned = user and any(int(x.get('i_id', 0) or 0) == idx for x in user.get('user_music', []))
     if user and not already_owned:
         paid = _deduct_currency(uuid, user, currency, price)
     if paid:
         lst = user.setdefault('user_music', [])
-        if not any(x.get('i_id') == idx for x in lst):
+        if not any(int(x.get('i_id', 0) or 0) == idx for x in lst):
             lst.append({'i_id': idx, 'i_Level': 1, 'i_BonusLevel': 0, 'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0, 'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0})
         state.save_user(user)
         
@@ -387,7 +403,7 @@ def h_buy_music(req, player, ctx):
         'u_gold': ud.get('u_candy', 0),
         'u_cp': ud.get('u_cp', 0),
         'u_mp': 0,
-        'music': {'i_id': idx, 'i_Level': 1, 'i_BonusLevel': 0} if paid else {}
+        'music': {idx: {'music_idx': idx, 'score1': 0, 'score2': 0, 'score3': 0}} if paid else {}
     }, OK
 
 @cmd('buyAvatar')

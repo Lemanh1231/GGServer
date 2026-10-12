@@ -147,7 +147,9 @@ def _give_reward(user, rew):
     ud = user['userdata']
     if rtype in (1, 11): # Goods / Table 1
         cp = candy = like = fans = 0
-        if rid == 1: 
+        if rtype == 11 or rid == 11: # Cookies / AP
+            state.add_ap(user, int(rval))
+        elif rid == 1: 
             cp = int(rval)
             ud['u_cp'] = int(ud.get('u_cp', 0) or 0) + cp
         elif rid == 2: 
@@ -159,8 +161,6 @@ def _give_reward(user, rew):
         elif rid == 8: 
             fans = int(rval)
             ud['u_fans'] = ud.get('u_fans', 0) + fans
-        elif rid == 11:
-            user['user_ap'] = min(70, int(user.get('user_ap', 70) or 70) + int(rval))
         if uuid and (cp or candy or like or fans):
             state.increment_currency(uuid, cp=cp, candy=candy, like=like, fans=fans)
     elif rtype == 2: # Music
@@ -175,9 +175,12 @@ def _give_reward(user, rew):
         if not any(x.get('i_id') == rid for x in lst): lst.append({'i_id': rid, 'i_Level': 1})
     elif rtype == 5: # Follower
         lst = user.setdefault('user_follower', [])
-        if not any(x.get('i_id') == rid for x in lst): lst.append({'i_id': rid, 'i_Level': 1, 'i_BonusLevel': 0})
+        if not any(x.get('i_id') == rid for x in lst):
+            lst.append({'i_id': rid, 'i_Level': 1, 'i_BonusLevel': 0})
+            from server.handlers.follower import _sync_follower_messenger
+            _sync_follower_messenger(user)
     elif rtype == 7: # Unit
-        lst = user.setdefault('user_unit', [{'i_id': 1, 'i_Level': 1}])
+        lst = user.setdefault('user_unit', [])
         if not any(x.get('i_id') == rid for x in lst): lst.append({'i_id': rid, 'i_Level': 1})
 
 @cmd('setAttendance')
@@ -535,9 +538,8 @@ def h_set_ad_reward(req, player, ctx):
             return {}, OK
 
         # Capture: adViewLog(ad_profile_free_gift), followed by
-        # setAdReward(i_id=1, param1=<profile id>).  Game table 32 configures
+        # setAdReward(i_id=1, param1=<profile id>). Game table 32 configures
         # this as PROFILE_EXP: 300 hearts/EXP, 10-minute cooldown, 5 per day.
-        # It is not the generic 50-Candy ad reward this emulator used before.
         if i_id == 1 and profile_id > 0 and user:
             from server.handlers.follower import _apply_profile_exp, _follower_data
             profiles_def, gifts_def, level_data, f_to_p, followers_tbl = _follower_data()
@@ -546,9 +548,9 @@ def h_set_ad_reward(req, player, ctx):
 
             now = int(time.time())
             today = _today_ymd()
-            ad_state = user.setdefault('follower_profile_ad_rewards', {})
-            slot = ad_state.setdefault(str(raw_profile_id), {
-                'i_Count': 0, 'i_TotalCount': 0, 'i_LastViewTick': 0, 'upd_day': today,
+            ad_rewards = user.setdefault('ad_rewards', {})
+            slot = ad_rewards.setdefault('1', {
+                'i_id': 1, 'i_Count': 0, 'i_TotalCount': 0, 'i_LastViewTime': 0, 'upd_day': today,
             })
             if int(slot.get('upd_day', 0) or 0) != today:
                 slot['i_Count'] = 0
@@ -562,75 +564,91 @@ def h_set_ad_reward(req, player, ctx):
                              if int(row.get('i_id', 0) or 0) in (profile_id, raw_profile_id)), None)
 
             if profile is None:
-                follower_level = int((follower or {}).get('i_Level', 1) or 1)
-                profile = {'i_id': profile_id, 'i_Level': follower_level, 'd_Exp': 0, 'i_AddCandy': 0}
+                profile = {'i_id': profile_id, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0}
                 profiles.append(profile)
 
-            if follower is None:
-                follower = {'i_id': raw_profile_id, 'i_Level': int(profile.get('i_Level', 1) or 1), 'i_BonusLevel': 0}
+            if follower is None and raw_profile_id != 100000:
+                follower = {'i_id': raw_profile_id, 'i_Level': 1, 'i_BonusLevel': 0}
                 followers.append(follower)
 
-            p_levels = level_data.get(profile_id) or level_data.get(raw_profile_id) or level_data.get(1, {})
-            curr_lvl = max(1, int(profile.get('i_Level', 1) or 1))
-            req_curr = int(p_levels.get(curr_lvl, {}).get('4', 0) or 0)
-            req_next = int(p_levels.get(curr_lvl + 1, {}).get('4', 0) or 0)
-            delta_req = max(0, req_next - req_curr) if req_next > req_curr else 0
-            ad_exp = max(100, min(300, int(delta_req * 0.1))) if delta_req > 0 else 100
+            cur_count = int(slot.get('i_Count', 0) or 0)
+            last_time = int(slot.get('i_LastViewTime', 0) or 0)
+            # Table 32: DAY_LIMIT = 5, COOLTIME = 600s
+            allowed = (cur_count < 5 and (last_time == 0 or now - last_time >= 600))
 
-            _apply_profile_exp(profile, p_levels, ad_exp)
-            slot['i_Count'] = int(slot.get('i_Count', 0) or 0) + 1
-            slot['i_TotalCount'] = int(slot.get('i_TotalCount', 0) or 0) + 1
-            slot['i_LastViewTick'] = now
+            if allowed:
+                p_levels = level_data.get(profile_id) or level_data.get(raw_profile_id) or level_data.get(1, {})
+                curr_lvl = max(1, int(profile.get('i_Level', 1) or 1))
+                req_curr = int(p_levels.get(curr_lvl, {}).get('4', 0) or 0)
+                req_next = int(p_levels.get(curr_lvl + 1, {}).get('4', 0) or 0)
+                delta_req = max(0, req_next - req_curr) if req_next > req_curr else 0
+                ad_exp = max(100, min(300, int(delta_req * 0.1))) if delta_req > 0 else 100
 
-            follower['i_Level'] = int(profile['i_Level'])
-            for f in followers:
-                fid = int(f.get('i_id', 0) or 0)
-                if fid in (profile_id, raw_profile_id) or f_to_p.get(fid) == profile_id:
-                    f['i_Level'] = int(profile['i_Level'])
+                _apply_profile_exp(profile, p_levels, ad_exp)
+                slot['i_Count'] = cur_count + 1
+                slot['i_TotalCount'] = int(slot.get('i_TotalCount', 0) or 0) + 1
+                slot['i_LastViewTime'] = now
 
-            from server.handlers.follower import _sync_follower_unlock_rewards
-            _sync_follower_unlock_rewards(user, profile_id, int(profile['i_Level']))
+                from server.handlers.follower import _sync_follower_profiles
+                _sync_follower_profiles(user)
 
-            state.save_user(user)
+                state.save_user(user)
+                rew_data = [{'reward_type': 0, 'reward_id': 0, 'reward_value': ad_exp}]
+            else:
+                rew_data = []
 
             return {
                 'i_id': i_id,
-                'user_ad_list': {'i_id': i_id, **slot},
+                'user_ad_list': {
+                    'i_id': 1,
+                    'i_Count': int(slot.get('i_Count', 0) or 0),
+                    'i_TotalCount': int(slot.get('i_TotalCount', 0) or 0),
+                    'i_LastViewTime': int(slot.get('i_LastViewTime', 0) or 0),
+                },
                 'user_follower_profile': profile,
-                # Profile EXP matching the client's Table 32 quantity display
-                'reward_data': [{'reward_type': 0, 'reward_id': 0, 'reward_value': ad_exp}],
+                'reward_data': rew_data,
             }, OK
 
-        # Game table 32: ad_ap.  It is a separate ad slot from the follower
+        # Game table 32: ad_ap. It is a separate ad slot from the follower
         # profile ad: five views per day, no cooldown, reward group 1011 =
-        # 25 Cookie (Chapter 3 AP).  The client adds the returned reward locally
-        # and will receive the authoritative AP value on its next getChThird.
+        # 25 Cookie (Chapter 3 AP).
         if i_id == 2 and user:
             from server.handlers.ch_third import _add_ap
             today = _today_ymd()
-            ad_state = user.setdefault('chapter_ap_ad_rewards', {})
-            slot = ad_state.setdefault('2', {
-                'i_Count': 0, 'i_TotalCount': 0, 'i_LastViewTime': 0, 'upd_day': today,
+            now = int(time.time())
+            ad_rewards = user.setdefault('ad_rewards', {})
+            slot = ad_rewards.setdefault('2', {
+                'i_id': 2, 'i_Count': 0, 'i_TotalCount': 0, 'i_LastViewTime': 0, 'upd_day': today,
             })
             if int(slot.get('upd_day', 0) or 0) != today:
                 slot['i_Count'] = 0
                 slot['upd_day'] = today
-            _add_ap(user, 25)
-            slot['i_Count'] = int(slot.get('i_Count', 0) or 0) + 1
-            slot['i_TotalCount'] = int(slot.get('i_TotalCount', 0) or 0) + 1
-            slot['i_LastViewTime'] = int(time.time())
-            state.save_user(user)
+
+            allowed = int(slot.get('i_Count', 0) or 0) < 5
+            if allowed:
+                _add_ap(user, 25)
+                slot['i_Count'] = int(slot.get('i_Count', 0) or 0) + 1
+                slot['i_TotalCount'] = int(slot.get('i_TotalCount', 0) or 0) + 1
+                slot['i_LastViewTime'] = now
+                state.save_user(user)
+
             return {
                 'i_id': i_id,
-                'user_ad_list': slot,
-                'reward_data': [{'reward_type': 1, 'reward_id': 11, 'reward_value': 25}],
+                'user_ad_list': {
+                    'i_id': 2,
+                    'i_Count': int(slot.get('i_Count', 0) or 0),
+                    'i_TotalCount': int(slot.get('i_TotalCount', 0) or 0),
+                    'i_LastViewTime': int(slot.get('i_LastViewTime', 0) or 0),
+                },
+                'reward_data': ([{'reward_type': 1, 'reward_id': 11, 'reward_value': 25}]
+                                if allowed else []),
             }, OK
 
         # Preserve a neutral response for ad slots that have not been captured.
         return {
             'i_id': i_id,
             'user_ad_list': {'i_id': i_id, 'i_Count': 0, 'i_TotalCount': 0,
-                             'i_LastViewTick': 0, 'upd_day': _today_ymd()},
+                             'i_LastViewTime': 0},
             'reward_data': [],
         }, OK
 

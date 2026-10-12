@@ -117,7 +117,32 @@ def _default_userdata(u_seq, u_id, uuid, device_uuid):
         'u_create_time': time.strftime('%Y%m%d'), 'u_tutorial_step': 0,
         'u_review_popup': 'N', 'device_uuid': device_uuid, 'u_samseck_step': 0,
         'u_free_cp': 0, 'u_charge_cp': 0,
+        'u_fans': 0, 'u_like': 0.0,
     }
+
+def _all_ch_third_stages():
+    """Return all Chapter 1 and Chapter 2 stages (for stage definitions lookup)."""
+    gd_path = os.path.join(os.path.dirname(__file__), '..', 'gamedata', 'game_data.json')
+    try:
+        with open(gd_path, 'r', encoding='utf-8') as f:
+            gd = json.load(f)
+        stages = []
+        for r in gd.get('33', []):
+            s_id = int(r.get('1', 0) or 0)
+            chap = int(r.get('2', 0) or 0)
+            idx = int(r.get('3', 0) or 0)
+            stype = str(r.get('34', ''))
+            star = 3 if stype == 'Normal' else 0
+            if s_id > 0:
+                stages.append({'i_id': s_id, 'i_ChapterId': chap, 'i_StageIndex': idx, 'i_Star': star})
+        return stages
+    except Exception:
+        res = []
+        for i in range(1001, 1021):
+            res.append({'i_id': i, 'i_ChapterId': 1, 'i_StageIndex': i - 1000, 'i_Star': 3 if i in (1001, 1004, 1006, 1008, 1010, 1011, 1013, 1015, 1017, 1019) else 0})
+        for i in range(2001, 2022):
+            res.append({'i_id': i, 'i_ChapterId': 2, 'i_StageIndex': i - 2000, 'i_Star': 3 if i in (2002, 2004, 2007, 2009, 2010, 2012, 2014, 2016, 2018, 2020) else 0})
+        return res
 
 def _default_areas():
     def area(n):
@@ -202,9 +227,13 @@ def create_user(uuid, device_uuid):
         
         seq = _next_seq()
         u_id = f'guest_{seq}'
+        starter_stage = [{'i_id': 1001, 'i_ChapterId': 1, 'i_StageIndex': 1, 'i_Star': 3}]
+        now_ts = int(time.time())
         user = {
             'uuid': uuid,
             'userdata': _default_userdata(seq, u_id, uuid, device_uuid),
+            'needs_client_reset': True,
+            'last_save_time': now_ts,
             'areas': _default_areas(),
             'achievements': [{'i_id': i, 'i_Level': 1, 'd_Quantity': 1.0, 's_Quantity': ''} for i in range(1, 11)],
             'characters': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}],
@@ -220,6 +249,9 @@ def create_user(uuid, device_uuid):
             ],
             'user_follower_profile_reward': [],
             'user_follower_giftitem': [{'i_id': 1, 'i_Value': 141}],
+            'user_ch_third_stage': starter_stage,
+            'user_chthird_stage': starter_stage,
+            'user_ap': {'i_Ap': 70, 'i_FullApTime': 0, 'i_MaxAp': 70},
             'user_messenger': [
                 {
                     'i_MessengerChatRoomId': 1,
@@ -228,10 +260,13 @@ def create_user(uuid, device_uuid):
                     'l_UpdateTimeTicks': 0,
                 }
             ],
+            'legacy_unlock_all_migrated': True,
         }
+        user['userdata']['u_ap'] = 70
+        user['userdata']['u_cp'] = 0
+        user['userdata']['u_fans'] = 0
+        user['userdata']['u_like'] = 0.0
         
-        # A new profile starts empty.  The old seeded values (1,000,000 CP and
-        # 100,000 Candy) made every purchase effectively free.
         u_cp = 0
         u_candy = 0.0
         u_like = 0.0
@@ -390,3 +425,20 @@ def update_attendance(uuid, count, date):
             ''', (count, date, ruuid))
             conn.commit()
         conn.close()
+
+
+def add_ap(user, amount):
+    """Safely increment player cookie / AP balance while preserving the user_ap dict structure."""
+    if not user:
+        return {}
+    if not isinstance(user.get('user_ap'), dict):
+        user['user_ap'] = {'i_Ap': 70, 'i_FullApTime': 0, 'i_MaxAp': 70}
+    ap = user['user_ap']
+    cur = int(ap.get('i_Ap', 70) or 70)
+    max_ap = int(ap.get('i_MaxAp', 70) or 70)
+    new_ap = cur + int(amount)
+    ap['i_Ap'] = new_ap
+    if new_ap >= max_ap:
+        ap['i_FullApTime'] = 0
+    return ap
+

@@ -20,6 +20,7 @@ COMMANDS = {full: v for full, v in SCHEMA.items() if _is_request_env(v)}
 _SPECIAL_RETURN = {
     'Request': 'initReturn',
     'facebookUserJoin': 'userJoinReturn',
+    'setChThirdChapterReward': 'getChThirdStarRewardReturn',
 }
 
 def return_dto_for(cmd_full):

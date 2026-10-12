@@ -14,13 +14,13 @@ from server.handlers.registry import cmd, OK, _payload
 @cmd('getSamSeckList')
 def h_get_samseck_list(req, player, ctx):
     # getSamSeckListRetDataInfo: { event_type: STRING, rewardList: LIST<rewardListData> }.
-    # The client binds each slot by its rewardList entry (i_id 100001..100003).
+    # The client binds each slot by its milestone i_id (1..3) matching getGameDataList.samseckevent.
     return {
         'event_type': '',
         'rewardList': [
-            {'i_id': 100001, 'i_RewardType': 5, 'i_RewardId': 10, 'd_RewardQuantity': 1.0},
-            {'i_id': 100002, 'i_RewardType': 4, 'i_RewardId': 13, 'd_RewardQuantity': 1.0},
-            {'i_id': 100003, 'i_RewardType': 8, 'i_RewardId': 1, 'd_RewardQuantity': 1.0},
+            {'i_id': 1, 'i_RewardType': 9, 'i_RewardId': 10, 'd_RewardQuantity': 1.0},
+            {'i_id': 2, 'i_RewardType': 3, 'i_RewardId': 13, 'd_RewardQuantity': 1.0},
+            {'i_id': 3, 'i_RewardType': 7, 'i_RewardId': 1, 'd_RewardQuantity': 1.0},
         ],
     }, OK
 
@@ -54,8 +54,11 @@ def h_get_samseck_reward(req, player, ctx):
     elif i_id == 3:
         # Step 3: Unit 1 (Calico Cat Navi / 삼색이)
         units = user.setdefault('user_unit', [])
-        if not any(int(u.get('i_id', 0) or 0) == 1 for u in units):
+        unit1 = next((u for u in units if int(u.get('i_id', 0) or 0) == 1), None)
+        if not unit1:
             units.append({'i_id': 1, 'i_Level': 1})
+        else:
+            unit1['i_Level'] = int(unit1.get('i_Level', 1) or 1) + 1
 
     state.save_user(user)
     return {'step': step}, OK

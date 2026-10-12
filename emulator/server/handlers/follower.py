@@ -21,8 +21,8 @@ def _follower_data():
     except (OSError, ValueError, TypeError, json.JSONDecodeError, KeyError):
         return {}, {}, {}, {}, {}
 
-def _apply_profile_exp(profile, level_rows, exp_gain):
-    """Apply gift/ad EXP to a follower profile.
+def _apply_profile_exp(profile, level_rows, exp_gain=0):
+    """Apply gift/ad/encore EXP to a follower profile using Table 31 (followerprofilelevel).
 
     Follower profiles in the game client (GgFollowerProfileManagerSGT) use
     cumulative total EXP from Table 31 (getFollowerProfileLevelData):
@@ -31,32 +31,22 @@ def _apply_profile_exp(profile, level_rows, exp_gain):
     - Level 3: 150 EXP
     - Level 4: 350 EXP
     ...
-    - Level 20: 141,890 EXP
+    - Level 20: 141,890 EXP (283,780 for Guitar Girl 100000)
 
     On the client UI, current level EXP is displayed as:
       (profile.d_Exp - currentLevel.RequireEXP) / (nextLevel.RequireEXP - currentLevel.RequireEXP)
 
-    Therefore:
-    1. profile['d_Exp'] stores CUMULATIVE TOTAL EXP across all levels.
-    2. Total EXP never has level costs subtracted from it.
-    3. If an existing profile has d_Exp < currentLevel.RequireEXP (due to old server bugs
-       where d_Exp was reset or stored as within-level delta), we rebase it to
-       currentLevel.RequireEXP + d_Exp before applying exp_gain.
+    profile['d_Exp'] stores CUMULATIVE TOTAL EXP across all levels.
+    profile['i_Level'] is determined purely by the highest level in Table 31 whose RequireEXP <= d_Exp.
+    profile['i_Level'] CANNOT exceed max level (20).
+    Follower stage level (user_follower.i_Level) is an entirely separate system and must NEVER be synced to profile level.
     """
     if not profile or not level_rows:
         return
 
-    cur_level = max(1, int(profile.get('i_Level', 1) or 1))
     cur_exp = max(0, int(profile.get('d_Exp', 0) or 0))
-
-    base_req = int(level_rows.get(cur_level, {}).get('4', 0) or 0)
-    # Heal legacy within-level EXP
-    if cur_exp < base_req:
-        cur_exp = base_req + cur_exp
-
     total_exp = cur_exp + max(0, int(exp_gain or 0))
 
-    # Cap at max level's requirement if exceeded
     max_level = max(level_rows.keys()) if level_rows else 20
     max_req = int(level_rows[max_level].get('4', 0) or 0)
     if total_exp > max_req:
@@ -70,25 +60,28 @@ def _apply_profile_exp(profile, level_rows, exp_gain):
         else:
             break
 
-    profile['i_Level'] = reached_level
+    profile['i_Level'] = min(max_level, reached_level)
     profile['d_Exp'] = total_exp
 
     total_add_candy = sum(
         int(level_rows[l].get('7', 0) or 0)
-        for l in range(1, reached_level + 1)
+        for l in range(1, profile['i_Level'] + 1)
         if int(level_rows.get(l, {}).get('7', -1) or -1) > 0
     )
     profile['i_AddCandy'] = total_add_candy
 
-def _sync_follower_unlock_rewards(user, target_profile_id=None, target_level=None):
-    """Ensure user_follower_profile_reward contains all reached
-    information unlock milestone levels (Table 31 col 6 != '') for owned followers."""
+def _sync_follower_profiles(user, target_profile_id=None):
+    """Ensure all owned followers have corresponding profiles in user_follower_profile.
+    
+    CRITICAL: Follower stage levels (user_follower.i_Level) are upgraded by Likes/Fans
+    and go up to 2000+. Follower intimacy profiles (user_follower_profile.i_Level) are
+    upgraded by Gifts/EXP and only go up to level 20. They are COMPLETELY INDEPENDENT.
+    NEVER copy user_follower.i_Level into profile.i_Level, and NEVER overwrite
+    user_follower.i_Level with profile.i_Level.
+    """
     if not user:
         return []
     profiles_def, _, level_data, f_to_p, _ = _follower_data()
-
-    claims = user.setdefault('user_follower_profile_reward', [])
-    existing_claims = {(int(r.get('i_id', 0) or 0), int(r.get('i_RewardLevel', 0) or 0)) for r in claims}
 
     profiles = user.setdefault('user_follower_profile', [])
     profile_map = {int(p.get('i_id', 0) or 0): p for p in profiles}
@@ -99,32 +92,168 @@ def _sync_follower_unlock_rewards(user, target_profile_id=None, target_level=Non
         if not fid:
             continue
         pid = f_to_p.get(fid, fid)
-        flvl = int(f.get('i_Level', 1) or 1)
         if pid not in profile_map:
-            p = {'i_id': pid, 'i_Level': flvl, 'd_Exp': 0, 'i_AddCandy': 0}
+            p = {'i_id': pid, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0}
             profiles.append(p)
             profile_map[pid] = p
-        else:
-            profile_map[pid]['i_Level'] = max(int(profile_map[pid].get('i_Level', 1) or 1), flvl)
-            f['i_Level'] = profile_map[pid]['i_Level']
 
+    # Ensure Guitar Girl profile (100000) exists
+    if 100000 not in profile_map:
+        p100 = {'i_id': 100000, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0}
+        profiles.append(p100)
+        profile_map[100000] = p100
+
+    # Reconcile EXP and levels for all profiles
+    for pid, p in profile_map.items():
+        p_levels = level_data.get(pid) or level_data.get(1, {})
+        _apply_profile_exp(p, p_levels, 0)
+
+    # Sanitize claimed rewards: remove any claim for levels beyond reached profile level
+    claims = user.setdefault('user_follower_profile_reward', [])
+    valid_claims = []
+    seen = set()
+    for c in claims:
+        cid = int(c.get('i_id', 0) or 0)
+        clvl = int(c.get('i_RewardLevel', 0) or 0)
+        prof = profile_map.get(cid)
+        if prof and clvl <= int(prof.get('i_Level', 1) or 1):
+            key = (cid, clvl)
+            if key not in seen:
+                seen.add(key)
+                valid_claims.append(c)
+
+    # Ensure reached story / info milestones (Table 31 col 6 != '') are unlocked
     for pid, p in profile_map.items():
         cur_lvl = int(p.get('i_Level', 1) or 1)
-        if target_profile_id is not None and pid == target_profile_id and target_level is not None:
-            cur_lvl = max(cur_lvl, target_level)
-            p['i_Level'] = cur_lvl
-
         p_levels = level_data.get(pid) or level_data.get(1, {})
-
-        # Milestone information unlock levels from Table 31 (e.g. Levels 5, 7, 10, 15, 20)
         for lvl in range(1, cur_lvl + 1):
             row = p_levels.get(lvl, {})
-            if row.get('6'):  # unlock_info column is non-empty
-                if (pid, lvl) not in existing_claims:
-                    claims.append({'i_id': pid, 'i_RewardLevel': lvl})
-                    existing_claims.add((pid, lvl))
+            if row.get('6'):
+                key = (pid, lvl)
+                if key not in seen:
+                    seen.add(key)
+                    valid_claims.append({'i_id': pid, 'i_RewardLevel': lvl})
 
-    return claims
+    user['user_follower_profile_reward'] = valid_claims
+    _sync_follower_messenger(user)
+    return valid_claims
+
+_sync_follower_unlock_rewards = _sync_follower_profiles
+
+FOLLOWER_MESSENGER_MAP = {
+    1: (1, 1),        # Follower 1 (Classmate Joy) -> Room 1, Group 1
+    2: (2, 2),        # Follower 2 (Convenience Store Friend) -> Room 2, Group 2
+    3: (3, 6),        # Follower 3 (Homeroom Teacher) -> Room 3, Group 6
+    4: (4, 9),        # Follower 4 (Quiet Upperclassman) -> Room 4, Group 9
+    5: (5, 13),       # Follower 5 (Neighbor Moa) -> Room 5, Group 13
+    6: (6, 18),       # Follower 6 (Friend Elle) -> Room 6, Group 18
+    7: (7, 20),       # Follower 7 (Class President Amber) -> Room 7, Group 20
+    8: (8, 51),       # Follower 8 (School President) -> Room 8, Group 51
+    9: (9, 62),       # Follower 9 (New Employee Sua) -> Room 9, Group 62
+    10: (10, 54),     # Follower 10 (Cat Butler) -> Room 10, Group 54
+    11: (11, 74),     # Follower 11 (Classmate Jae) -> Room 11, Group 74
+    12: (12, 80),     # Follower 12 (Happy Bakery) -> Room 12, Group 80
+    13: (13, 88),     # Follower 13 (MN Trainee Nova) -> Room 13, Group 88
+    14: (14, 90),     # Follower 14 (Fashionista Yeri) -> Room 14, Group 90
+    15: (15, 91),     # Follower 15 (Band Mocha Latte) -> Room 15, Group 91
+    201: (1, 1),      # Follower 201 (Joy Ch2) -> Room 1, Group 1
+    202: (5, 13),     # Follower 202 (Moa Ch2) -> Room 5, Group 13
+    203: (203, 114),  # Follower 203 (Reading Fox) -> Room 203, Group 114
+    204: (204, 127),  # Follower 204 (Friend Ruby) -> Room 204, Group 127
+    205: (205, 138),  # Follower 205 (Friend Alex) -> Room 205, Group 138
+    206: (206, 178),  # Follower 206 (Busking TV) -> Room 206, Group 178
+    207: (207, 181),  # Follower 207 (Friend Sora) -> Room 207, Group 181
+    208: (208, 186),  # Follower 208 (Jessica) -> Room 208, Group 186
+}
+
+def _sync_follower_messenger(user):
+    """Ensure all owned followers have corresponding chat rooms in user_messenger."""
+    if not user:
+        return []
+    ms = user.setdefault('user_messenger', [])
+    existing_rooms = {int(r.get('i_MessengerChatRoomId', 0) or 0): r for r in ms}
+
+    # Ensure starter follower (Joy - Room 1) exists
+    if 1 not in existing_rooms:
+        r1 = {
+            'i_MessengerChatRoomId': 1,
+            'i_LastConfirmIndex': -1,
+            's_UnlockGroupList': '1',
+            'l_UpdateTimeTicks': 0,
+        }
+        ms.append(r1)
+        existing_rooms[1] = r1
+
+    followers = user.get('user_follower', [])
+    f_levels = {}
+    for f in followers:
+        fid = int(f.get('i_id', 0) or 0)
+        flvl = int(f.get('i_Level', 0) or 0)
+        f_levels[fid] = flvl
+        if fid in FOLLOWER_MESSENGER_MAP:
+            room_id, init_group = FOLLOWER_MESSENGER_MAP[fid]
+            if room_id not in existing_rooms:
+                new_room = {
+                    'i_MessengerChatRoomId': room_id,
+                    'i_LastConfirmIndex': -1,
+                    's_UnlockGroupList': str(init_group),
+                    'l_UpdateTimeTicks': 0,
+                }
+                ms.append(new_room)
+                existing_rooms[room_id] = new_room
+
+    # Group chat room 16 (Joy, Moa) unlocks when Follower 1 level >= 1250
+    if f_levels.get(1, 0) >= 1250 and 16 not in existing_rooms:
+        r16 = {
+            'i_MessengerChatRoomId': 16,
+            'i_LastConfirmIndex': -1,
+            's_UnlockGroupList': '76',
+            'l_UpdateTimeTicks': 0,
+        }
+        ms.append(r16)
+        existing_rooms[16] = r16
+
+    # Group chat room 17 (Joy, Moa, Ruby, Alex) unlocks when Follower 201 level >= 650
+    if f_levels.get(201, 0) >= 650 and 17 not in existing_rooms:
+        r17 = {
+            'i_MessengerChatRoomId': 17,
+            'i_LastConfirmIndex': -1,
+            's_UnlockGroupList': '139',
+            'l_UpdateTimeTicks': 0,
+        }
+        ms.append(r17)
+        existing_rooms[17] = r17
+
+    # Ensure each room has a valid s_UnlockGroupList
+    for rid, r in existing_rooms.items():
+        if not r.get('s_UnlockGroupList'):
+            if rid == 16:
+                r['s_UnlockGroupList'] = '76'
+            elif rid == 17:
+                r['s_UnlockGroupList'] = '139'
+            elif rid in FOLLOWER_MESSENGER_MAP:
+                r['s_UnlockGroupList'] = str(FOLLOWER_MESSENGER_MAP[rid][1])
+            else:
+                r['s_UnlockGroupList'] = '1'
+
+    user['user_messenger'] = ms
+    return ms
+
+def _merge_user_messenger(user, incoming_ms):
+    """Safely merge incoming user_messenger without dropping server-known rooms."""
+    if incoming_ms is None:
+        return
+    ms = user.setdefault('user_messenger', [])
+    room_map = {int(r.get('i_MessengerChatRoomId', 0) or 0): r for r in ms}
+    for inc in incoming_ms:
+        rid = int(inc.get('i_MessengerChatRoomId', 0) or 0)
+        if rid in room_map:
+            room_map[rid].update(inc)
+        else:
+            ms.append(inc)
+            room_map[rid] = inc
+    user['user_messenger'] = ms
+
 
 def _profile_reward_data():
     """Return the configured follower-profile milestones and their rewards."""
@@ -147,10 +276,6 @@ def _profile_level_for_reward(user, profile_id):
                     if int(row.get('i_id', 0) or 0) in (profile_id, f_to_p.get(profile_id))), None)
     if profile:
         return max(1, int(profile.get('i_Level', 1) or 1))
-    follower = next((row for row in user.get('user_follower', [])
-                     if int(row.get('i_id', 0) or 0) in (profile_id, f_to_p.get(profile_id))), None)
-    if follower:
-        return max(1, int(follower.get('i_Level', 1) or 1))
     return 1
 
 @cmd('setFollowerProfileGift')
@@ -186,12 +311,11 @@ def h_set_follower_profile_gift(req, player, ctx):
             follower = {'i_id': raw_profile_id, 'i_Level': 1, 'i_BonusLevel': 0}
             followers.append(follower)
 
-        # Ensure profile exists in user_follower_profile
+        # Ensure profile exists in user_follower_profile (starts at Level 1, 0 EXP)
         profiles = user.setdefault('user_follower_profile', [])
         profile = next((item for item in profiles if int(item.get('i_id', 0) or 0) in (profile_id, raw_profile_id)), None)
         if profile is None:
-            follower_level = int(follower.get('i_Level', 1) or 1) if follower else 1
-            profile = {'i_id': profile_id, 'i_Level': follower_level, 'd_Exp': 0, 'i_AddCandy': 0}
+            profile = {'i_id': profile_id, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0}
             profiles.append(profile)
 
         # Inventory lookup
@@ -207,7 +331,7 @@ def h_set_follower_profile_gift(req, player, ctx):
         # If user has no gifts remaining, heal profile and return current count so client UI displays cleanly
         if cur_val <= 0 or not gift_def:
             _apply_profile_exp(profile, p_levels, 0)
-            _sync_follower_unlock_rewards(user, profile_id, int(profile['i_Level']))
+            _sync_follower_profiles(user)
             state.save_user(user)
             return {
                 'i_gift_type': int((gift_def or {}).get('2', 0) or 1),
@@ -221,16 +345,7 @@ def h_set_follower_profile_gift(req, player, ctx):
         exp_gain = int(gift_def.get('3', 0) or 0) * actual_use
         _apply_profile_exp(profile, p_levels, exp_gain)
 
-        # Sync follower level
-        reached_level = int(profile['i_Level'])
-        if follower:
-            follower['i_Level'] = reached_level
-            for f in followers:
-                fid = int(f.get('i_id', 0) or 0)
-                if fid in (profile_id, raw_profile_id) or f_to_p.get(fid) == profile_id:
-                    f['i_Level'] = reached_level
-
-        _sync_follower_unlock_rewards(user, profile_id, reached_level)
+        _sync_follower_profiles(user)
 
         state.save_user(user)
 

@@ -72,6 +72,15 @@ def _grant_gift_rewards(user, rewards):
         gift['i_Value'] = int(gift.get('i_Value', 0) or 0) + reward['reward_value']
 
 
+def _get_or_create_girl_profile(user):
+    profiles = user.setdefault('user_follower_profile', [])
+    girl_profile = next((x for x in profiles if int(x.get('i_id', 0) or 0) == 100000), None)
+    if girl_profile is None:
+        girl_profile = {'i_id': 100000, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0}
+        profiles.append(girl_profile)
+    return girl_profile
+
+
 def _chapter_reward(chapter_id, reward_num):
     """Return (required stars, rewards) for one chapter-star chest."""
     try:
@@ -164,11 +173,16 @@ def h_get_ch_third(req, player, ctx):
     if not user:
         return {}, OK
     ap = _user_ap(user)
+    stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage')
+    if not stages:
+        stages = [{'i_id': 1001, 'i_ChapterId': 1, 'i_StageIndex': 1, 'i_Star': 3}]
+        user['user_ch_third_stage'] = stages
+        user['user_chthird_stage'] = stages
     state.save_user(user)
     return {
         'u_seq': user['userdata']['u_seq'],
         'user_ap': ap,
-        'user_ch_third_stage': user.setdefault('user_ch_third_stage', []),
+        'user_ch_third_stage': stages,
         'user_ch_third_chapter_reward': user.setdefault('user_ch_third_chapter_reward', []),
     }, OK
 
@@ -202,6 +216,12 @@ def h_ch_third_stage(req, player, ctx):
             stage = {'i_id': stage_id, 'i_ChapterId': stage_id // 1000,
                      'i_StageIndex': stage_id % 1000, 'i_Star': 0}
             stages.append(stage)
+        girl_profile = _get_or_create_girl_profile(user)
+        exp_gain = 200 if stage_id >= 2000 else 100
+        from server.handlers.follower import _follower_data, _apply_profile_exp
+        _, _, level_data, _, _ = _follower_data()
+        gg_levels = level_data.get(100000, {})
+        _apply_profile_exp(girl_profile, gg_levels, exp_gain)
         state.save_user(user)
         return {
             'star': 0, 'character_score': 0, 'music_score': 0,
@@ -209,6 +229,7 @@ def h_ch_third_stage(req, player, ctx):
             'clear': 1, 'user_ap': ap, 'user_ch_third_stage': stage,
             'user_music': None, 'reward_data': [],
             'bonus_follower_profile_ids': [],
+            'user_follower_profile': girl_profile,
             'user_follower_profile_score': [],
         }, OK
 
@@ -297,6 +318,15 @@ def h_ch_third_stage(req, player, ctx):
         stage['i_Star'] = max(star, int(stage.get('i_Star', 0) or 0))
     rewards = _stage_rewards(config) if clear else []
     _grant_gift_rewards(user, rewards)
+
+    girl_profile = _get_or_create_girl_profile(user)
+    if clear:
+        exp_gain = 200 if stage_id >= 2000 else 100
+        from server.handlers.follower import _follower_data, _apply_profile_exp
+        _, _, level_data, _, _ = _follower_data()
+        gg_levels = level_data.get(100000, {})
+        _apply_profile_exp(girl_profile, gg_levels, exp_gain)
+
     state.save_user(user)
     return {
         'star': star, 'character_score': char_score, 'music_score': music_score,
@@ -304,11 +334,56 @@ def h_ch_third_stage(req, player, ctx):
         'clear': clear, 'user_ap': ap, 'user_ch_third_stage': stage,
         'user_music': selected_music, 'reward_data': rewards,
         'bonus_follower_profile_ids': bonus_follower_profile_ids,
+        'user_follower_profile': girl_profile,
         'user_follower_profile_score': profile_scores,
     }, OK
 
 
+@cmd('chThirdStreamStage')
+def h_ch_third_stream_stage(req, player, ctx):
+    p = _payload(req)
+    user = state.get_user(p.get('uuid') or ctx.get('uuid'))
+    if not user:
+        return {}, OK
+    try:
+        stage_id = int(p.get('i_id', 0) or 0)
+        count = max(1, int(p.get('count', 1) or 1))
+    except (TypeError, ValueError):
+        return {}, OK
+
+    ap_cost = count * AP_USE
+    spent, ap = _spend_ap(user, ap_cost)
+    if not spent:
+        return {'clear': 0, 'user_ap': ap}, {'code': 1, 'errmsg': 'Not enough Cookie'}
+
+    config = _stage_config(stage_id) or {}
+    all_reward_data = {}
+    for run_idx in range(1, count + 1):
+        run_rewards = _stage_rewards(config)
+        all_reward_data[run_idx] = run_rewards
+        _grant_gift_rewards(user, run_rewards)
+
+    exp_per_run = 200 if stage_id >= 2000 else 100
+    total_exp_gain = exp_per_run * count
+
+    girl_profile = _get_or_create_girl_profile(user)
+    from server.handlers.follower import _follower_data, _apply_profile_exp
+    _, _, level_data, _, _ = _follower_data()
+    gg_levels = level_data.get(100000, {})
+    _apply_profile_exp(girl_profile, gg_levels, total_exp_gain)
+
+    state.save_user(user)
+
+    return {
+        'i_id': stage_id,
+        'user_ap': ap,
+        'user_follower_profile': girl_profile,
+        'reward_data': all_reward_data,
+    }, OK
+
+
 @cmd('getChThirdStarReward')
+@cmd('setChThirdChapterReward')
 def h_get_ch_third_star_reward(req, player, ctx):
     p = _payload(req)
     user = state.get_user(p.get('uuid') or ctx.get('uuid'))
@@ -321,8 +396,9 @@ def h_get_ch_third_star_reward(req, player, ctx):
         return {}, OK
     ap = _user_ap(user)
     required, rewards = _chapter_reward(chapter_id, reward_num)
+    stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage') or []
     earned_stars = sum(int(stage.get('i_Star', 0) or 0)
-                       for stage in user.get('user_ch_third_stage', [])
+                       for stage in stages
                        if int(stage.get('i_ChapterId', 0) or 0) == chapter_id)
     claims = user.setdefault('user_ch_third_chapter_reward', [])
     claim = next((row for row in claims if int(row.get('i_id', 0) or 0) == chapter_id), None)

@@ -55,6 +55,10 @@ def _convert_val(f, val):
         vs = f.get('val') or {}
         if vs.get('type') == 'STRUCT':
             return {k:(_ids_to_names(vs.get('struct'), x) if isinstance(x, dict) else x) for k,x in val.items()}
+        if vs.get('type') == 'LIST':
+            es = vs.get('elem') or {}
+            if es.get('type') == 'STRUCT':
+                return {k: [_ids_to_names(es.get('struct'), item) if isinstance(item, dict) else item for item in (x if isinstance(x, list) else [])] for k, x in val.items()}
         return val
     return val
 

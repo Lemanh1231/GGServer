@@ -28,11 +28,17 @@ def _remove_legacy_unlock_all(user):
     """Replace the former synthetic full catalogue with starter ownership."""
     if user.get('legacy_unlock_all_migrated'):
         return
-    user['costumes'] = [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}]
-    user['user_music'] = [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0,
-                           'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
-                           'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0}]
-    user['user_guitar'] = [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}]
+    user['costumes'] = [
+        {'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0},
+    ]
+    user['user_music'] = [
+        {'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0,
+         'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
+         'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0},
+    ]
+    user['user_guitar'] = [
+        {'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0},
+    ]
     user['legacy_unlock_all_migrated'] = True
     state.save_user(user)
 
@@ -178,20 +184,8 @@ def _active_buffs(user):
     user['user_buff'] = buffs
     return buffs
 def _starter_messenger(user):
-    ms = user.get('user_messenger')
-    if not ms:
-        ms = [{
-            'i_MessengerChatRoomId': 1,
-            'i_LastConfirmIndex': -1,
-            's_UnlockGroupList': '1',
-            'l_UpdateTimeTicks': 0,
-        }]
-        user['user_messenger'] = ms
-        return ms
-    for r in ms:
-        if r.get('i_MessengerChatRoomId') == 1 and not r.get('s_UnlockGroupList'):
-            r['s_UnlockGroupList'] = '1'
-    return ms
+    from server.handlers.follower import _sync_follower_messenger
+    return _sync_follower_messenger(user)
 
 def _normalise_event_points(user):
     evp = user.setdefault('user_event_point', [])
@@ -209,108 +203,70 @@ def _normalise_subscribe_list(user):
 
 def _normalise_ticketcollection(user):
     tickets = user.setdefault('user_ticketcollection', [])
-    owned_seasons = set()
-    for s in user.get('user_subscribe_list', []):
-        pid = int(s.get('i_SubscribeID', 0) or 0)
-        s_num = pid % 1000 if pid > 1000 else pid
-        if 1 <= s_num <= 13:
-            owned_seasons.add(s_num)
-    for sh in user.get('user_shop', []):
-        idx = int(sh.get('i_id', 0) or 0)
-        if 1001 <= idx <= 3013:
-            s_num = idx % 1000
-            if 1 <= s_num <= 13:
-                owned_seasons.add(s_num)
+    owned_tickets = set()
     for t in tickets:
         tid = int(t.get('i_id', 0) or 0)
-        if 1 <= tid <= 13:
-            owned_seasons.add(tid)
-    result = [{'i_id': sid} for sid in sorted(owned_seasons)]
+        if (1 <= tid <= 13) or (1001 <= tid <= 1013):
+            owned_tickets.add(tid)
+    for s in user.get('user_subscribe_list', []):
+        pid = int(s.get('i_SubscribeID', 0) or 0)
+        if 1 <= pid <= 13:
+            owned_tickets.add(pid)
+        elif 1001 <= pid <= 1013:
+            owned_tickets.add(pid)
+            owned_tickets.add(pid % 1000)
+    for sh in user.get('user_shop', []):
+        idx = int(sh.get('i_id', 0) or 0)
+        cnt = int(sh.get('i_Count', sh.get('i_TotalCount', 0)) or 0)
+        if cnt > 0:
+            if 1001 <= idx <= 1013:
+                s_num = idx % 1000
+                if 1 <= s_num <= 13:
+                    owned_tickets.add(s_num)
+            elif 2001 <= idx <= 3013:
+                s_num = idx % 1000
+                if 1 <= s_num <= 13:
+                    owned_tickets.add(s_num)
+                    owned_tickets.add(1000 + s_num)
+    result = [{'i_id': tid} for tid in sorted(owned_tickets)]
     user['user_ticketcollection'] = result
     return result
 
 def _sync_follower_profiles_and_rewards(user):
-    """Ensure all owned followers have corresponding profiles with valid cumulative EXP and unlocked information milestones."""
-    from server.handlers.follower import _follower_data, _apply_profile_exp, _sync_follower_unlock_rewards
-    _, _, level_data, f_to_p, _ = _follower_data()
-
-    profiles = user.setdefault('user_follower_profile', [])
-    existing_profiles = {int(p.get('i_id', 0) or 0): p for p in profiles}
-
-    for f in user.get('user_follower', []):
-        fid = int(f.get('i_id', 0) or 0)
-        flvl = int(f.get('i_Level', 1) or 1)
-        if not fid:
-            continue
-        pid = f_to_p.get(fid, fid)
-        if pid not in existing_profiles:
-            p = {
-                'i_id': pid,
-                'i_Level': flvl,
-                'd_Exp': 0,
-                'i_AddCandy': 0,
-            }
-            profiles.append(p)
-            existing_profiles[pid] = p
-        else:
-            p = existing_profiles[pid]
-            max_lvl = max(int(p.get('i_Level', 1) or 1), flvl)
-            p['i_Level'] = max_lvl
-            f['i_Level'] = max_lvl
-
-    # Ensure Guitar Girl profile (100000) exists starting at Level 1
-    if 100000 not in existing_profiles:
-        p100 = {
-            'i_id': 100000,
-            'i_Level': 1,
-            'd_Exp': 0,
-            'i_AddCandy': 0,
-        }
-        profiles.append(p100)
-        existing_profiles[100000] = p100
-    else:
-        p100 = existing_profiles[100000]
-        if int(p100.get('i_Level', 1) or 1) >= 20:
-            p100['i_Level'] = 1
-            p100['d_Exp'] = 0
-            p100['i_AddCandy'] = 0
-            user['user_follower_profile_reward'] = [
-                r for r in user.get('user_follower_profile_reward', [])
-                if int(r.get('i_id', 0) or 0) != 100000
-            ]
-        else:
-            p100['i_Level'] = max(1, int(p100.get('i_Level', 1) or 1))
-
-    # Reconcile and heal cumulative EXP for all follower profiles
-    for p in profiles:
-        pid = int(p.get('i_id', 0) or 0)
-        p_levels = level_data.get(pid) or level_data.get(1, {})
-        _apply_profile_exp(p, p_levels, 0)
-
-    # Synchronize unlocked information milestones in user_follower_profile_reward
-    _sync_follower_unlock_rewards(user)
+    """Ensure all owned followers have corresponding profiles with valid cumulative EXP, unlocked information milestones, and chat rooms."""
+    from server.handlers.follower import _sync_follower_profiles, _sync_follower_messenger
+    _sync_follower_profiles(user)
+    _sync_follower_messenger(user)
 
 def _user_contents(user):
     # Do not expose skills before their character-level gates.  The game-data
     # table defines the three Guitar Girl skills at Lv. 100 / 300 / 500; the
     # separate cooldown-reset skill unlocks at Lv. 10.
-    skills = user.setdefault('user_skill', [
-        {'i_id': 1, 'i_Level': 1, 'b_Activate': 0,
-         'l_ActivateOnTicks': 0, 'l_ActivateOffTicks': 0},
-    ])
-    character_level = max(
-        (int(c.get('i_Level', 0) or 0) for c in user.get('characters', [])),
-        default=0,
-    )
-    skill_unlock_levels = {1: 100, 2: 300, 3: 500, 4: 10}
-    skills[:] = [
-        skill for skill in skills
-        if character_level >= skill_unlock_levels.get(skill.get('i_id'), 0)
-    ]
-    for skill_id, unlock_level in skill_unlock_levels.items():
-        if (character_level >= unlock_level
-                and not any(skill.get('i_id') == skill_id for skill in skills)):
-            skills.append({'i_id': skill_id, 'i_Level': 1, 'b_Activate': 0,
+    skills = user.setdefault('user_skill', [])
+    c1_level = next((int(c.get('i_Level', 0) or 0) for c in user.get('characters', []) if int(c.get('i_id', 0) or 0) == 1), 0)
+    c2_level = next((int(c.get('i_Level', 0) or 0) for c in user.get('characters', []) if int(c.get('i_id', 0) or 0) == 2), 0)
+    skill_gates = {
+        1: (1, 100),
+        2: (1, 300),
+        3: (1, 500),
+        4: (1, 10),
+        21: (2, 100),
+        22: (2, 300),
+        23: (2, 500),
+        24: (2, 10),
+    }
+
+    def _is_unlocked(sid):
+        char_id, req_lvl = skill_gates.get(sid, (1, 999999))
+        lvl = c1_level if char_id == 1 else c2_level
+        return lvl >= req_lvl
+
+    skills[:] = [s for s in skills if _is_unlocked(s.get('i_id', 0))]
+    for sid, (char_id, req_lvl) in skill_gates.items():
+        lvl = c1_level if char_id == 1 else c2_level
+        if (lvl >= req_lvl
+                and not any(s.get('i_id') == sid for s in skills)):
+            skills.append({'i_id': sid, 'i_Level': 1, 'b_Activate': 0,
                            'l_ActivateOnTicks': 0, 'l_ActivateOffTicks': 0})
 
     props = user.setdefault('user_prop', [])
@@ -336,21 +292,27 @@ def _user_contents(user):
         if not any(int(u.get('i_id', 0) or 0) == 1 for u in units):
             units.append({'i_id': 1, 'i_Level': 1})
 
+    ch3_stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage') or [{'i_id': 1001, 'i_ChapterId': 1, 'i_StageIndex': 1, 'i_Star': 3}]
+    user['user_ch_third_stage'] = ch3_stages
+    user['user_chthird_stage'] = ch3_stages
+
     return {
         'user_achievement': _normalise_achievements(user),
         'user_buff': _active_buffs(user),
         'user_candy_shop': user.setdefault('user_candy_shop', []),
-        'user_character': user.get('characters', []),
+        'user_character': user.setdefault('characters', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}]),
         'user_costume': user.setdefault('costumes', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}]),
         'user_daily_mission': _normalise_daily_missions(user),
         'user_follower': user.setdefault('user_follower', [
             {'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0},
         ]),
-        'user_music': user.setdefault('user_music', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0,
-                                                       'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
-                                                       'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0}]),
+        'user_music': user.setdefault('user_music', [
+            {'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0,
+             'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
+             'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0},
+        ]),
         'user_prop': props,
-        'user_unit': user.setdefault('user_unit', [{'i_id': 1, 'i_Level': 1}]),
+        'user_unit': user.setdefault('user_unit', []),
         'user_skill': skills,
         'user_shop': user.setdefault('user_shop', []),
         # Chat room 1 (Joy) is unlocked at start with unread notification
@@ -365,10 +327,55 @@ def _user_contents(user):
         'user_follower_profile_reward': user.setdefault('user_follower_profile_reward', []),
         'user_follower_profile': profiles,
         'user_follower_giftitem': user.setdefault('user_follower_giftitem', [{'i_id': 1, 'i_Value': 141}]),
-        'user_chthird_stage': user.get('user_chthird_stage') or user.setdefault('user_ch_third_stage', [{'i_id': 1001, 'i_ChapterId': 1, 'i_StageIndex': 1, 'i_Star': 3}]),
+        'user_chthird_stage': ch3_stages,
         'user_tutorial': user.setdefault('user_tutorial', [{'i_id': i} for i in range(1, 8)]),
         'user_ad_level': [{'i_id': 210010, 'i_Level': 1, 'i_EXP': 1}],
+        'user_ad_list': _normalise_ad_list(user),
     }
+
+def _normalise_ad_list(user):
+    today = int(time.strftime('%Y%m%d', time.localtime()))
+    ad_rewards = user.setdefault('ad_rewards', {})
+
+    if '1' not in ad_rewards and 'follower_profile_ad_rewards' in user:
+        old_fp = user.get('follower_profile_ad_rewards', {})
+        if '1' in old_fp:
+            ad_rewards['1'] = old_fp['1']
+        elif old_fp:
+            ad_rewards['1'] = next(iter(old_fp.values()))
+    if '2' not in ad_rewards and 'chapter_ap_ad_rewards' in user:
+        old_ap = user.get('chapter_ap_ad_rewards', {})
+        if '2' in old_ap:
+            ad_rewards['2'] = old_ap['2']
+
+    ad1 = ad_rewards.setdefault('1', {
+        'i_id': 1, 'i_Count': 0, 'i_TotalCount': 0, 'i_LastViewTime': 0, 'upd_day': today,
+    })
+    if int(ad1.get('upd_day', 0) or 0) != today:
+        ad1['i_Count'] = 0
+        ad1['upd_day'] = today
+
+    ad2 = ad_rewards.setdefault('2', {
+        'i_id': 2, 'i_Count': 0, 'i_TotalCount': 0, 'i_LastViewTime': 0, 'upd_day': today,
+    })
+    if int(ad2.get('upd_day', 0) or 0) != today:
+        ad2['i_Count'] = 0
+        ad2['upd_day'] = today
+
+    return [
+        {
+            'i_id': 1,
+            'i_Count': int(ad1.get('i_Count', 0) or 0),
+            'i_TotalCount': int(ad1.get('i_TotalCount', 0) or 0),
+            'i_LastViewTime': int(ad1.get('i_LastViewTime', 0) or 0),
+        },
+        {
+            'i_id': 2,
+            'i_Count': int(ad2.get('i_Count', 0) or 0),
+            'i_TotalCount': int(ad2.get('i_TotalCount', 0) or 0),
+            'i_LastViewTime': int(ad2.get('i_LastViewTime', 0) or 0),
+        },
+    ]
 
 @cmd('userLogin')
 def h_user_login(req, player, ctx):
@@ -380,17 +387,44 @@ def h_user_login(req, player, ctx):
     u_seq_req = p.get('u_seq', 0) or 0
     if u_seq_req != 0:
         _remove_legacy_currency_grant(user)
-        _remove_legacy_paid_subscriptions(user)
         _remove_legacy_unlock_all(user)
+        contents = _user_contents(user)
         area_map = {int(k): v for k, v in user.get('areas', {}).items()}
         ud = user['userdata']
         ct = str(ud.get('u_create_time', ''))
         if not ct.lstrip('-').isdigit():
-            ud['u_create_time'] = str(int(time.time()))
-        contents = _user_contents(user)
+            ud['u_create_time'] = time.strftime('%Y%m%d')
+
+        needs_reset = user.get('needs_client_reset', False)
+        # If client's requested u_seq does not match this server profile's u_seq,
+        # the phone has leftover save data from an old/deleted account.
+        if u_seq_req != ud.get('u_seq'):
+            needs_reset = True
+
+        now_str = time.strftime('%Y-%m-%d %H:%M:%S')
+        now_ts = int(time.time())
+        ud['u_last_login'] = now_str
+        ud['u_last_communication'] = now_str
+        ud_resp = dict(ud)
+        ud_resp['u_last_login'] = now_str
+        ud_resp['u_last_communication'] = now_str
+
+        if needs_reset:
+            # Send mismatched device_uuid on this initial login response to trigger
+            # the client's internal purge: GgUtil.ClearRenewalPrefs(), ClearUserTable(),
+            # and ClearUserTempPrefbs() in ApiServerSGT.OnRecv(userLogin).
+            # This purges leftover PlayerPrefs, local tables, and HibernationStartTimeTicks (enum 0xa5)
+            # so the client doesn't calculate massive fake offline rewards from prior sessions.
+            dev_id = ud.get('device_uuid') or p.get('device_uuid') or uuid
+            ud_resp['device_uuid'] = "RESET_" + str(dev_id)
+            user['needs_client_reset'] = False
+            user['last_save_time'] = now_ts
+            ud['u_save_date'] = now_str
+            ud_resp['u_save_date'] = now_str
+
         state.save_user(user)
         return {
-            'user': ud,
+            'user': ud_resp,
             'area_data': area_map,
             'user_contents': contents,
         }, OK
@@ -404,6 +438,11 @@ def h_user_save(req, player, ctx):
     with state._LOCK:
         user = state.get_user(uuid)
         if user:
+            now_ts = int(time.time())
+            now_s = time.strftime('%Y-%m-%d %H:%M:%S')
+            user['last_save_time'] = now_ts
+            user['userdata']['u_save_date'] = now_s
+            user['userdata']['u_last_communication'] = now_s
             if 'user_achievement' in p: _normalise_achievements(user, p['user_achievement'])
             if 'user_character' in p:   user['characters'] = p['user_character']
             if 'user_costume' in p:     user['costumes'] = p['user_costume']
@@ -412,18 +451,41 @@ def h_user_save(req, player, ctx):
             if 'user_follower' in p:
                 user['user_follower'] = p['user_follower']
                 _sync_follower_profiles_and_rewards(user)
-            if 'user_messenger' in p:   user['user_messenger'] = p['user_messenger']
+            if 'user_messenger' in p:
+                from server.handlers.follower import _merge_user_messenger
+                _merge_user_messenger(user, p['user_messenger'])
+            from server.handlers.follower import _sync_follower_messenger
+            _sync_follower_messenger(user)
             if 'user_ticketcollection' in p: user['user_ticketcollection'] = p['user_ticketcollection']
             if 'user_event_point' in p: user['user_event_point'] = p['user_event_point']
             if 'user_daily_mission' in p: _normalise_daily_missions(user, p['user_daily_mission'])
             if 'user_prop' in p:        user['user_prop'] = p['user_prop']
             if 'user_candy_shop' in p:  user['user_candy_shop'] = p['user_candy_shop']
+            for ui in (p.get('user_info') or []):
+                if ui.get('u_selected_costume_id'):
+                    user['userdata']['u_selected_costume_id'] = ui['u_selected_costume_id']
+                if ui.get('u_selected_music_id'):
+                    user['userdata']['u_selected_music_id'] = ui['u_selected_music_id']
             for area in (p.get('user_area_info') or []):
                 n = area.get('u_area_num')
                 if n is not None:
                     user.setdefault('areas', {})[str(n)] = area
             state.save_user(user)
     return {'status': 'Y'}, OK
+
+@cmd('lastSaveTime')
+def h_last_save_time(req, player, ctx):
+    p = _payload(req)
+    uuid = p.get('uuid') or ctx.get('uuid')
+    user = state.get_user(uuid)
+    now = int(time.time())
+    last_save = now
+    device_uuid = p.get('device_uuid', '')
+    if user:
+        ud = user.get('userdata', {})
+        device_uuid = ud.get('device_uuid') or device_uuid
+        last_save = int(user.get('last_save_time', now) or now)
+    return {'last_save_time': last_save, 'device_uuid': device_uuid}, OK
 
 @cmd('userLoad')
 def h_user_load(req, player, ctx):

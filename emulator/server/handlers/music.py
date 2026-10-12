@@ -151,8 +151,9 @@ def h_get_music_reward(req, player, ctx):
                 follower_profiles.append(new_fp)
                 profile_map[fid] = new_fp
             _apply_follower_profile_exp(profile_map[fid], t31.get(fid, {}), exp)
-            from server.handlers.follower import _sync_follower_unlock_rewards
-            _sync_follower_unlock_rewards(user, fid, int(profile_map[fid].get('i_Level', 1) or 1))
+
+        from server.handlers.follower import _sync_follower_profiles
+        _sync_follower_profiles(user)
 
         if not follower_profiles:
             follower_profiles = [{'i_id': 1, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0}]
