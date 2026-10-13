@@ -20,23 +20,36 @@ def h_update_time(req, player, ctx):
     # time-gated UI such as the day-7 attendance reward.
     return {'upd_time': int(time.time())}, OK
 
+from server import event_manager
+
 @cmd('defaultSettingList')
 def h_default_settings(req, player, ctx):
+    snow_val = 'true' if event_manager.is_weather_snow_enabled() else 'false'
+    cherry_val = 'true' if event_manager.is_weather_cherry_blossom_enabled() else 'false'
+    fan_art_val = 'true' if event_manager.is_fan_art_costume_enabled() else 'false'
+    sale_end_val = '2999-12-31 23:59' if event_manager.is_pass_goods_sale_enabled() else '2020-01-01 00:00'
+
     settings = [
         ('shop_call_wait', '2'), ('ad_cancel_delay', '0'), ('force_menu_restric', 'true'),
-        ('max_bundle_texutre_loading', '1'), ('weather_snow', 'true'), ('check_time_cheat', 'false'),
+        ('max_bundle_texutre_loading', '1'), ('weather_snow', snow_val), ('check_time_cheat', 'false'),
         ('ap_max', '70'), ('ap_time', '300'), ('ap_use', '5'), ('character_exp', '45'),
         ('ap_shop_id', '31'), ('ap_ad_list_id', '2'), ('ch_third_unlock_follower_id', '5'),
         ('ch_third_unlock_follower_level', '1'), ('ad_follower_profile_exp_persent', '0.1'),
         ('follower_profile_bonus_percent', '1'), ('spine_load_max_count', '0'), ('log_flag', 'true'),
-        ('weather_cherry_blossom', 'false'), ('active_goods_ticket_buff', 'true'),
-        ('active_fan_art_costume', 'true'),
-        # Keep the sale UI visible for testing.  Actual paid-card purchase and
-        # point top-up remain blocked by paid_star_card.enabled=false.
-        ('pass_goods_sale_start_time', '2022-02-19 00:00'),
-        ('pass_goods_sale_end_time', '2999-02-27 23:59'), ('attendacne_buff_value', '0.01'),
+        ('weather_cherry_blossom', cherry_val), ('active_goods_ticket_buff', 'true'),
+        ('active_fan_art_costume', fan_art_val),
+        ('pass_goods_sale_start_time', '2020-01-01 00:00'),
+        ('pass_goods_sale_end_time', sale_end_val), ('attendacne_buff_value', '0.01'),
         ('attendacne_buff_limit_day', '10000'), ('log_flag_unfinished_purchase', 'true'),
         ('jp_laws_flag', 'true'),
     ]
     return {'status': 'Y',
             'setting_list': [{'setting_key': k, 'setting_value': v} for k, v in settings]}, OK
+
+@cmd('hibernationLog')
+def h_hibernation_log(req, player, ctx):
+    return {'action': 0}, OK
+
+@cmd('completeLog')
+def h_complete_log(req, player, ctx):
+    return {'status': '1'}, OK

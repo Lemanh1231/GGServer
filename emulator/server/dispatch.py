@@ -109,7 +109,7 @@ def find_message_field(form_fields):
 # ---------- response envelope ----------
 def now_times():
     t = int(time.time())
-    dt = int(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S'))
+    dt = int((datetime.datetime.utcnow() + datetime.timedelta(hours=9)).strftime('%Y%m%d%H%M%S'))
     return t, dt
 
 def success_error():

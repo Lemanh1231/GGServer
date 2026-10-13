@@ -1,33 +1,22 @@
 import os, time, json
-from server import state
+from server import state, event_manager
 from server.handlers.registry import cmd, OK, _payload
 
 EVENT_REWARDS = None
 _EVENT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'event_config.json')
 
 def _event_settings():
-    """Read operator-controlled event availability on every request.
-
-    This intentionally is not cached: changing `event_config.json` opens or
-    closes an event immediately, without modifying player data or restarting
-    the server.
-    """
-    try:
-        with open(_EVENT_CONFIG_PATH, encoding='utf-8') as f:
-            config = json.load(f)
-        return config if isinstance(config, dict) else {}
-    except (OSError, ValueError, TypeError):
-        return {'events': {'1': {'enabled': True}}}
+    """Read operator-controlled event availability on every request."""
+    return event_manager.load_event_config()
 
 def _event_config():
-    return _event_settings().get('events', {})
+    return _event_settings().get('attendance_events', {})
 
 def _event_enabled(event_idx):
-    event = _event_config().get(str(event_idx), {})
-    return bool(event.get('enabled', False))
+    return event_manager.is_attendance_event_enabled(event_idx)
 
 def _paid_star_card_enabled():
-    return bool(_event_settings().get('paid_star_card', {}).get('enabled', False))
+    return event_manager.is_paid_star_card_enabled()
 
 # game_data.json is the decoded getGameDataList payload.  These three tables
 # describe exactly which Free/Paid reward belongs to each Star Pass group/step.
@@ -145,9 +134,9 @@ def _give_reward(user, rew):
     if not user: return
     uuid = user.get('uuid')
     ud = user['userdata']
-    if rtype in (1, 11): # Goods / Table 1
+    if rtype == 1: # Goods / Table 1
         cp = candy = like = fans = 0
-        if rtype == 11 or rid == 11: # Cookies / AP
+        if rid == 11: # Cookies / AP
             state.add_ap(user, int(rval))
         elif rid == 1: 
             cp = int(rval)
@@ -163,6 +152,13 @@ def _give_reward(user, rew):
             ud['u_fans'] = ud.get('u_fans', 0) + fans
         if uuid and (cp or candy or like or fans):
             state.increment_currency(uuid, cp=cp, candy=candy, like=like, fans=fans)
+    elif rtype == 11: # Follower Gift / Table 30
+        gifts = user.setdefault('user_follower_giftitem', [])
+        gift = next((g for g in gifts if int(g.get('i_id', 0) or 0) == rid), None)
+        if gift:
+            gift['i_Value'] = int(gift.get('i_Value', 0) or 0) + int(rval)
+        else:
+            gifts.append({'i_id': rid, 'i_Value': int(rval)})
     elif rtype == 2: # Music
         lst = user.setdefault('user_music', [])
         if not any(x.get('i_id') == rid for x in lst):
@@ -223,7 +219,7 @@ def h_set_attendance(req, player, ctx):
         claimed_today = False
         cur = 1
     return {
-        'status': 'Y' if added else ('N' if (claimed_today or (user and int(user.get('userdata', {}).get('attendance_date', 0) or 0) == today)) else 'Y'),
+        'status': 'Y' if added else ('N' if claimed_today else 'Y'),
         'attendance_count': cur,
         'attendance_date': today if (claimed_today or added) else 0,
         'max_coutinuous_attendance_count': cur,
@@ -443,6 +439,8 @@ def h_set_game_reward(req, player, ctx):
         for ep in evp_list:
             if ep.get('s_EventType') == 'Pass':
                 ep['i_Point'] = ep.get('i_Point', 0) + 10
+                sub_id = int(ep.get('i_DataID', 13) or 13)
+                ep['i_Step'] = _get_step_for_points(sub_id, ep['i_Point'])
                 break
 
         state.save_user(user)
@@ -494,9 +492,10 @@ def h_set_pass_reward(req, player, ctx):
         # type 0 is the Free Star Pass track.  type 1 is the paid/gold track
         # and may only be claimed when a real entitlement is present.  The
         # emulator deliberately never creates that entitlement.
-        paid_active = any(item.get('i_SubscribeID') in (group, 1000 + group)
-                          and item.get('i_isActive') for item
-                          in user.get('user_subscribe_list', []))
+        paid_active = (event_manager.is_paid_star_card_enabled() and event_manager.is_star_pass_enabled()) or any(
+            item.get('i_SubscribeID') in (group, 1000 + group) and item.get('i_isActive')
+            for item in user.get('user_subscribe_list', [])
+        )
         if ptype == 1 and not paid_active:
             rewards = []
             return {

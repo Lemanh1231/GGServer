@@ -13,7 +13,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import codec
-from server import multipart, dispatch, handlers, state, auth
+from server import multipart, dispatch, handlers, state, auth, event_manager, admin
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CAP_DIR = os.path.join(BASE, 'captures')
@@ -102,6 +102,19 @@ class Handler(BaseHTTPRequestHandler):
         if path in ('/', '/health'):
             self._send('GG emulator OK')
             return
+        if path in ('/admin', '/admin/'):
+            html = admin.get_admin_html()
+            self._send(html, 200, 'text/html; charset=utf-8')
+            return
+        if path == '/admin/api/events':
+            cfg = event_manager.load_event_config()
+            resp = {
+                'success': True,
+                'config': cfg,
+                'seasons': event_manager.STAR_PASS_SEASONS
+            }
+            self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
+            return
         fname = CDN_MAP.get(path)
         if not fname and path.startswith('/AssetBundles/'):
             fname = os.path.basename(path)   # tolerant fallback
@@ -125,6 +138,19 @@ class Handler(BaseHTTPRequestHandler):
             body = self.rfile.read(length) if length else b''
             ctype = self.headers.get('Content-Type', '')
             path = self.path.split('?', 1)[0]
+
+            # --- Admin Event Manager API ---
+            if path == '/admin/api/events':
+                try:
+                    data = json.loads(body.decode('utf-8'))
+                    updated = event_manager.save_event_config(data)
+                    resp = {'success': True, 'config': updated, 'message': 'Cập nhật sự kiện thành công!'}
+                    self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
+                except Exception as e:
+                    resp = {'success': False, 'error': str(e)}
+                    self._send(json.dumps(resp, ensure_ascii=False), 400, 'application/json; charset=utf-8')
+                return
+
             form = multipart.parse(ctype, body)
 
             # --- NeonAPI / PmangPlus auth (JSON) ---

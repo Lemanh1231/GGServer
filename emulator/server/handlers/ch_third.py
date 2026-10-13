@@ -3,7 +3,7 @@ import json
 import os
 import time
 
-from server import state
+from server import state, event_manager
 from server.handlers.registry import cmd, OK, _payload
 
 AP_MAX = 70
@@ -168,6 +168,8 @@ def _spend_ap(user, amount=AP_USE):
 
 @cmd('getChThird')
 def h_get_ch_third(req, player, ctx):
+    if not event_manager.is_chapter3_tour_enabled():
+        return {}, {'code': 1, 'errmsg': 'Chapter 3 Tour is closed'}
     p = _payload(req)
     user = state.get_user(p.get('uuid') or ctx.get('uuid'))
     if not user:
@@ -189,6 +191,8 @@ def h_get_ch_third(req, player, ctx):
 
 @cmd('chThirdStage')
 def h_ch_third_stage(req, player, ctx):
+    if not event_manager.is_chapter3_tour_enabled():
+        return {'clear': 0}, {'code': 1, 'errmsg': 'Chapter 3 Tour is closed'}
     p = _payload(req)
     user = state.get_user(p.get('uuid') or ctx.get('uuid'))
     if not user:
@@ -335,6 +339,7 @@ def h_ch_third_stage(req, player, ctx):
         'user_music': selected_music, 'reward_data': rewards,
         'bonus_follower_profile_ids': bonus_follower_profile_ids,
         'user_follower_profile': girl_profile,
+        'bonus_music_score': bonus_music_score,
         'user_follower_profile_score': profile_scores,
     }, OK
 

@@ -140,6 +140,9 @@ def h_get_music_reward(req, player, ctx):
         for ep in evp_list:
             if ep.get('s_EventType') == 'Pass':
                 ep['i_Point'] = ep.get('i_Point', 0) + 10 * len(claimed_ids)
+                from server.handlers.reward import _get_step_for_points
+                sub_id = int(ep.get('i_DataID', 13) or 13)
+                ep['i_Step'] = _get_step_for_points(sub_id, ep['i_Point'])
                 break
 
         # Apply follower EXP and update profile levels

@@ -145,11 +145,14 @@ def _all_ch_third_stages():
         return res
 
 def _default_areas():
-    def area(n):
-        return {'u_area_num': n, 'd_Candy': 0.0, 'd_Like': 0.0, 'i_UserFanCount': 0,
-                'i_UserFanGrade': 1, 'i_SelectedCostumeId': 1, 'i_SelectedMusicId': 1,
-                'i_SelectedGuitarId': 1, 's_TutorialList': '', 's_Gp1': '', 's_Gp2': ''}
-    return {1: area(1), 2: area(2)}
+    return {
+        1: {'u_area_num': 1, 'd_Candy': 0.0, 'd_Like': 0.0, 'i_UserFanCount': 0,
+            'i_UserFanGrade': 1, 'i_SelectedCostumeId': 1, 'i_SelectedMusicId': 1,
+            'i_SelectedGuitarId': 1, 's_TutorialList': '', 's_Gp1': '', 's_Gp2': ''},
+        2: {'u_area_num': 2, 'd_Candy': 0.0, 'd_Like': 0.0, 'i_UserFanCount': 0,
+            'i_UserFanGrade': 1, 'i_SelectedCostumeId': 201, 'i_SelectedMusicId': 201,
+            'i_SelectedGuitarId': 201, 's_TutorialList': '', 's_Gp1': '', 's_Gp2': ''}
+    }
 
 def _reconstruct_user(row):
     data = json.loads(row['user_contents_json'])
@@ -236,12 +239,17 @@ def create_user(uuid, device_uuid):
             'last_save_time': now_ts,
             'areas': _default_areas(),
             'achievements': [{'i_id': i, 'i_Level': 1, 'd_Quantity': 1.0, 's_Quantity': ''} for i in range(1, 11)],
-            'characters': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}],
-            'costumes': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}],
-            'user_music': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0,
-                            'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
-                            'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0}],
-            'user_guitar': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}],
+            'characters': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}, {'i_id': 2, 'i_Level': 1, 'i_BonusLevel': 0}],
+            'costumes': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}, {'i_id': 201, 'i_Level': 1, 'i_BonusLevel': 0}],
+            'user_music': [
+                {'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0,
+                 'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
+                 'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0},
+                {'i_id': 201, 'i_Level': 1, 'i_BonusLevel': 0,
+                 'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
+                 'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0},
+            ],
+            'user_guitar': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}, {'i_id': 201, 'i_Level': 1, 'i_BonusLevel': 0}],
             'user_follower': [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}],
             'user_follower_profile': [
                 {'i_id': 1, 'i_Level': 1, 'd_Exp': 0, 'i_AddCandy': 0},

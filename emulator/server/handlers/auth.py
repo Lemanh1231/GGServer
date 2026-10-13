@@ -188,17 +188,39 @@ def _starter_messenger(user):
     return _sync_follower_messenger(user)
 
 def _normalise_event_points(user):
+    from server import event_manager
     evp = user.setdefault('user_event_point', [])
     pass_entry = next((e for e in evp if e.get('s_EventType') == 'Pass'), None)
+    if not event_manager.is_star_pass_enabled():
+        if pass_entry:
+            evp.remove(pass_entry)
+        return evp
+    active_season = event_manager.get_active_star_pass_season()
     if not pass_entry:
-        evp.append({'s_EventType': 'Pass', 'i_DataID': 13, 'i_Point': 0, 'i_Step': 0, 'i_ADViewTime': 0, 'i_Version': 13})
-    elif pass_entry.get('i_DataID') != 13:
-        pass_entry['i_DataID'] = 13
-        pass_entry['i_Version'] = 13
+        evp.append({'s_EventType': 'Pass', 'i_DataID': active_season, 'i_Point': 0, 'i_Step': 0, 'i_ADViewTime': 0, 'i_Version': active_season})
+    elif pass_entry.get('i_DataID') != active_season:
+        pass_entry['i_DataID'] = active_season
+        pass_entry['i_Version'] = active_season
     return evp
 
 def _normalise_subscribe_list(user):
-    return user.setdefault('user_subscribe_list', [])
+    from server import event_manager
+    subs = user.setdefault('user_subscribe_list', [])
+    if not event_manager.is_star_pass_enabled():
+        return subs
+    active_season = event_manager.get_active_star_pass_season()
+    paid_enabled = event_manager.is_paid_star_card_enabled()
+    paid_sub = next((s for s in subs if s.get('i_SubscribeID') in (active_season, 1000 + active_season)), None)
+    if paid_enabled:
+        if not paid_sub:
+            subs.append({'i_SubscribeID': active_season, 'i_isActive': 1, 'i_EndTime': 2147483647})
+        else:
+            paid_sub['i_isActive'] = 1
+            paid_sub['i_EndTime'] = 2147483647
+    else:
+        if paid_sub:
+            paid_sub['i_isActive'] = 0
+    return subs
 
 
 def _normalise_ticketcollection(user):
@@ -243,8 +265,8 @@ def _user_contents(user):
     # table defines the three Guitar Girl skills at Lv. 100 / 300 / 500; the
     # separate cooldown-reset skill unlocks at Lv. 10.
     skills = user.setdefault('user_skill', [])
-    c1_level = next((int(c.get('i_Level', 0) or 0) for c in user.get('characters', []) if int(c.get('i_id', 0) or 0) == 1), 0)
-    c2_level = next((int(c.get('i_Level', 0) or 0) for c in user.get('characters', []) if int(c.get('i_id', 0) or 0) == 2), 0)
+    c1_level = max([int(c.get('i_Level', 0) or 0) for c in user.get('characters', []) if int(c.get('i_id', 0) or 0) == 1] or [0])
+    c2_level = max([int(c.get('i_Level', 0) or 0) for c in user.get('characters', []) if int(c.get('i_id', 0) or 0) == 2] or [0])
     skill_gates = {
         1: (1, 100),
         2: (1, 300),
@@ -296,28 +318,48 @@ def _user_contents(user):
     user['user_ch_third_stage'] = ch3_stages
     user['user_chthird_stage'] = ch3_stages
 
+    chars = user.setdefault('characters', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}])
+    if not any(int(c.get('i_id', 0) or 0) == 2 for c in chars):
+        chars.append({'i_id': 2, 'i_Level': 1, 'i_BonusLevel': 0})
+
+    costumes = user.setdefault('costumes', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}])
+    if not any(int(c.get('i_id', 0) or 0) == 201 for c in costumes):
+        costumes.append({'i_id': 201, 'i_Level': 1, 'i_BonusLevel': 0})
+
+    guitars = user.setdefault('user_guitar', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}])
+    if not any(int(g.get('i_id', 0) or 0) == 201 for g in guitars):
+        guitars.append({'i_id': 201, 'i_Level': 1, 'i_BonusLevel': 0})
+
+    user_music = user.setdefault('user_music', [
+        {'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0,
+         'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
+         'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0}
+    ])
+    if not any(int(m.get('i_id', 0) or 0) == 201 for m in user_music):
+        user_music.append({
+            'i_id': 201, 'i_Level': 1, 'i_BonusLevel': 0,
+            'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
+            'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0
+        })
+
     return {
         'user_achievement': _normalise_achievements(user),
         'user_buff': _active_buffs(user),
         'user_candy_shop': user.setdefault('user_candy_shop', []),
-        'user_character': user.setdefault('characters', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}]),
-        'user_costume': user.setdefault('costumes', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}]),
+        'user_character': chars,
+        'user_costume': costumes,
         'user_daily_mission': _normalise_daily_missions(user),
         'user_follower': user.setdefault('user_follower', [
             {'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0},
         ]),
-        'user_music': user.setdefault('user_music', [
-            {'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0,
-             'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0,
-             'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0},
-        ]),
+        'user_music': user_music,
         'user_prop': props,
         'user_unit': user.setdefault('user_unit', []),
         'user_skill': skills,
         'user_shop': user.setdefault('user_shop', []),
         # Chat room 1 (Joy) is unlocked at start with unread notification
         'user_messenger': _starter_messenger(user),
-        'user_guitar': user.setdefault('user_guitar', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}]),
+        'user_guitar': guitars,
         # Star Pass: read from persisted user data, default to Season 13
         'user_event_point': _normalise_event_points(user),
         # Star Pass Subscriptions: Season 13 Thẻ Sao Nâng Cấp is active
@@ -389,7 +431,9 @@ def h_user_login(req, player, ctx):
         _remove_legacy_currency_grant(user)
         _remove_legacy_unlock_all(user)
         contents = _user_contents(user)
-        area_map = {int(k): v for k, v in user.get('areas', {}).items()}
+        areas = user.get('areas') or state._default_areas()
+        user['areas'] = areas
+        area_map = {int(k): v for k, v in areas.items()}
         ud = user['userdata']
         ct = str(ud.get('u_create_time', ''))
         if not ct.lstrip('-').isdigit():
@@ -528,3 +572,13 @@ def h_set_subscribe(req, player, ctx):
     user = state.get_user(uuid)
     subs = _normalise_subscribe_list(user) if user else []
     return {'u_seq': p.get('u_seq', 0), 'user_subscribe_list': subs}, OK
+
+@cmd('setReviewPopup')
+def h_set_review_popup(req, player, ctx):
+    p = _payload(req)
+    uuid = p.get('uuid') or ctx.get('uuid')
+    user = state.get_user(uuid)
+    if user:
+        user.setdefault('userdata', {})['u_review_popup'] = 'Y'
+        state.save_user(user)
+    return {'status': 'Y'}, OK

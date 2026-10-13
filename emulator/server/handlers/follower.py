@@ -492,3 +492,39 @@ def h_set_follower_quest_infinite(req, player, ctx):
         'u_seq': u_seq,
         'user_follower_quest': quest
     }, OK
+
+@cmd('setUserFollowerQuest')
+def h_set_user_follower_quest(req, player, ctx):
+    p = _payload(req)
+    uuid = p.get('uuid') or ctx.get('uuid')
+    user = state.get_user(uuid)
+    cur_id = int(p.get('i_CurrentID', 0) or 0)
+    sub_id = int(p.get('i_SubID', 1) or 1)
+    cond_val = float(p.get('d_ConditionValue', 0.0) or 0.0)
+    quest = {
+        'i_CurrentID': cur_id,
+        'i_CompleteID': 0,
+        'd_ConditionValue1': 0.0,
+        'd_ConditionValue2': 0.0,
+        'd_ConditionValue3': 0.0,
+        'i_RewardReceived1': 0,
+        'i_RewardReceived2': 0,
+        'i_RewardReceived3': 0,
+        'next_flg': 0,
+        'reward_data': [],
+    }
+    if user:
+        quests = user.setdefault('user_follower_quest', [])
+        found_quest = next((q for q in quests if int(q.get('i_CurrentID', 0) or 0) == cur_id), None)
+        if not found_quest:
+            found_quest = dict(quest)
+            quests.append(found_quest)
+        if sub_id == 1:
+            found_quest['d_ConditionValue1'] = cond_val
+        elif sub_id == 2:
+            found_quest['d_ConditionValue2'] = cond_val
+        elif sub_id == 3:
+            found_quest['d_ConditionValue3'] = cond_val
+        state.save_user(user)
+        quest = found_quest
+    return quest, OK

@@ -172,6 +172,23 @@ def h_buy_check(req, player, ctx):
     # libil2cpp.so at 0x21E0D44 compares data.Data.Result with "ok" (OrdinalIgnoreCase)
     return {'result': 'ok'}, OK
 
+@cmd('checkBuyShop')
+def h_check_buy_shop(req, player, ctx):
+    p = _payload(req)
+    uuid = p.get('uuid') or ctx.get('uuid')
+    user = state.get_user(uuid)
+    shop_id = p.get('shop_id')
+    try:
+        idx = int(shop_id)
+    except (TypeError, ValueError):
+        idx = 0
+    is_owner = 0
+    if idx and user:
+        eligible, _ = _check_purchase_eligibility(user, idx)
+        if not eligible:
+            is_owner = 1
+    return {'is_owner': is_owner}, OK
+
 @cmd('buyShop')
 def h_buy_shop(req, player, ctx):
     p = _payload(req)
@@ -289,17 +306,15 @@ def h_buy_shop(req, player, ctx):
     if 1 <= season_num <= 13 and (1000 <= idx <= 3020):
         sub_list = user.setdefault('user_subscribe_list', [])
         now_ts = int(time.time())
-        is_merch_pack = (2000 <= idx <= 3020)
-        pids_to_sub = {season_num, 1000 + season_num} if is_merch_pack else {season_num}
+        pids_to_sub = {season_num, 1000 + season_num}
         for pid in pids_to_sub:
             if not any(int(s.get('i_SubscribeID', 0) or 0) == pid for s in sub_list):
                 sub_list.append({'i_SubscribeID': pid, 'i_ActiveTime': now_ts, 'i_isActive': 1})
         tickets = user.setdefault('user_ticketcollection', [])
-        tids_to_add = {season_num, 1000 + season_num} if is_merch_pack else {season_num}
-        for tid in tids_to_add:
+        for tid in pids_to_sub:
             if not any(int(t.get('i_id', 0) or 0) == tid for t in tickets):
                 tickets.append({'i_id': tid})
-        if is_merch_pack and not any(rew.get('reward_type') == 10 for rew in rewards):
+        if not any(rew.get('reward_type') == 10 for rew in rewards):
             rewards.append({'reward_type': 10, 'reward_id': 1000 + season_num, 'reward_value': 1})
 
     lst = user.setdefault('user_shop', [])
@@ -337,6 +352,10 @@ def _get_price(table_id, item_id, currency_col, price_col):
                 if str(row.get('1')) == str(item_id):
                     currency = str(row.get(str(currency_col), ''))
                     price = int(row.get(str(price_col), 0))
+                    if str(table_id) == '2' and price == 0:
+                        alt_price = int(row.get('46', 0) or 0)
+                        if alt_price > 0:
+                            price = alt_price
                     if price < 0:
                         return None, None
                     return currency, price
@@ -521,15 +540,27 @@ def h_buy_contents(req, player, ctx):
             lst = user.setdefault('user_skill', [])
             item = next((x for x in lst if x.get('i_id') == idx), None)
             cur_lvl = item.get('i_Level', 1) if item else 1
-            cur, price = _get_upgrade_cost(8, idx, cur_lvl)
-            
-            if _deduct_currency(uuid, user, cur, price):
-                if item:
-                    item['i_Level'] = cur_lvl + 1
-                else:
-                    item = {'i_id': idx, 'i_Level': 2, 'i_ActiveTime': 0}
-                    lst.append(item)
+            max_lvl = 20
+            try:
+                with open(_GAME_DATA_PATH, 'r', encoding='utf-8') as f:
+                    gd = json.load(f)
+                    for row in gd.get('8', []):
+                        if int(row.get('1', 0)) == idx:
+                            max_lvl = int(row.get('28', 20) or 20)
+                            break
+            except Exception:
+                pass
+            if cur_lvl >= max_lvl:
                 ret['user_skill'] = item
+            else:
+                cur, price = _get_upgrade_cost(8, idx, cur_lvl)
+                if _deduct_currency(uuid, user, cur, price):
+                    if item:
+                        item['i_Level'] = cur_lvl + 1
+                    else:
+                        item = {'i_id': idx, 'i_Level': 2, 'i_ActiveTime': 0}
+                        lst.append(item)
+                    ret['user_skill'] = item
 
         elif ctype == 'guitar':
             lst = user.setdefault('user_guitar', [])
