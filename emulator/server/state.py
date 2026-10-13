@@ -199,6 +199,14 @@ def _reconstruct_user(row):
     ud['u_fans'] = row['u_fans']
     ud['attendance_count'] = row['attendance_count']
     ud['attendance_date'] = row['attendance_date']
+
+    # Sync like currency to active areas so client in-game HUD displays the hearts
+    cur_like = float(row['u_like'] or 0.0)
+    areas = data.setdefault('areas', _default_areas())
+    for aid, ainfo in areas.items():
+        if cur_like > float(ainfo.get('d_Like', 0.0) or 0.0):
+            ainfo['d_Like'] = cur_like
+
     return data
 
 def get_user(uuid):
@@ -379,6 +387,38 @@ def increment_currency(uuid, cp=0, candy=0.0, like=0.0, fans=0):
                 SET u_cp = u_cp + ?, u_candy = u_candy + ?, u_like = u_like + ?, u_fans = u_fans + ?
                 WHERE uuid = ?
             ''', (cp, candy, like, fans, ruuid))
+            if like != 0:
+                row = conn.execute('SELECT u_like, user_contents_json FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
+                if row and row['user_contents_json']:
+                    try:
+                        d = json.loads(row['user_contents_json'])
+                        new_l = float(row['u_like'] or 0.0)
+                        d.setdefault('userdata', {})['u_like'] = new_l
+                        for a in d.setdefault('areas', {}).values():
+                            a['d_Like'] = new_l
+                        conn.execute('UPDATE user_data SET user_contents_json = ? WHERE uuid = ?', (json.dumps(d, ensure_ascii=False), ruuid))
+                    except Exception:
+                        pass
+            conn.commit()
+        conn.close()
+
+def set_like_currency(uuid, amount):
+    with _LOCK:
+        conn = get_db()
+        ruuid = _resolve_uuid(conn, uuid)
+        if ruuid is not None:
+            amount = max(0.0, float(amount))
+            conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (amount, ruuid))
+            row = conn.execute('SELECT user_contents_json FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
+            if row and row['user_contents_json']:
+                try:
+                    d = json.loads(row['user_contents_json'])
+                    d.setdefault('userdata', {})['u_like'] = amount
+                    for a in d.setdefault('areas', {}).values():
+                        a['d_Like'] = amount
+                    conn.execute('UPDATE user_data SET user_contents_json = ? WHERE uuid = ?', (json.dumps(d, ensure_ascii=False), ruuid))
+                except Exception:
+                    pass
             conn.commit()
         conn.close()
 

@@ -140,9 +140,13 @@ class Handler(BaseHTTPRequestHandler):
                 cur_point = int(pass_entry.get('i_Point', 0) or 0)
                 cur_step = int(pass_entry.get('i_Step', 0) or 0)
 
-                att_info = data.get('attendance', {}).get('1', {})
-                att_day = att_info.get('day', 0)
-                att_ymd = att_info.get('ymd', 0)
+                att_info_1 = data.get('attendance', {}).get('1', {})
+                att_1_day = att_info_1.get('day', 0)
+                att_1_ymd = att_info_1.get('ymd', 0)
+
+                att_info_3 = data.get('attendance', {}).get('3', {})
+                att_3_day = att_info_3.get('day', 0)
+                att_3_ymd = att_info_3.get('ymd', 0)
 
                 users_list.append({
                     'uuid': r['uuid'],
@@ -155,8 +159,10 @@ class Handler(BaseHTTPRequestHandler):
                     'u_candy': r['u_candy'],
                     'u_like': float(r['u_like'] or 0.0),
                     'attendance_count': r['attendance_count'] or ud.get('attendance_count', 0),
-                    'attendance_day': att_day,
-                    'attendance_ymd': att_ymd,
+                    'attendance_day': att_1_day,
+                    'attendance_ymd': att_1_ymd,
+                    'ch2_attendance_day': att_3_day,
+                    'ch2_attendance_ymd': att_3_ymd,
                     'is_gold': is_gold,
                     'star_point': cur_point,
                     'star_step': cur_step,
@@ -385,8 +391,37 @@ class Handler(BaseHTTPRequestHandler):
                         conn.commit()
                         conn.close()
 
-                    # Save user
-                    state.save_user(user)
+                    # Event 3: Cửa Hàng Tiện Lợi Hạnh Phúc (Chapter 2)
+                    att_3 = att_dict.setdefault('3', {'day': 0, 'ymd': 0})
+                    ch2_target_att = data.get('ch2_attendance_day')
+                    ch2_unlock_today = bool(data.get('ch2_attendance_unlock_today', True))
+                    ch2_att_mode = data.get('ch2_attendance_mode', 'claim_day')
+
+                    if ch2_target_att is not None and str(ch2_target_att).strip() != '':
+                        ch2_day = int(ch2_target_att)
+                        if ch2_day >= 7:
+                            if ch2_att_mode == 'complete':
+                                att_3['day'] = 7
+                                att_3['ymd'] = today_ymd
+                            else:
+                                att_3['day'] = 6
+                                att_3['ymd'] = 0 if ch2_unlock_today else today_ymd
+                        elif ch2_day <= 0:
+                            att_3['day'] = 0
+                            att_3['ymd'] = 0
+                        else:
+                            att_3['day'] = ch2_day - 1
+                            att_3['ymd'] = 0 if ch2_unlock_today else today_ymd
+
+                    if data.get('grant_ch2_rewards'):
+                        from server.handlers.reward import _give_reward, _get_event_rewards
+                        rewards_3 = _get_event_rewards().get('3', {})
+                        for d_num in range(1, 8):
+                            rew = rewards_3.get(str(d_num))
+                            if rew:
+                                _give_reward(user, rew)
+                        att_3['day'] = 7
+                        att_3['ymd'] = today_ymd
 
                     # 4. Currencies (CP, Candy, Tim/Like)
                     add_cp = int(data.get('add_cp', 0) or 0)
@@ -396,17 +431,23 @@ class Handler(BaseHTTPRequestHandler):
 
                     if set_like is not None and str(set_like).strip() != '':
                         s_like = max(0.0, float(set_like))
-                        conn = state.get_db()
-                        conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (s_like, user['uuid']))
-                        conn.commit()
-                        conn.close()
+                        state.set_like_currency(user['uuid'], s_like)
                         user.setdefault('userdata', {})['u_like'] = s_like
-                        add_like = 0  # set_like takes precedence
+                        for a in user.setdefault('areas', state._default_areas()).values():
+                            a['d_Like'] = s_like
+                        add_like = 0
+                    elif add_like != 0:
+                        state.increment_currency(user['uuid'], like=add_like)
+                        cur_l = float(user.get('userdata', {}).get('u_like', 0.0) or 0.0) + add_like
+                        user.setdefault('userdata', {})['u_like'] = cur_l
+                        for a in user.setdefault('areas', state._default_areas()).values():
+                            a['d_Like'] = float(a.get('d_Like', 0.0) or 0.0) + add_like
 
-                    if add_cp != 0 or add_candy != 0 or add_like != 0:
-                        state.increment_currency(user['uuid'], cp=add_cp, candy=add_candy, like=add_like)
-                        if add_like != 0:
-                            user.setdefault('userdata', {})['u_like'] = float(user.get('userdata', {}).get('u_like', 0.0) or 0.0) + add_like
+                    if add_cp != 0 or add_candy != 0:
+                        state.increment_currency(user['uuid'], cp=add_cp, candy=add_candy)
+
+                    # Save user with updated areas and attendance
+                    state.save_user(user)
 
                     # 5. Direct Mail notification
                     if data.get('send_mail'):

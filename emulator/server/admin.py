@@ -849,6 +849,16 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             }
         }
 
+        function formatNumber(num) {
+            if (num === null || num === undefined) return '0';
+            const n = Number(num);
+            if (isNaN(n)) return '0';
+            if (n >= 1e15) {
+                return n.toExponential(2);
+            }
+            return Math.floor(n).toLocaleString();
+        }
+
         let cachedUsers = [];
 
         async function loadUsers() {
@@ -877,6 +887,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                                 <th>Người Chơi</th>
                                 <th>Thời Gian Đăng Nhập Gần Nhất</th>
                                 <th>Tài Nguyên</th>
+                                <th>Sự Kiện Điểm Danh</th>
                                 <th>Thẻ Sao (Mùa ${activeSeason})</th>
                                 <th style="text-align: right;">Cài Đặt Riêng</th>
                             </tr>
@@ -899,9 +910,13 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                                 <div style="color: var(--text-main); font-size: 0.85rem;">🕒 ${escapeHtml(u.u_last_login)}</div>
                             </td>
                             <td>
-                                <div style="font-size: 0.82rem; color: #ff6b81; font-weight: 600;">❤️ ${Number(Math.floor(u.u_like || 0)).toLocaleString()} Tim</div>
-                                <div style="font-size: 0.82rem; color: #f5cd79;">🍫 ${Number(u.u_cp || 0).toLocaleString()} CP</div>
-                                <div style="font-size: 0.82rem; color: #68d8d6;">🍬 ${Number(Math.floor(u.u_candy || 0)).toLocaleString()} Candy</div>
+                                <div style="font-size: 0.82rem; color: #ff6b81; font-weight: 600;">❤️ ${formatNumber(u.u_like)} Tim</div>
+                                <div style="font-size: 0.82rem; color: #f5cd79;">🍫 ${formatNumber(u.u_cp)} CP</div>
+                                <div style="font-size: 0.82rem; color: #68d8d6;">🍬 ${formatNumber(u.u_candy)} Candy</div>
+                            </td>
+                            <td>
+                                <div style="font-size: 0.82rem; color: #a29bfe; font-weight: 500;">📅 Tân Thủ: <b>${u.attendance_day || 0}/7</b></div>
+                                <div style="font-size: 0.82rem; color: #55efc4; font-weight: 500; margin-top: 3px;">🏪 Tiện Lợi: <b>${u.ch2_attendance_day || 0}/7</b></div>
                             </td>
                             <td>
                                 <div>${passBadge}</div>
@@ -944,13 +959,13 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             document.getElementById('modal-star-point').value = u.star_point || 0;
 
             // Currencies
-            document.getElementById('modal-user-like').innerText = 'Hiện có: ' + Number(Math.floor(u.u_like || 0)).toLocaleString() + ' Tim';
+            document.getElementById('modal-user-like').innerText = 'Hiện có: ' + formatNumber(u.u_like) + ' Tim';
             document.getElementById('modal-add-like').value = 0;
             document.getElementById('modal-add-cp').value = 0;
             document.getElementById('modal-add-candy').value = 0;
             document.getElementById('modal-set-like').value = '';
 
-            // Attendance
+            // Attendance (Event 1 - 7 ngày tân thủ)
             const currentClaimed = u.attendance_day || 0;
             const currentNext = Math.min(7, currentClaimed + 1);
             document.getElementById('modal-att-status').innerText = `Đã nhận ${currentClaimed}/7 ngày`;
@@ -963,6 +978,20 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             }
             document.getElementById('modal-att-unlock').checked = true;
             document.getElementById('modal-att-direct-grant').checked = false;
+
+            // Attendance (Event 3 - Cửa hàng tiện lợi hạnh phúc)
+            const ch2Claimed = u.ch2_attendance_day || 0;
+            const ch2Next = Math.min(7, ch2Claimed + 1);
+            document.getElementById('modal-ch2-att-status').innerText = `Đã nhận ${ch2Claimed}/7 ngày`;
+            if (ch2Claimed >= 7) {
+                document.getElementById('modal-ch2-att-day').value = 'completed';
+            } else if (ch2Claimed === 6) {
+                document.getElementById('modal-ch2-att-day').value = 'claim_7';
+            } else {
+                document.getElementById('modal-ch2-att-day').value = 'claim_' + ch2Next;
+            }
+            document.getElementById('modal-ch2-att-unlock').checked = true;
+            document.getElementById('modal-ch2-direct-grant').checked = false;
 
             document.getElementById('modal-send-mail').checked = false;
             document.getElementById('user-event-modal').classList.add('active');
@@ -983,7 +1012,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             const set_like_val = document.getElementById('modal-set-like').value.trim();
             const set_like = set_like_val !== '' ? parseFloat(set_like_val) : null;
 
-            // Attendance selection
+            // Attendance selection (Event 1)
             const attDayVal = document.getElementById('modal-att-day').value;
             let attendance_day = 7;
             let attendance_mode = 'claim_day';
@@ -1000,6 +1029,25 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
             const attendance_unlock_today = document.getElementById('modal-att-unlock').checked;
             const grant_7d_rewards = document.getElementById('modal-att-direct-grant').checked;
+
+            // Attendance selection (Event 3 - CH2 Tiện lợi)
+            const ch2DayVal = document.getElementById('modal-ch2-att-day').value;
+            let ch2_attendance_day = 7;
+            let ch2_attendance_mode = 'claim_day';
+            if (ch2DayVal === 'completed') {
+                ch2_attendance_day = 7;
+                ch2_attendance_mode = 'complete';
+            } else if (ch2DayVal === 'reset') {
+                ch2_attendance_day = 0;
+                ch2_attendance_mode = 'claim_day';
+            } else if (ch2DayVal.startsWith('claim_')) {
+                ch2_attendance_day = parseInt(ch2DayVal.replace('claim_', '')) || 7;
+                ch2_attendance_mode = 'claim_day';
+            }
+
+            const ch2_attendance_unlock_today = document.getElementById('modal-ch2-att-unlock').checked;
+            const grant_ch2_rewards = document.getElementById('modal-ch2-direct-grant').checked;
+
             const send_mail = document.getElementById('modal-send-mail').checked;
 
             try {
@@ -1018,6 +1066,10 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                         attendance_mode,
                         attendance_unlock_today,
                         grant_7d_rewards,
+                        ch2_attendance_day,
+                        ch2_attendance_mode,
+                        ch2_attendance_unlock_today,
+                        grant_ch2_rewards,
                         send_mail,
                         mail_title: 'Cập nhật Sự kiện Cá nhân',
                         mail_memo: 'Quản trị viên đã cập nhật quyền lợi sự kiện cho tài khoản của bạn.'
@@ -1128,6 +1180,38 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                         <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; color:#f5cd79; cursor:pointer;">
                             <input type="checkbox" id="modal-att-direct-grant">
                             <span>🎁 Nhận ngay trọn bộ quà 7 ngày vào tài khoản (Nhạc 13 + Váy 9 + 600 CP + 100 Kẹo)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 4.2 Điểm Danh Cửa Hàng Tiện Lợi Hạnh Phúc (CH2 - Event 3) -->
+                <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span style="font-weight:600; font-size:0.9rem; color:#fff;">🏪 Cửa Hàng Tiện Lợi Hạnh Phúc (CH2 - Event 3)</span>
+                        <span id="modal-ch2-att-status" style="font-size:0.78rem; color:var(--text-sub);"></span>
+                    </div>
+                    
+                    <label class="form-label">Chọn mốc ngày điểm danh tiện lợi:</label>
+                    <select id="modal-ch2-att-day" style="margin-bottom:10px;">
+                        <option value="claim_7">🍫 Ngày 7 (Mở khóa nhận quà Ngày 7: 150 CP Socola)</option>
+                        <option value="claim_6">🍪 Ngày 6 (Mở khóa nhận quà Ngày 6: 100 AP Bánh quy)</option>
+                        <option value="claim_3">🍪 Ngày 3 (Mở khóa nhận quà Ngày 3: 50 AP Bánh quy)</option>
+                        <option value="claim_1">🍪 Ngày 1 (Mở khóa nhận quà Ngày 1: 50 AP Bánh quy)</option>
+                        <option value="claim_2">🍬 Ngày 2 (Mở khóa nhận quà Ngày 2: 50 Kẹo)</option>
+                        <option value="claim_4">🍬 Ngày 4 (Mở khóa nhận quà Ngày 4: 50 Kẹo)</option>
+                        <option value="claim_5">🍪 Ngày 5 (Mở khóa nhận quà Ngày 5: 50 AP Bánh quy)</option>
+                        <option value="completed">✅ Đã hoàn thành trọn bộ 7/7 ngày</option>
+                        <option value="reset">🔄 Đặt lại từ đầu (0/7 ngày)</option>
+                    </select>
+
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; color:var(--text-sub); cursor:pointer;">
+                            <input type="checkbox" id="modal-ch2-att-unlock" checked>
+                            <span>🔓 Mở khóa nhận quà ngay hôm nay (Xóa giới hạn chờ 24h)</span>
+                        </label>
+                        <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; color:#68d8d6; cursor:pointer;">
+                            <input type="checkbox" id="modal-ch2-direct-grant">
+                            <span>🎁 Nhận ngay trọn bộ quà tiện lợi vào tài khoản (250 AP + 100 Kẹo + 150 CP)</span>
                         </label>
                     </div>
                 </div>

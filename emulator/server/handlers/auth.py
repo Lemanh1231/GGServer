@@ -510,8 +510,12 @@ def h_user_login(req, player, ctx):
         contents = _user_contents(user)
         areas = user.get('areas') or state._default_areas()
         user['areas'] = areas
-        area_map = {int(k): v for k, v in areas.items()}
         ud = user['userdata']
+        cur_like = float(ud.get('u_like', 0.0) or 0.0)
+        for aid, ainfo in areas.items():
+            if cur_like > float(ainfo.get('d_Like', 0.0) or 0.0):
+                ainfo['d_Like'] = cur_like
+        area_map = {int(k): v for k, v in areas.items()}
         ct = str(ud.get('u_create_time', ''))
         if not ct.lstrip('-').isdigit():
             ud['u_create_time'] = time.strftime('%Y%m%d')
@@ -634,7 +638,18 @@ def h_user_save(req, player, ctx):
             for area in (p.get('user_area_info') or []):
                 n = area.get('u_area_num')
                 if n is not None:
-                    user.setdefault('areas', {})[str(n)] = area
+                    stored = user.setdefault('areas', {}).setdefault(str(n), {})
+                    stored.update(area)
+                    srv_like = float(user.get('userdata', {}).get('u_like', 0.0) or 0.0)
+                    if srv_like > float(stored.get('d_Like', 0.0) or 0.0):
+                        stored['d_Like'] = srv_like
+                    else:
+                        c_like = float(stored.get('d_Like', 0.0) or 0.0)
+                        user.setdefault('userdata', {})['u_like'] = c_like
+                        conn = state.get_db()
+                        conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (c_like, user['uuid']))
+                        conn.commit()
+                        conn.close()
             state.save_user(user)
     return {'status': 'Y'}, OK
 
@@ -668,8 +683,12 @@ def h_user_load(req, player, ctx):
         contents = _user_contents(user)
         areas = user.get('areas') or state._default_areas()
         user['areas'] = areas
-        area_map = {int(k): v for k, v in areas.items()}
         ud = user.get('userdata', {})
+        cur_like = float(ud.get('u_like', 0.0) or 0.0)
+        for aid, ainfo in areas.items():
+            if cur_like > float(ainfo.get('d_Like', 0.0) or 0.0):
+                ainfo['d_Like'] = cur_like
+        area_map = {int(k): v for k, v in areas.items()}
         now_str = time.strftime('%Y-%m-%d %H:%M:%S')
         ud_resp = dict(ud)
         ud_resp['u_last_communication'] = now_str
