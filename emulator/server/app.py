@@ -580,11 +580,29 @@ class Handler(BaseHTTPRequestHandler):
             ctx = {'game_url': base_url, 'cdn_url': cdn_url, 'uuid': uuid}
 
             # Banned player check
-            if uuid:
-                u_check = state.get_user(uuid)
+            # DO NOT block bootstrap/system handshake commands (Request, getServerTime, getUpdateTime,
+            # defaultSettingList, getGameDataList, getVarietyStore) so the Unity client can initialize
+            # its UI properly and display the native Ban dialog instead of falling back to "No network connection".
+            if cmd_full not in ('main.Request', 'main.getServerTime', 'main.getUpdateTime',
+                                'main.defaultSettingList', 'main.getGameDataList', 'store.getVarietyStore'):
+                u_check = None
+                if uuid:
+                    u_check = state.get_user(uuid)
+                if not u_check and isinstance(req_named, dict):
+                    d = req_named.get('data') or {}
+                    if isinstance(d, dict):
+                        for k in ('device_uuid', 'uuid', 'u_seq'):
+                            val = d.get(k)
+                            if val:
+                                u_check = state.get_user(str(val))
+                                if u_check:
+                                    break
                 if u_check and u_check.get('is_banned'):
-                    self.log_message("BANNED USER ATTEMPT: %s", uuid)
-                    error = {'code': 90001, 'errmsg': 'Tài khoản của bạn đã bị KHÓA (BANNED) bởi Quản trị viên!'}
+                    self.log_message("BANNED USER BLOCKED: %s (cmd=%s)", u_check.get('uuid'), cmd_full)
+                    error = {
+                        'code': 900,
+                        'errmsg': 'Tài khoản của bạn đã bị KHÓA (BAN) bởi Quản trị viên!\nVui lòng liên hệ Admin để được hỗ trợ.'
+                    }
                     simple = codec.SCHEMA[cmd_full]['name']
                     rdto, env = dispatch.build_return(cmd_full, None, call=simple, category=category, error=error)
                     if rdto:

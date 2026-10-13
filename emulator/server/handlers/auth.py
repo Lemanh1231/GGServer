@@ -501,6 +501,13 @@ def h_user_login(req, player, ctx):
     p = _payload(req)
     uuid = p.get('uuid') or p.get('device_uuid') or ctx.get('uuid')
     user = state.get_user(uuid)
+    if not user and p.get('device_uuid'):
+        user = state.get_user(p.get('device_uuid'))
+    if user and user.get('is_banned'):
+        return None, {
+            'code': 900,
+            'errmsg': 'Tài khoản của bạn đã bị KHÓA (BAN) bởi Quản trị viên!\nVui lòng liên hệ Admin để được hỗ trợ.'
+        }
     if not user:
         user = state.create_user(uuid, p.get('device_uuid', ''))
     u_seq_req = p.get('u_seq', 0) or 0

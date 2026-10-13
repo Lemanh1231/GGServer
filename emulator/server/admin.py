@@ -1227,7 +1227,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 <div class="event-item" style="padding: 10px 0; margin-bottom: 12px; background: rgba(255, 71, 87, 0.08); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 71, 87, 0.25);">
                     <div class="event-info">
                         <div class="event-name" style="color: #ff6b81;">🚫 Khóa Tài Khoản (Ban Player)</div>
-                        <div class="event-desc">Chặn tài khoản kết nối vào server. Game sẽ báo lỗi khi mở.</div>
+                        <div class="event-desc">Khóa tài khoản người chơi. Game sẽ hiện thông báo "Tài khoản đã bị KHÓA" thay vì lỗi mạng.</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="modal-is-banned">

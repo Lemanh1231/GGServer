@@ -230,7 +230,7 @@ def get_user(uuid):
         row = conn.execute('SELECT * FROM user_data WHERE uuid = ?', (uuid,)).fetchone()
         if not row:
             row = conn.execute('SELECT * FROM user_data WHERE device_uuid = ? OR u_id = ? OR u_seq = ?', 
-                               (uuid, uuid, uuid if uuid.isdigit() else -1)).fetchone()
+                               (uuid, uuid, uuid if str(uuid).isdigit() else -1)).fetchone()
 
         if row:
             user = _reconstruct_user(row)
