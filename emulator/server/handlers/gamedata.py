@@ -61,6 +61,12 @@ def build_filtered_ret():
         eidx = str(ev.get('idx', ''))
         is_active = 1 if event_manager.is_attendance_event_enabled(eidx) else 0
         ev_copy['b_IsActive'] = is_active
+        if is_active:
+            ev_copy['start_date'] = '0001-01-01 00:00:00'
+            ev_copy['end_date'] = '9999-12-31 23:59:00'
+        else:
+            ev_copy['start_date'] = '2020-01-01 00:00:00'
+            ev_copy['end_date'] = '2020-01-01 00:00:00'
         filtered_events.append(ev_copy)
     ret['event_list'] = filtered_events
 
