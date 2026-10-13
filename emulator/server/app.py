@@ -32,10 +32,11 @@ CONFIG = {
 
 # precompiled static responses (verbatim base64 bodies)
 STATIC_RESPONSES = {}
-# NOTE: getPostTime and getEventRewardList are intentionally NOT static --
+# NOTE: getPostTime, getEventRewardList, and getGameDataList are intentionally NOT static --
 # getPostTime is handled dynamically by handlers/post.py so the client checks
 # for new mailbox rewards and triggers red dot notifications on unread mail.
-for _name in ('getGameDataList', 'getVarietyStore'):
+# getGameDataList is handled dynamically by handlers/gamedata.py to sync live event toggles (Meowfest, etc.).
+for _name in ('getVarietyStore',):
     _f = os.path.join(GAMEDATA_DIR, _name + '.b64')
     if os.path.exists(_f):
         STATIC_RESPONSES[_name] = open(_f).read().strip()
@@ -115,6 +116,54 @@ class Handler(BaseHTTPRequestHandler):
             }
             self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
             return
+        if path == '/admin/api/users':
+            active_season = event_manager.get_active_star_pass_season()
+            users_list = []
+            conn = state.get_db()
+            rows = conn.execute('SELECT uuid, device_uuid, u_id, u_seq, u_cp, u_candy, u_like, attendance_count, user_contents_json FROM user_data ORDER BY u_seq ASC').fetchall()
+            conn.close()
+            for r in rows:
+                try:
+                    data = json.loads(r['user_contents_json'] or '{}')
+                except Exception:
+                    data = {}
+                ud = data.get('userdata', {})
+                tickets = data.get('user_ticketcollection', []) or []
+                subs = data.get('user_subscribe_list', []) or []
+                evp = data.get('user_event_point', []) or []
+
+                has_ticket = any(int(t.get('i_id', 0) or 0) in (active_season, 1000 + active_season) for t in tickets)
+                has_active_sub = any(int(s.get('i_SubscribeID', 0) or 0) in (active_season, 1000 + active_season) and int(s.get('i_isActive', 0) or 0) == 1 for s in subs)
+                is_gold = has_ticket or has_active_sub
+
+                pass_entry = next((e for e in evp if e.get('s_EventType') == 'Pass' and int(e.get('i_DataID', 0) or 0) == active_season), {})
+                cur_point = int(pass_entry.get('i_Point', 0) or 0)
+                cur_step = int(pass_entry.get('i_Step', 0) or 0)
+
+                att_info = data.get('attendance', {}).get('1', {})
+                att_day = att_info.get('day', 0)
+                att_ymd = att_info.get('ymd', 0)
+
+                users_list.append({
+                    'uuid': r['uuid'],
+                    'device_uuid': r['device_uuid'],
+                    'u_seq': r['u_seq'],
+                    'u_id': r['u_id'],
+                    'u_nick': ud.get('u_nick') or r['u_id'] or f"Player {r['u_seq']}",
+                    'u_last_login': ud.get('u_last_login') or ud.get('u_last_communication') or 'Chưa có',
+                    'u_cp': r['u_cp'],
+                    'u_candy': r['u_candy'],
+                    'u_like': float(r['u_like'] or 0.0),
+                    'attendance_count': r['attendance_count'] or ud.get('attendance_count', 0),
+                    'attendance_day': att_day,
+                    'attendance_ymd': att_ymd,
+                    'is_gold': is_gold,
+                    'star_point': cur_point,
+                    'star_step': cur_step,
+                })
+            resp = {'success': True, 'users': users_list, 'active_season': active_season}
+            self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
+            return
         fname = CDN_MAP.get(path)
         if not fname and path.startswith('/AssetBundles/'):
             fname = os.path.basename(path)   # tolerant fallback
@@ -131,6 +180,14 @@ class Handler(BaseHTTPRequestHandler):
     # _send() suppresses the body for HEAD while keeping status + Content-Length headers identical.
     do_HEAD = do_GET
 
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, HEAD')
+        self.send_header('Access-Control-Allow-Headers', '*')
+        self.send_header('Content-Length', '0')
+        self.end_headers()
+
     # ---------------- POST (game RPC / auth) ----------------
     def do_POST(self):
         try:
@@ -138,6 +195,10 @@ class Handler(BaseHTTPRequestHandler):
             body = self.rfile.read(length) if length else b''
             ctype = self.headers.get('Content-Type', '')
             path = self.path.split('?', 1)[0]
+
+            if path in ('/', '/health'):
+                self._send('GG emulator OK')
+                return
 
             # --- Admin Event Manager API ---
             if path == '/admin/api/events':
@@ -178,6 +239,189 @@ class Handler(BaseHTTPRequestHandler):
                     self._send(json.dumps(resp, ensure_ascii=False), 400, 'application/json; charset=utf-8')
                 return
 
+            if path == '/admin/api/user/event_settings':
+                try:
+                    data = json.loads(body.decode('utf-8'))
+                    target_uuid = data.get('uuid')
+                    if not target_uuid:
+                        raise ValueError('Thiếu mã UUID của người chơi!')
+
+                    user = state.get_user(target_uuid)
+                    if not user:
+                        raise ValueError(f'Không tìm thấy người chơi với ID {target_uuid}!')
+
+                    active_season = event_manager.get_active_star_pass_season()
+
+                    # 1. Update Gold Pass for this individual user
+                    if 'is_gold' in data:
+                        is_gold = bool(data['is_gold'])
+                        shop_items = user.setdefault('user_shop', [])
+                        subs = user.setdefault('user_subscribe_list', [])
+                        tickets = user.setdefault('user_ticketcollection', [])
+
+                        target_shop_id = 1000 + active_season
+                        sub_ids = (active_season, 1000 + active_season)
+
+                        if is_gold:
+                            # Add to user_shop to mark as legitimately owned
+                            sh = next((item for item in shop_items if int(item.get('i_id', 0) or 0) == target_shop_id), None)
+                            if not sh:
+                                shop_items.append({'i_id': target_shop_id, 'i_Count': 1, 'i_TotalCount': 1})
+                            else:
+                                sh['i_Count'] = max(int(sh.get('i_Count', 0) or 0), 1)
+                                sh['i_TotalCount'] = max(int(sh.get('i_TotalCount', 0) or 0), 1)
+
+                            # Ensure active subscription
+                            sub = next((s for s in subs if int(s.get('i_SubscribeID', 0) or 0) in sub_ids), None)
+                            if not sub:
+                                subs.append({
+                                    'i_SubscribeID': active_season,
+                                    'i_isActive': 1,
+                                    'i_ActiveTime': 2147483647
+                                })
+                            else:
+                                sub['i_isActive'] = 1
+                                sub['i_ActiveTime'] = 2147483647
+
+                            # Ensure tickets in ticketcollection
+                            t_ids = {int(t.get('i_id', 0) or 0) for t in tickets}
+                            if active_season not in t_ids:
+                                tickets.append({'i_id': active_season})
+                            if target_shop_id not in t_ids:
+                                tickets.append({'i_id': target_shop_id})
+                        else:
+                            # Revoke Gold Pass for this season
+                            user['user_shop'] = [item for item in shop_items if int(item.get('i_id', 0) or 0) not in (active_season, 1000 + active_season, 2000 + active_season, 3000 + active_season)]
+                            for s in subs:
+                                if int(s.get('i_SubscribeID', 0) or 0) in sub_ids:
+                                    s['i_isActive'] = 0
+                                    s['i_ActiveTime'] = 0
+                            user['user_ticketcollection'] = [t for t in tickets if int(t.get('i_id', 0) or 0) not in (active_season, target_shop_id)]
+
+                    # 2. Update Star Pass Points
+                    if 'star_point' in data and data['star_point'] is not None:
+                        new_point = max(0, int(data['star_point']))
+                        from server.handlers.reward import _get_step_for_points, _get_pass_version
+                        new_step = _get_step_for_points(active_season, new_point)
+                        pass_version = _get_pass_version(active_season)
+
+                        evp_list = user.setdefault('user_event_point', [])
+                        pass_entry = next((e for e in evp_list if e.get('s_EventType') == 'Pass' and int(e.get('i_DataID', 0) or 0) == active_season), None)
+                        if pass_entry:
+                            pass_entry['i_Point'] = new_point
+                            pass_entry['i_Step'] = new_step
+                            pass_entry['i_Version'] = pass_version
+                        else:
+                            evp_list.append({
+                                's_EventType': 'Pass',
+                                'i_DataID': active_season,
+                                'i_Point': new_point,
+                                'i_Step': new_step,
+                                'i_ADViewTime': 0,
+                                'i_Version': pass_version,
+                            })
+
+                    # 3. Update attendance count & board progress
+                    att_dict = user.setdefault('attendance', {})
+                    att_1 = att_dict.setdefault('1', {'day': 0, 'ymd': 0})
+                    ud = user.setdefault('userdata', {})
+                    today_ymd = int(time.strftime('%Y%m%d', time.localtime()))
+                    unlock_today = bool(data.get('attendance_unlock_today', True))
+                    att_mode = data.get('attendance_mode', 'claim_day')
+
+                    # Priority: attendance_day or attendance_count
+                    target_att = data.get('attendance_day')
+                    if target_att is None:
+                        target_att = data.get('attendance_count')
+
+                    if target_att is not None and str(target_att).strip() != '':
+                        target_day = int(target_att)
+                        if target_day >= 7:
+                            if att_mode == 'complete':
+                                att_1['day'] = 7
+                                att_1['ymd'] = today_ymd
+                                ud['attendance_count'] = 7
+                                ud['attendance_date'] = today_ymd
+                            else:
+                                # Ready to claim Day 7 in-game
+                                att_1['day'] = 6
+                                att_1['ymd'] = 0 if unlock_today else today_ymd
+                                ud['attendance_count'] = 7
+                                ud['attendance_date'] = 0 if unlock_today else today_ymd
+                        elif target_day <= 0:
+                            att_1['day'] = 0
+                            att_1['ymd'] = 0
+                            ud['attendance_count'] = 0
+                            ud['attendance_date'] = 0
+                        else:
+                            # Ready to claim Day target_day (e.g. Day 2 -> day=1, ymd=0)
+                            att_1['day'] = target_day - 1
+                            att_1['ymd'] = 0 if unlock_today else today_ymd
+                            ud['attendance_count'] = target_day
+                            ud['attendance_date'] = 0 if unlock_today else today_ymd
+
+                        # Sync SQLite columns
+                        conn = state.get_db()
+                        conn.execute('UPDATE user_data SET attendance_count = ?, attendance_date = ? WHERE uuid = ?',
+                                     (ud['attendance_count'], ud['attendance_date'], user['uuid']))
+                        conn.commit()
+                        conn.close()
+
+                    # Direct grant 7-day rewards if requested
+                    if data.get('grant_7d_rewards'):
+                        from server.handlers.reward import _give_reward, _get_event_rewards
+                        rewards = _get_event_rewards().get('1', {})
+                        for d_num in range(1, 8):
+                            rew = rewards.get(str(d_num))
+                            if rew:
+                                _give_reward(user, rew)
+                        att_1['day'] = 7
+                        att_1['ymd'] = today_ymd
+                        ud['attendance_count'] = 7
+                        ud['attendance_date'] = today_ymd
+                        conn = state.get_db()
+                        conn.execute('UPDATE user_data SET attendance_count = 7, attendance_date = ? WHERE uuid = ?',
+                                     (today_ymd, user['uuid']))
+                        conn.commit()
+                        conn.close()
+
+                    # Save user
+                    state.save_user(user)
+
+                    # 4. Currencies (CP, Candy, Tim/Like)
+                    add_cp = int(data.get('add_cp', 0) or 0)
+                    add_candy = float(data.get('add_candy', 0) or 0)
+                    add_like = float(data.get('add_like', 0) or 0)
+                    set_like = data.get('set_like')
+
+                    if set_like is not None and str(set_like).strip() != '':
+                        s_like = max(0.0, float(set_like))
+                        conn = state.get_db()
+                        conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (s_like, user['uuid']))
+                        conn.commit()
+                        conn.close()
+                        user.setdefault('userdata', {})['u_like'] = s_like
+                        add_like = 0  # set_like takes precedence
+
+                    if add_cp != 0 or add_candy != 0 or add_like != 0:
+                        state.increment_currency(user['uuid'], cp=add_cp, candy=add_candy, like=add_like)
+                        if add_like != 0:
+                            user.setdefault('userdata', {})['u_like'] = float(user.get('userdata', {}).get('u_like', 0.0) or 0.0) + add_like
+
+                    # 5. Direct Mail notification
+                    if data.get('send_mail'):
+                        title = data.get('mail_title') or 'Cập nhật Sự kiện Cá nhân'
+                        memo = data.get('mail_memo') or 'Quản trị viên đã cập nhật quyền lợi sự kiện cho tài khoản của bạn.'
+                        from server.handlers import post
+                        post.send_post(uuid=user['uuid'], title=title, memo=memo, items=[])
+
+                    resp = {'success': True, 'message': 'Đã cập nhật sự kiện cho người chơi thành công!'}
+                    self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
+                except Exception as e:
+                    resp = {'success': False, 'error': str(e)}
+                    self._send(json.dumps(resp, ensure_ascii=False), 400, 'application/json; charset=utf-8')
+                return
+
             form = multipart.parse(ctype, body)
 
             # --- NeonAPI / PmangPlus auth (JSON) ---
@@ -207,6 +451,17 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(STATIC_RESPONSES[call])
                 return
 
+            # dynamic event-aware gamedata response with caching
+            if call == 'getGameDataList':
+                from server.handlers import gamedata
+                out_b64 = gamedata.get_game_data_list_b64(category=category)
+                self.log_message("%s -> dynamic (meowfest=%s, %d B)",
+                                 call, event_manager.is_meowfest_enabled(), len(out_b64))
+                _capture(call, {'path': path, 'call': call, 'dynamic': True,
+                                'meowfest': event_manager.is_meowfest_enabled()})
+                self._send(out_b64)
+                return
+
             cmd_full = dispatch.resolve_command(form)
             msg_field, b64 = dispatch.find_message_field(form)
             req_named = None
@@ -222,6 +477,9 @@ class Handler(BaseHTTPRequestHandler):
                    'request_decoded': req_named}
 
             if not cmd_full:
+                if not call and not form:
+                    self._send('GG emulator OK')
+                    return
                 _capture('UNRESOLVED', cap)
                 self.log_message("UNRESOLVED call=%s fields=%s", call, list(form.keys()))
                 self._send('')

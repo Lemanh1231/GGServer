@@ -201,6 +201,12 @@ def save_event_config(cfg, notify_in_game=False):
         json.dump(normalized, f, indent=2, ensure_ascii=False)
     os.replace(tmp_path, CONFIG_PATH)
 
+    try:
+        from server.handlers import gamedata
+        gamedata.invalidate_cache()
+    except Exception:
+        pass
+
     if notify_in_game:
         try:
             from server.handlers import post

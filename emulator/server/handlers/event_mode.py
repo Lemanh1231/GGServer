@@ -141,17 +141,3 @@ def h_event_reward_list(req, player, ctx):
         ],
     }, OK
 
-
-@cmd('paidEventPoint')
-def h_paid_event_point(req, player, ctx):
-    p = _payload(req)
-    uuid = p.get('uuid') or ctx.get('uuid')
-    user = state.get_user(uuid) if uuid else None
-    ud = user.get('userdata', {}) if user else {}
-    return {
-        'u_cp': int(ud.get('u_cp', 0)),
-        'u_candy': float(ud.get('u_candy', 0)),
-        'i_SubscribeID': 0,
-        'i_Point': 0,
-        'i_Version': 1,
-    }, OK

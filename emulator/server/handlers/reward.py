@@ -1,4 +1,4 @@
-import os, time, json
+import os, time, json, datetime
 from server import state, event_manager
 from server.handlers.registry import cmd, OK, _payload
 
@@ -672,6 +672,21 @@ def _get_pass_point_config(sub_id):
         pass
     return {'cp_cost': 50, 'paid_point': 5000, 'ad_point': 2000, 'ad_cooltime': 600}
 
+def _get_pass_version(sub_id):
+    try:
+        now_year = datetime.datetime.now().year
+        path = os.path.join(os.path.dirname(__file__), '..', '..', 'gamedata', 'game_data.json')
+        with open(path, encoding='utf-8') as f:
+            data = json.load(f)
+        for r in data.get('17', []):
+            if int(r.get('1', 0) or 0) == sub_id:
+                start_year = int(r.get('11', 2020) or 2020)
+                return now_year - start_year
+    except Exception:
+        pass
+    now_year = datetime.datetime.now().year
+    return now_year - (2020 if sub_id <= 5 else 2021)
+
 def _get_step_for_points(sub_id, points):
     try:
         path = os.path.join(os.path.dirname(__file__), '..', '..', 'gamedata', 'game_data.json')
@@ -698,6 +713,8 @@ def h_paid_event_point(req, player, ctx):
 
     sub_id = int(p.get('i_SubscribeID', 13) or 13)
     version = int(p.get('i_Version', 0) or 0)
+    if version <= 0:
+        version = _get_pass_version(sub_id)
     ptype = int(p.get('type', 0) or 0)
     cfg = _get_pass_point_config(sub_id)
 
@@ -713,32 +730,36 @@ def h_paid_event_point(req, player, ctx):
         points_to_add = cfg['ad_point']
 
     evp_list = user.setdefault('user_event_point', [])
-    cur_point = 0
-    cur_step = 0
     now_ts = int(time.time())
-    found = False
-    for ep in evp_list:
-        if ep.get('s_EventType') == 'Pass' and int(ep.get('i_DataID', 0) or 0) == sub_id:
-            ep['i_Point'] = int(ep.get('i_Point', 0) or 0) + points_to_add
-            cur_point = ep['i_Point']
-            ep['i_Step'] = _get_step_for_points(sub_id, cur_point)
-            cur_step = ep['i_Step']
-            if ptype == 0:
-                ep['i_ADViewTime'] = now_ts
-            found = True
 
-    if not found:
+    matching_eps = [ep for ep in evp_list if ep.get('s_EventType') == 'Pass' and int(ep.get('i_DataID', 0) or 0) == sub_id]
+    other_eps = [ep for ep in evp_list if not (ep.get('s_EventType') == 'Pass' and int(ep.get('i_DataID', 0) or 0) == sub_id)]
+
+    if matching_eps:
+        base_point = max(int(ep.get('i_Point', 0) or 0) for ep in matching_eps)
+        cur_point = base_point + points_to_add
+        cur_step = _get_step_for_points(sub_id, cur_point)
+        pass_entry = {
+            's_EventType': 'Pass',
+            'i_DataID': sub_id,
+            'i_Point': cur_point,
+            'i_Step': cur_step,
+            'i_ADViewTime': now_ts if ptype == 0 else max(int(ep.get('i_ADViewTime', 0) or 0) for ep in matching_eps),
+            'i_Version': version
+        }
+    else:
         cur_point = points_to_add
         cur_step = _get_step_for_points(sub_id, cur_point)
-        evp_list.append({
+        pass_entry = {
             's_EventType': 'Pass',
             'i_DataID': sub_id,
             'i_Point': cur_point,
             'i_Step': cur_step,
             'i_ADViewTime': now_ts if ptype == 0 else 0,
             'i_Version': version
-        })
+        }
 
+    evp_list[:] = other_eps + [pass_entry]
     state.save_user(user)
     return {
         'u_cp': ud.get('u_cp', 0),
@@ -747,3 +768,4 @@ def h_paid_event_point(req, player, ctx):
         'i_Point': cur_point,
         'i_Version': version
     }, OK
+

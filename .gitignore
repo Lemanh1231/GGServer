@@ -55,6 +55,8 @@ patcher/*.keystore
 *.xapk
 *.apks
 *.aab
+*.idsig
+work/build_b/
 
 # OS metadata
 .DS_Store

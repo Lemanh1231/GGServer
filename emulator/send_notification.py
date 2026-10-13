@@ -70,9 +70,27 @@ def main():
                 print(f"  - Type: {it['i_RewardType']}, ID: {it['i_RewardId']}, Qty: {it['d_RewardQuantity']}")
         else:
             print("No rewards attached.")
+
+        # Soft wakeup ADB device if connected so game client refreshes immediately without restarting
+        if trigger_soft_resume():
+            print("[INFO] Kích hoạt soft-sync qua ADB thành công! Client đã tự động nhận hòm thư mới.")
     else:
         print(f"[ERROR] Failed to send notification (user '{args.uuid}' not found).")
         sys.exit(1)
+
+def trigger_soft_resume():
+    try:
+        import subprocess
+        res = subprocess.run(["adb", "devices"], capture_output=True, text=True, timeout=2)
+        if "\tdevice" in res.stdout:
+            subprocess.run([
+                "adb", "shell", "am", "start", "-n",
+                "com.neowiz.game.guitargirl/com.google.firebase.MessagingUnityPlayerActivity"
+            ], capture_output=True, text=True, timeout=3)
+            return True
+    except Exception:
+        pass
+    return False
 
 if __name__ == '__main__':
     main()

@@ -189,55 +189,121 @@ def _starter_messenger(user):
 
 def _normalise_event_points(user):
     from server import event_manager
+    from server.handlers.reward import _get_pass_version, _get_step_for_points
     evp = user.setdefault('user_event_point', [])
-    pass_entry = next((e for e in evp if e.get('s_EventType') == 'Pass'), None)
     if not event_manager.is_star_pass_enabled():
-        if pass_entry:
-            evp.remove(pass_entry)
+        evp[:] = [e for e in evp if e.get('s_EventType') != 'Pass']
         return evp
+
     active_season = event_manager.get_active_star_pass_season()
-    if not pass_entry:
-        evp.append({'s_EventType': 'Pass', 'i_DataID': active_season, 'i_Point': 0, 'i_Step': 0, 'i_ADViewTime': 0, 'i_Version': active_season})
-    elif pass_entry.get('i_DataID') != active_season:
-        pass_entry['i_DataID'] = active_season
-        pass_entry['i_Version'] = active_season
+    target_version = _get_pass_version(active_season)
+
+    passes_by_id = {}
+    non_passes = []
+    for e in evp:
+        if e.get('s_EventType') == 'Pass':
+            sid = int(e.get('i_DataID', 0) or 0)
+            if sid not in passes_by_id:
+                passes_by_id[sid] = []
+            passes_by_id[sid].append(e)
+        else:
+            non_passes.append(e)
+
+    result_passes = []
+    if active_season in passes_by_id:
+        active_entries = passes_by_id.pop(active_season)
+        best_point = max(int(e.get('i_Point', 0) or 0) for e in active_entries)
+        best_ad = max(int(e.get('i_ADViewTime', 0) or 0) for e in active_entries)
+        result_passes.append({
+            's_EventType': 'Pass',
+            'i_DataID': active_season,
+            'i_Point': best_point,
+            'i_Step': _get_step_for_points(active_season, best_point),
+            'i_ADViewTime': best_ad,
+            'i_Version': target_version,
+        })
+    else:
+        result_passes.append({
+            's_EventType': 'Pass',
+            'i_DataID': active_season,
+            'i_Point': 0,
+            'i_Step': 0,
+            'i_ADViewTime': 0,
+            'i_Version': target_version,
+        })
+
+    for sid, entries in passes_by_id.items():
+        if sid <= 0:
+            continue
+        best_point = max(int(e.get('i_Point', 0) or 0) for e in entries)
+        best_ad = max(int(e.get('i_ADViewTime', 0) or 0) for e in entries)
+        sid_version = _get_pass_version(sid)
+        result_passes.append({
+            's_EventType': 'Pass',
+            'i_DataID': sid,
+            'i_Point': best_point,
+            'i_Step': _get_step_for_points(sid, best_point),
+            'i_ADViewTime': best_ad,
+            'i_Version': sid_version,
+        })
+
+    evp[:] = non_passes + result_passes
     return evp
+
 
 def _normalise_subscribe_list(user):
     from server import event_manager
     subs = user.setdefault('user_subscribe_list', [])
+
+    # Migrate any legacy i_EndTime to i_ActiveTime
+    for s in subs:
+        if 'i_EndTime' in s:
+            s['i_ActiveTime'] = int(s.pop('i_EndTime', 0) or 0)
+        if 'i_ActiveTime' not in s:
+            s['i_ActiveTime'] = 0
+
     if not event_manager.is_star_pass_enabled():
+        for s in subs:
+            s['i_isActive'] = 0
         return subs
+
     active_season = event_manager.get_active_star_pass_season()
     paid_enabled = event_manager.is_paid_star_card_enabled()
+
+    # Check if user legitimately bought active season in shop
+    shop_items = user.get('user_shop', []) or []
+    bought_ids = {int(sh.get('i_id', 0) or 0) for sh in shop_items if int(sh.get('i_Count', sh.get('i_TotalCount', 0)) or 0) > 0}
+    season_bought = (1000 + active_season in bought_ids or 2000 + active_season in bought_ids or 3000 + active_season in bought_ids)
+
     paid_sub = next((s for s in subs if s.get('i_SubscribeID') in (active_season, 1000 + active_season)), None)
-    if paid_enabled:
+    if paid_enabled or season_bought:
         if not paid_sub:
-            subs.append({'i_SubscribeID': active_season, 'i_isActive': 1, 'i_EndTime': 2147483647})
+            subs.append({'i_SubscribeID': active_season, 'i_isActive': 1, 'i_ActiveTime': 2147483647 if paid_enabled else int(time.time())})
         else:
             paid_sub['i_isActive'] = 1
-            paid_sub['i_EndTime'] = 2147483647
+            if paid_sub.get('i_ActiveTime', 0) == 0:
+                paid_sub['i_ActiveTime'] = 2147483647 if paid_enabled else int(time.time())
     else:
         if paid_sub:
             paid_sub['i_isActive'] = 0
+            paid_sub['i_ActiveTime'] = 0
+
+    for s in subs:
+        sid = s.get('i_SubscribeID', 0)
+        s_season = sid % 1000 if sid > 1000 else sid
+        if s_season != active_season:
+            s_bought = (1000 + s_season in bought_ids or 2000 + s_season in bought_ids or 3000 + s_season in bought_ids)
+            if not s_bought:
+                s['i_isActive'] = 0
+
     return subs
 
 
 def _normalise_ticketcollection(user):
-    tickets = user.setdefault('user_ticketcollection', [])
     owned_tickets = set()
-    for t in tickets:
-        tid = int(t.get('i_id', 0) or 0)
-        if (1 <= tid <= 13) or (1001 <= tid <= 1013):
-            owned_tickets.add(tid)
-    for s in user.get('user_subscribe_list', []):
-        pid = int(s.get('i_SubscribeID', 0) or 0)
-        if 1 <= pid <= 13:
-            owned_tickets.add(pid)
-        elif 1001 <= pid <= 1013:
-            owned_tickets.add(pid)
-            owned_tickets.add(pid % 1000)
-    for sh in user.get('user_shop', []):
+
+    # 1. Shop purchases
+    for sh in user.get('user_shop', []) or []:
         idx = int(sh.get('i_id', 0) or 0)
         cnt = int(sh.get('i_Count', sh.get('i_TotalCount', 0)) or 0)
         if cnt > 0:
@@ -250,6 +316,17 @@ def _normalise_ticketcollection(user):
                 if 1 <= s_num <= 13:
                     owned_tickets.add(s_num)
                     owned_tickets.add(1000 + s_num)
+
+    # 2. Active subscriptions (legitimately purchased or admin-granted)
+    for s in user.get('user_subscribe_list', []) or []:
+        if int(s.get('i_isActive', 0) or 0) == 1:
+            pid = int(s.get('i_SubscribeID', 0) or 0)
+            if 1 <= pid <= 13:
+                owned_tickets.add(pid)
+            elif 1001 <= pid <= 1013:
+                owned_tickets.add(pid)
+                owned_tickets.add(pid % 1000)
+
     result = [{'i_id': tid} for tid in sorted(owned_tickets)]
     user['user_ticketcollection'] = result
     return result
@@ -452,6 +529,8 @@ def h_user_login(req, player, ctx):
         ud_resp = dict(ud)
         ud_resp['u_last_login'] = now_str
         ud_resp['u_last_communication'] = now_str
+        if p.get('uuid'):
+            ud_resp['uuid'] = p.get('uuid')
 
         if needs_reset:
             # Send mismatched device_uuid on this initial login response to trigger
@@ -473,7 +552,10 @@ def h_user_login(req, player, ctx):
             'user_contents': contents,
         }, OK
     ud = user['userdata']
-    return {'user': {'u_seq': ud['u_seq'], 'u_id': ud['u_id']}}, OK
+    u_resp = {'u_seq': ud['u_seq'], 'u_id': ud['u_id']}
+    if p.get('uuid'):
+        u_resp['uuid'] = p.get('uuid')
+    return {'user': u_resp}, OK
 
 def _safe_merge_items(existing_items, new_items):
     """Merge client items into existing items without losing items granted server-side."""
@@ -526,7 +608,9 @@ def h_user_save(req, player, ctx):
             from server.handlers.follower import _sync_follower_messenger
             _sync_follower_messenger(user)
             if 'user_ticketcollection' in p: user['user_ticketcollection'] = p['user_ticketcollection']
-            if 'user_event_point' in p: user['user_event_point'] = p['user_event_point']
+            if 'user_event_point' in p:
+                user['user_event_point'] = p['user_event_point']
+                _normalise_event_points(user)
             if 'user_daily_mission' in p: _normalise_daily_missions(user, p['user_daily_mission'])
             if 'user_prop' in p:        user['user_prop'] = _safe_merge_items(user.get('user_prop', []), p['user_prop'])
             if 'user_candy_shop' in p:  user['user_candy_shop'] = p['user_candy_shop']
@@ -580,6 +664,20 @@ def h_user_load(req, player, ctx):
         return {'user_contents': {'user_shop': user.get('user_shop', [])}}, OK
     elif load_type == 'buff':
         return {'user_contents': {'user_buff': _active_buffs(user)}}, OK
+    elif load_type in ('ALL', None, ''):
+        contents = _user_contents(user)
+        areas = user.get('areas') or state._default_areas()
+        user['areas'] = areas
+        area_map = {int(k): v for k, v in areas.items()}
+        ud = user.get('userdata', {})
+        now_str = time.strftime('%Y-%m-%d %H:%M:%S')
+        ud_resp = dict(ud)
+        ud_resp['u_last_communication'] = now_str
+        return {
+            'user': ud_resp,
+            'area_data': area_map,
+            'user_contents': contents,
+        }, OK
     return {}, OK
 
 @cmd('setTutorialNew')

@@ -4,9 +4,9 @@ import os
 import threading
 
 from server.handlers.registry import HANDLERS, cmd
-from . import auth, shop, reward, system, profile, music, follower, event_mode, ch_third, post
+from . import auth, shop, reward, system, profile, music, follower, event_mode, ch_third, post, gamedata
 
-_MODULES = (auth, shop, reward, system, profile, music, follower, event_mode, ch_third, post)
+_MODULES = (auth, shop, reward, system, profile, music, follower, event_mode, ch_third, post, gamedata)
 _MODULE_MTIMES = {}
 _RELOAD_LOCK = threading.RLock()
 

@@ -274,6 +274,136 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* User Table & Modal */
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.88rem;
+        }
+        .user-table th, .user-table td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .user-table th {
+            color: var(--text-sub);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .user-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .user-badge-gold {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.25));
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .user-badge-free {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-sub);
+            border: 1px solid var(--card-border);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+        }
+        .btn-setting-event {
+            background: linear-gradient(135deg, #6c5ce7, #8e44ad);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-setting-event:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.4);
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-dialog {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+            animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.02);
+        }
+        .modal-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            font-size: 1.4rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px;
+        }
+        .modal-close:hover {
+            color: #fff;
+        }
+        .modal-body {
+            padding: 20px;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            padding: 14px 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.02);
+        }
         /* CLI Reference */
         .cli-box {
             background: #0d101a;
@@ -311,6 +441,22 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     <input type="checkbox" id="auto-notify-mail" checked>
                     <span>📬 Tự động gửi thư thông báo vào game khi lưu sự kiện</span>
                 </label>
+            </div>
+        </div>
+
+        <!-- 0. Quản lý Tài khoản Người chơi (User Accounts) -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">👥 Danh Sách Người Chơi (User Accounts)</div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.82rem;" onclick="loadUsers()">🔄 Làm mới danh sách</button>
+                </div>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom: 12px;">
+                Quản lý tiến trình và sự kiện riêng biệt cho từng người chơi. Bấm nút <b>⚙️ Setting Event</b> để cấu hình Thẻ Sao Gold, điểm số hoặc tặng tài nguyên riêng mà không ảnh hưởng tới người chơi khác.
+            </p>
+            <div id="users-table-container" style="overflow-x: auto;">
+                <div style="text-align: center; color: var(--text-sub); padding: 20px;">Đang tải danh sách người chơi...</div>
             </div>
         </div>
 
@@ -703,8 +849,303 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             }
         }
 
-        window.onload = loadConfig;
+        let cachedUsers = [];
+
+        async function loadUsers() {
+            const container = document.getElementById('users-table-container');
+            try {
+                const res = await fetch('/admin/api/users');
+                const data = await res.json();
+                if (!data.success) throw new Error('Không thể tải danh sách người chơi');
+                cachedUsers = data.users || [];
+                const activeSeason = data.active_season || 13;
+
+                if (cachedUsers.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; color: var(--text-sub); padding: 24px; background: rgba(0,0,0,0.2); border-radius: 10px;">
+                            Chưa có người chơi nào đăng nhập server.<br>
+                            <span style="font-size:0.8rem; margin-top:4px; display:inline-block;">Dữ liệu tài khoản sẽ tự động xuất hiện tại đây khi người chơi kết nối vào game.</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = `
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Người Chơi</th>
+                                <th>Thời Gian Đăng Nhập Gần Nhất</th>
+                                <th>Tài Nguyên</th>
+                                <th>Thẻ Sao (Mùa ${activeSeason})</th>
+                                <th style="text-align: right;">Cài Đặt Riêng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                cachedUsers.forEach(u => {
+                    const passBadge = u.is_gold
+                        ? `<span class="user-badge-gold">⭐ Gold Pass</span>`
+                        : `<span class="user-badge-free">⚪ Free Pass</span>`;
+
+                    html += `
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600; color: #fff;">${escapeHtml(u.u_nick)}</div>
+                                <div style="font-size: 0.76rem; color: var(--text-sub);">Seq: #${u.u_seq} &bull; ID: ${escapeHtml(u.u_id || '-')}</div>
+                            </td>
+                            <td>
+                                <div style="color: var(--text-main); font-size: 0.85rem;">🕒 ${escapeHtml(u.u_last_login)}</div>
+                            </td>
+                            <td>
+                                <div style="font-size: 0.82rem; color: #ff6b81; font-weight: 600;">❤️ ${Number(Math.floor(u.u_like || 0)).toLocaleString()} Tim</div>
+                                <div style="font-size: 0.82rem; color: #f5cd79;">🍫 ${Number(u.u_cp || 0).toLocaleString()} CP</div>
+                                <div style="font-size: 0.82rem; color: #68d8d6;">🍬 ${Number(Math.floor(u.u_candy || 0)).toLocaleString()} Candy</div>
+                            </td>
+                            <td>
+                                <div>${passBadge}</div>
+                                <div style="font-size: 0.76rem; color: var(--text-sub); margin-top: 3px;">
+                                    ${Number(u.star_point || 0).toLocaleString()} điểm &bull; Cấp ${u.star_step || 0}
+                                </div>
+                            </td>
+                            <td style="text-align: right;">
+                                <button class="btn-setting-event" onclick="openUserModal('${u.uuid}')">
+                                    ⚙️ Setting Event
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = `<div style="color: var(--danger); padding: 12px; text-align: center;">Lỗi tải dữ liệu người chơi: ${e.message}</div>`;
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function openUserModal(uuid) {
+            const u = cachedUsers.find(x => x.uuid === uuid);
+            if (!u) {
+                showToast('Không tìm thấy người chơi!', true);
+                return;
+            }
+            document.getElementById('modal-uuid').value = u.uuid;
+            document.getElementById('modal-user-name').innerText = u.u_nick;
+            document.getElementById('modal-user-sub').innerText = `ID: ${u.u_id || '-'} | Seq: #${u.u_seq} | UUID: ${u.uuid}`;
+            document.getElementById('modal-user-lastlogin').innerText = `🕒 Đăng nhập gần nhất: ${u.u_last_login}`;
+            document.getElementById('modal-is-gold').checked = !!u.is_gold;
+            document.getElementById('modal-star-point').value = u.star_point || 0;
+
+            // Currencies
+            document.getElementById('modal-user-like').innerText = 'Hiện có: ' + Number(Math.floor(u.u_like || 0)).toLocaleString() + ' Tim';
+            document.getElementById('modal-add-like').value = 0;
+            document.getElementById('modal-add-cp').value = 0;
+            document.getElementById('modal-add-candy').value = 0;
+            document.getElementById('modal-set-like').value = '';
+
+            // Attendance
+            const currentClaimed = u.attendance_day || 0;
+            const currentNext = Math.min(7, currentClaimed + 1);
+            document.getElementById('modal-att-status').innerText = `Đã nhận ${currentClaimed}/7 ngày`;
+            if (currentClaimed >= 7) {
+                document.getElementById('modal-att-day').value = 'completed';
+            } else if (currentClaimed === 6) {
+                document.getElementById('modal-att-day').value = 'claim_7';
+            } else {
+                document.getElementById('modal-att-day').value = 'claim_' + currentNext;
+            }
+            document.getElementById('modal-att-unlock').checked = true;
+            document.getElementById('modal-att-direct-grant').checked = false;
+
+            document.getElementById('modal-send-mail').checked = false;
+            document.getElementById('user-event-modal').classList.add('active');
+        }
+
+        function closeUserModal() {
+            document.getElementById('user-event-modal').classList.remove('active');
+        }
+
+        async function saveUserModal() {
+            const uuid = document.getElementById('modal-uuid').value;
+            const is_gold = document.getElementById('modal-is-gold').checked;
+            const star_point = parseInt(document.getElementById('modal-star-point').value) || 0;
+
+            const add_cp = parseInt(document.getElementById('modal-add-cp').value) || 0;
+            const add_candy = parseFloat(document.getElementById('modal-add-candy').value) || 0;
+            const add_like = parseFloat(document.getElementById('modal-add-like').value) || 0;
+            const set_like_val = document.getElementById('modal-set-like').value.trim();
+            const set_like = set_like_val !== '' ? parseFloat(set_like_val) : null;
+
+            // Attendance selection
+            const attDayVal = document.getElementById('modal-att-day').value;
+            let attendance_day = 7;
+            let attendance_mode = 'claim_day';
+            if (attDayVal === 'completed') {
+                attendance_day = 7;
+                attendance_mode = 'complete';
+            } else if (attDayVal === 'reset') {
+                attendance_day = 0;
+                attendance_mode = 'claim_day';
+            } else if (attDayVal.startsWith('claim_')) {
+                attendance_day = parseInt(attDayVal.replace('claim_', '')) || 7;
+                attendance_mode = 'claim_day';
+            }
+
+            const attendance_unlock_today = document.getElementById('modal-att-unlock').checked;
+            const grant_7d_rewards = document.getElementById('modal-att-direct-grant').checked;
+            const send_mail = document.getElementById('modal-send-mail').checked;
+
+            try {
+                const res = await fetch('/admin/api/user/event_settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uuid,
+                        is_gold,
+                        star_point,
+                        add_cp,
+                        add_candy,
+                        add_like,
+                        set_like,
+                        attendance_day,
+                        attendance_mode,
+                        attendance_unlock_today,
+                        grant_7d_rewards,
+                        send_mail,
+                        mail_title: 'Cập nhật Sự kiện Cá nhân',
+                        mail_memo: 'Quản trị viên đã cập nhật quyền lợi sự kiện cho tài khoản của bạn.'
+                    })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Lưu thất bại');
+                showToast(data.message || '✅ Đã cập nhật sự kiện cho người chơi thành công!');
+                closeUserModal();
+                loadUsers();
+            } catch (e) {
+                showToast('❌ Lỗi: ' + e.message, true);
+            }
+        }
+
+        window.onload = () => {
+            loadConfig();
+            loadUsers();
+        };
     </script>
+
+    <!-- Modal Setting Event cho User -->
+    <div id="user-event-modal" class="modal-overlay">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>⚙️ Cài đặt Sự kiện Riêng</h3>
+                <button class="modal-close" onclick="closeUserModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="background:#121524; border:1px solid var(--card-border); border-radius:10px; padding:12px; margin-bottom:16px;">
+                    <div style="font-weight:700; font-size:1.05rem; color:#fff;" id="modal-user-name">Player</div>
+                    <div style="font-size:0.8rem; color:var(--text-sub); margin-top:4px;" id="modal-user-sub">UUID: -</div>
+                    <div style="font-size:0.8rem; color:var(--text-sub); margin-top:4px;" id="modal-user-lastlogin">🕒 Đăng nhập gần nhất: -</div>
+                </div>
+
+                <input type="hidden" id="modal-uuid">
+
+                <!-- 1. Star Pass Toggle -->
+                <div class="event-item" style="padding: 10px 0;">
+                    <div class="event-info">
+                        <div class="event-name">⭐ Thẻ Sao Gold Trả Phí (Paid Pass)</div>
+                        <div class="event-desc">Mở khóa phần thưởng Thẻ Sao Gold mùa hiện tại cho riêng tài khoản này</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="modal-is-gold">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- 2. Star Pass Points -->
+                <div class="form-group" style="margin-top:10px; padding-top:10px;">
+                    <label class="form-label">Điểm Thẻ Sao (Star Points):</label>
+                    <input type="number" id="modal-star-point" min="0" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                    <div style="font-size:0.75rem; color:var(--text-sub); margin-top:4px;">Cập nhật điểm để nhận quà các cấp độ mốc sao (Tự động tính level quà tương ứng).</div>
+                </div>
+
+                <!-- 3. Currencies (Tim/Likes, Socola/CP, Kẹo/Candy) -->
+                <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                    <div style="font-weight:600; font-size:0.9rem; color:#fff; margin-bottom:8px;">💰 Tài Nguyên (Tim, Socola, Kẹo)</div>
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <div style="flex:1;">
+                            <label class="form-label">Thêm Tim (Likes):</label>
+                            <input type="number" id="modal-add-like" value="0" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                        </div>
+                        <div style="flex:1;">
+                            <label class="form-label">Thêm Socola (CP):</label>
+                            <input type="number" id="modal-add-cp" value="0" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                        </div>
+                        <div style="flex:1;">
+                            <label class="form-label">Thêm Kẹo (Candy):</label>
+                            <input type="number" id="modal-add-candy" value="0" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label" style="display:flex; justify-content:space-between;">
+                            <span>❤️ Đặt chính xác số Tim (Ghi đè số Tim hiện tại):</span>
+                            <span id="modal-user-like" style="color:#ff6b81; font-weight:600;">Hiện có: 0</span>
+                        </label>
+                        <input type="number" id="modal-set-like" placeholder="Nhập số Tim muốn đặt (để trống nếu chỉ muốn cộng thêm)..." style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                    </div>
+                </div>
+
+                <!-- 4. Điểm Danh 7 Ngày Tân Thủ -->
+                <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span style="font-weight:600; font-size:0.9rem; color:#fff;">📅 Điểm Danh 7 Ngày Tân Thủ (7-Day Attendance)</span>
+                        <span id="modal-att-status" style="font-size:0.78rem; color:var(--text-sub);"></span>
+                    </div>
+                    
+                    <label class="form-label">Chọn mốc ngày điểm danh:</label>
+                    <select id="modal-att-day" style="margin-bottom:10px;">
+                        <option value="claim_7">⭐ Ngày 7 (Mở khóa nhận quà Ngày 7 ngay: Nhạc Bông hoa chưa được đặt tên)</option>
+                        <option value="claim_2">👗 Ngày 2 (Mở khóa nhận quà Ngày 2: Váy đầm hoa tuyết)</option>
+                        <option value="claim_1">📅 Ngày 1 (Bắt đầu ngày 1: 100 CP)</option>
+                        <option value="claim_3">🍫 Ngày 3 (Mở khóa nhận Ngày 3: 200 CP)</option>
+                        <option value="claim_4">🍬 Ngày 4 (Mở khóa nhận Ngày 4: 50 Kẹo)</option>
+                        <option value="claim_5">🍫 Ngày 5 (Mở khóa nhận Ngày 5: 300 CP)</option>
+                        <option value="claim_6">🍬 Ngày 6 (Mở khóa nhận Ngày 6: 50 Kẹo)</option>
+                        <option value="completed">✅ Đã hoàn thành trọn bộ 7/7 ngày</option>
+                        <option value="reset">🔄 Đặt lại từ đầu (0/7 ngày)</option>
+                    </select>
+
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; color:var(--text-sub); cursor:pointer;">
+                            <input type="checkbox" id="modal-att-unlock" checked>
+                            <span>🔓 Mở khóa nhận quà ngay hôm nay (Xóa giới hạn chờ 24h)</span>
+                        </label>
+                        <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; color:#f5cd79; cursor:pointer;">
+                            <input type="checkbox" id="modal-att-direct-grant">
+                            <span>🎁 Nhận ngay trọn bộ quà 7 ngày vào tài khoản (Nhạc 13 + Váy 9 + 600 CP + 100 Kẹo)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 5. Mail notice toggle -->
+                <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                    <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-sub); cursor:pointer;">
+                        <input type="checkbox" id="modal-send-mail">
+                        <span>📬 Gửi kèm thư thông báo vào Hòm thư in-game của người chơi</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeUserModal()" style="flex:1;">Hủy</button>
+                <button class="btn btn-primary" onclick="saveUserModal()" style="flex:1;">💾 Lưu Cài Đặt Riêng</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 """

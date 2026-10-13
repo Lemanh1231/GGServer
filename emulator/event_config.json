@@ -18,19 +18,19 @@
     "202110": {
       "name": "Sự kiện đăng nhập tháng 10/2021",
       "description": "Sự kiện đăng nhập lễ hội Halloween 14 ngày",
-      "enabled": false
+      "enabled": true
     },
     "202111": {
       "name": "Sự kiện đăng nhập tháng 11/2021",
       "description": "Sự kiện chọn quà đăng nhập tân thủ 7 ngày",
-      "enabled": false
+      "enabled": true
     }
   },
   "star_pass": {
     "name": "Thẻ Sao / Star Pass",
     "description": "Vé mùa Star Pass với chuỗi nhiệm vụ và phần thưởng độc quyền 13 mùa giải",
     "enabled": true,
-    "active_season": 13,
+    "active_season": 6,
     "paid_card_enabled": false
   },
   "pass_goods_sale": {
@@ -52,7 +52,7 @@
     "name": "Lễ hội Hiệu ứng Thời tiết Mùa",
     "description": "Hiệu ứng tuyết rơi mùa đông (Snow Festival) hoặc cánh hoa anh đào rơi mùa xuân (Cherry Blossom Date)",
     "snow_enabled": true,
-    "cherry_blossom_enabled": false
+    "cherry_blossom_enabled": true
   },
   "fan_art_costume": {
     "name": "Trang phục Thiết kế Fan Art",
@@ -82,13 +82,13 @@
     },
     "202110": {
       "name": "Sự kiện đăng nhập tháng 10/2021",
-      "enabled": false,
-      "state": "ended"
+      "enabled": true,
+      "state": "active"
     },
     "202111": {
       "name": "Sự kiện đăng nhập tháng 11/2021",
-      "enabled": false,
-      "state": "ended"
+      "enabled": true,
+      "state": "active"
     }
   },
   "paid_star_card": {

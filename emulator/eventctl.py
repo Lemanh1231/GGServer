@@ -239,6 +239,24 @@ def cmd_sendmail(args):
     if items:
         print(f"{CYAN}  Quà đính kèm: {cp} CP, {candy} Kẹo, {cookies} Cookies{RESET}")
 
+    if trigger_soft_resume():
+        print(f"{YELLOW}⚡ Đã tự động kích hoạt soft-sync tới game qua ADB! Client đã cập nhật hòm thư tức thì.{RESET}")
+
+
+def trigger_soft_resume():
+    try:
+        import subprocess
+        res = subprocess.run(["adb", "devices"], capture_output=True, text=True, timeout=2)
+        if "\tdevice" in res.stdout:
+            subprocess.run([
+                "adb", "shell", "am", "start", "-n",
+                "com.neowiz.game.guitargirl/com.google.firebase.MessagingUnityPlayerActivity"
+            ], capture_output=True, text=True, timeout=3)
+            return True
+    except Exception:
+        pass
+    return False
+
 
 def print_help():
     print(f"""{BOLD}Hướng dẫn sử dụng công cụ điều khiển sự kiện (eventctl):{RESET}
