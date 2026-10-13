@@ -215,6 +215,31 @@ def cmd_gold(state_val):
     print(f"{GREEN}✓ Đã {st} Thẻ Sao Gold Trả Phí (Paid Star Pass Gold){RESET}")
 
 
+def cmd_sendmail(args):
+    if len(args) < 2:
+        print(f"{RED}Cú pháp: ./emulator/eventctl.sh sendmail <tiêu_đề> <nội_dung> [cp] [kẹo] [cookies]{RESET}")
+        return
+    title = args[0]
+    memo = args[1]
+    cp = int(args[2]) if len(args) > 2 and args[2].isdigit() else 0
+    candy = float(args[3]) if len(args) > 3 else 0.0
+    cookies = int(args[4]) if len(args) > 4 and args[4].isdigit() else 0
+
+    from server.handlers import post
+    items = []
+    if cp > 0:
+        items.append({'i_RewardType': 1, 'i_RewardId': 1, 'd_RewardQuantity': float(cp)})
+    if candy > 0:
+        items.append({'i_RewardType': 1, 'i_RewardId': 2, 'd_RewardQuantity': float(candy)})
+    if cookies > 0:
+        items.append({'i_RewardType': 1, 'i_RewardId': 11, 'd_RewardQuantity': float(cookies)})
+
+    p = post.send_post(uuid=None, title=title, memo=memo, items=items)
+    print(f"{GREEN}✓ Đã gửi thư thành công vào game! (ID thư: {p.get('idx')}){RESET}")
+    if items:
+        print(f"{CYAN}  Quà đính kèm: {cp} CP, {candy} Kẹo, {cookies} Cookies{RESET}")
+
+
 def print_help():
     print(f"""{BOLD}Hướng dẫn sử dụng công cụ điều khiển sự kiện (eventctl):{RESET}
   {CYAN}./emulator/eventctl.sh list{RESET}               : Hiển thị trạng thái tất cả các sự kiện
@@ -222,6 +247,7 @@ def print_help():
   {CYAN}./emulator/eventctl.sh disable <mục>{RESET}      : Tắt sự kiện (1, 2, 3, 202110, 202111, pass, gold, sale, meowfest, ch3, snow, cherry, fanart, rank, all)
   {CYAN}./emulator/eventctl.sh season <1-13>{RESET}     : Đặt mùa giải Star Pass (1 đến 13)
   {CYAN}./emulator/eventctl.sh gold <on|off>{RESET}     : Bật/tắt Thẻ Sao Gold trả phí
+  {CYAN}./emulator/eventctl.sh sendmail <tiêu_đề> <nội_dung> [cp] [kẹo] [cookies]{RESET} : Gửi thư & quà trực tiếp vào game
 """)
 
 
@@ -254,6 +280,8 @@ if __name__ == '__main__':
             print(f"{RED}Thiếu trạng thái! Ví dụ: ./emulator/eventctl.sh gold on{RESET}")
         else:
             cmd_gold(args[1])
+    elif cmd in ('sendmail', 'mail', 'post'):
+        cmd_sendmail(args[1:])
     else:
         print(f"{RED}Lệnh không xác định: '{cmd}'.{RESET}")
         print_help()

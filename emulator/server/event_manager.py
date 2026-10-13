@@ -193,13 +193,26 @@ def load_event_config():
         return _normalize_config(cfg)
 
 
-def save_event_config(cfg):
+def save_event_config(cfg, notify_in_game=False):
     """Normalize and persist configuration atomically to disk."""
     normalized = _normalize_config(cfg)
     tmp_path = CONFIG_PATH + '.tmp'
     with open(tmp_path, 'w', encoding='utf-8') as f:
         json.dump(normalized, f, indent=2, ensure_ascii=False)
     os.replace(tmp_path, CONFIG_PATH)
+
+    if notify_in_game:
+        try:
+            from server.handlers import post
+            sp = normalized.get('star_pass', {})
+            s_id = sp.get('active_season', 13)
+            s_info = next((s for s in STAR_PASS_SEASONS if s['id'] == s_id), {})
+            title = "Cập nhật Sự kiện Trực tiếp"
+            memo = f"Sự kiện máy chủ đã được đồng bộ! Star Pass: Mùa {s_id} - {s_info.get('name_vi', '')}. Chúc bạn có những phút giây thư giãn tuyệt vời!"
+            post.send_post(uuid=None, title=title, memo=memo)
+        except Exception:
+            pass
+
     return normalized
 
 

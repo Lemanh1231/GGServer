@@ -143,8 +143,35 @@ class Handler(BaseHTTPRequestHandler):
             if path == '/admin/api/events':
                 try:
                     data = json.loads(body.decode('utf-8'))
-                    updated = event_manager.save_event_config(data)
+                    notify = bool(data.get('notify_in_game', True))
+                    updated = event_manager.save_event_config(data, notify_in_game=notify)
                     resp = {'success': True, 'config': updated, 'message': 'Cập nhật sự kiện thành công!'}
+                    self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
+                except Exception as e:
+                    resp = {'success': False, 'error': str(e)}
+                    self._send(json.dumps(resp, ensure_ascii=False), 400, 'application/json; charset=utf-8')
+                return
+
+            if path == '/admin/api/send_post':
+                try:
+                    data = json.loads(body.decode('utf-8'))
+                    title = data.get('title') or 'Thông báo Quản trị'
+                    memo = data.get('memo') or 'Quản trị viên đã gửi thông báo đến bạn.'
+                    target_uuid = data.get('uuid') or None
+                    items = []
+                    cp = int(data.get('cp', 0) or 0)
+                    if cp > 0:
+                        items.append({'i_RewardType': 1, 'i_RewardId': 1, 'd_RewardQuantity': float(cp)})
+                    candy = float(data.get('candy', 0) or 0)
+                    if candy > 0:
+                        items.append({'i_RewardType': 1, 'i_RewardId': 2, 'd_RewardQuantity': float(candy)})
+                    cookies = int(data.get('cookies', 0) or 0)
+                    if cookies > 0:
+                        items.append({'i_RewardType': 1, 'i_RewardId': 11, 'd_RewardQuantity': float(cookies)})
+
+                    from server.handlers import post
+                    p = post.send_post(uuid=target_uuid, title=title, memo=memo, items=items)
+                    resp = {'success': True, 'message': 'Đã gửi thư và quà thành công vào game!', 'post': p}
                     self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
                 except Exception as e:
                     resp = {'success': False, 'error': str(e)}

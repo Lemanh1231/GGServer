@@ -475,6 +475,29 @@ def h_user_login(req, player, ctx):
     ud = user['userdata']
     return {'user': {'u_seq': ud['u_seq'], 'u_id': ud['u_id']}}, OK
 
+def _safe_merge_items(existing_items, new_items):
+    """Merge client items into existing items without losing items granted server-side."""
+    if not isinstance(existing_items, list):
+        return new_items if isinstance(new_items, list) else []
+    if not isinstance(new_items, list):
+        return existing_items
+
+    merged_map = {}
+    for item in existing_items:
+        if isinstance(item, dict) and 'i_id' in item:
+            merged_map[int(item['i_id'])] = dict(item)
+
+    for item in new_items:
+        if isinstance(item, dict) and 'i_id' in item:
+            iid = int(item['i_id'])
+            if iid in merged_map:
+                merged_map[iid].update(item)
+            else:
+                merged_map[iid] = dict(item)
+
+    return list(merged_map.values())
+
+
 @cmd('userSave')
 def h_user_save(req, player, ctx):
     p = _payload(req)
@@ -487,11 +510,13 @@ def h_user_save(req, player, ctx):
             user['last_save_time'] = now_ts
             user['userdata']['u_save_date'] = now_s
             user['userdata']['u_last_communication'] = now_s
+
+            # Two-way safe merging: never lose server-granted items
             if 'user_achievement' in p: _normalise_achievements(user, p['user_achievement'])
-            if 'user_character' in p:   user['characters'] = p['user_character']
-            if 'user_costume' in p:     user['costumes'] = p['user_costume']
-            if 'user_music' in p:       user['user_music'] = p['user_music']
-            if 'user_guitar' in p:      user['user_guitar'] = p['user_guitar']
+            if 'user_character' in p:   user['characters'] = _safe_merge_items(user.get('characters', []), p['user_character'])
+            if 'user_costume' in p:     user['costumes'] = _safe_merge_items(user.get('costumes', []), p['user_costume'])
+            if 'user_music' in p:       user['user_music'] = _safe_merge_items(user.get('user_music', []), p['user_music'])
+            if 'user_guitar' in p:      user['user_guitar'] = _safe_merge_items(user.get('user_guitar', []), p['user_guitar'])
             if 'user_follower' in p:
                 user['user_follower'] = p['user_follower']
                 _sync_follower_profiles_and_rewards(user)
@@ -503,8 +528,20 @@ def h_user_save(req, player, ctx):
             if 'user_ticketcollection' in p: user['user_ticketcollection'] = p['user_ticketcollection']
             if 'user_event_point' in p: user['user_event_point'] = p['user_event_point']
             if 'user_daily_mission' in p: _normalise_daily_missions(user, p['user_daily_mission'])
-            if 'user_prop' in p:        user['user_prop'] = p['user_prop']
+            if 'user_prop' in p:        user['user_prop'] = _safe_merge_items(user.get('user_prop', []), p['user_prop'])
             if 'user_candy_shop' in p:  user['user_candy_shop'] = p['user_candy_shop']
+
+            # Apply any pending server-side grants
+            pending = user.pop('pending_grants', None)
+            if pending and isinstance(pending, dict):
+                ud = user.setdefault('userdata', {})
+                if 'cp' in pending:
+                    ud['u_cp'] = int(ud.get('u_cp', 0) or 0) + int(pending['cp'])
+                if 'candy' in pending:
+                    ud['u_candy'] = float(ud.get('u_candy', 0.0) or 0.0) + float(pending['candy'])
+                if 'cookies' in pending:
+                    state.add_ap(user, int(pending['cookies']))
+
             for ui in (p.get('user_info') or []):
                 if ui.get('u_selected_costume_id'):
                     user['userdata']['u_selected_costume_id'] = ui['u_selected_costume_id']

@@ -303,9 +303,15 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             </div>
         </header>
 
-        <div class="action-bar">
+        <div class="action-bar" style="flex-wrap: wrap;">
             <button class="btn btn-secondary" onclick="loadConfig()">🔄 Tải lại cấu hình</button>
             <button class="btn btn-primary" onclick="saveConfig()">💾 Lưu thay đổi</button>
+            <div style="width: 100%; display: flex; justify-content: center; margin-top: 4px;">
+                <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-sub); cursor:pointer;">
+                    <input type="checkbox" id="auto-notify-mail" checked>
+                    <span>📬 Tự động gửi thư thông báo vào game khi lưu sự kiện</span>
+                </label>
+            </div>
         </div>
 
         <!-- 1. Attendance Events -->
@@ -474,6 +480,40 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             </div>
         </div>
 
+        <!-- 9. Live In-Game Push & Mailbox -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">📬 Gửi Thư & Tặng Quà Trực Tiếp Vào Game (Live In-Game Push)</div>
+                <span style="font-size:0.8rem; color:var(--text-sub)">Đồng bộ tức thì không cần out game</span>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom: 12px;">
+                Gửi thư thông báo và tặng tài nguyên trực tiếp vào Hộp thư in-game. Client đang chơi game sẽ tự động hiện dấu chấm đỏ (Red Dot) lập tức mà không cần thoát game!
+            </p>
+            <div class="form-group" style="margin-bottom: 10px;">
+                <label class="form-label">Tiêu đề thư:</label>
+                <input type="text" id="mail-title" value="Quà tặng Sự kiện Hệ thống" style="width:100%; padding:8px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+            </div>
+            <div class="form-group" style="margin-bottom: 10px;">
+                <label class="form-label">Nội dung thư:</label>
+                <input type="text" id="mail-memo" value="Chúc bạn chơi game vui vẻ! Hãy nhận quà tặng đặc biệt từ hệ thống nhé." style="width:100%; padding:8px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+            </div>
+            <div style="display:flex; gap:10px; margin-bottom: 14px;">
+                <div style="flex:1;">
+                    <label class="form-label">Socola (CP):</label>
+                    <input type="number" id="mail-cp" value="500" style="width:100%; padding:8px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                </div>
+                <div style="flex:1;">
+                    <label class="form-label">Kẹo (Candy):</label>
+                    <input type="number" id="mail-candy" value="100" style="width:100%; padding:8px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                </div>
+                <div style="flex:1;">
+                    <label class="form-label">Bánh quy (AP):</label>
+                    <input type="number" id="mail-cookies" value="50" style="width:100%; padding:8px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                </div>
+            </div>
+            <button class="btn btn-primary" style="width:100%; padding:10px;" onclick="sendDirectMail()">🚀 Gửi Thư & Quà Vào Game Ngay</button>
+        </div>
+
         <!-- CLI Guide Card -->
         <div class="card">
             <div class="card-header">
@@ -624,6 +664,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             currentConfig.event_ranking = currentConfig.event_ranking || {};
             currentConfig.event_ranking.enabled = document.getElementById('er-enabled').checked;
 
+            currentConfig.notify_in_game = document.getElementById('auto-notify-mail').checked;
+
             try {
                 const res = await fetch('/admin/api/events', {
                     method: 'POST',
@@ -637,6 +679,27 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 showToast('✅ Đã lưu và áp dụng cấu hình sự kiện thành công!');
             } catch (e) {
                 showToast('❌ Lỗi khi lưu: ' + e.message, true);
+            }
+        }
+
+        async function sendDirectMail() {
+            const title = document.getElementById('mail-title').value.trim() || 'Thông báo Quản trị';
+            const memo = document.getElementById('mail-memo').value.trim() || 'Quà tặng từ quản trị viên';
+            const cp = parseInt(document.getElementById('mail-cp').value) || 0;
+            const candy = parseFloat(document.getElementById('mail-candy').value) || 0;
+            const cookies = parseInt(document.getElementById('mail-cookies').value) || 0;
+
+            try {
+                const res = await fetch('/admin/api/send_post', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, memo, cp, candy, cookies })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Gửi thất bại');
+                showToast('🚀 Đã gửi thư và quà thành công vào game! Người chơi sẽ thấy chấm đỏ.');
+            } catch (e) {
+                showToast('❌ Lỗi khi gửi thư: ' + e.message, true);
             }
         }
 

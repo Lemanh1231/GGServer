@@ -46,5 +46,58 @@
     ],
     "url": "",
     "image_resource_name": ""
+  },
+  {
+    "idx": 102,
+    "notice_type": 1,
+    "title_ko": "Test Thông Báo",
+    "memo_ko": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "title_en": "Test Thông Báo",
+    "memo_en": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "title_jp": "Test Thông Báo",
+    "memo_jp": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "title_zh_chs": "Test Thông Báo",
+    "memo_zh_chs": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "title_zh_cht": "Test Thông Báo",
+    "memo_zh_cht": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "title_vi": "Test Thông Báo",
+    "memo_vi": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "title_es": "Test Thông Báo",
+    "memo_es": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "title_it": "Test Thông Báo",
+    "memo_it": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "title_id": "Test Thông Báo",
+    "memo_id": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "title_th": "Test Thông Báo",
+    "memo_th": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "title_pt": "Test Thông Báo",
+    "memo_pt": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "title_hi": "Test Thông Báo",
+    "memo_hi": "Hệ thống kết hợp 1 và 2 đã hoạt động",
+    "have_reward": 1,
+    "status": 0,
+    "unlimit_flg": 0,
+    "flg": 0,
+    "create_time": 1791854576,
+    "del_time": 1794446576,
+    "item_list": [
+      {
+        "i_RewardType": 1,
+        "i_RewardId": 1,
+        "d_RewardQuantity": 100.0
+      },
+      {
+        "i_RewardType": 1,
+        "i_RewardId": 2,
+        "d_RewardQuantity": 10.0
+      },
+      {
+        "i_RewardType": 1,
+        "i_RewardId": 11,
+        "d_RewardQuantity": 5.0
+      }
+    ],
+    "url": "",
+    "image_resource_name": ""
   }
 ]
