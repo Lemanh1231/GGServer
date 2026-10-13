@@ -11,19 +11,19 @@ import copy
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'event_config.json')
 
 STAR_PASS_SEASONS = [
-    {'id': 1, 'name_vi': 'Vị chanh Kỳ nghỉ', 'name_en': 'Lemon Flavored Vacation', 'year': 2020, 'month': 8},
-    {'id': 2, 'name_vi': 'Một điều ước gửi đến mặt trăng', 'name_en': 'Make a wish to the moon', 'year': 2020, 'month': 9},
-    {'id': 3, 'name_vi': 'Ngọt ngào Bữa tiệc Halloween', 'name_en': 'Sweet Halloween Party', 'year': 2020, 'month': 10},
-    {'id': 4, 'name_vi': 'Buổi chụp ảnh đặc biệt! Thần tượng ngọt ngào', 'name_en': 'Sweet Idol Photoshoot!', 'year': 2020, 'month': 11},
-    {'id': 5, 'name_vi': 'Lấp lánh Giáng Sinh mộng mơ', 'name_en': 'Twinkling Dreamy Christmas', 'year': 2020, 'month': 12},
-    {'id': 6, 'name_vi': 'Lễ hội tuyết', 'name_en': 'Snow Festival', 'year': 2021, 'month': 1},
-    {'id': 7, 'name_vi': 'Thiếu nữ ngày Tình nhân', 'name_en': 'Maid in Valentine', 'year': 2021, 'month': 2},
-    {'id': 8, 'name_vi': 'Hẹn hò mùa hoa anh đào', 'name_en': 'Cherry Blossom Date', 'year': 2021, 'month': 3},
-    {'id': 9, 'name_vi': 'Thông điệp mùa xuân dễ thương', 'name_en': 'Pleasant Spring Message', 'year': 2021, 'month': 4},
-    {'id': 10, 'name_vi': 'Picnic Tối Đầy Nắng', 'name_en': 'Sunny Evening Picnic', 'year': 2021, 'month': 5},
-    {'id': 11, 'name_vi': 'Ký Ức Màu Phấn Mơ Mộng', 'name_en': 'Dreaming Pastel Memories', 'year': 2021, 'month': 6},
-    {'id': 12, 'name_vi': 'Mùa Hè Lấp Lánh', 'name_en': 'Shining Summer', 'year': 2021, 'month': 7},
-    {'id': 13, 'name_vi': 'Cưỡi một vòng đu quay lãng mạn', 'name_en': 'Riding a Romantic Ferris Wheel', 'year': 2021, 'month': 8},
+    {'id': 1, 'name': 'Vị chanh Kỳ nghỉ (Lemon Flavored Vacation)', 'name_vi': 'Vị chanh Kỳ nghỉ', 'name_en': 'Lemon Flavored Vacation', 'year': 2020, 'month': 8},
+    {'id': 2, 'name': 'Một điều ước gửi đến mặt trăng (Make a wish to the moon)', 'name_vi': 'Một điều ước gửi đến mặt trăng', 'name_en': 'Make a wish to the moon', 'year': 2020, 'month': 9},
+    {'id': 3, 'name': 'Ngọt ngào Bữa tiệc Halloween (Sweet Halloween Party)', 'name_vi': 'Ngọt ngào Bữa tiệc Halloween', 'name_en': 'Sweet Halloween Party', 'year': 2020, 'month': 10},
+    {'id': 4, 'name': 'Buổi chụp ảnh đặc biệt! Thần tượng ngọt ngào (Sweet Idol Photoshoot!)', 'name_vi': 'Buổi chụp ảnh đặc biệt! Thần tượng ngọt ngào', 'name_en': 'Sweet Idol Photoshoot!', 'year': 2020, 'month': 11},
+    {'id': 5, 'name': 'Lấp lánh Giáng Sinh mộng mơ (Twinkling Dreamy Christmas)', 'name_vi': 'Lấp lánh Giáng Sinh mộng mơ', 'name_en': 'Twinkling Dreamy Christmas', 'year': 2020, 'month': 12},
+    {'id': 6, 'name': 'Lễ hội tuyết (Snow Festival)', 'name_vi': 'Lễ hội tuyết', 'name_en': 'Snow Festival', 'year': 2021, 'month': 1},
+    {'id': 7, 'name': 'Thiếu nữ ngày Tình nhân (Maid in Valentine)', 'name_vi': 'Thiếu nữ ngày Tình nhân', 'name_en': 'Maid in Valentine', 'year': 2021, 'month': 2},
+    {'id': 8, 'name': 'Hẹn hò mùa hoa anh đào (Cherry Blossom Date)', 'name_vi': 'Hẹn hò mùa hoa anh đào', 'name_en': 'Cherry Blossom Date', 'year': 2021, 'month': 3},
+    {'id': 9, 'name': 'Thông điệp mùa xuân dễ thương (Pleasant Spring Message)', 'name_vi': 'Thông điệp mùa xuân dễ thương', 'name_en': 'Pleasant Spring Message', 'year': 2021, 'month': 4},
+    {'id': 10, 'name': 'Picnic Tối Đầy Nắng (Sunny Evening Picnic)', 'name_vi': 'Picnic Tối Đầy Nắng', 'name_en': 'Sunny Evening Picnic', 'year': 2021, 'month': 5},
+    {'id': 11, 'name': 'Ký Ức Màu Phấn Mơ Mộng (Dreaming Pastel Memories)', 'name_vi': 'Ký Ức Màu Phấn Mơ Mộng', 'name_en': 'Dreaming Pastel Memories', 'year': 2021, 'month': 6},
+    {'id': 12, 'name': 'Mùa Hè Lấp Lánh (Shining Summer)', 'name_vi': 'Mùa Hè Lấp Lánh', 'name_en': 'Shining Summer', 'year': 2021, 'month': 7},
+    {'id': 13, 'name': 'Cưỡi một vòng đu quay lãng mạn (Riding a Romantic Ferris Wheel)', 'name_vi': 'Cưỡi một vòng đu quay lãng mạn', 'name_en': 'Riding a Romantic Ferris Wheel', 'year': 2021, 'month': 8},
 ]
 
 DEFAULT_CONFIG = {

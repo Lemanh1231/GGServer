@@ -1228,7 +1228,10 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             seasonsList.forEach(s => {
                 const opt = document.createElement('option');
                 opt.value = s.id;
-                opt.text = `${s.id}. ${s.name}`;
+                const nameVi = s.name_vi || s.name || `Mùa ${s.id}`;
+                const nameEn = s.name_en ? ` (${s.name_en})` : '';
+                const dateInfo = (s.month && s.year) ? ` [T${s.month}/${s.year}]` : '';
+                opt.text = `Mùa ${s.id}: ${nameVi}${nameEn}${dateInfo}`;
                 if (s.id === currentConfig.star_pass.active_season) opt.selected = true;
                 seasonSelect.appendChild(opt);
             });
