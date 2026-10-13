@@ -149,11 +149,28 @@ def _normalize_config(raw):
     if isinstance(c3, dict):
         cfg['chapter3_tour']['enabled'] = bool(c3.get('enabled', True))
 
-    # 6. Weather Festival
+    # 6. Weather Festival (Mutually exclusive: only 1 effect or none)
     wf = raw.get('weather_festival')
     if isinstance(wf, dict):
-        cfg['weather_festival']['snow_enabled'] = bool(wf.get('snow_enabled', True))
-        cfg['weather_festival']['cherry_blossom_enabled'] = bool(wf.get('cherry_blossom_enabled', False))
+        mode = wf.get('mode')
+        snow = bool(wf.get('snow_enabled', False))
+        cherry = bool(wf.get('cherry_blossom_enabled', False))
+        if mode == 'snow':
+            snow, cherry = True, False
+        elif mode == 'cherry':
+            snow, cherry = False, True
+        elif mode == 'none':
+            snow, cherry = False, False
+        elif snow and cherry:
+            # Prevent overlap: default to snow
+            cherry = False
+            mode = 'snow'
+        else:
+            mode = 'snow' if snow else ('cherry' if cherry else 'none')
+
+        cfg['weather_festival']['snow_enabled'] = snow
+        cfg['weather_festival']['cherry_blossom_enabled'] = cherry
+        cfg['weather_festival']['mode'] = mode
 
     # 7. Fan Art Costume
     fac = raw.get('fan_art_costume')
@@ -332,10 +349,26 @@ def set_chapter3_tour_enabled(enabled):
 def set_weather_festival(snow=None, cherry_blossom=None):
     cfg = load_event_config()
     wf = cfg.setdefault('weather_festival', {})
-    if snow is not None:
-        wf['snow_enabled'] = bool(snow)
-    if cherry_blossom is not None:
-        wf['cherry_blossom_enabled'] = bool(cherry_blossom)
+    if snow is True:
+        wf['snow_enabled'] = True
+        wf['cherry_blossom_enabled'] = False
+        wf['mode'] = 'snow'
+    elif cherry_blossom is True:
+        wf['snow_enabled'] = False
+        wf['cherry_blossom_enabled'] = True
+        wf['mode'] = 'cherry'
+    elif snow is False and cherry_blossom is None:
+        wf['snow_enabled'] = False
+        if not wf.get('cherry_blossom_enabled'):
+            wf['mode'] = 'none'
+    elif cherry_blossom is False and snow is None:
+        wf['cherry_blossom_enabled'] = False
+        if not wf.get('snow_enabled'):
+            wf['mode'] = 'none'
+    elif snow is False and cherry_blossom is False:
+        wf['snow_enabled'] = False
+        wf['cherry_blossom_enabled'] = False
+        wf['mode'] = 'none'
     return save_event_config(cfg)
 
 

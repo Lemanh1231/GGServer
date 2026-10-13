@@ -119,10 +119,10 @@ def cmd_enable(target):
         print(f"{GREEN}✓ Đã BẬT Sự kiện Tour Chapter 3 (Sunshine High School){RESET}")
     elif t in ('snow', 'tuyet'):
         event_manager.set_weather_festival(snow=True)
-        print(f"{GREEN}✓ Đã BẬT Hiệu ứng Tuyết rơi mùa đông (Snow Festival){RESET}")
+        print(f"{GREEN}✓ Đã BẬT Hiệu ứng Tuyết rơi mùa đông (Snow Festival) - Đã tự động tắt Hoa anh đào{RESET}")
     elif t in ('cherry', 'cherryblossom', 'hoaanhdao'):
         event_manager.set_weather_festival(cherry_blossom=True)
-        print(f"{GREEN}✓ Đã BẬT Hiệu ứng Cánh hoa anh đào rơi (Cherry Blossom Date){RESET}")
+        print(f"{GREEN}✓ Đã BẬT Hiệu ứng Cánh hoa anh đào rơi (Cherry Blossom Date) - Đã tự động tắt Tuyết rơi{RESET}")
     elif t in ('fanart', 'costume'):
         event_manager.set_fan_art_costume_enabled(True)
         print(f"{GREEN}✓ Đã BẬT Trang phục Thiết kế Fan Art 2021{RESET}")
@@ -136,10 +136,10 @@ def cmd_enable(target):
         event_manager.set_pass_goods_sale_enabled(True)
         event_manager.set_meowfest_enabled(True)
         event_manager.set_chapter3_tour_enabled(True)
-        event_manager.set_weather_festival(snow=True, cherry_blossom=True)
+        event_manager.set_weather_festival(snow=True)
         event_manager.set_fan_art_costume_enabled(True)
         event_manager.set_event_ranking_enabled(True)
-        print(f"{GREEN}✓ Đã BẬT TẤT CẢ các sự kiện!{RESET}")
+        print(f"{GREEN}✓ Đã BẬT TẤT CẢ các sự kiện! (Thời tiết: Tuyết rơi mùa đông){RESET}")
     else:
         print(f"{RED}✗ Mục không hợp lệ: '{target}'. Dùng: 1, 2, 3, 202110, 202111, pass, gold, sale, meowfest, ch3, snow, cherry, fanart, rank, all{RESET}")
 

@@ -443,6 +443,30 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             transform: translateX(22px);
         }
 
+        /* Weather Radio Selection */
+        .weather-radio-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .weather-radio-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.18);
+            transform: translateY(-1px);
+        }
+        .weather-radio-card.active {
+            background: rgba(108, 92, 231, 0.12);
+            border-color: #6c5ce7;
+            box-shadow: 0 4px 14px rgba(108, 92, 231, 0.25);
+        }
+
         /* Form elements */
         .form-group {
             margin-top: 14px;
@@ -831,27 +855,44 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 6. Weather Festival -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">❄️🌸 Lễ hội Hiệu ứng Thời tiết Mùa (Weather Festival)</div>
-                    <span style="font-size:0.8rem; color:var(--text-sub)">Hiệu ứng sảnh chính</span>
+                    <div class="card-title">❄️🌸 Hiệu Ứng Thời Tiết Mùa (Seasonal Weather)</div>
+                    <span style="font-size:0.8rem; color:var(--text-sub)">Chọn 1 hiệu ứng duy nhất</span>
                 </div>
-                <div class="event-item">
-                    <div class="event-info">
-                        <div class="event-name">Lễ hội Tuyết rơi Mùa đông (Snow Festival)</div>
-                        <div class="event-desc">Kích hoạt hiệu ứng những bông tuyết trắng rơi lãng mạn trên màn hình</div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="wf-snow-enabled">
-                        <span class="slider"></span>
+                <div style="font-size:0.85rem; color:var(--text-sub); margin-bottom:14px; line-height:1.4;">
+                    Hệ thống chỉ kích hoạt <b>1 hiệu ứng thời tiết duy nhất</b> tại một thời điểm để phân chia rõ ràng, tránh bị chồng đè hạt hiệu ứng lên nhau trong màn chơi:
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <label class="weather-radio-card" id="card-wf-snow" onclick="selectWeatherMode('snow')">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <input type="radio" name="weather_mode" value="snow" id="wf-mode-snow" style="width: 20px; height: 20px; accent-color: #6c5ce7; cursor: pointer;">
+                            <div>
+                                <div style="font-weight: 600; color: #fff; font-size: 0.95rem;">❄️ Lễ hội Tuyết rơi Mùa đông (Snow Festival)</div>
+                                <div style="font-size: 0.8rem; color: var(--text-sub); margin-top: 3px;">Kích hoạt các hạt bông tuyết trắng rơi lãng mạn ngoài khung cửa sổ phòng & sảnh chính</div>
+                            </div>
+                        </div>
+                        <span style="background: rgba(116, 185, 255, 0.15); color: #74b9ff; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight:600;">Mùa đông</span>
                     </label>
-                </div>
-                <div class="event-item">
-                    <div class="event-info">
-                        <div class="event-name">Hẹn hò Mùa Hoa Anh Đào (Cherry Blossom Date)</div>
-                        <div class="event-desc">Kích hoạt hiệu ứng những cánh hoa anh đào hồng bay bay trong không gian</div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="wf-cherry-enabled">
-                        <span class="slider"></span>
+
+                    <label class="weather-radio-card" id="card-wf-cherry" onclick="selectWeatherMode('cherry')">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <input type="radio" name="weather_mode" value="cherry" id="wf-mode-cherry" style="width: 20px; height: 20px; accent-color: #ff5e97; cursor: pointer;">
+                            <div>
+                                <div style="font-weight: 600; color: #fff; font-size: 0.95rem;">🌸 Hẹn hò Mùa Hoa Anh Đào (Cherry Blossom Date)</div>
+                                <div style="font-size: 0.8rem; color: var(--text-sub); margin-top: 3px;">Kích hoạt những cánh hoa anh đào màu hồng bay bay trong không gian mùa xuân</div>
+                            </div>
+                        </div>
+                        <span style="background: rgba(255, 118, 117, 0.15); color: #ff7675; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight:600;">Mùa xuân</span>
+                    </label>
+
+                    <label class="weather-radio-card" id="card-wf-none" onclick="selectWeatherMode('none')">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <input type="radio" name="weather_mode" value="none" id="wf-mode-none" style="width: 20px; height: 20px; accent-color: #a4b0be; cursor: pointer;">
+                            <div>
+                                <div style="font-weight: 600; color: #fff; font-size: 0.95rem;">🚫 Tắt toàn bộ hiệu ứng thời tiết</div>
+                                <div style="font-size: 0.8rem; color: var(--text-sub); margin-top: 3px;">Trở về không gian ban đầu mặc định của trò chơi, không có hạt thời tiết rơi</div>
+                            </div>
+                        </div>
+                        <span style="background: rgba(255, 255, 255, 0.08); color: var(--text-sub); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight:600;">Mặc định</span>
                     </label>
                 </div>
             </div>
@@ -1196,6 +1237,15 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             }
         }
 
+        function selectWeatherMode(mode) {
+            document.querySelectorAll('input[name="weather_mode"]').forEach(r => {
+                r.checked = (r.value === mode);
+            });
+            document.getElementById('card-wf-snow')?.classList.toggle('active', mode === 'snow');
+            document.getElementById('card-wf-cherry')?.classList.toggle('active', mode === 'cherry');
+            document.getElementById('card-wf-none')?.classList.toggle('active', mode === 'none');
+        }
+
         function renderUI() {
             if (!currentConfig) return;
 
@@ -1253,10 +1303,12 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             if (currentConfig.chapter3_tour.name) document.getElementById('c3-name').innerText = currentConfig.chapter3_tour.name;
             if (currentConfig.chapter3_tour.description) document.getElementById('c3-desc').innerText = currentConfig.chapter3_tour.description;
 
-            // Weather Festival
+            // Weather Festival (Mutually Exclusive)
             if (currentConfig.weather_festival) {
-                document.getElementById('wf-snow-enabled').checked = !!currentConfig.weather_festival.snow_enabled;
-                document.getElementById('wf-cherry-enabled').checked = !!currentConfig.weather_festival.cherry_blossom_enabled;
+                const snow = !!currentConfig.weather_festival.snow_enabled;
+                const cherry = !!currentConfig.weather_festival.cherry_blossom_enabled;
+                const mode = currentConfig.weather_festival.mode || (snow ? 'snow' : (cherry ? 'cherry' : 'none'));
+                selectWeatherMode(mode);
             }
 
             // Fan Art
@@ -1293,8 +1345,10 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             currentConfig.chapter3_tour.enabled = document.getElementById('c3-enabled').checked;
 
             currentConfig.weather_festival = currentConfig.weather_festival || {};
-            currentConfig.weather_festival.snow_enabled = document.getElementById('wf-snow-enabled').checked;
-            currentConfig.weather_festival.cherry_blossom_enabled = document.getElementById('wf-cherry-enabled').checked;
+            const selectedWeather = document.querySelector('input[name="weather_mode"]:checked')?.value || 'none';
+            currentConfig.weather_festival.snow_enabled = (selectedWeather === 'snow');
+            currentConfig.weather_festival.cherry_blossom_enabled = (selectedWeather === 'cherry');
+            currentConfig.weather_festival.mode = selectedWeather;
 
             currentConfig.fan_art_costume = currentConfig.fan_art_costume || {};
             currentConfig.fan_art_costume.enabled = document.getElementById('fac-enabled').checked;

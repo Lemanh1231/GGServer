@@ -52,7 +52,8 @@
     "name": "Lễ hội Hiệu ứng Thời tiết Mùa",
     "description": "Hiệu ứng tuyết rơi mùa đông (Snow Festival) hoặc cánh hoa anh đào rơi mùa xuân (Cherry Blossom Date)",
     "snow_enabled": true,
-    "cherry_blossom_enabled": true
+    "cherry_blossom_enabled": false,
+    "mode": "snow"
   },
   "fan_art_costume": {
     "name": "Trang phục Thiết kế Fan Art",
