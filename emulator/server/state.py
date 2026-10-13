@@ -58,6 +58,12 @@ def init_db():
             )
         ''')
         # Automatic Migration
+        try:
+            conn.execute('ALTER TABLE user_data ADD COLUMN is_banned INTEGER DEFAULT 0')
+            conn.commit()
+        except Exception:
+            pass
+
         for f in os.listdir(_DIR):
             if f.startswith('user_') and f.endswith('.json'):
                 try:
@@ -199,13 +205,21 @@ def _reconstruct_user(row):
     ud['u_fans'] = row['u_fans']
     ud['attendance_count'] = row['attendance_count']
     ud['attendance_date'] = row['attendance_date']
+    data['is_banned'] = bool(row['is_banned'] if 'is_banned' in row.keys() else 0)
 
     # Sync like currency to active areas so client in-game HUD displays the hearts
     cur_like = float(row['u_like'] or 0.0)
+    cur_like_int = int(cur_like)
     areas = data.setdefault('areas', _default_areas())
     for aid, ainfo in areas.items():
         if cur_like > float(ainfo.get('d_Like', 0.0) or 0.0):
             ainfo['d_Like'] = cur_like
+        try:
+            cur_gp1 = int(ainfo.get('s_Gp1') or '0')
+        except Exception:
+            cur_gp1 = 0
+        if cur_like_int > cur_gp1:
+            ainfo['s_Gp1'] = str(cur_like_int)
 
     return data
 
@@ -394,8 +408,14 @@ def increment_currency(uuid, cp=0, candy=0.0, like=0.0, fans=0):
                         d = json.loads(row['user_contents_json'])
                         new_l = float(row['u_like'] or 0.0)
                         d.setdefault('userdata', {})['u_like'] = new_l
+                        like_int = int(like)
                         for a in d.setdefault('areas', {}).values():
                             a['d_Like'] = new_l
+                            try:
+                                old_gp = int(a.get('s_Gp1') or '0')
+                            except Exception:
+                                old_gp = 0
+                            a['s_Gp1'] = str(max(0, old_gp + like_int))
                         conn.execute('UPDATE user_data SET user_contents_json = ? WHERE uuid = ?', (json.dumps(d, ensure_ascii=False), ruuid))
                     except Exception:
                         pass
@@ -407,20 +427,62 @@ def set_like_currency(uuid, amount):
         conn = get_db()
         ruuid = _resolve_uuid(conn, uuid)
         if ruuid is not None:
-            amount = max(0.0, float(amount))
-            conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (amount, ruuid))
+            try:
+                if isinstance(amount, str):
+                    amount_clean = amount.strip()
+                    if '.' in amount_clean or 'e' in amount_clean.lower():
+                        amount_int = int(float(amount_clean))
+                    else:
+                        amount_int = int(amount_clean)
+                else:
+                    amount_int = int(amount)
+            except Exception:
+                amount_int = 0
+            amount_f = max(0.0, float(amount_int))
+            amount_str = str(max(0, amount_int))
+
+            conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (amount_f, ruuid))
             row = conn.execute('SELECT user_contents_json FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
             if row and row['user_contents_json']:
                 try:
                     d = json.loads(row['user_contents_json'])
-                    d.setdefault('userdata', {})['u_like'] = amount
+                    d.setdefault('userdata', {})['u_like'] = amount_f
                     for a in d.setdefault('areas', {}).values():
-                        a['d_Like'] = amount
+                        a['d_Like'] = amount_f
+                        a['s_Gp1'] = amount_str
                     conn.execute('UPDATE user_data SET user_contents_json = ? WHERE uuid = ?', (json.dumps(d, ensure_ascii=False), ruuid))
                 except Exception:
                     pass
             conn.commit()
         conn.close()
+
+def ban_user(uuid, banned=True):
+    with _LOCK:
+        conn = get_db()
+        ruuid = _resolve_uuid(conn, uuid)
+        if ruuid is not None:
+            val = 1 if banned else 0
+            conn.execute('UPDATE user_data SET is_banned = ? WHERE uuid = ?', (val, ruuid))
+            conn.commit()
+            res = True
+        else:
+            res = False
+        conn.close()
+        return res
+
+def delete_user(uuid):
+    with _LOCK:
+        conn = get_db()
+        ruuid = _resolve_uuid(conn, uuid)
+        if ruuid is not None:
+            conn.execute('DELETE FROM user_inventory WHERE uuid = ?', (ruuid,))
+            conn.execute('DELETE FROM user_data WHERE uuid = ?', (ruuid,))
+            conn.commit()
+            res = True
+        else:
+            res = False
+        conn.close()
+        return res
 
 def spend_currency(uuid, *, currency, amount):
     """Atomically spend a positive amount only when the balance covers it."""

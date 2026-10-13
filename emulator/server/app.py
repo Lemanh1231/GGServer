@@ -120,7 +120,7 @@ class Handler(BaseHTTPRequestHandler):
             active_season = event_manager.get_active_star_pass_season()
             users_list = []
             conn = state.get_db()
-            rows = conn.execute('SELECT uuid, device_uuid, u_id, u_seq, u_cp, u_candy, u_like, attendance_count, user_contents_json FROM user_data ORDER BY u_seq ASC').fetchall()
+            rows = conn.execute('SELECT uuid, device_uuid, u_id, u_seq, u_cp, u_candy, u_like, attendance_count, is_banned, user_contents_json FROM user_data ORDER BY u_seq ASC').fetchall()
             conn.close()
             for r in rows:
                 try:
@@ -166,6 +166,7 @@ class Handler(BaseHTTPRequestHandler):
                     'is_gold': is_gold,
                     'star_point': cur_point,
                     'star_step': cur_step,
+                    'is_banned': bool(r['is_banned'] if 'is_banned' in r.keys() else 0),
                 })
             resp = {'success': True, 'users': users_list, 'active_season': active_season}
             self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
@@ -239,6 +240,36 @@ class Handler(BaseHTTPRequestHandler):
                     from server.handlers import post
                     p = post.send_post(uuid=target_uuid, title=title, memo=memo, items=items)
                     resp = {'success': True, 'message': 'Đã gửi thư và quà thành công vào game!', 'post': p}
+                    self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
+                except Exception as e:
+                    resp = {'success': False, 'error': str(e)}
+                    self._send(json.dumps(resp, ensure_ascii=False), 400, 'application/json; charset=utf-8')
+                return
+
+            if path == '/admin/api/user/ban':
+                try:
+                    data = json.loads(body.decode('utf-8'))
+                    target_uuid = data.get('uuid')
+                    banned = bool(data.get('banned', True))
+                    ok = state.ban_user(target_uuid, banned=banned)
+                    if not ok:
+                        raise ValueError('Không tìm thấy người chơi!')
+                    msg = 'Đã KHÓA (BAN) tài khoản thành công!' if banned else 'Đã MỞ KHÓA tài khoản thành công!'
+                    resp = {'success': True, 'message': msg, 'is_banned': banned}
+                    self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
+                except Exception as e:
+                    resp = {'success': False, 'error': str(e)}
+                    self._send(json.dumps(resp, ensure_ascii=False), 400, 'application/json; charset=utf-8')
+                return
+
+            if path == '/admin/api/user/delete':
+                try:
+                    data = json.loads(body.decode('utf-8'))
+                    target_uuid = data.get('uuid')
+                    ok = state.delete_user(target_uuid)
+                    if not ok:
+                        raise ValueError('Không tìm thấy người chơi để xóa!')
+                    resp = {'success': True, 'message': 'Đã xóa toàn bộ dữ liệu tài khoản thành công! Khi vào lại game sẽ là tài khoản mới tinh.'}
                     self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
                 except Exception as e:
                     resp = {'success': False, 'error': str(e)}
@@ -424,24 +455,39 @@ class Handler(BaseHTTPRequestHandler):
                         att_3['ymd'] = today_ymd
 
                     # 4. Currencies (CP, Candy, Tim/Like)
+                    if 'is_banned' in data:
+                        state.ban_user(user['uuid'], banned=bool(data['is_banned']))
+
                     add_cp = int(data.get('add_cp', 0) or 0)
                     add_candy = float(data.get('add_candy', 0) or 0)
                     add_like = float(data.get('add_like', 0) or 0)
                     set_like = data.get('set_like')
 
                     if set_like is not None and str(set_like).strip() != '':
-                        s_like = max(0.0, float(set_like))
-                        state.set_like_currency(user['uuid'], s_like)
+                        state.set_like_currency(user['uuid'], set_like)
+                        try:
+                            s_str = str(set_like).strip()
+                            s_int = int(float(s_str)) if ('.' in s_str or 'e' in s_str.lower()) else int(s_str)
+                        except Exception:
+                            s_int = 0
+                        s_like = float(s_int)
                         user.setdefault('userdata', {})['u_like'] = s_like
                         for a in user.setdefault('areas', state._default_areas()).values():
                             a['d_Like'] = s_like
+                            a['s_Gp1'] = str(s_int)
                         add_like = 0
                     elif add_like != 0:
                         state.increment_currency(user['uuid'], like=add_like)
                         cur_l = float(user.get('userdata', {}).get('u_like', 0.0) or 0.0) + add_like
                         user.setdefault('userdata', {})['u_like'] = cur_l
+                        add_int = int(add_like)
                         for a in user.setdefault('areas', state._default_areas()).values():
                             a['d_Like'] = float(a.get('d_Like', 0.0) or 0.0) + add_like
+                            try:
+                                old_gp = int(a.get('s_Gp1') or '0')
+                            except Exception:
+                                old_gp = 0
+                            a['s_Gp1'] = str(max(0, old_gp + add_int))
 
                     if add_cp != 0 or add_candy != 0:
                         state.increment_currency(user['uuid'], cp=add_cp, candy=add_candy)
@@ -532,6 +578,21 @@ class Handler(BaseHTTPRequestHandler):
                 if isinstance(d, dict):
                     uuid = d.get('uuid') or d.get('device_uuid')
             ctx = {'game_url': base_url, 'cdn_url': cdn_url, 'uuid': uuid}
+
+            # Banned player check
+            if uuid:
+                u_check = state.get_user(uuid)
+                if u_check and u_check.get('is_banned'):
+                    self.log_message("BANNED USER ATTEMPT: %s", uuid)
+                    error = {'code': 90001, 'errmsg': 'Tài khoản của bạn đã bị KHÓA (BANNED) bởi Quản trị viên!'}
+                    simple = codec.SCHEMA[cmd_full]['name']
+                    rdto, env = dispatch.build_return(cmd_full, None, call=simple, category=category, error=error)
+                    if rdto:
+                        out_b64 = codec.encode_response(rdto, env)
+                        self._send(out_b64)
+                    else:
+                        self._send('', 403)
+                    return
 
             simple = codec.SCHEMA[cmd_full]['name']
             ret_data, error = handlers.handle(simple, req_named, ctx)

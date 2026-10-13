@@ -337,6 +337,64 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(108, 92, 231, 0.4);
         }
+        .user-badge-banned {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.4);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+        .btn-ban {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.4);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-ban:hover {
+            background: #ff4757;
+            color: #fff;
+        }
+        .btn-unban {
+            background: rgba(46, 213, 115, 0.15);
+            color: #2ed573;
+            border: 1px solid rgba(46, 213, 115, 0.4);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-unban:hover {
+            background: #2ed573;
+            color: #fff;
+        }
+        .btn-delete-user {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.4);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-delete-user:hover {
+            background: #ff4757;
+            color: #fff;
+        }
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -899,11 +957,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     const passBadge = u.is_gold
                         ? `<span class="user-badge-gold">⭐ Gold Pass</span>`
                         : `<span class="user-badge-free">⚪ Free Pass</span>`;
+                    const banBadge = u.is_banned
+                        ? `<span class="user-badge-banned">🚫 BANNED</span>`
+                        : '';
 
                     html += `
                         <tr>
                             <td>
-                                <div style="font-weight: 600; color: #fff;">${escapeHtml(u.u_nick)}</div>
+                                <div style="font-weight: 600; color: #fff;">${escapeHtml(u.u_nick)} ${banBadge}</div>
                                 <div style="font-size: 0.76rem; color: var(--text-sub);">Seq: #${u.u_seq} &bull; ID: ${escapeHtml(u.u_id || '-')}</div>
                             </td>
                             <td>
@@ -924,10 +985,18 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                                     ${Number(u.star_point || 0).toLocaleString()} điểm &bull; Cấp ${u.star_step || 0}
                                 </div>
                             </td>
-                            <td style="text-align: right;">
-                                <button class="btn-setting-event" onclick="openUserModal('${u.uuid}')">
-                                    ⚙️ Setting Event
-                                </button>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <div style="display: inline-flex; gap: 6px; align-items: center; justify-content: flex-end;">
+                                    <button class="btn-setting-event" onclick="openUserModal('${u.uuid}')" title="Cài đặt sự kiện">
+                                        ⚙️ Setting
+                                    </button>
+                                    <button class="${u.is_banned ? 'btn-unban' : 'btn-ban'}" onclick="toggleBan('${u.uuid}', ${!u.is_banned})" title="${u.is_banned ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}">
+                                        ${u.is_banned ? '✅ Mở' : '🚫 Ban'}
+                                    </button>
+                                    <button class="btn-delete-user" onclick="deleteUser('${u.uuid}', '${escapeHtml(u.u_nick)}')" title="Xóa toàn bộ dữ liệu">
+                                        🗑️ Xóa All
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -945,6 +1014,50 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
+        async function toggleBan(uuid, banState) {
+            const actionText = banState ? 'KHÓA (BAN)' : 'MỞ KHÓA';
+            if (!confirm(`Bạn có chắc chắn muốn ${actionText} tài khoản người chơi này?\n${banState ? 'Khi bị khóa, người chơi sẽ không thể đăng nhập vào game.' : 'Sau khi mở khóa, người chơi sẽ có thể chơi game bình thường.'}`)) return;
+            try {
+                const res = await fetch('/admin/api/user/ban', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ uuid, banned: banState })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Thao tác thất bại');
+                showToast(data.message || 'Thành công!');
+                loadUsers();
+            } catch (e) {
+                showToast('❌ Lỗi: ' + e.message, true);
+            }
+        }
+
+        async function deleteUser(uuid, nick) {
+            if (!confirm(`⚠️ CẢNH BÁO NGUY HIỂM!\n\nBạn có chắc chắn muốn XÓA TOÀN BỘ DỮ LIỆU của người chơi [${nick}]?\nToàn bộ tiến trình, Tim, CP, sự kiện sẽ bị xóa vĩnh viễn khỏi server. Khi vào lại game sẽ là tài khoản mới tinh.`)) {
+                return;
+            }
+            try {
+                const res = await fetch('/admin/api/user/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ uuid })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Xóa thất bại');
+                showToast(data.message || '✅ Đã xóa toàn bộ dữ liệu người chơi!');
+                loadUsers();
+            } catch (e) {
+                showToast('❌ Lỗi: ' + e.message, true);
+            }
+        }
+
+        function deleteCurrentModalUser() {
+            const uuid = document.getElementById('modal-uuid').value;
+            const nick = document.getElementById('modal-user-name').innerText;
+            deleteUser(uuid, nick);
+            closeUserModal();
+        }
+
         function openUserModal(uuid) {
             const u = cachedUsers.find(x => x.uuid === uuid);
             if (!u) {
@@ -955,6 +1068,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             document.getElementById('modal-user-name').innerText = u.u_nick;
             document.getElementById('modal-user-sub').innerText = `ID: ${u.u_id || '-'} | Seq: #${u.u_seq} | UUID: ${u.uuid}`;
             document.getElementById('modal-user-lastlogin').innerText = `🕒 Đăng nhập gần nhất: ${u.u_last_login}`;
+            document.getElementById('modal-is-banned').checked = !!u.is_banned;
             document.getElementById('modal-is-gold').checked = !!u.is_gold;
             document.getElementById('modal-star-point').value = u.star_point || 0;
 
@@ -1003,6 +1117,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
         async function saveUserModal() {
             const uuid = document.getElementById('modal-uuid').value;
+            const is_banned = document.getElementById('modal-is-banned').checked;
             const is_gold = document.getElementById('modal-is-gold').checked;
             const star_point = parseInt(document.getElementById('modal-star-point').value) || 0;
 
@@ -1010,7 +1125,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             const add_candy = parseFloat(document.getElementById('modal-add-candy').value) || 0;
             const add_like = parseFloat(document.getElementById('modal-add-like').value) || 0;
             const set_like_val = document.getElementById('modal-set-like').value.trim();
-            const set_like = set_like_val !== '' ? parseFloat(set_like_val) : null;
+            const set_like = set_like_val !== '' ? set_like_val : null;
 
             // Attendance selection (Event 1)
             const attDayVal = document.getElementById('modal-att-day').value;
@@ -1056,6 +1171,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         uuid,
+                        is_banned,
                         is_gold,
                         star_point,
                         add_cp,
@@ -1107,6 +1223,18 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
                 <input type="hidden" id="modal-uuid">
 
+                <!-- 0. Ban Switch -->
+                <div class="event-item" style="padding: 10px 0; margin-bottom: 12px; background: rgba(255, 71, 87, 0.08); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 71, 87, 0.25);">
+                    <div class="event-info">
+                        <div class="event-name" style="color: #ff6b81;">🚫 Khóa Tài Khoản (Ban Player)</div>
+                        <div class="event-desc">Chặn tài khoản kết nối vào server. Game sẽ báo lỗi khi mở.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="modal-is-banned">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
                 <!-- 1. Star Pass Toggle -->
                 <div class="event-item" style="padding: 10px 0;">
                     <div class="event-info">
@@ -1148,7 +1276,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                             <span>❤️ Đặt chính xác số Tim (Ghi đè số Tim hiện tại):</span>
                             <span id="modal-user-like" style="color:#ff6b81; font-weight:600;">Hiện có: 0</span>
                         </label>
-                        <input type="number" id="modal-set-like" placeholder="Nhập số Tim muốn đặt (để trống nếu chỉ muốn cộng thêm)..." style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                        <input type="text" id="modal-set-like" placeholder="Nhập số Tim muốn đặt (ví dụ: 100000000000000000000)..." style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                     </div>
                 </div>
 
@@ -1224,9 +1352,12 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     </label>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeUserModal()" style="flex:1;">Hủy</button>
-                <button class="btn btn-primary" onclick="saveUserModal()" style="flex:1;">💾 Lưu Cài Đặt Riêng</button>
+            <div class="modal-footer" style="flex-wrap: wrap;">
+                <button type="button" class="btn btn-secondary" onclick="closeUserModal()" style="flex:1;">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="saveUserModal()" style="flex:1;">💾 Lưu Cài Đặt Riêng</button>
+                <button type="button" class="btn btn-delete-user" onclick="deleteCurrentModalUser()" style="width:100%; margin-top:8px; padding:10px;">
+                    🗑️ Xóa Toàn Bộ Dữ Liệu Tài Khoản Này (Reset Sạch Về Đầu)
+                </button>
             </div>
         </div>
     </div>

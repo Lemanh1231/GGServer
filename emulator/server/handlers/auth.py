@@ -512,9 +512,16 @@ def h_user_login(req, player, ctx):
         user['areas'] = areas
         ud = user['userdata']
         cur_like = float(ud.get('u_like', 0.0) or 0.0)
+        cur_like_int = int(cur_like)
         for aid, ainfo in areas.items():
             if cur_like > float(ainfo.get('d_Like', 0.0) or 0.0):
                 ainfo['d_Like'] = cur_like
+            try:
+                cur_gp1 = int(ainfo.get('s_Gp1') or '0')
+            except Exception:
+                cur_gp1 = 0
+            if cur_like_int > cur_gp1:
+                ainfo['s_Gp1'] = str(cur_like_int)
         area_map = {int(k): v for k, v in areas.items()}
         ct = str(ud.get('u_create_time', ''))
         if not ct.lstrip('-').isdigit():
@@ -639,15 +646,24 @@ def h_user_save(req, player, ctx):
                 n = area.get('u_area_num')
                 if n is not None:
                     stored = user.setdefault('areas', {}).setdefault(str(n), {})
+                    c_gp1_raw = area.get('s_Gp1')
                     stored.update(area)
                     srv_like = float(user.get('userdata', {}).get('u_like', 0.0) or 0.0)
-                    if srv_like > float(stored.get('d_Like', 0.0) or 0.0):
+                    srv_like_int = int(srv_like)
+                    try:
+                        c_gp1_int = int(c_gp1_raw) if c_gp1_raw is not None else 0
+                    except Exception:
+                        c_gp1_int = 0
+
+                    if srv_like_int > c_gp1_int:
+                        stored['s_Gp1'] = str(srv_like_int)
                         stored['d_Like'] = srv_like
                     else:
-                        c_like = float(stored.get('d_Like', 0.0) or 0.0)
-                        user.setdefault('userdata', {})['u_like'] = c_like
+                        stored['s_Gp1'] = str(c_gp1_int)
+                        stored['d_Like'] = float(c_gp1_int)
+                        user.setdefault('userdata', {})['u_like'] = float(c_gp1_int)
                         conn = state.get_db()
-                        conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (c_like, user['uuid']))
+                        conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (float(c_gp1_int), user['uuid']))
                         conn.commit()
                         conn.close()
             state.save_user(user)
@@ -685,9 +701,16 @@ def h_user_load(req, player, ctx):
         user['areas'] = areas
         ud = user.get('userdata', {})
         cur_like = float(ud.get('u_like', 0.0) or 0.0)
+        cur_like_int = int(cur_like)
         for aid, ainfo in areas.items():
             if cur_like > float(ainfo.get('d_Like', 0.0) or 0.0):
                 ainfo['d_Like'] = cur_like
+            try:
+                cur_gp1 = int(ainfo.get('s_Gp1') or '0')
+            except Exception:
+                cur_gp1 = 0
+            if cur_like_int > cur_gp1:
+                ainfo['s_Gp1'] = str(cur_like_int)
         area_map = {int(k): v for k, v in areas.items()}
         now_str = time.strftime('%Y-%m-%d %H:%M:%S')
         ud_resp = dict(ud)
