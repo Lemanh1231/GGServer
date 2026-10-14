@@ -1009,6 +1009,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="modal-uuid">
+                <input type="hidden" id="modal-useq">
                 
                 <div style="margin-bottom: 14px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border: 1px solid var(--card-border);">
                     <div id="modal-user-name" style="font-weight: 700; font-size: 1.1rem; color: #fff;"></div>
@@ -1564,16 +1565,16 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                         </td>
                         <td style="text-align: right; white-space: nowrap;">
                             <div style="display: inline-flex; gap: 6px; align-items: center; justify-content: flex-end;">
-                                <button class="btn-setting-event" onclick="openUserModal('${u.uuid}')" title="Cài đặt sự kiện & tài nguyên cá nhân">
+                                <button class="btn-setting-event" onclick="openUserModal('${u.uuid || ""}', ${u.u_seq})" title="Cài đặt sự kiện & tài nguyên cá nhân">
                                     ⚙️ Setting
                                 </button>
-                                <button class="btn-mail" onclick="openSendMailModal('${u.uuid}', '${escapeHtml(u.u_nick)}')" title="Gửi thư và quà riêng cho người chơi này">
+                                <button class="btn-mail" onclick="openSendMailModal('${u.uuid || ""}', '${escapeHtml(u.u_nick)}')" title="Gửi thư và quà riêng cho người chơi này">
                                     ✉️ Thư
                                 </button>
-                                <button class="${u.is_banned ? 'btn-unban' : 'btn-ban'}" onclick="toggleBan('${u.uuid}', ${!u.is_banned})" title="${u.is_banned ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}">
+                                <button class="${u.is_banned ? 'btn-unban' : 'btn-ban'}" onclick="toggleBan('${u.uuid || ""}', ${!u.is_banned}, ${u.u_seq})" title="${u.is_banned ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}">
                                     ${u.is_banned ? '✅ Mở' : '🚫 Ban'}
                                 </button>
-                                <button class="btn-delete-user" onclick="deleteUser('${u.uuid}', '${escapeHtml(u.u_nick)}')" title="Xóa toàn bộ dữ liệu">
+                                <button class="btn-delete-user" onclick="deleteUser('${u.uuid || ""}', '${escapeHtml(u.u_nick)}', ${u.u_seq})" title="Xóa toàn bộ dữ liệu">
                                     🗑️ Xóa
                                 </button>
                             </div>
@@ -1591,14 +1592,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
-        async function toggleBan(uuid, banState) {
+        async function toggleBan(uuid, banState, uSeq) {
             const actionText = banState ? 'KHÓA (BAN)' : 'MỞ KHÓA';
             if (!confirm(`Bạn có chắc chắn muốn ${actionText} tài khoản người chơi này?\n${banState ? 'Khi bị khóa, game sẽ hiển thị thông báo "Tài khoản của bạn đã bị KHÓA" thay vì lỗi mạng.' : 'Sau khi mở khóa, người chơi sẽ có thể đăng nhập bình thường.'}`)) return;
             try {
                 const res = await fetch('/admin/api/user/ban', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ uuid, banned: banState })
+                    body: JSON.stringify({ uuid: (uuid && uuid !== 'null') ? uuid : '', banned: banState, u_seq: uSeq })
                 });
                 const data = await res.json();
                 if (!data.success) throw new Error(data.error || 'Thao tác thất bại');
@@ -1609,7 +1610,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             }
         }
 
-        async function deleteUser(uuid, nick) {
+        async function deleteUser(uuid, nick, uSeq) {
             if (!confirm(`⚠️ CẢNH BÁO NGUY HIỂM!\n\nBạn có chắc chắn muốn XÓA TOÀN BỘ DỮ LIỆU của người chơi [${nick}]?\nToàn bộ tiến trình, Tim, CP, sự kiện sẽ bị xóa vĩnh viễn khỏi server. Khi vào lại game sẽ là tài khoản mới tinh.`)) {
                 return;
             }
@@ -1617,7 +1618,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 const res = await fetch('/admin/api/user/delete', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ uuid })
+                    body: JSON.stringify({ uuid: (uuid && uuid !== 'null') ? uuid : '', u_seq: uSeq })
                 });
                 const data = await res.json();
                 if (!data.success) throw new Error(data.error || 'Xóa thất bại');
@@ -1630,8 +1631,9 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
         function deleteCurrentModalUser() {
             const uuid = document.getElementById('modal-uuid').value;
+            const uSeq = document.getElementById('modal-useq').value;
             const nick = document.getElementById('modal-user-name').innerText;
-            deleteUser(uuid, nick);
+            deleteUser(uuid, nick, uSeq);
             closeUserModal();
         }
 
@@ -1763,15 +1765,16 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             currentModalUserAttData[currentModalAttEventKey] = state;
         }
 
-        function openUserModal(uuid) {
-            const u = cachedUsers.find(x => x.uuid === uuid);
+        function openUserModal(uuid, uSeq) {
+            const u = cachedUsers.find(x => (uuid && uuid !== 'null' && x.uuid === uuid) || (uSeq !== undefined && x.u_seq === Number(uSeq)));
             if (!u) {
                 showToast('Không tìm thấy người chơi!', true);
                 return;
             }
-            document.getElementById('modal-uuid').value = u.uuid;
+            document.getElementById('modal-uuid').value = u.uuid || '';
+            document.getElementById('modal-useq').value = u.u_seq;
             document.getElementById('modal-user-name').innerText = u.u_nick;
-            document.getElementById('modal-user-sub').innerText = `ID: ${u.u_id || '-'} | Seq: #${u.u_seq} | UUID: ${u.uuid}`;
+            document.getElementById('modal-user-sub').innerText = `ID: ${u.u_id || '-'} | Seq: #${u.u_seq} | UUID: ${u.uuid || '-'}`;
             document.getElementById('modal-user-lastlogin').innerText = `🕒 Đăng nhập gần nhất: ${u.u_last_login}`;
             document.getElementById('modal-is-banned').checked = !!u.is_banned;
             document.getElementById('modal-is-gold').checked = !!u.is_gold;
@@ -1827,6 +1830,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
         async function saveUserModal() {
             const uuid = document.getElementById('modal-uuid').value;
+            const uSeq = document.getElementById('modal-useq').value;
             const is_banned = document.getElementById('modal-is-banned').checked;
             const is_gold = document.getElementById('modal-is-gold').checked;
             const star_point = parseInt(document.getElementById('modal-star-point').value) || 0;
@@ -1849,6 +1853,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         uuid,
+                        u_seq: uSeq,
                         is_banned,
                         is_gold,
                         star_point,

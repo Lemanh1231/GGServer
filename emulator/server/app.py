@@ -197,11 +197,7 @@ class Handler(BaseHTTPRequestHandler):
                 followers = data.get('user_follower', []) or []
                 f12_level = f12_map.get(r['uuid']) or next((int(f.get('i_Level', 0) or 0) for f in followers if int(f.get('i_id', 0) or 0) == 12), 0)
                 ch2_unlocked = bool(a1_grade >= 4 and f12_level >= 15)
-
-                is_test = bool(
-                    str(r['uuid']).startswith(('test_', 'emu-test-', 'att-test-', 'dm-test-', 'verify-'))
-                    or str(r['device_uuid']).startswith(('test_', 'emu-test-', 'att-test-', 'dm-test-', 'verify-'))
-                )
+                is_test = state.is_test_user(r['uuid'], r['device_uuid'])
 
                 users_list.append({
                     'uuid': r['uuid'],
@@ -308,8 +304,9 @@ class Handler(BaseHTTPRequestHandler):
                 try:
                     data = json.loads(body.decode('utf-8'))
                     target_uuid = data.get('uuid')
+                    u_seq = data.get('u_seq')
                     banned = bool(data.get('banned', True))
-                    ok = state.ban_user(target_uuid, banned=banned)
+                    ok = state.ban_user(target_uuid, banned=banned, u_seq=u_seq)
                     if not ok:
                         raise ValueError('Không tìm thấy người chơi!')
                     msg = 'Đã KHÓA (BAN) tài khoản thành công!' if banned else 'Đã MỞ KHÓA tài khoản thành công!'
@@ -324,7 +321,8 @@ class Handler(BaseHTTPRequestHandler):
                 try:
                     data = json.loads(body.decode('utf-8'))
                     target_uuid = data.get('uuid')
-                    ok = state.delete_user(target_uuid)
+                    u_seq = data.get('u_seq')
+                    ok = state.delete_user(target_uuid, u_seq=u_seq)
                     if not ok:
                         raise ValueError('Không tìm thấy người chơi để xóa!')
                     resp = {'success': True, 'message': 'Đã xóa toàn bộ dữ liệu tài khoản thành công! Khi vào lại game sẽ là tài khoản mới tinh.'}
@@ -348,6 +346,13 @@ class Handler(BaseHTTPRequestHandler):
                 try:
                     data = json.loads(body.decode('utf-8'))
                     target_uuid = data.get('uuid')
+                    u_seq = data.get('u_seq')
+                    if (not target_uuid or target_uuid == 'null') and u_seq:
+                        conn = state.get_db()
+                        row = conn.execute('SELECT uuid FROM user_data WHERE u_seq = ?', (int(u_seq),)).fetchone()
+                        conn.close()
+                        if row and row['uuid']:
+                            target_uuid = row['uuid']
                     if not target_uuid:
                         raise ValueError('Thiếu mã UUID của người chơi!')
 

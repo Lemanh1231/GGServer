@@ -242,6 +242,15 @@ def get_user(uuid):
 
 def create_user(uuid, device_uuid):
     with _LOCK:
+        if not uuid and not device_uuid:
+            import uuid as uuidlib
+            uuid = f"gen_{uuidlib.uuid4().hex[:16]}"
+            device_uuid = uuid
+        elif not uuid:
+            uuid = device_uuid
+        elif not device_uuid:
+            device_uuid = uuid
+
         # The app creates a fresh local UUID after Clear data, while its
         # device UUID remains stable.  Prefer that stable identifier so a
         # clear cannot create a second account and re-grant starter rewards.
@@ -456,15 +465,25 @@ def set_like_currency(uuid, amount):
             conn.commit()
         conn.close()
 
-def ban_user(uuid, banned=True):
+def ban_user(uuid, banned=True, u_seq=None):
     with _LOCK:
         conn = get_db()
-        ruuid = _resolve_uuid(conn, uuid)
+        ruuid = None
+        if uuid and uuid != 'null':
+            ruuid = _resolve_uuid(conn, uuid)
         if ruuid is not None:
             val = 1 if banned else 0
             conn.execute('UPDATE user_data SET is_banned = ? WHERE uuid = ?', (val, ruuid))
             conn.commit()
             res = True
+        elif u_seq:
+            try:
+                val = 1 if banned else 0
+                conn.execute('UPDATE user_data SET is_banned = ? WHERE u_seq = ?', (val, int(u_seq)))
+                conn.commit()
+                res = True
+            except Exception:
+                res = False
         else:
             res = False
         conn.close()
@@ -484,15 +503,59 @@ def is_user_banned(ident):
         conn.close()
         return res
 
-def delete_user(uuid):
+def is_real_device_uuid(val):
+    if not val or not isinstance(val, str):
+        return False
+    s = val.strip().lower()
+    if len(s) != 32:
+        return False
+    return all(c in '0123456789abcdef' for c in s)
+
+def is_test_user(uuid, device_uuid):
+    if not uuid or not device_uuid:
+        return True
+    u_str = str(uuid).lower()
+    d_str = str(device_uuid).lower()
+    test_prefixes = (
+        'test', 't1-', 't2-', 't3-', 't4-', 't5-', 't6-', 't7-', 't8-', 't9-',
+        'emu-', 'att-', 'dm-', 'verify-', 'cat-', 'music-', 'ad-', 'gift-', 'fix-'
+    )
+    if any(u_str.startswith(p) for p in test_prefixes) or any(d_str.startswith(p) for p in test_prefixes):
+        return True
+    if any(k in u_str for k in ('test', 'verify')) or any(k in d_str for k in ('test', 'verify')):
+        return True
+    return not is_real_device_uuid(uuid)
+
+def delete_user(uuid, u_seq=None):
     with _LOCK:
         conn = get_db()
-        ruuid = _resolve_uuid(conn, uuid)
+        ruuid = None
+        if uuid and uuid != 'null':
+            ruuid = _resolve_uuid(conn, uuid)
+        if ruuid is None and u_seq:
+            try:
+                row = conn.execute('SELECT uuid FROM user_data WHERE u_seq = ?', (int(u_seq),)).fetchone()
+                if row:
+                    ruuid = row['uuid']
+                    if ruuid is None:
+                        conn.execute('DELETE FROM user_data WHERE u_seq = ?', (int(u_seq),))
+                        conn.commit()
+                        conn.close()
+                        return True
+            except Exception:
+                pass
         if ruuid is not None:
             conn.execute('DELETE FROM user_inventory WHERE uuid = ?', (ruuid,))
             conn.execute('DELETE FROM user_data WHERE uuid = ?', (ruuid,))
             conn.commit()
             res = True
+        elif u_seq:
+            try:
+                conn.execute('DELETE FROM user_data WHERE u_seq = ?', (int(u_seq),))
+                conn.commit()
+                res = True
+            except Exception:
+                res = False
         else:
             res = False
         conn.close()
@@ -502,17 +565,20 @@ def cleanup_test_users():
     """Delete all automatically generated test accounts from database."""
     with _LOCK:
         conn = get_db()
-        test_patterns = ['test_%', 'emu-test-%', 'att-test-%', 'dm-test-%', 'verify-%']
-        conditions = ' OR '.join(['uuid LIKE ?' for _ in test_patterns] + ['device_uuid LIKE ?' for _ in test_patterns])
-        args = tuple(test_patterns + test_patterns)
-        rows = conn.execute(f'SELECT uuid FROM user_data WHERE {conditions}', args).fetchall()
-        uuids = [r['uuid'] for r in rows]
-        for u in uuids:
-            conn.execute('DELETE FROM user_inventory WHERE uuid = ?', (u,))
-            conn.execute('DELETE FROM user_data WHERE uuid = ?', (u,))
+        rows = conn.execute('SELECT rowid, u_seq, uuid, device_uuid FROM user_data').fetchall()
+        deleted_count = 0
+        for r in rows:
+            row_id = r['rowid']
+            uuid = r['uuid']
+            dev = r['device_uuid']
+            if is_test_user(uuid, dev):
+                if uuid:
+                    conn.execute('DELETE FROM user_inventory WHERE uuid = ?', (uuid,))
+                conn.execute('DELETE FROM user_data WHERE rowid = ?', (row_id,))
+                deleted_count += 1
         conn.commit()
         conn.close()
-        return len(uuids)
+        return deleted_count
 
 def spend_currency(uuid, *, currency, amount):
     """Atomically spend a positive amount only when the balance covers it."""
