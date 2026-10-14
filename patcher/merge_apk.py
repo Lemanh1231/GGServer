@@ -37,6 +37,40 @@ RES_XML_START_ELEMENT = 0x0102
 
 UTF8_FLAG = 1 << 8
 
+# ARM64 binary patches for lib/arm64-v8a/libil2cpp.so:
+# Disables offline restrictions and PmangPlus account requirements for:
+# 1) Push notifications toggles in Settings (m_goNotifications_Online_KR)
+# 2) CP (Chocolate) free/paid breakdown in Settings (m_goGoods_Online)
+LIBIL2CPP_PATCHES = [
+    # (offset, expected_original_bytes, patched_replacement_bytes, description)
+    (0x1E13D04, b'\xe0\x08\x00\x37', b'\x1f\x20\x03\xd5', 'SetupNotifications: isOffline tbnz -> NOP'),
+    (0x1E13D1C, b'\x21\x08\x00\x54', b'\x1f\x20\x03\xd5', 'SetupNotifications: authType b.ne -> NOP'),
+    (0x1E137D0, b'\x80\x01\x00\x37', b'\x1f\x20\x03\xd5', 'ClickDay: isOffline tbnz -> NOP'),
+    (0x1E137E8, b'\xc1\x00\x00\x54', b'\x1f\x20\x03\xd5', 'ClickDay: authType b.ne -> NOP'),
+    (0x1E18774, b'\x80\x01\x00\x37', b'\x1f\x20\x03\xd5', 'ClickNight: isOffline tbnz -> NOP'),
+    (0x1E1878C, b'\xc1\x00\x00\x54', b'\x1f\x20\x03\xd5', 'ClickNight: authType b.ne -> NOP'),
+    (0x1E1526C, b'\x80\x01\x00\x37', b'\x1f\x20\x03\xd5', 'ClickGO: isOffline tbnz -> NOP'),
+    (0x1E15284, b'\xc1\x00\x00\x54', b'\x1f\x20\x03\xd5', 'ClickGO: authType b.ne -> NOP'),
+    (0x1ED4904, b'\x00\x01\x00\x36', b'\x08\x00\x00\x14', 'SetGoods: isOffline tbz -> b #0x1ed8924'),
+    (0x1ED493C, b'\xe1\x17\x9f\x1a', b'\x21\x00\x80\x52', 'SetGoods: cset w1, eq -> mov w1, #1'),
+    (0x1ED4950, b'\xa1\x00\x00\x54', b'\x1f\x20\x03\xd5', 'SetGoods: authType b.ne -> NOP'),
+]
+
+
+def patch_libil2cpp_so(so_bytes):
+    """Patch libil2cpp.so to bypass offline restrictions on notifications and goods (CP).
+    Returns (new_bytes, patched_count). Byte length is strictly preserved."""
+    buf = bytearray(so_bytes)
+    patched = 0
+    for offset, old, new, desc in LIBIL2CPP_PATCHES:
+        if offset + len(old) <= len(buf):
+            chunk = buf[offset:offset + len(old)]
+            if chunk == old:
+                buf[offset:offset + len(new)] = new
+                patched += 1
+    return bytes(buf), patched
+
+
 
 def _read_string_pool(data, off):
     """Return (list_of_strings,) for the string pool chunk at `off`."""
@@ -262,7 +296,16 @@ def merge(apk_dir, out_apk, base='com.neowiz.game.guitargirl.apk',
         with zipfile.ZipFile(abi_p) as za:
             for zi in za.infolist():
                 if zi.filename.startswith('lib/'):
-                    copy_entry(zi, za); nlibs += 1
+                    if zi.filename in seen:
+                        continue
+                    seen.add(zi.filename)
+                    data = za.read(zi.filename)
+                    if zi.filename.endswith('libil2cpp.so'):
+                        data, n_patched = patch_libil2cpp_so(data)
+                        if verbose and n_patched > 0:
+                            print(f"  [merge] patched libil2cpp.so at {n_patched} location(s)")
+                    zo.writestr(zi, data, compress_type=zi.compress_type)
+                    nlibs += 1
 
         # 3) asset-pack: assets (carries the URL-patched global-metadata.dat)
         nassets = 0

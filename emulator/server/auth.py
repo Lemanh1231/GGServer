@@ -19,14 +19,14 @@ def _login(form):
         'crt_dt': now_ms, 'upd_dt': now_ms, 'status_cd': 'OK', 'member_id': _MEMBER_ID,
         'nickname': 'User', 'profile_img_url': None, 'feeling': None, 'adult_auth_yn': 'N',
         'adult_auth_dt': None, 'recent_login_dt': None, 'recent_app_id': _int(app_id),
-        'email': None, 'anonymous_yn': 'Y', 'friend_accept_cd': None, 'reg_path': None,
+        'email': None, 'anonymous_yn': 'N', 'friend_accept_cd': None, 'reg_path': None,
         'recent_app_title': 'Guitar Girl', 'last_msg_dt': None, 'new_msg_yn': None,
         'conflict_member_id': 0, 'reg_ip': '127.0.0.1', 'reg_nation': 'US',
-        'is_guest_login': True, 'provider_display_name': '', 'pushgroup': None, 'locale': None,
+        'is_guest_login': False, 'provider_display_name': 'PmangPlus', 'pushgroup': None, 'locale': None,
     }
     value = {
         'access_token': access_token, 'member': member, 'force_receipt': None,
-        'conflict_member_id': None, 'is_guest_login': True, 'old_member_id': None,
+        'conflict_member_id': None, 'is_guest_login': False, 'old_member_id': None,
         'jailbreak_yn': 'N', 'fcm_send_lang': 'EN', 'unreg_status': 'NO',
         'unreg_remain_time': None, 'callTime': 0,
     }

@@ -118,7 +118,7 @@ def _default_userdata(u_seq, u_id, uuid, device_uuid):
     return {
         'u_seq': u_seq, 'u_id': u_id, 'uuid': uuid, 'u_name': u_id, 'u_nick': 'Guitarist',
         'u_fans_grade': 1, 'u_selected_costume_id': 1, 'u_selected_music_id': 1, 
-        'u_retain_continuous_tap': 0, 'u_join_type': 0, 'u_last_login': _now_str(), 
+        'u_retain_continuous_tap': 0, 'u_join_type': 1, 'u_last_login': _now_str(), 
         'u_last_communication': _now_str(), 'u_save_date': _now_str(), 
         'u_create_time': time.strftime('%Y%m%d'), 'u_tutorial_step': 0,
         'u_review_popup': 'N', 'device_uuid': device_uuid, 'u_samseck_step': 0,
@@ -195,6 +195,7 @@ def _reconstruct_user(row):
             except: pass
         lst.append(d)
     ud = data.setdefault('userdata', {})
+    ud['u_join_type'] = 1
     ud['uuid'] = row['uuid']
     ud['device_uuid'] = row['device_uuid']
     ud['u_id'] = row['u_id']

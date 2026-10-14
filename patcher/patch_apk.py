@@ -193,10 +193,16 @@ def main():
             zo.writestr(mi, patched_manifest)
         os.replace(temp_main, main_out)
 
-    # copy config.arm64_v8a.apk
+    # copy & patch config.arm64_v8a.apk
     cfg_in = os.path.join(a.apk_dir, 'config.arm64_v8a.apk')
     cfg_out = os.path.join(a.out, 'config.arm64_v8a.apk')
     shutil.copy2(cfg_in, cfg_out)
+    with zipfile.ZipFile(cfg_out) as z:
+        so_data = z.read('lib/arm64-v8a/libil2cpp.so')
+    patched_so, n_so = merge_apk.patch_libil2cpp_so(so_data)
+    if n_so > 0:
+        print(f"[2/4] patched lib/arm64-v8a/libil2cpp.so ({n_so} locations: unlocked Settings notifications & CP breakdown)")
+        overwrite_stored_entry(cfg_out, 'lib/arm64-v8a/libil2cpp.so', patched_so)
     print(f"[2/4] prepared split APKs in {a.out}")
 
     # 3) merge splits into single universal APK

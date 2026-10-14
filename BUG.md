@@ -95,6 +95,45 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
 
 ---
 
+### 1.8. Lỗi khóa Offline các nút Thông báo (Push Notifications) và Thống kê Socola (CP Breakdown) trong Cài đặt
+- **Hiện tượng** (hình `image.png` và `image copy.png`):
+  1. Trong menu Cài đặt (`Cài đặt`), mục `Thông báo`: hai nút bật/tắt "Bật thông báo đẩy" (Day Push Notifications) và "Bật thông báo đẩy vào ban đêm (9h tối đến 8h sáng)" (Night Push Notifications) hiển thị icon đỏ mất kết nối (biểu tượng sóng wifi gạch chéo), bấm vào không có phản hồi và không thể bật tắt.
+  2. Mục `Socola` (Chocolate / CP Breakdown): hiển thị dạng gạch ngang mất kết nối `[ - ] + [ - ] = [ - ]` cùng các icon đỏ mất kết nối, không hiển thị số lượng CP miễn phí và CP trả phí.
+- **Nguyên nhân chi tiết (Reverse-Engineering qua IL2CPP Dump & ARM64 Disassembly)**:
+  1. Trong `libil2cpp.so`, các hàm khởi tạo giao diện Cài đặt và sự kiện click:
+     - `GgUIInGameSettingManager.SetupNotifications` (RVA `0x1E17CB0`, file offset `0x1E13CB0`)
+     - `GgUIInGameSettingManager.OnUIEventClickDayNotifications_KR` (RVA `0x1E177AC`, file offset `0x1E137AC`)
+     - `GgUIInGameSettingManager.OnUIEventClickNightNotifications_KR` (RVA `0x1E1C750`, file offset `0x1E18750`)
+     - `GgUIInGameSettingManager.OnUIEventClickNotifications_GO` (RVA `0x1E19248`, file offset `0x1E15248`)
+     - `GgUIInGameSettingManager_Goods.SetGoodsOnline` (RVA `0x1ED88F0`, file offset `0x1ED48F0`)
+  2. Game thực hiện 2 tầng kiểm tra:
+     - Kiểm tra trạng thái mạng: `GlobalManagerSGT.get_IsOffline()` (`0x1D22A44`).
+     - Kiểm tra kiểu tài khoản: `ApiServerSGT.JoinType` (field offset `0x80`) == `1` (`PmangPlus`).
+  3. Khi chạy qua máy chủ giả lập hoặc đăng nhập ẩn danh / Guest (`is_guest_login: True`), `JoinType` được đặt là `0` (`Guest`). Vì `JoinType != 1`, lệnh điều kiện `b.ne` rẽ nhánh trực tiếp sang khối Offline:
+     - Gọi `m_goNotifications_Offline_KR.SetActive(true)` (chứa icon đỏ gạch chéo) và `m_goNotifications_Online_KR.SetActive(false)`.
+     - Các sự kiện click toggle thoát sớm (`b.ne` tới `ret`), bỏ qua hàm lưu cài đặt thông báo.
+     - Tương tự với CP: gọi `SetGoodsOnline(false)`, hiển thị `m_goGoods_Offline` (`[ - ] + [ - ] = [ - ]`) và không gọi `ReqUserLoad_UpdateCP`.
+- **Cách khắc phục triệt để**:
+  1. **Binary Patch trực tiếp trên ARM64 `libil2cpp.so`**:
+     - Vô hiệu hóa toàn bộ các lệnh nhảy rẽ nhánh kiểm tra offline và `JoinType` thành `NOP` (`1f2003d5`), ép luồng thực thi luôn đi vào nhánh Online:
+       - Offset `0x1E13D04`: `e0080037` (`tbnz`) -> `1f2003d5` (`NOP`)
+       - Offset `0x1E13D1C`: `21080054` (`b.ne`) -> `1f2003d5` (`NOP`)
+       - Offset `0x1E137D0`: `80010037` (`tbnz`) -> `1f2003d5` (`NOP`)
+       - Offset `0x1E137E8`: `c1000054` (`b.ne`) -> `1f2003d5` (`NOP`)
+       - Offset `0x1E18774`: `80010037` (`tbnz`) -> `1f2003d5` (`NOP`)
+       - Offset `0x1E1878C`: `c1000054` (`b.ne`) -> `1f2003d5` (`NOP`)
+       - Offset `0x1E1526C`: `80010037` (`tbnz`) -> `1f2003d5` (`NOP`)
+       - Offset `0x1E15284`: `c1000054` (`b.ne`) -> `1f2003d5` (`NOP`)
+       - Offset `0x1ED4904`: `00010036` (`tbz`) -> `08000014` (`b #0x1ed8924`)
+       - Offset `0x1ED493C`: `e1179f1a` (`cset w1, eq`) -> `21008052` (`mov w1, #1`)
+       - Offset `0x1ED4950`: `a1000054` (`b.ne`) -> `1f2003d5` (`NOP`)
+     - Tích hợp tự động vào [patch_apk.py](file:///root/project/GGServer/patcher/patch_apk.py) và [merge_apk.py](file:///root/project/GGServer/patcher/merge_apk.py). Cả Universal APK và Split APK đều được tự động áp dụng khi chạy `./build.sh`.
+  2. **Đồng bộ Server PmangPlus Auth & State**:
+     - Trong [auth.py](file:///root/project/GGServer/emulator/server/auth.py): Đổi `'is_guest_login': False`, `'anonymous_yn': 'N'`, `'provider_display_name': 'PmangPlus'` trong API `/accounts/v3/global/login`.
+     - Trong [state.py](file:///root/project/GGServer/emulator/server/state.py): Đặt `'u_join_type': 1` trong default userdata và trong hàm `_reconstruct_user`, đảm bảo `userLogin` và `userLoad` luôn trả về `u_join_type: 1`.
+
+---
+
 ## 2. Lỗi Server, Nginx Routing & PmangPlus / NeonAPI Auth
 
 ### 2.1. Lỗi Nginx 404/403 cho các endpoint PmangPlus không có tiền tố `/api/`
