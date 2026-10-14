@@ -72,11 +72,12 @@ def _read_resource_map(data, off):
 
 
 def patch_manifest_axml(data):
-    """Empty android:requiredSplitTypes in a binary AndroidManifest.xml so the APK installs
-    standalone. Returns (new_bytes, changed_count). Same length as input (in-place edits)."""
+    """Empty android:requiredSplitTypes and disable PlayGamesInitProvider (android:enabled="false")
+    in a binary AndroidManifest.xml. Returns (new_bytes, changed_count). Same length as input (in-place edits)."""
     buf = bytearray(data)
     # file header: type(2) headerSize(2) size(4); chunks follow at offset 8
     resmap = []
+    strings = []
     empty_raw = empty_data = None   # string-pool index of "" (reused from splitTypes="")
     # First pass over top-level chunks to grab string pool + resource map.
     p = 8
@@ -87,7 +88,9 @@ def patch_manifest_axml(data):
         if csize < 8:
             break
         chunks.append((ctype, p, csize))
-        if ctype == RES_XML_RESOURCE_MAP:
+        if ctype == RES_STRING_POOL:
+            strings = _read_string_pool(buf, p)
+        elif ctype == RES_XML_RESOURCE_MAP:
             resmap = _read_resource_map(buf, p)
         p += csize
 
@@ -127,6 +130,49 @@ def patch_manifest_axml(data):
             struct.pack_into('<I', buf, ab + 8, empty_raw)             # rawValue -> ""
             struct.pack_into('<BBI', buf, ab + 15, 0x03, 0, empty_data)  # dataType=STRING, data -> ""
             changed += 1
+
+    # Pass 3: disable Google Play Games v2 PlayGamesInitProvider (android:enabled="false")
+    # This completely disables auto sign-in popup on startup without needing to dismiss Google Play.
+    ID_ENABLED = 0x0101000e
+    ID_INIT_ORDER = 0x0101001a
+    enabled_name_idx = resmap.index(ID_ENABLED) if ID_ENABLED in resmap else None
+
+    if enabled_name_idx is not None and strings:
+        for ctype, coff, csize in chunks:
+            if ctype != RES_XML_START_ELEMENT:
+                continue
+            tag_idx = struct.unpack_from('<I', buf, coff + 20)[0]
+            tag_name = strings[tag_idx] if tag_idx < len(strings) else ''
+            if tag_name != 'provider':
+                continue
+            attr_start = coff + 16 + struct.unpack_from('<H', buf, coff + 24)[0]
+            attr_size  = struct.unpack_from('<H', buf, coff + 26)[0]
+            attr_count = struct.unpack_from('<H', buf, coff + 28)[0]
+            is_playgames = False
+            init_order_offset = None
+            for i in range(attr_count):
+                ab = attr_start + i * attr_size
+                name_idx = struct.unpack_from('<I', buf, ab + 4)[0]
+                raw_idx = struct.unpack_from('<I', buf, ab + 8)[0]
+                raw_str = strings[raw_idx] if (raw_idx < len(strings) and raw_idx != 0xffffffff) else ''
+                dtype = buf[ab + 15]
+                data_val = struct.unpack_from('<I', buf, ab + 16)[0]
+                data_str = strings[data_val] if (dtype == 0x03 and data_val < len(strings)) else ''
+                res_id = attr_id(name_idx)
+                if 'PlayGamesInitProvider' in raw_str or 'PlayGamesInitProvider' in data_str:
+                    is_playgames = True
+                if res_id == ID_INIT_ORDER:
+                    init_order_offset = ab
+            if is_playgames and init_order_offset is not None:
+                # Replace initOrder attribute with android:enabled="false"
+                # name_idx -> enabled_name_idx
+                struct.pack_into('<I', buf, init_order_offset + 4, enabled_name_idx)
+                # raw_idx -> 0xffffffff
+                struct.pack_into('<I', buf, init_order_offset + 8, 0xffffffff)
+                # typed value: size(2)=8, res0(1)=0, dataType(1)=0x12 (boolean), data(4)=0 (false)
+                struct.pack_into('<HBB I', buf, init_order_offset + 12, 8, 0, 0x12, 0)
+                changed += 1
+
     return bytes(buf), changed
 
 

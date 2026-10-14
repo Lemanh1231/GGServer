@@ -19,9 +19,7 @@ OUT="${GG_OUT:-$HERE/../out/patched-apks}"
 
 ARG="$1"
 if [ -z "$ARG" ]; then
-  IP="$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || curl -s -m 5 https://ifconfig.me 2>/dev/null || hostname -I 2>/dev/null | awk '{print $1}')"
-  [ -z "$IP" ] && { echo "Could not detect IP; pass a base URL: ./build.sh http://192.168.1.50:8080"; exit 1; }
-  TARGET="http://$IP:8080"
+  TARGET="https://kotori.click"
 elif [[ "$ARG" == http://* || "$ARG" == https://* ]]; then
   TARGET="$ARG"
 else

@@ -11,6 +11,7 @@ Usage:
 """
 import argparse, os, shutil, struct, subprocess, sys, tempfile, zipfile, binascii
 import patch_metadata
+import merge_apk
 
 META_ENTRY = "assets/bin/Data/Managed/Metadata/global-metadata.dat"
 SPLITS = ["com.neowiz.game.guitargirl.apk", "config.arm64_v8a.apk", "base_assets.apk"]
@@ -120,34 +121,69 @@ def main():
         print(f"[1/3] size changed ({len(meta)} -> {len(patched)}) -> rebuilding zip entry")
         replace_entry_grow(base_out, META_ENTRY, bytes(patched))
 
-    # copy the other splits
-    for s in SPLITS:
-        if s == 'base_assets.apk':
-            continue
-        shutil.copy2(os.path.join(a.apk_dir, s), os.path.join(a.out, s))
-    print(f"[2/3] copied {len(SPLITS)} splits to {a.out}")
+    # 2) patch AndroidManifest.xml in com.neowiz.game.guitargirl.apk (disabling Google Play Games)
+    main_in = os.path.join(a.apk_dir, 'com.neowiz.game.guitargirl.apk')
+    main_out = os.path.join(a.out, 'com.neowiz.game.guitargirl.apk')
+    print(f"[2/4] patching AndroidManifest.xml in com.neowiz.game.guitargirl.apk (disabling Google Play Games)")
+    with zipfile.ZipFile(main_in) as zb:
+        manifest = zb.read('AndroidManifest.xml')
+        patched_manifest, n = merge_apk.patch_manifest_axml(manifest)
+        temp_main = main_out + '.tmp'
+        with zipfile.ZipFile(temp_main, 'w') as zo:
+            for zi in zb.infolist():
+                if zi.filename == 'AndroidManifest.xml' or zi.filename.startswith('META-INF/'):
+                    continue
+                zo.writestr(zi, zb.read(zi.filename), compress_type=zi.compress_type)
+            mi = zipfile.ZipInfo('AndroidManifest.xml')
+            mi.compress_type = zipfile.ZIP_DEFLATED
+            zo.writestr(mi, patched_manifest)
+        os.replace(temp_main, main_out)
+
+    # copy config.arm64_v8a.apk
+    cfg_in = os.path.join(a.apk_dir, 'config.arm64_v8a.apk')
+    cfg_out = os.path.join(a.out, 'config.arm64_v8a.apk')
+    shutil.copy2(cfg_in, cfg_out)
+    print(f"[2/4] prepared split APKs in {a.out}")
+
+    # 3) merge splits into single universal APK
+    universal_out = os.path.join(a.out, 'Guitar_Girl_v8.0.0_Universal.apk')
+    print(f"[3/4] merging splits into universal standalone APK -> {universal_out}")
+    merge_apk.merge(a.out, universal_out, verbose=False)
 
     if a.no_sign:
-        print("--no-sign: skipping signing. Sign all 3 with ONE key then adb install-multiple.")
+        print("--no-sign: skipping signing. Sign all APKs with ONE key then install.")
         return
 
-    # 2) keystore
+    # keystore
     if not os.path.exists(a.ks):
-        print(f"[3/3] creating keystore {a.ks}")
+        print(f"[4/4] creating keystore {a.ks}")
         subprocess.run(['keytool', '-genkeypair', '-v', '-keystore', a.ks, '-alias', 'gg',
                         '-keyalg', 'RSA', '-keysize', '2048', '-validity', '10000',
                         '-storepass', 'android', '-keypass', 'android', '-dname', 'CN=gg'], check=True)
 
-    # 3) sign all splits with uber-apk-signer (zipalign + v1/v2/v3)
-    apks = [os.path.join(a.out, s) for s in SPLITS]
-    print("[3/3] signing all splits with one key (uber-apk-signer)")
-    cmd = ['java', '-jar', JAR, '--apks', *apks, '--ks', a.ks, '--ksAlias', 'gg',
+    # 4) sign all splits and universal APK with uber-apk-signer (zipalign + v1/v2/v3)
+    apks_to_sign = [os.path.join(a.out, s) for s in SPLITS] + [universal_out]
+    print("[4/4] signing splits and universal APK with one key (uber-apk-signer)")
+    cmd = ['java', '-jar', JAR, '--apks', *apks_to_sign, '--ks', a.ks, '--ksAlias', 'gg',
            '--ksPass', 'android', '--ksKeyPass', 'android', '--overwrite', '--allowResign']
     subprocess.run(cmd, check=True)
 
-    print("\nDONE. Install on BlueStacks (uninstall original first):")
-    print("  adb uninstall com.neowiz.game.guitargirl")
-    print("  adb install-multiple \\\n    " + " \\\n    ".join(apks))
+    # Also copy universal APK to out/ directory for convenience
+    out_parent = os.path.abspath(os.path.join(a.out, '..'))
+    if os.path.isdir(out_parent):
+        for name in ('Guitar_Girl_v8.0.0_NoGooglePlay.apk', 'Guitar_Girl_v8.0.0_Universal.apk'):
+            dst = os.path.join(out_parent, name)
+            shutil.copy2(universal_out, dst)
+            if os.path.exists(universal_out + '.idsig'):
+                shutil.copy2(universal_out + '.idsig', dst + '.idsig')
+            print(f"      exported: {dst}")
+
+    print("\nDONE! Installation options on Android / BlueStacks:")
+    print("1) Single APK install (Recommended):")
+    print(f"   adb install out/Guitar_Girl_v8.0.0_NoGooglePlay.apk")
+    print("2) Split APK install:")
+    print("   adb uninstall com.neowiz.game.guitargirl")
+    print("   adb install-multiple \\\n     " + " \\\n     ".join([os.path.join(a.out, s) for s in SPLITS]))
 
 
 if __name__ == '__main__':

@@ -17,9 +17,11 @@ from server import multipart, dispatch, handlers, state, auth, event_manager, ad
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CAP_DIR = os.path.join(BASE, 'captures')
+BANNED_CAP_DIR = os.path.join(CAP_DIR, 'banned')
 GAMEDATA_DIR = os.path.join(BASE, 'gamedata')
 CDN_DIR = os.path.join(BASE, 'cdn_files')
 os.makedirs(CAP_DIR, exist_ok=True)
+os.makedirs(BANNED_CAP_DIR, exist_ok=True)
 
 CONFIG = {
     # Full base URL advertised to the client in init's game_url/cdn_url. Set this to the SAME value
@@ -50,12 +52,14 @@ CDN_MAP = {
 }
 
 _seq = 0
-def _capture(tag, data):
+def _capture(tag, data, is_banned=False):
     global _seq
     _seq += 1
+    target_dir = BANNED_CAP_DIR if is_banned else CAP_DIR
     try:
-        json.dump(data, open(os.path.join(CAP_DIR, f"{int(time.time())}_{_seq:04d}_{tag}.json"), 'w',
-                  encoding='utf-8'), indent=1, ensure_ascii=False, default=str)
+        fname = os.path.join(target_dir, f"{int(time.time())}_{_seq:04d}_{tag}.json")
+        with open(fname, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=1, ensure_ascii=False, default=str)
     except Exception:
         pass
 
@@ -616,9 +620,12 @@ class Handler(BaseHTTPRequestHandler):
                 res = auth.handle(path, form)
                 if res is not None:
                     data, ct = res
+                    device_cd = form.get('device_cd', '')
+                    is_banned = state.is_user_banned(device_cd) if device_cd else False
                     _capture('auth' + path.replace('/', '_'),
-                             {'path': path, 'form': {k: str(v)[:120] for k, v in form.items()}})
-                    self.log_message("AUTH %s", path)
+                             {'path': path, 'form': {k: str(v)[:120] for k, v in form.items()}},
+                             is_banned=is_banned)
+                    self.log_message("AUTH %s (banned=%s)", path, is_banned)
                     self._send(data, 200, ct)
                     return
 
@@ -663,48 +670,56 @@ class Handler(BaseHTTPRequestHandler):
                                    for k, v in form.items()},
                    'request_decoded': req_named}
 
-            if not cmd_full:
-                if not call and not form:
-                    self._send('GG emulator OK')
-                    return
-                _capture('UNRESOLVED', cap)
-                self.log_message("UNRESOLVED call=%s fields=%s", call, list(form.keys()))
-                self._send('')
-                return
-
             uuid = None
             if isinstance(req_named, dict):
                 d = req_named.get('data') or {}
                 if isinstance(d, dict):
                     uuid = d.get('uuid') or d.get('device_uuid')
+
+            # Identify if this device/user is banned
+            is_banned = False
+            u_ident = uuid
+            if not u_ident and isinstance(req_named, dict):
+                d = req_named.get('data') or {}
+                if isinstance(d, dict):
+                    for k in ('device_uuid', 'uuid', 'u_seq'):
+                        val = d.get(k)
+                        if val:
+                            u_ident = str(val)
+                            break
+            if u_ident and state.is_user_banned(u_ident):
+                is_banned = True
+
+            if not cmd_full:
+                if not call and not form:
+                    self._send('GG emulator OK')
+                    return
+                _capture('UNRESOLVED', cap, is_banned=is_banned)
+                self.log_message("UNRESOLVED call=%s fields=%s", call, list(form.keys()))
+                self._send('')
+                return
+
             ctx = {'game_url': base_url, 'cdn_url': cdn_url, 'uuid': uuid}
 
             # Banned player check
             # DO NOT block bootstrap/system handshake commands (Request, getServerTime, getUpdateTime,
-            # defaultSettingList, getGameDataList, getVarietyStore) so the Unity client can initialize
+            # defaultSettingList, getGameDataList, store.getVarietyStore) so the Unity client can initialize
             # its UI properly and display the native Ban dialog instead of falling back to "No network connection".
             if cmd_full not in ('main.Request', 'main.getServerTime', 'main.getUpdateTime',
                                 'main.defaultSettingList', 'main.getGameDataList', 'store.getVarietyStore'):
-                u_check = None
-                if uuid:
-                    u_check = state.get_user(uuid)
-                if not u_check and isinstance(req_named, dict):
-                    d = req_named.get('data') or {}
-                    if isinstance(d, dict):
-                        for k in ('device_uuid', 'uuid', 'u_seq'):
-                            val = d.get(k)
-                            if val:
-                                u_check = state.get_user(str(val))
-                                if u_check:
-                                    break
-                if u_check and u_check.get('is_banned'):
-                    self.log_message("BANNED USER BLOCKED: %s (cmd=%s)", u_check.get('uuid'), cmd_full)
+                if is_banned:
+                    self.log_message("BANNED USER BLOCKED: %s (cmd=%s)", u_ident, cmd_full)
                     error = {
                         'code': 900,
                         'errmsg': 'Tài khoản của bạn đã bị KHÓA (BAN) bởi Quản trị viên!\nVui lòng liên hệ Admin để được hỗ trợ.'
                     }
                     simple = codec.SCHEMA[cmd_full]['name']
                     rdto, env = dispatch.build_return(cmd_full, None, call=simple, category=category, error=error)
+                    cap['response_dto'] = rdto
+                    cap['response'] = env
+                    cap['error'] = error
+                    cap['blocked'] = True
+                    _capture('BLOCKED_' + simple, cap, is_banned=True)
                     if rdto:
                         out_b64 = codec.encode_response(rdto, env)
                         self._send(out_b64)
@@ -718,20 +733,21 @@ class Handler(BaseHTTPRequestHandler):
                                               category=category, error=error)
             if not rdto:
                 cap['error'] = 'no Return DTO'
-                _capture('NORETURN', cap)
+                _capture('NORETURN', cap, is_banned=is_banned)
                 self._send('')
                 return
 
             out_b64 = codec.encode_response(rdto, env)
             cap['response_dto'] = rdto
             cap['response'] = env
-            _capture(simple, cap)
+            _capture(simple, cap, is_banned=is_banned)
             self.log_message("%s -> %s (%d B)", simple, rdto, len(out_b64))
             self._send(out_b64)
 
         except Exception as e:
             traceback.print_exc()
-            _capture('ERROR', {'path': self.path, 'error': str(e), 'tb': traceback.format_exc()})
+            _capture('ERROR', {'path': self.path, 'error': str(e), 'tb': traceback.format_exc()},
+                     is_banned=is_banned if 'is_banned' in locals() else False)
             self._send('', 500)
 
 

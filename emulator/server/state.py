@@ -470,6 +470,20 @@ def ban_user(uuid, banned=True):
         conn.close()
         return res
 
+def is_user_banned(ident):
+    if not ident:
+        return False
+    with _LOCK:
+        conn = get_db()
+        ruuid = _resolve_uuid(conn, ident)
+        if ruuid is not None:
+            row = conn.execute('SELECT is_banned FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
+            res = bool(row['is_banned']) if row and 'is_banned' in row.keys() else False
+        else:
+            res = False
+        conn.close()
+        return res
+
 def delete_user(uuid):
     with _LOCK:
         conn = get_db()
