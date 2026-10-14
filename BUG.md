@@ -182,6 +182,39 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
 
 ---
 
+### 4.6. Lỗi tràn số nguyên uint64 (> 1.84e19) khi quy đổi số Tim (Likes) sang các bậc đơn vị lớn (G, H, ... ZZ)
+- **Hiện tượng**: Khi tài khoản đạt số Tim lớn (từ bậc G trở lên, ví dụ $42.877\text{G} = 4.2877 \times 10^{22}$), server gặp ngoại lệ:
+  ```text
+  OverflowError: Python int too large to convert to SQLite INTEGER
+  struct.error: 'q' format requires -9223372036854775808 <= number <= 9223372036854775807
+  ```
+  Dẫn đến việc lưu trữ thất bại, không lưu được tiến trình hoặc HUD hiển thị sai số lượng Tim.
+- **Phân tích Reverse Engineering Client IL2CPP**:
+  - Trích xuất cấu trúc từ `libil2cpp.so` + `global-metadata.dat` (TypeDef `ShortScaleString`, phương thức `parseBigInteger` tại `0x20E2DD0`):
+    - Game sử dụng `System.Numerics.BigInteger.ToString()` để lấy chuỗi chữ số, tính `len = s.Length`, `unit_idx = (len - 1) / 3`.
+    - Client khởi tạo mảng 702 đơn vị (`field_1`): 26 chữ cái đơn `A` ($10^3$)..`Z` ($10^{78}$) và 676 chữ cái đôi `AA` ($10^{81}$)..`ZZ` ($10^{2109}$).
+    - $10^3 = \text{A}$, $10^6 = \text{B}$, $10^9 = \text{C}$, $10^{12} = \text{D}$, $10^{15} = \text{E}$, $10^{18} = \text{F}$ ($\approx \text{uint64 max} \approx 1.84 \times 10^{19}$).
+    - $10^{21} = \text{G}$, $10^{24} = \text{H}$... hoàn toàn vượt quá ngưỡng 64-bit nguyên!
+    - Giới hạn client: `d_Like` (trong `userAreaData`) và `u_like` (trong `userData`) được truyền tải qua Thrift dưới dạng `DOUBLE` (IEEE 754 float64, tối đa $1.7976931348623157 \times 10^{308}$, tương đương đơn vị `CX`/`CY`). Chuỗi nguyên lớn được lưu trong `s_Gp1` / `s_Gp2` (Thrift `STRING`).
+- **Nguyên nhân kỹ thuật**:
+  1. Python `sqlite3`: Driver C của SQLite chuyển đổi Python `int` thành C `long long` (int64 signed, max $2^{63}-1 \approx 9.22 \times 10^{18}$). Khi truyền một Python `int` lớn hơn $2^{63}-1$ vào câu lệnh `UPDATE user_data SET u_like = ?`, dù cột SQLite khai báo kiểu `REAL`, driver Python vẫn raise `OverflowError` ngay trước khi gửi câu lệnh đến engine SQLite.
+  2. Thrift Serializer: Khi pack giá trị `I64` bằng `struct.pack('>q', v)`, nếu một trường bị nhầm kiểu hoặc tràn, Python ném ra `struct.error`.
+- **Cách khắc phục triệt để**:
+  1. **Tạo module quy đổi chuẩn [currency.py](file:///root/project/GGServer/emulator/server/currency.py)**:
+     - Định nghĩa đủ 702 đơn vị game `A`..`ZZ` chuẩn xác theo metadata IL2CPP.
+     - Hàm `parse_currency(val)`: Chấp nhận mọi định dạng đầu vào (số nguyên, số thực, chuỗi khoa học `1e22`, chuỗi đơn vị game `42.877G`, `100H`, `1.2AA`). Sử dụng `decimal.Decimal` để tính toán chính xác tuyệt đối, kẹp biên ở `MAX_FLOAT` ($1.79 \times 10^{308}$) để tránh tràn bộ nhớ.
+     - Hàm `format_currency(val)`: Định dạng chuẩn `{0}.{1}{2}` (`42.877G`, `100.000H`) khớp 100% với giao diện Unity client.
+  2. **Vá cơ chế lưu SQLite & Đồng bộ State**:
+     - Trong [state.py](file:///root/project/GGServer/emulator/server/state.py), luôn ép kiểu `float(like_f)` khi bind vào tham số SQL cho cột `u_like` (SQLite `REAL`), kích hoạt `PyFloat_AsDouble` thay vì `PyLong_AsLongLong`, hỗ trợ an toàn tới $1.79 \times 10^{308}$.
+     - `s_Gp1` trong `areas` lưu trữ chuỗi số nguyên lớn chính xác `s_str` để client Unity parse thành `BigInteger`.
+  3. **Vá Thrift Binary Codec**:
+     - Trong [thrift.py](file:///root/project/GGServer/emulator/codec/thrift.py), bổ sung cơ chế clamp tự động cho `Writer.i16`, `Writer.i32`, `Writer.i64`, `Writer.dbl`, loại bỏ hoàn toàn nguy cơ sập luồng do `struct.error`.
+  4. **Nâng cấp Admin Dashboard UI**:
+     - Cho phép quản trị viên nhập trực tiếp đơn vị game (`42.877G`, `100H`...) tại cả hai ô "Thêm Tim" và "Đặt chính xác số Tim".
+     - Tích hợp tính năng live preview tức thì ngay dưới ô nhập liệu để kiểm tra giá trị quy đổi trước khi lưu.
+
+---
+
 ## 5. Quy trình Build, Cài đặt và Kiểm tra chuẩn
 
 ### 5.1. Build APK không Google Play

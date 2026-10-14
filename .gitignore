@@ -77,3 +77,6 @@ emulator/test_*.py
 # Screenshots
 *.png
 *.PNG
+
+# Reverse engineering tools and dumps
+tools/

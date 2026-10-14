@@ -13,7 +13,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import codec
-from server import multipart, dispatch, handlers, state, auth, event_manager, admin, download
+from server import multipart, dispatch, handlers, state, auth, event_manager, admin, download, currency
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(BASE)
@@ -215,6 +215,7 @@ class Handler(BaseHTTPRequestHandler):
                     'u_cp': r['u_cp'],
                     'u_candy': r['u_candy'],
                     'u_like': float(r['u_like'] or 0.0),
+                    'u_like_formatted': currency.format_currency(r['u_like'] or 0.0),
                     'attendance_count': r['attendance_count'] or ud.get('attendance_count', 0),
                     'attendance_day': att_1_day,
                     'attendance_ymd': att_1_ymd,
@@ -612,34 +613,28 @@ class Handler(BaseHTTPRequestHandler):
 
                     add_cp = int(data.get('add_cp', 0) or 0)
                     add_candy = float(data.get('add_candy', 0) or 0)
-                    add_like = float(data.get('add_like', 0) or 0)
                     set_like = data.get('set_like')
+                    add_like = data.get('add_like')
+                    from server import currency
 
                     if set_like is not None and str(set_like).strip() != '':
-                        state.set_like_currency(user['uuid'], set_like)
-                        try:
-                            s_str = str(set_like).strip()
-                            s_int = int(float(s_str)) if ('.' in s_str or 'e' in s_str.lower()) else int(s_str)
-                        except Exception:
-                            s_int = 0
-                        s_like = float(s_int)
+                        s_int, s_like, s_str, s_fmt = currency.parse_currency(set_like)
+                        state.set_like_currency(user['uuid'], s_str)
                         user.setdefault('userdata', {})['u_like'] = s_like
                         for a in user.setdefault('areas', state._default_areas()).values():
                             a['d_Like'] = s_like
-                            a['s_Gp1'] = str(s_int)
+                            a['s_Gp1'] = s_str
                         add_like = 0
-                    elif add_like != 0:
-                        state.increment_currency(user['uuid'], like=add_like)
-                        cur_l = float(user.get('userdata', {}).get('u_like', 0.0) or 0.0) + add_like
-                        user.setdefault('userdata', {})['u_like'] = cur_l
-                        add_int = int(add_like)
-                        for a in user.setdefault('areas', state._default_areas()).values():
-                            a['d_Like'] = float(a.get('d_Like', 0.0) or 0.0) + add_like
-                            try:
-                                old_gp = int(a.get('s_Gp1') or '0')
-                            except Exception:
-                                old_gp = 0
-                            a['s_Gp1'] = str(max(0, old_gp + add_int))
+                    elif add_like is not None and str(add_like).strip() not in ('', '0'):
+                        a_int, a_like, a_str, a_fmt = currency.parse_currency(add_like)
+                        if a_int != 0:
+                            state.increment_currency(user['uuid'], like=a_str)
+                            cur_l = float(user.get('userdata', {}).get('u_like', 0.0) or 0.0) + a_like
+                            user.setdefault('userdata', {})['u_like'] = cur_l
+                            for a in user.setdefault('areas', state._default_areas()).values():
+                                a['d_Like'] = float(a.get('d_Like', 0.0) or 0.0) + a_like
+                                old_int, _, _, _ = currency.parse_currency(a.get('s_Gp1') or '0')
+                                a['s_Gp1'] = str(max(0, old_int + a_int))
 
                     if add_cp != 0 or add_candy != 0:
                         state.increment_currency(user['uuid'], cp=add_cp, candy=add_candy)

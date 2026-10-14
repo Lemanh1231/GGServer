@@ -518,17 +518,15 @@ def h_user_login(req, player, ctx):
         areas = user.get('areas') or state._default_areas()
         user['areas'] = areas
         ud = user['userdata']
+        from server import currency
         cur_like = float(ud.get('u_like', 0.0) or 0.0)
-        cur_like_int = int(cur_like)
+        cur_like_int, cur_like_f, cur_like_str, _ = currency.parse_currency(cur_like)
         for aid, ainfo in areas.items():
-            if cur_like > float(ainfo.get('d_Like', 0.0) or 0.0):
-                ainfo['d_Like'] = cur_like
-            try:
-                cur_gp1 = int(ainfo.get('s_Gp1') or '0')
-            except Exception:
-                cur_gp1 = 0
-            if cur_like_int > cur_gp1:
-                ainfo['s_Gp1'] = str(cur_like_int)
+            if cur_like_f > float(ainfo.get('d_Like', 0.0) or 0.0):
+                ainfo['d_Like'] = cur_like_f
+            cur_gp1_int, _, _, _ = currency.parse_currency(ainfo.get('s_Gp1') or '0')
+            if cur_like_int > cur_gp1_int:
+                ainfo['s_Gp1'] = cur_like_str
         area_map = {int(k): v for k, v in areas.items()}
         ct = str(ud.get('u_create_time', ''))
         if not ct.lstrip('-').isdigit():
@@ -655,22 +653,21 @@ def h_user_save(req, player, ctx):
                     stored = user.setdefault('areas', {}).setdefault(str(n), {})
                     c_gp1_raw = area.get('s_Gp1')
                     stored.update(area)
+                    from server import currency
                     srv_like = float(user.get('userdata', {}).get('u_like', 0.0) or 0.0)
-                    srv_like_int = int(srv_like)
-                    try:
-                        c_gp1_int = int(c_gp1_raw) if c_gp1_raw is not None else 0
-                    except Exception:
-                        c_gp1_int = 0
+                    srv_like_int, srv_like_f, srv_like_str, _ = currency.parse_currency(srv_like)
+                    c_gp1_int, c_gp1_f, c_gp1_str, _ = currency.parse_currency(c_gp1_raw)
 
                     if srv_like_int > c_gp1_int:
-                        stored['s_Gp1'] = str(srv_like_int)
-                        stored['d_Like'] = srv_like
+                        stored['s_Gp1'] = srv_like_str
+                        stored['d_Like'] = srv_like_f
                     else:
-                        stored['s_Gp1'] = str(c_gp1_int)
-                        stored['d_Like'] = float(c_gp1_int)
-                        user.setdefault('userdata', {})['u_like'] = float(c_gp1_int)
+                        stored['s_Gp1'] = c_gp1_str
+                        stored['d_Like'] = c_gp1_f
+                        user.setdefault('userdata', {})['u_like'] = c_gp1_f
                         conn = state.get_db()
-                        conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (float(c_gp1_int), user['uuid']))
+                        # CRITICAL: Bind c_gp1_f as float to prevent SQLite integer overflow
+                        conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (float(c_gp1_f), user['uuid']))
                         conn.commit()
                         conn.close()
             state.save_user(user)
@@ -707,17 +704,15 @@ def h_user_load(req, player, ctx):
         areas = user.get('areas') or state._default_areas()
         user['areas'] = areas
         ud = user.get('userdata', {})
+        from server import currency
         cur_like = float(ud.get('u_like', 0.0) or 0.0)
-        cur_like_int = int(cur_like)
+        cur_like_int, cur_like_f, cur_like_str, _ = currency.parse_currency(cur_like)
         for aid, ainfo in areas.items():
-            if cur_like > float(ainfo.get('d_Like', 0.0) or 0.0):
-                ainfo['d_Like'] = cur_like
-            try:
-                cur_gp1 = int(ainfo.get('s_Gp1') or '0')
-            except Exception:
-                cur_gp1 = 0
-            if cur_like_int > cur_gp1:
-                ainfo['s_Gp1'] = str(cur_like_int)
+            if cur_like_f > float(ainfo.get('d_Like', 0.0) or 0.0):
+                ainfo['d_Like'] = cur_like_f
+            cur_gp1_int, _, _, _ = currency.parse_currency(ainfo.get('s_Gp1') or '0')
+            if cur_like_int > cur_gp1_int:
+                ainfo['s_Gp1'] = cur_like_str
         area_map = {int(k): v for k, v in areas.items()}
         now_str = time.strftime('%Y-%m-%d %H:%M:%S')
         ud_resp = dict(ud)

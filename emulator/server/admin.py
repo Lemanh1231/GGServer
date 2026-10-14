@@ -1054,7 +1054,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     <div style="display:flex; gap:10px; margin-bottom:10px;">
                         <div style="flex:1;">
                             <label class="form-label">Thêm Tim (Likes):</label>
-                            <input type="number" id="modal-add-like" value="0" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                            <input type="text" id="modal-add-like" value="0" placeholder="vd: 1000, 10A, 42.877G..." oninput="updateLikePreviews()" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                            <div id="modal-add-like-preview" style="font-size:0.75rem; color:#ff6b81; margin-top:3px; min-height:16px;"></div>
                         </div>
                         <div style="flex:1;">
                             <label class="form-label">Thêm Socola (CP):</label>
@@ -1067,10 +1068,11 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     </div>
                     <div>
                         <label class="form-label" style="display:flex; justify-content:space-between;">
-                            <span>❤️ Đặt chính xác số Tim (Ghi đè số Tim hiện tại):</span>
+                            <span>❤️ Đặt chính xác số Tim (Hỗ trợ đơn vị game: 42.877G, 100H, 10AA...):</span>
                             <span id="modal-user-like" style="color:#ff6b81; font-weight:600;">Hiện có: 0</span>
                         </label>
-                        <input type="text" id="modal-set-like" placeholder="Nhập số Tim muốn đặt (ví dụ: 100000000000000000000)..." style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                        <input type="text" id="modal-set-like" oninput="updateLikePreviews()" placeholder="Nhập số Tim (ví dụ: 1000, 42.877G, 100H, 10AA)..." style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                        <div id="modal-set-like-preview" style="font-size:0.78rem; color:#ff6b81; margin-top:3px; min-height:18px;"></div>
                     </div>
                 </div>
 
@@ -1403,14 +1405,69 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             }
         }
 
+        const GAME_UNITS = [];
+        for (let i = 0; i < 26; i++) GAME_UNITS.push(String.fromCharCode(65 + i)); // A..Z
+        for (let i = 0; i < 26; i++) {
+            for (let j = 0; j < 26; j++) {
+                GAME_UNITS.push(String.fromCharCode(65 + i) + String.fromCharCode(65 + j)); // AA..ZZ
+            }
+        }
+
         function formatNumber(num) {
             if (num === null || num === undefined) return '0';
+            const s = String(num).trim();
+            if (!s || s === '0') return '0';
             const n = Number(num);
-            if (isNaN(n)) return '0';
-            if (n >= 1e15) {
-                return n.toExponential(2);
+            if (!isNaN(n) && n >= 0 && n < 1000) {
+                return Math.floor(n).toLocaleString();
             }
-            return Math.floor(n).toLocaleString();
+            if (s.includes('e') || s.includes('E') || s.includes('.')) {
+                if (isNaN(n) || !isFinite(n)) return '0';
+                const exp = Math.floor(Math.log10(n));
+                const unitIdx = Math.floor(exp / 3);
+                if (unitIdx <= 0) return Math.floor(n).toLocaleString();
+                const unitName = GAME_UNITS[unitIdx - 1] || 'ZZ';
+                const mantissa = n / Math.pow(10, unitIdx * 3);
+                return mantissa.toFixed(3) + unitName;
+            }
+            const digits = s.length;
+            const unitIdx = Math.floor((digits - 1) / 3);
+            if (unitIdx <= 0) return Number(s).toLocaleString();
+            const unitName = GAME_UNITS[unitIdx - 1] || 'ZZ';
+            const intLen = ((digits - 1) % 3) + 1;
+            const intPart = s.substring(0, intLen);
+            const decPart = s.substring(intLen, intLen + 3).padEnd(3, '0');
+            return `${intPart}.${decPart}${unitName}`;
+        }
+
+        function parseGameCurrencyPreview(inputStr) {
+            if (!inputStr) return '';
+            const trimmed = inputStr.trim();
+            if (!trimmed || trimmed === '0') return '';
+            const m = trimmed.match(/^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)\\s*([a-zA-Z]*)$/);
+            if (!m) return '';
+            const num = parseFloat(m[1]);
+            const unit = m[2].toUpperCase();
+            if (isNaN(num)) return '';
+            if (!unit) {
+                return 'Quy đổi: ' + formatNumber(num) + ' Tim';
+            }
+            const idx = GAME_UNITS.indexOf(unit);
+            if (idx === -1) {
+                if (unit === 'K') return 'Quy đổi: ' + (num * 1e3).toLocaleString() + ' Tim (10.000A)';
+                return '⚠️ Đơn vị không hợp lệ (hợp lệ: A, B, C... G, H... ZZ)';
+            }
+            const exp = (idx + 1) * 3;
+            return `✨ Đơn vị game: ${num.toFixed(3)}${unit} (10^${exp})`;
+        }
+
+        function updateLikePreviews() {
+            const addLikeVal = document.getElementById('modal-add-like') ? document.getElementById('modal-add-like').value : '';
+            const setLikeVal = document.getElementById('modal-set-like') ? document.getElementById('modal-set-like').value : '';
+            const addPrev = document.getElementById('modal-add-like-preview');
+            const setPrev = document.getElementById('modal-set-like-preview');
+            if (addPrev) addPrev.innerText = parseGameCurrencyPreview(addLikeVal);
+            if (setPrev) setPrev.innerText = parseGameCurrencyPreview(setLikeVal);
         }
 
         // ================= USERS MANAGEMENT LOGIC =================
@@ -1782,10 +1839,11 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
             // Currencies
             document.getElementById('modal-user-like').innerText = 'Hiện có: ' + formatNumber(u.u_like) + ' Tim';
-            document.getElementById('modal-add-like').value = 0;
+            document.getElementById('modal-add-like').value = '';
             document.getElementById('modal-add-cp').value = 0;
             document.getElementById('modal-add-candy').value = 0;
             document.getElementById('modal-set-like').value = '';
+            updateLikePreviews();
 
             // Build attendance state for all events from user
             currentModalUserAttData = {};
@@ -1837,7 +1895,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
             const add_cp = parseInt(document.getElementById('modal-add-cp').value) || 0;
             const add_candy = parseFloat(document.getElementById('modal-add-candy').value) || 0;
-            const add_like = parseFloat(document.getElementById('modal-add-like').value) || 0;
+            const add_like = document.getElementById('modal-add-like').value.trim();
             const set_like_val = document.getElementById('modal-set-like').value.trim();
 
             const unlock_ch2 = document.getElementById('modal-unlock-ch2').checked;

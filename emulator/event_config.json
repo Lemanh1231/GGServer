@@ -3,93 +3,93 @@
     "1": {
       "name": "Điểm danh 7 ngày",
       "description": "Nhận CP, Kẹo, Trang phục và Nhạc trong 7 ngày đầu",
-      "enabled": true
+      "enabled": false
     },
     "2": {
       "name": "Điểm danh kỷ niệm 1 năm",
       "description": "Sự kiện 1st Anniversary mừng sinh nhật game (14 ngày)",
-      "enabled": true
+      "enabled": false
     },
     "3": {
       "name": "Điểm danh hằng ngày",
       "description": "Điểm danh hằng ngày Cửa hàng tiện lợi Chapter 2 (7 ngày bánh gừng, kẹo, AP)",
-      "enabled": true
+      "enabled": false
     },
     "202110": {
       "name": "Sự kiện đăng nhập tháng 10/2021",
       "description": "Sự kiện đăng nhập lễ hội Halloween 14 ngày",
-      "enabled": true
+      "enabled": false
     },
     "202111": {
       "name": "Sự kiện đăng nhập tháng 11/2021",
       "description": "Sự kiện chọn quà đăng nhập tân thủ 7 ngày",
-      "enabled": true
+      "enabled": false
     }
   },
   "star_pass": {
     "name": "Thẻ Sao / Star Pass",
     "description": "Vé mùa Star Pass với chuỗi nhiệm vụ và phần thưởng độc quyền 13 mùa giải",
-    "enabled": true,
+    "enabled": false,
     "active_season": 1,
     "paid_card_enabled": false
   },
   "pass_goods_sale": {
     "name": "Cửa hàng Giảm giá Star Pass (Pass Goods Sale)",
     "description": "Mở biểu tượng nút Sale trên sảnh chính để mua lại toàn bộ Trang phục & Guitar của 13 mùa Star Pass đã qua",
-    "enabled": true
+    "enabled": false
   },
   "meowfest": {
     "name": "Sự kiện Nuôi Mèo Meowfest (SamSeck)",
     "description": "Mở khóa 3 mốc nuôi mèo Tam Thể nhận Cây cào móng (Guitar 10), Quần yếm (Costume 13), Bé mèo Navi (Unit 1)",
-    "enabled": true
+    "enabled": false
   },
   "chapter3_tour": {
     "name": "Tour Chapter 3 (Sunshine High School)",
     "description": "Biểu diễn sân khấu trường trung học Sunshine 20 màn với Năng lượng Cookie / AP",
-    "enabled": true
+    "enabled": false
   },
   "weather_festival": {
     "name": "Lễ hội Hiệu ứng Thời tiết Mùa",
     "description": "Hiệu ứng tuyết rơi mùa đông (Snow Festival) hoặc cánh hoa anh đào rơi mùa xuân (Cherry Blossom Date)",
     "snow_enabled": false,
-    "cherry_blossom_enabled": true,
-    "mode": "cherry"
+    "cherry_blossom_enabled": false,
+    "mode": "none"
   },
   "fan_art_costume": {
     "name": "Trang phục Thiết kế Fan Art",
     "description": "Kích hoạt bộ trang phục nghệ thuật do cộng đồng người hâm mộ sáng tạo",
-    "enabled": true
+    "enabled": false
   },
   "event_ranking": {
     "name": "Đua Top Xếp Hạng Sự Kiện (Event Ranking)",
     "description": "Bảng xếp hạng đua top điểm sự kiện trực tiếp với danh sách Top 100 cao thủ",
-    "enabled": true
+    "enabled": false
   },
   "events": {
     "1": {
       "name": "Điểm danh 7 ngày",
-      "enabled": true,
-      "state": "active"
+      "enabled": false,
+      "state": "ended"
     },
     "2": {
       "name": "Điểm danh kỷ niệm 1 năm",
-      "enabled": true,
-      "state": "active"
+      "enabled": false,
+      "state": "ended"
     },
     "3": {
       "name": "Điểm danh hằng ngày",
-      "enabled": true,
-      "state": "active"
+      "enabled": false,
+      "state": "ended"
     },
     "202110": {
       "name": "Sự kiện đăng nhập tháng 10/2021",
-      "enabled": true,
-      "state": "active"
+      "enabled": false,
+      "state": "ended"
     },
     "202111": {
       "name": "Sự kiện đăng nhập tháng 11/2021",
-      "enabled": true,
-      "state": "active"
+      "enabled": false,
+      "state": "ended"
     }
   },
   "paid_star_card": {

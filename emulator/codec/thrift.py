@@ -68,21 +68,37 @@ class Reader:
 def _safe_int(v, default=0):
     if v is None: return default
     try: return int(v)
-    except (ValueError, TypeError): return default
+    except (ValueError, TypeError, OverflowError): return default
 
 def _safe_float(v, default=0.0):
     if v is None: return default
-    try: return float(v)
-    except (ValueError, TypeError): return default
+    try:
+        fv = float(v)
+        if fv > 1.7976931348623157e308: return 1.7976931348623157e308
+        if fv < -1.7976931348623157e308: return -1.7976931348623157e308
+        return fv
+    except (ValueError, TypeError, OverflowError): return default
 
 
 class Writer:
     def __init__(self): self.o=bytearray()
-    def byte(self,v): self.o.append(v & 0xff)
-    def i16(self,v): self.o+=struct.pack('>h', v)
-    def i32(self,v): self.o+=struct.pack('>i', v)
-    def i64(self,v): self.o+=struct.pack('>q', v)
-    def dbl(self,v): self.o+=struct.pack('>d', float(v))
+    def byte(self,v): self.o.append(_safe_int(v) & 0xff)
+    def i16(self,v):
+        iv = _safe_int(v)
+        if iv > 32767: iv = 32767
+        elif iv < -32768: iv = -32768
+        self.o+=struct.pack('>h', iv)
+    def i32(self,v):
+        iv = _safe_int(v)
+        if iv > 2147483647: iv = 2147483647
+        elif iv < -2147483648: iv = -2147483648
+        self.o+=struct.pack('>i', iv)
+    def i64(self,v):
+        iv = _safe_int(v)
+        if iv > 9223372036854775807: iv = 9223372036854775807
+        elif iv < -9223372036854775808: iv = -9223372036854775808
+        self.o+=struct.pack('>q', iv)
+    def dbl(self,v): self.o+=struct.pack('>d', _safe_float(v))
     def string(self,v):
         if v is None:
             raw = b''

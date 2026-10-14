@@ -208,18 +208,16 @@ def _reconstruct_user(row):
     data['is_banned'] = bool(row['is_banned'] if 'is_banned' in row.keys() else 0)
 
     # Sync like currency to active areas so client in-game HUD displays the hearts
+    from server import currency
     cur_like = float(row['u_like'] or 0.0)
-    cur_like_int = int(cur_like)
+    cur_like_int, cur_like_f, cur_like_str, _ = currency.parse_currency(cur_like)
     areas = data.setdefault('areas', _default_areas())
     for aid, ainfo in areas.items():
-        if cur_like > float(ainfo.get('d_Like', 0.0) or 0.0):
-            ainfo['d_Like'] = cur_like
-        try:
-            cur_gp1 = int(ainfo.get('s_Gp1') or '0')
-        except Exception:
-            cur_gp1 = 0
-        if cur_like_int > cur_gp1:
-            ainfo['s_Gp1'] = str(cur_like_int)
+        if cur_like_f > float(ainfo.get('d_Like', 0.0) or 0.0):
+            ainfo['d_Like'] = cur_like_f
+        cur_gp1_int, _, _, _ = currency.parse_currency(ainfo.get('s_Gp1') or '0')
+        if cur_like_int > cur_gp1_int:
+            ainfo['s_Gp1'] = cur_like_str
 
     return data
 
@@ -405,26 +403,25 @@ def increment_currency(uuid, cp=0, candy=0.0, like=0.0, fans=0):
         conn = get_db()
         ruuid = _resolve_uuid(conn, uuid)
         if ruuid is not None:
+            from server import currency
+            like_int, like_f, like_str, _ = currency.parse_currency(like)
+            # CRITICAL: Bind like_f as float in SQLite to prevent OverflowError on numbers > 2^63-1
             conn.execute('''
                 UPDATE user_data
                 SET u_cp = u_cp + ?, u_candy = u_candy + ?, u_like = u_like + ?, u_fans = u_fans + ?
                 WHERE uuid = ?
-            ''', (cp, candy, like, fans, ruuid))
-            if like != 0:
+            ''', (int(cp), float(candy), float(like_f), int(fans), ruuid))
+            if like_f != 0:
                 row = conn.execute('SELECT u_like, user_contents_json FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
                 if row and row['user_contents_json']:
                     try:
                         d = json.loads(row['user_contents_json'])
                         new_l = float(row['u_like'] or 0.0)
                         d.setdefault('userdata', {})['u_like'] = new_l
-                        like_int = int(like)
                         for a in d.setdefault('areas', {}).values():
                             a['d_Like'] = new_l
-                            try:
-                                old_gp = int(a.get('s_Gp1') or '0')
-                            except Exception:
-                                old_gp = 0
-                            a['s_Gp1'] = str(max(0, old_gp + like_int))
+                            old_iv, _, _, _ = currency.parse_currency(a.get('s_Gp1') or '0')
+                            a['s_Gp1'] = str(max(0, old_iv + like_int))
                         conn.execute('UPDATE user_data SET user_contents_json = ? WHERE uuid = ?', (json.dumps(d, ensure_ascii=False), ruuid))
                     except Exception:
                         pass
@@ -436,29 +433,19 @@ def set_like_currency(uuid, amount):
         conn = get_db()
         ruuid = _resolve_uuid(conn, uuid)
         if ruuid is not None:
-            try:
-                if isinstance(amount, str):
-                    amount_clean = amount.strip()
-                    if '.' in amount_clean or 'e' in amount_clean.lower():
-                        amount_int = int(float(amount_clean))
-                    else:
-                        amount_int = int(amount_clean)
-                else:
-                    amount_int = int(amount)
-            except Exception:
-                amount_int = 0
-            amount_f = max(0.0, float(amount_int))
-            amount_str = str(max(0, amount_int))
+            from server import currency
+            int_val, float_val, gp_str, formatted = currency.parse_currency(amount)
 
-            conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (amount_f, ruuid))
+            # CRITICAL: Always bind float_val into SQLite column
+            conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (float(float_val), ruuid))
             row = conn.execute('SELECT user_contents_json FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
             if row and row['user_contents_json']:
                 try:
                     d = json.loads(row['user_contents_json'])
-                    d.setdefault('userdata', {})['u_like'] = amount_f
+                    d.setdefault('userdata', {})['u_like'] = float_val
                     for a in d.setdefault('areas', {}).values():
-                        a['d_Like'] = amount_f
-                        a['s_Gp1'] = amount_str
+                        a['d_Like'] = float_val
+                        a['s_Gp1'] = gp_str
                     conn.execute('UPDATE user_data SET user_contents_json = ? WHERE uuid = ?', (json.dumps(d, ensure_ascii=False), ruuid))
                 except Exception:
                     pass
