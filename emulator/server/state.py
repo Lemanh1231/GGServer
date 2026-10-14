@@ -484,6 +484,22 @@ def delete_user(uuid):
         conn.close()
         return res
 
+def cleanup_test_users():
+    """Delete all automatically generated test accounts from database."""
+    with _LOCK:
+        conn = get_db()
+        test_patterns = ['test_%', 'emu-test-%', 'att-test-%', 'dm-test-%', 'verify-%']
+        conditions = ' OR '.join(['uuid LIKE ?' for _ in test_patterns] + ['device_uuid LIKE ?' for _ in test_patterns])
+        args = tuple(test_patterns + test_patterns)
+        rows = conn.execute(f'SELECT uuid FROM user_data WHERE {conditions}', args).fetchall()
+        uuids = [r['uuid'] for r in rows]
+        for u in uuids:
+            conn.execute('DELETE FROM user_inventory WHERE uuid = ?', (u,))
+            conn.execute('DELETE FROM user_data WHERE uuid = ?', (u,))
+        conn.commit()
+        conn.close()
+        return len(uuids)
+
 def spend_currency(uuid, *, currency, amount):
     """Atomically spend a positive amount only when the balance covers it."""
     try:

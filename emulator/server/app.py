@@ -157,6 +157,11 @@ class Handler(BaseHTTPRequestHandler):
                 f12_level = f12_map.get(r['uuid']) or next((int(f.get('i_Level', 0) or 0) for f in followers if int(f.get('i_id', 0) or 0) == 12), 0)
                 ch2_unlocked = bool(a1_grade >= 4 and f12_level >= 15)
 
+                is_test = bool(
+                    str(r['uuid']).startswith(('test_', 'emu-test-', 'att-test-', 'dm-test-', 'verify-'))
+                    or str(r['device_uuid']).startswith(('test_', 'emu-test-', 'att-test-', 'dm-test-', 'verify-'))
+                )
+
                 users_list.append({
                     'uuid': r['uuid'],
                     'device_uuid': r['device_uuid'],
@@ -178,6 +183,7 @@ class Handler(BaseHTTPRequestHandler):
                     'star_point': cur_point,
                     'star_step': cur_step,
                     'is_banned': bool(r['is_banned'] if 'is_banned' in r.keys() else 0),
+                    'is_test': is_test,
                 })
             resp = {'success': True, 'users': users_list, 'active_season': active_season}
             self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
@@ -281,6 +287,16 @@ class Handler(BaseHTTPRequestHandler):
                     if not ok:
                         raise ValueError('Không tìm thấy người chơi để xóa!')
                     resp = {'success': True, 'message': 'Đã xóa toàn bộ dữ liệu tài khoản thành công! Khi vào lại game sẽ là tài khoản mới tinh.'}
+                    self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
+                except Exception as e:
+                    resp = {'success': False, 'error': str(e)}
+                    self._send(json.dumps(resp, ensure_ascii=False), 400, 'application/json; charset=utf-8')
+                return
+
+            if path == '/admin/api/users/cleanup_tests':
+                try:
+                    count = state.cleanup_test_users()
+                    resp = {'success': True, 'count': count, 'message': f'Đã dọn dẹp thành công {count} tài khoản test tự động!'}
                     self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
                 except Exception as e:
                     resp = {'success': False, 'error': str(e)}

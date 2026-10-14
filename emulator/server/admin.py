@@ -692,8 +692,12 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     <div class="stat-card-value" id="stat-total-users" style="color: #a29bfe;">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-card-title">🟢 Đang Hoạt Động</div>
-                    <div class="stat-card-value" id="stat-active-users" style="color: #2ed573;">0</div>
+                    <div class="stat-card-title">📱 Thiết Bị Thật</div>
+                    <div class="stat-card-value" id="stat-real-users" style="color: #2ed573;">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">🧪 Tài Khoản Test Auto</div>
+                    <div class="stat-card-value" id="stat-test-users" style="color: #ffa502;">0</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-card-title">🚫 Đã Khóa (Banned)</div>
@@ -711,12 +715,15 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     <input type="text" id="user-search-input" class="search-input" placeholder="🔍 Tìm kiếm theo Tên, ID, Seq, UUID..." oninput="filterUsers()">
                     <select id="user-status-filter" class="filter-select" onchange="filterUsers()">
                         <option value="all">Tất cả người chơi</option>
+                        <option value="real">📱 Chỉ thiết bị thật (Ẩn test)</option>
+                        <option value="test">🧪 Chỉ tài khoản test tự động</option>
                         <option value="active">🟢 Đang hoạt động (Bình thường)</option>
                         <option value="banned">🚫 Đã bị khóa (BANNED)</option>
                         <option value="gold">⭐ Đã có Thẻ Sao Gold</option>
                         <option value="free">⚪ Thẻ Sao Thường (Free)</option>
                     </select>
                     <button class="btn btn-secondary" style="padding: 10px 14px; font-size: 0.88rem; flex: 0 0 auto;" onclick="loadUsers()">🔄 Làm mới</button>
+                    <button class="btn" style="padding: 10px 14px; font-size: 0.88rem; flex: 0 0 auto; background: rgba(255, 71, 87, 0.15); color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.35);" onclick="cleanupTestUsers()" title="Xóa bỏ toàn bộ các tài khoản giả lập tự sinh khi chạy kiểm thử">🧹 Dọn Dẹp Acc Test</button>
                     <button class="btn btn-primary" style="padding: 10px 14px; font-size: 0.88rem; flex: 0 0 auto;" onclick="openSendMailModal()">✉️ Gửi Thư Toàn Server</button>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; color: var(--text-sub); padding: 0 4px;">
@@ -1422,12 +1429,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
         function updateUserStats() {
             const total = cachedUsers.length;
+            const real = cachedUsers.filter(u => !u.is_test).length;
+            const test = cachedUsers.filter(u => u.is_test).length;
             const banned = cachedUsers.filter(u => u.is_banned).length;
-            const active = total - banned;
             const gold = cachedUsers.filter(u => u.is_gold).length;
 
             document.getElementById('stat-total-users').innerText = total;
-            document.getElementById('stat-active-users').innerText = active;
+            document.getElementById('stat-real-users').innerText = real;
+            document.getElementById('stat-test-users').innerText = test;
             document.getElementById('stat-banned-users').innerText = banned;
             document.getElementById('stat-gold-users').innerText = gold;
             document.getElementById('tab-users-count').innerText = total;
@@ -1439,6 +1448,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             const filter = document.getElementById('user-status-filter').value;
 
             let filtered = cachedUsers.filter(u => {
+                if (filter === 'real' && u.is_test) return false;
+                if (filter === 'test' && !u.is_test) return false;
                 if (filter === 'active' && u.is_banned) return false;
                 if (filter === 'banned' && !u.is_banned) return false;
                 if (filter === 'gold' && !u.is_gold) return false;
@@ -1455,6 +1466,23 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
             document.getElementById('filtered-count').innerText = filtered.length;
             renderUsersTable(filtered);
+        }
+
+        async function cleanupTestUsers() {
+            if (!confirm('Bạn có chắc chắn muốn DỌN DẸP toàn bộ tài khoản test tự động không?\\nCác thiết bị người chơi thật sẽ được bảo toàn nguyên vẹn 100%.')) return;
+            try {
+                const res = await fetch('/admin/api/users/cleanup_tests', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Dọn dẹp thất bại');
+                showToast('🧹 ' + data.message);
+                loadUsers();
+            } catch (e) {
+                showToast('❌ Lỗi: ' + e.message, true);
+            }
         }
 
         function renderUsersTable(users) {
@@ -1491,12 +1519,19 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 const banBadge = u.is_banned
                     ? `<span class="user-badge-banned">🚫 BANNED</span>`
                     : '';
+                const deviceBadge = u.is_test
+                    ? `<span style="display:inline-flex; align-items:center; background:rgba(255,165,2,0.15); color:#ffa502; border:1px solid rgba(255,165,2,0.35); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:700; margin-left:6px;">🧪 Test Auto</span>`
+                    : `<span style="display:inline-flex; align-items:center; background:rgba(46, 213, 115, 0.15); color:#2ed573; border:1px solid rgba(46, 213, 115, 0.35); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:700; margin-left:6px;">📱 Máy Thật</span>`;
                 const shortUuid = u.uuid ? (u.uuid.length > 14 ? u.uuid.substring(0, 14) + '...' : u.uuid) : '-';
 
                 html += `
                     <tr>
                         <td>
-                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">${escapeHtml(u.u_nick)} ${banBadge}</div>
+                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem; display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
+                                <span>${escapeHtml(u.u_nick)}</span>
+                                ${deviceBadge}
+                                ${banBadge}
+                            </div>
                             <div style="font-size: 0.76rem; color: var(--text-sub); margin-top: 2px;">Seq: #${u.u_seq} &bull; ID: ${escapeHtml(u.u_id || '-')}</div>
                             <div class="uuid-pill" onclick="copyToClipboard('${u.uuid}', 'UUID')" title="Bấm để sao chép toàn bộ UUID">
                                 📋 ${escapeHtml(shortUuid)}
