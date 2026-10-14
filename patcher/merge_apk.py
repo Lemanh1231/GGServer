@@ -195,9 +195,9 @@ def patch_manifest_axml(data):
                     struct.pack_into('<I', buf, ab + 16, empty_data)
                     changed += 1
 
-    # Pass 5: Redirect GooglePlayAuth and GamePlayLogin activities to GuestAuth
-    guest_auth_idx = strings.index('com.pmangplus.ui.activity.firebase.GuestAuth') if 'com.pmangplus.ui.activity.firebase.GuestAuth' in strings else None
-    if guest_auth_idx is not None:
+    # Pass 5: Redirect GooglePlayAuth activity to GamePlayLogin
+    game_login_idx = strings.index('com.pmangplus.ui.activity.login.GamePlayLogin') if 'com.pmangplus.ui.activity.login.GamePlayLogin' in strings else None
+    if game_login_idx is not None:
         for ctype, coff, csize in chunks:
             if ctype != RES_XML_START_ELEMENT: continue
             tag_idx = struct.unpack_from('<I', buf, coff + 20)[0]
@@ -214,9 +214,9 @@ def patch_manifest_axml(data):
                 data_val = struct.unpack_from('<I', buf, ab + 16)[0]
                 if res_id == 0x01010003 and dtype == 0x03:
                     act_name = strings[data_val] if data_val < len(strings) else ''
-                    if act_name in ('com.pmangplus.ui.activity.firebase.GooglePlayAuth', 'com.pmangplus.ui.activity.login.GamePlayLogin'):
-                        struct.pack_into('<I', buf, ab + 8, guest_auth_idx)
-                        struct.pack_into('<I', buf, ab + 16, guest_auth_idx)
+                    if act_name == 'com.pmangplus.ui.activity.firebase.GooglePlayAuth':
+                        struct.pack_into('<I', buf, ab + 8, game_login_idx)
+                        struct.pack_into('<I', buf, ab + 16, game_login_idx)
                         changed += 1
 
     return bytes(buf), changed

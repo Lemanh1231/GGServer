@@ -91,35 +91,49 @@ def replace_entry_grow(apk_path, name, new_bytes):
         shutil.rmtree(td, ignore_errors=True)
 
 
-def patch_classes3_dex(dex_bytes):
-    """Patch classes3.dex to redirect Google Play login to GuestAuth and disarm Play Games activities."""
-    import hashlib, zlib
+def patch_classes3_dex(dex_bytes, target_url=None):
+    """Patch classes3.dex:
+    1. Redirect GooglePlayAuth const-class references to GamePlayLogin
+    2. Auto-login via GamePlayLogin.onCreate -> GamePlayLogin.login('guest', 'user')
+    3. Disarm AppSecurityValidator.checkAppSignatureValidity()
+    4. Auto-agree EULA (Utility.isAgreeAllEula, isAgreeMobileServiceEula, isAgreePrivacyEula -> true)
+    """
+    import hashlib, zlib, struct
     dex = bytearray(dex_bytes)
-    # 5 const-class opcodes: change 0x1b76 (GooglePlayAuth) and 0x1b7f (GamePlayLogin) to 0x1b7a (GuestAuth)
-    patches = [
-        (3824612, b'\x1c\x02\x76\x1b', b'\x1c\x02\x7a\x1b'),
-        (3827718, b'\x1c\x06\x76\x1b', b'\x1c\x06\x7a\x1b'),
-        (3817222, b'\x1c\x01\x7f\x1b', b'\x1c\x01\x7a\x1b'),
-        (3817290, b'\x1c\x01\x7f\x1b', b'\x1c\x01\x7a\x1b'),
-        (3827940, b'\x1c\x00\x7f\x1b', b'\x1c\x00\x7a\x1b'),
-    ]
-    for off, old, new in patches:
-        if dex[off:off+4] == old:
-            dex[off:off+4] = new
 
-    # Disarm GooglePlayAuth->onCreate: call finish() and return
-    gp_start = 3884488
-    if dex[gp_start:gp_start+6] == bytes.fromhex('6f2022002100'):
-        stub = bytes.fromhex('6f2022002100') + bytes.fromhex('6e1008000100') + bytes.fromhex('0e00')
-        stub += b'\x00' * (50 - len(stub))
-        dex[gp_start:gp_start+50] = stub
+    # 1. Redirect GooglePlayAuth (0x1b76) -> GamePlayLogin (0x1b7f)
+    for off in (3824612, 3827718):
+        if dex[off:off+4] == b'\x1c\x02\x76\x1b':
+            dex[off:off+4] = b'\x1c\x02\x7f\x1b'
+        elif dex[off:off+4] == b'\x1c\x06\x76\x1b':
+            dex[off:off+4] = b'\x1c\x06\x7f\x1b'
 
-    # Disarm GamePlayLogin->onCreate: call finish() and return
-    gl_start = 3886124
-    if dex[gl_start:gl_start+6] == bytes.fromhex('6f2022003200'):
-        stub = bytes.fromhex('6f2022003200') + bytes.fromhex('6e1008000200') + bytes.fromhex('0e00')
-        stub += b'\x00' * (104 - len(stub))
-        dex[gl_start:gl_start+104] = stub
+    # 2. Auto-login in GamePlayLogin.onCreate: call login('guest', 'user') directly
+    # Update outs_size from 2 to 3 to accommodate 3 args (this, guest, user)
+    hdr_off = 3886124 - 16
+    if dex[hdr_off+4:hdr_off+6] == b'\x02\x00':
+        dex[hdr_off+4:hdr_off+6] = b'\x03\x00'
+
+    gl_off = 3886208  # 0x3b4c80
+    old_gl = bytes.fromhex('71101c0702000c035b2373556e10f9a002000e00')
+    # 70 is invoke-direct (required by ART for private method GamePlayLogin.login)
+    new_gl = bytes.fromhex('1a0048b61a014ae97030f5a002010e0000000000')
+    if dex[gl_off:gl_off+len(old_gl)] == old_gl:
+        dex[gl_off:gl_off+len(new_gl)] = new_gl
+
+    # 3. Disarm AppSecurityValidator.checkAppSignatureValidity: return-void immediately
+    sec_off = 3899864  # 0x3b81d8
+    old_sec = bytes.fromhex('5520c65538000300')
+    new_sec = bytes.fromhex('0e00000000000000')
+    if dex[sec_off:sec_off+len(old_sec)] == old_sec:
+        dex[sec_off:sec_off+len(new_sec)] = new_sec
+
+    # 4. Auto-agree EULA: return true (1) for all 3 EULA check methods
+    # const/4 v0, #1; return v0; nop; nop
+    eula_ret_true = bytes.fromhex('12100f0000000000')
+    for eoff in (3925104, 3925264, 3925336):  # 0x3be470, 0x3be510, 0x3be558
+        if dex[eoff:eoff+8] == bytes.fromhex('7100789500000c00'):
+            dex[eoff:eoff+8] = eula_ret_true
 
     # Recalculate DEX checksum & SHA-1
     dex[12:32] = hashlib.sha1(dex[32:]).digest()
@@ -170,7 +184,7 @@ def main():
                 if zi.filename == 'AndroidManifest.xml' or zi.filename.startswith('META-INF/'):
                     continue
                 if zi.filename == 'classes3.dex':
-                    dex_data = patch_classes3_dex(zb.read(zi.filename))
+                    dex_data = patch_classes3_dex(zb.read(zi.filename), a.target)
                     zo.writestr(zi, dex_data, compress_type=zi.compress_type)
                     continue
                 zo.writestr(zi, zb.read(zi.filename), compress_type=zi.compress_type)

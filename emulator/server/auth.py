@@ -53,22 +53,23 @@ def _int(s, d=0):
 def handle(path, form):
     """Return (body_bytes, content_type) for an /api/... auth path, or None if unmatched."""
     p = path.split('?', 1)[0]
-    if p == '/api/accounts/v3/global/login':
+    norm_p = p[4:] if p.startswith('/api/') else p
+
+    if norm_p == '/accounts/v3/global/login':
         return _json(_login(form))
-    if p.startswith('/api/eula/'):
+    if norm_p.startswith('/eula/'):
         f = os.path.join(_STATIC, 'eula.html')
         data = open(f, 'rb').read() if os.path.exists(f) else b'<html>OK</html>'
         return data, 'text/html; charset=utf-8'
-    if p == '/api/referrer/save':
+    if norm_p == '/referrer/save':
         return _json(_simple('OK'))
-    if p.startswith('/api/gcm/'):
+    if norm_p.startswith('/gcm/'):
         return _json(_gcm_register())
-    if p == '/api/analytics' or p.endswith('/analytics'):
+    if norm_p == '/analytics' or norm_p.endswith('/analytics'):
         return _json(_simple(True))
-    if 'geoip' in p:
+    if 'geoip' in norm_p:
         return _json(_simple('US'))
-    # default: generic OK for any other /api/ call so the client proceeds
-    if p.startswith('/api/'):
+    if norm_p.startswith('/accounts/') or norm_p.startswith('/app/') or norm_p.startswith('/api/'):
         return _json(_simple(True))
     return None
 

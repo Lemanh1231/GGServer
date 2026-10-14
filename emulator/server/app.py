@@ -140,6 +140,12 @@ class Handler(BaseHTTPRequestHandler):
             html = download.get_download_html()
             self._send(html, 200, 'text/html; charset=utf-8')
             return
+        if path.startswith('/api/') or path.startswith('/eula/') or path.startswith('/accounts/') or path.startswith('/app/'):
+            res = auth.handle(path, {})
+            if res is not None:
+                data, ct = res
+                self._send(data, 200, ct)
+                return
         if path in ('/download/apk', '/download/' + APK_FILENAME, '/' + APK_FILENAME, '/apk'):
             self.log_message("DOWNLOAD APK requested: %s", APK_PATH)
             self._send_file(APK_PATH, filename=APK_FILENAME)
@@ -658,7 +664,7 @@ class Handler(BaseHTTPRequestHandler):
             form = multipart.parse(ctype, body)
 
             # --- NeonAPI / PmangPlus auth (JSON) ---
-            if path.startswith('/api/'):
+            if path.startswith('/api/') or path.startswith('/accounts/') or path.startswith('/referrer/') or path.startswith('/gcm/') or path.startswith('/app/'):
                 res = auth.handle(path, form)
                 if res is not None:
                     data, ct = res
