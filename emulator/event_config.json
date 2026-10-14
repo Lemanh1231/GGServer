@@ -30,7 +30,7 @@
     "name": "Thẻ Sao / Star Pass",
     "description": "Vé mùa Star Pass với chuỗi nhiệm vụ và phần thưởng độc quyền 13 mùa giải",
     "enabled": true,
-    "active_season": 6,
+    "active_season": 1,
     "paid_card_enabled": false
   },
   "pass_goods_sale": {
@@ -51,9 +51,9 @@
   "weather_festival": {
     "name": "Lễ hội Hiệu ứng Thời tiết Mùa",
     "description": "Hiệu ứng tuyết rơi mùa đông (Snow Festival) hoặc cánh hoa anh đào rơi mùa xuân (Cherry Blossom Date)",
-    "snow_enabled": true,
-    "cherry_blossom_enabled": false,
-    "mode": "snow"
+    "snow_enabled": false,
+    "cherry_blossom_enabled": true,
+    "mode": "cherry"
   },
   "fan_art_costume": {
     "name": "Trang phục Thiết kế Fan Art",

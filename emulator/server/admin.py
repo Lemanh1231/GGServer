@@ -7,7 +7,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guitar Girl - Quản Lý Máy Chủ & Người Chơi</title>
+    <title>Guitar Girl - Quản lý Sự kiện & Quản Lý Người Chơi</title>
     <style>
         :root {
             --bg-color: #0f111a;
@@ -895,6 +895,10 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                         <span style="background: rgba(255, 255, 255, 0.08); color: var(--text-sub); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight:600;">Mặc định</span>
                     </label>
                 </div>
+
+                <div style="margin-top: 12px; padding: 10px 14px; background: rgba(255, 118, 117, 0.08); border-left: 3px solid #ff7675; border-radius: 6px; font-size: 0.8rem; color: #fab1a0; line-height: 1.45;">
+                    💡 <b>Lưu ý về Mùa hoa anh đào:</b> Theo thiết kế đồ họa gốc của nhà sản xuất game, hiệu ứng <b>Cánh hoa anh đào rơi</b> chỉ xuất hiện tại cảnh <b>Chapter 2 (Phố Hongdae / Tiệm bánh)</b>; trong khi hiệu ứng <b>Tuyết rơi</b> xuất hiện ở cả Chapter 1 & Chapter 2. Nếu tài khoản chưa mở Chapter 2, hãy sang tab <b>👥 Quản Lý Người Chơi &gt; ⚙️ Setting &gt; Bật "Mở khóa Chapter 2"</b> để test ngay!
+                </div>
             </div>
 
             <!-- 7. Fan Art Costume -->
@@ -1058,68 +1062,60 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     </div>
                 </div>
 
-                <!-- 4. Điểm Danh 7 Ngày Tân Thủ -->
-                <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <span style="font-weight:600; font-size:0.9rem; color:#fff;">📅 Điểm Danh 7 Ngày Tân Thủ (7-Day Attendance)</span>
-                        <span id="modal-att-status" style="font-size:0.78rem; color:var(--text-sub);"></span>
+                <!-- 4. TÙY CHỈNH ĐIỂM DANH SỰ KIỆN (COMPACT & HỖ TRỢ TẤT CẢ SỰ KIỆN) -->
+                <div style="margin-top:14px; padding:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-weight:600; font-size:0.9rem; color:#fff; display:inline-flex; align-items:center; gap:6px;">
+                            📅 Tùy Chỉnh Điểm Danh Sự Kiện
+                        </span>
+                        <span id="modal-att-status" style="font-size:0.8rem; color:#a29bfe; font-weight:600; background:rgba(162,155,254,0.15); padding:2px 8px; border-radius:6px;"></span>
                     </div>
-                    
-                    <label class="form-label">Chọn mốc ngày điểm danh:</label>
-                    <select id="modal-att-day" style="margin-bottom:10px;">
-                        <option value="claim_7">⭐ Ngày 7 (Mở khóa nhận quà Ngày 7 ngay: Nhạc Bông hoa chưa được đặt tên)</option>
-                        <option value="claim_2">👗 Ngày 2 (Mở khóa nhận quà Ngày 2: Váy đầm hoa tuyết)</option>
-                        <option value="claim_1">📅 Ngày 1 (Bắt đầu ngày 1: 100 CP)</option>
-                        <option value="claim_3">🍫 Ngày 3 (Mở khóa nhận Ngày 3: 200 CP)</option>
-                        <option value="claim_4">🍬 Ngày 4 (Mở khóa nhận Ngày 4: 50 Kẹo)</option>
-                        <option value="claim_5">🍫 Ngày 5 (Mở khóa nhận Ngày 5: 300 CP)</option>
-                        <option value="claim_6">🍬 Ngày 6 (Mở khóa nhận Ngày 6: 50 Kẹo)</option>
-                        <option value="completed">✅ Đã hoàn thành trọn bộ 7/7 ngày</option>
-                        <option value="reset">🔄 Đặt lại từ đầu (0/7 ngày)</option>
-                    </select>
+
+                    <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:10px; margin-bottom:10px;">
+                        <div>
+                            <label class="form-label" style="font-size:0.78rem; color:var(--text-sub); margin-bottom:4px;">Sự kiện muốn chỉnh:</label>
+                            <select id="modal-att-event-select" onchange="onModalAttEventChange()" style="width:100%; padding:8px 10px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px; font-size:0.85rem;">
+                                <option value="1">📅 Tân thủ 7 ngày (Event 1)</option>
+                                <option value="3">🏪 Cửa hàng tiện lợi (CH2 - Event 3)</option>
+                                <option value="202110">🎃 Halloween 14 ngày (Event 202110)</option>
+                                <option value="202111">🎁 Chọn quà Tân thủ (Event 202111)</option>
+                                <option value="2">🎂 Kỷ niệm 1 năm (14 ngày - Event 2)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size:0.78rem; color:var(--text-sub); margin-bottom:4px;">Mốc ngày đặt:</label>
+                            <select id="modal-att-day" onchange="onModalAttDayChange()" style="width:100%; padding:8px 10px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px; font-size:0.85rem;">
+                            </select>
+                        </div>
+                    </div>
 
                     <div style="display:flex; flex-direction:column; gap:8px;">
                         <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; color:var(--text-sub); cursor:pointer;">
-                            <input type="checkbox" id="modal-att-unlock" checked>
+                            <input type="checkbox" id="modal-att-unlock" onchange="onModalAttUnlockChange()" checked>
                             <span>🔓 Mở khóa nhận quà ngay hôm nay (Xóa giới hạn chờ 24h)</span>
                         </label>
                         <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; color:#f5cd79; cursor:pointer;">
-                            <input type="checkbox" id="modal-att-direct-grant">
-                            <span>🎁 Nhận ngay trọn bộ quà 7 ngày vào tài khoản (Nhạc 13 + Váy 9 + 600 CP + 100 Kẹo)</span>
+                            <input type="checkbox" id="modal-att-direct-grant" onchange="onModalAttGrantChange()">
+                            <span id="modal-att-grant-label">🎁 Nhận ngay trọn bộ quà sự kiện này vào tài khoản</span>
                         </label>
                     </div>
                 </div>
 
-                <!-- 4.2 Điểm Danh Cửa Hàng Tiện Lợi Hạnh Phúc (CH2 - Event 3) -->
-                <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <span style="font-weight:600; font-size:0.9rem; color:#fff;">🏪 Cửa Hàng Tiện Lợi Hạnh Phúc (CH2 - Event 3)</span>
-                        <span id="modal-ch2-att-status" style="font-size:0.78rem; color:var(--text-sub);"></span>
+                <!-- 4.5 MỞ KHÓA CHAPTER 2 (NHÃN NGUY HIỂM / CHỈ BẬT KHI TEST) -->
+                <div style="margin-top:14px; padding:12px; background:rgba(235, 77, 75, 0.08); border:1px solid rgba(235, 77, 75, 0.35); border-radius:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-weight:700; font-size:0.88rem; color:#ff6b6b; display:inline-flex; align-items:center; gap:6px;">
+                            ⚠️ Mở khóa Ch2: Tiệm bánh Hạnh phúc
+                        </span>
+                        <span class="badge" style="background:#eb4d4b; color:#fff; font-size:0.68rem; padding:2px 8px; border-radius:4px; font-weight:700;">NGUY HIỂM / TEST</span>
                     </div>
-                    
-                    <label class="form-label">Chọn mốc ngày điểm danh tiện lợi:</label>
-                    <select id="modal-ch2-att-day" style="margin-bottom:10px;">
-                        <option value="claim_7">🍫 Ngày 7 (Mở khóa nhận quà Ngày 7: 150 CP Socola)</option>
-                        <option value="claim_6">🍪 Ngày 6 (Mở khóa nhận quà Ngày 6: 100 AP Bánh quy)</option>
-                        <option value="claim_3">🍪 Ngày 3 (Mở khóa nhận quà Ngày 3: 50 AP Bánh quy)</option>
-                        <option value="claim_1">🍪 Ngày 1 (Mở khóa nhận quà Ngày 1: 50 AP Bánh quy)</option>
-                        <option value="claim_2">🍬 Ngày 2 (Mở khóa nhận quà Ngày 2: 50 Kẹo)</option>
-                        <option value="claim_4">🍬 Ngày 4 (Mở khóa nhận quà Ngày 4: 50 Kẹo)</option>
-                        <option value="claim_5">🍪 Ngày 5 (Mở khóa nhận quà Ngày 5: 50 AP Bánh quy)</option>
-                        <option value="completed">✅ Đã hoàn thành trọn bộ 7/7 ngày</option>
-                        <option value="reset">🔄 Đặt lại từ đầu (0/7 ngày)</option>
-                    </select>
-
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; color:var(--text-sub); cursor:pointer;">
-                            <input type="checkbox" id="modal-ch2-att-unlock" checked>
-                            <span>🔓 Mở khóa nhận quà ngay hôm nay (Xóa giới hạn chờ 24h)</span>
-                        </label>
-                        <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; color:#68d8d6; cursor:pointer;">
-                            <input type="checkbox" id="modal-ch2-direct-grant">
-                            <span>🎁 Nhận ngay trọn bộ quà tiện lợi vào tài khoản (250 AP + 100 Kẹo + 150 CP)</span>
-                        </label>
+                    <div style="font-size:0.77rem; color:#ccc; margin-bottom:8px; line-height:1.45;">
+                        Tự động nâng <b>Độ nổi tiếng Khu vực 1 lên cấp 4</b> và <b>Tiệm bánh Hạnh phúc (Follower 12) lên cấp 15</b> để vượt qua điều kiện gốc, lập tức mở bản đồ Chapter 2 (Hongdae) để test sự kiện & hiệu ứng hoa anh đào.
                     </div>
+                    <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.84rem; color:#ff7675; cursor:pointer; font-weight:600;">
+                        <input type="checkbox" id="modal-unlock-ch2" style="width:17px; height:17px; accent-color:#eb4d4b;">
+                        <span>🔓 Bật Mở Khóa Chapter 2 Ngay Cho Người Chơi Này</span>
+                    </label>
                 </div>
 
                 <!-- 5. Mail notice toggle -->
@@ -1517,6 +1513,9 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                         <td>
                             <div style="font-size: 0.82rem; color: #a29bfe; font-weight: 500;">📅 Tân Thủ: <b>${u.attendance_day || 0}/7</b></div>
                             <div style="font-size: 0.82rem; color: #55efc4; font-weight: 500; margin-top: 3px;">🏪 Tiện Lợi: <b>${u.ch2_attendance_day || 0}/7</b></div>
+                            ${u.ch2_unlocked
+                                ? `<div style="font-size: 0.74rem; color: #2ed573; font-weight: 600; margin-top: 3px;">🔓 CH2: Đã mở</div>`
+                                : `<div style="font-size: 0.74rem; color: var(--text-sub); margin-top: 3px;">🔒 CH2: Chưa mở</div>`}
                         </td>
                         <td>
                             <div>${passBadge}</div>
@@ -1597,6 +1596,134 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             closeUserModal();
         }
 
+        // Metadata for all Attendance Events
+        const ATT_EVENTS_INFO = {
+            '1': {
+                name: '📅 Tân thủ 7 ngày (Event 1)',
+                totalDays: 7,
+                rewardsDesc: 'Nhạc 13 + Váy 9 + 600 CP + 100 Kẹo',
+                dayNames: {
+                    1: '100 CP',
+                    2: 'Váy đầm hoa tuyết',
+                    3: '200 CP',
+                    4: '50 Kẹo',
+                    5: '300 CP',
+                    6: '50 Kẹo',
+                    7: 'Nhạc Bông hoa chưa được đặt tên'
+                }
+            },
+            '3': {
+                name: '🏪 Cửa hàng tiện lợi (CH2 - Event 3)',
+                totalDays: 7,
+                rewardsDesc: '250 AP + 100 Kẹo + 150 CP',
+                dayNames: {
+                    1: '50 AP Bánh quy',
+                    2: '50 Kẹo',
+                    3: '50 AP Bánh quy',
+                    4: '50 Kẹo',
+                    5: '50 AP Bánh quy',
+                    6: '100 AP Bánh quy',
+                    7: '150 CP Socola'
+                }
+            },
+            '202110': {
+                name: '🎃 Halloween 14 ngày (Event 202110)',
+                totalDays: 14,
+                rewardsDesc: 'Trang phục & Guitar Halloween + CP + Kẹo',
+                dayNames: {}
+            },
+            '202111': {
+                name: '🎁 Chọn quà Tân thủ (Event 202111)',
+                totalDays: 7,
+                rewardsDesc: 'Bộ quà chọn Tân thủ 7 ngày',
+                dayNames: {}
+            },
+            '2': {
+                name: '🎂 Kỷ niệm 1 năm (14 ngày - Event 2)',
+                totalDays: 14,
+                rewardsDesc: 'Trọn bộ quà kỷ niệm 1 năm 14 ngày',
+                dayNames: {}
+            }
+        };
+
+        let currentModalUserAttData = {};
+        let currentModalAttEventKey = '1';
+
+        function renderModalAttEvent(eventKey) {
+            currentModalAttEventKey = eventKey;
+            const meta = ATT_EVENTS_INFO[eventKey] || { name: 'Sự kiện ' + eventKey, totalDays: 7, rewardsDesc: 'Quà sự kiện', dayNames: {} };
+            const state = currentModalUserAttData[eventKey] || { day: 0, unlock_today: true, grant_all: false, modified: false, mode: 'claim_day' };
+
+            const statusElem = document.getElementById('modal-att-status');
+            const daySelect = document.getElementById('modal-att-day');
+            const unlockElem = document.getElementById('modal-att-unlock');
+            const grantElem = document.getElementById('modal-att-direct-grant');
+            const grantLabel = document.getElementById('modal-att-grant-label');
+
+            statusElem.innerText = `Đã nhận ${state.day}/${meta.totalDays} ngày`;
+            grantLabel.innerText = `🎁 Nhận ngay trọn bộ quà vào tài khoản (${meta.rewardsDesc})`;
+
+            // Populate options for day select
+            let opts = '';
+            opts += `<option value="completed">✅ Đã hoàn thành trọn bộ ${meta.totalDays}/${meta.totalDays} ngày</option>`;
+            for (let d = meta.totalDays; d >= 1; d--) {
+                const desc = meta.dayNames[d] ? `: ${meta.dayNames[d]}` : '';
+                opts += `<option value="claim_${d}">📅 Mở sẵn nhận Ngày ${d}${desc}</option>`;
+            }
+            opts += `<option value="reset">🔄 Đặt lại từ đầu (0/${meta.totalDays} ngày)</option>`;
+            daySelect.innerHTML = opts;
+
+            // Set current value
+            if (state.day >= meta.totalDays) {
+                daySelect.value = 'completed';
+            } else if (state.mode === 'reset' || state.day === 0) {
+                daySelect.value = (state.modified && state.mode === 'reset') ? 'reset' : 'claim_1';
+            } else {
+                daySelect.value = 'claim_' + Math.min(meta.totalDays, state.day + 1);
+            }
+
+            unlockElem.checked = state.unlock_today !== false;
+            grantElem.checked = !!state.grant_all;
+        }
+
+        function onModalAttEventChange() {
+            const newKey = document.getElementById('modal-att-event-select').value;
+            renderModalAttEvent(newKey);
+        }
+
+        function onModalAttDayChange() {
+            const val = document.getElementById('modal-att-day').value;
+            const meta = ATT_EVENTS_INFO[currentModalAttEventKey] || { totalDays: 7 };
+            const state = currentModalUserAttData[currentModalAttEventKey] || { day: 0 };
+            state.modified = true;
+
+            if (val === 'completed') {
+                state.target_day = meta.totalDays;
+                state.mode = 'complete';
+            } else if (val === 'reset') {
+                state.target_day = 0;
+                state.mode = 'reset';
+            } else if (val.startsWith('claim_')) {
+                state.target_day = parseInt(val.replace('claim_', ''));
+                state.mode = 'claim_day';
+            }
+            currentModalUserAttData[currentModalAttEventKey] = state;
+        }
+
+        function onModalAttUnlockChange() {
+            const state = currentModalUserAttData[currentModalAttEventKey] || { day: 0 };
+            state.unlock_today = document.getElementById('modal-att-unlock').checked;
+            state.modified = true;
+            currentModalUserAttData[currentModalAttEventKey] = state;
+        }
+
+        function onModalAttGrantChange() {
+            const state = currentModalUserAttData[currentModalAttEventKey] || { day: 0 };
+            state.grant_all = document.getElementById('modal-att-direct-grant').checked;
+            state.modified = true;
+            currentModalUserAttData[currentModalAttEventKey] = state;
+        }
+
         function openUserModal(uuid) {
             const u = cachedUsers.find(x => x.uuid === uuid);
             if (!u) {
@@ -1618,33 +1745,38 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             document.getElementById('modal-add-candy').value = 0;
             document.getElementById('modal-set-like').value = '';
 
-            // Attendance (Event 1 - 7 ngày tân thủ)
-            const currentClaimed = u.attendance_day || 0;
-            const currentNext = Math.min(7, currentClaimed + 1);
-            document.getElementById('modal-att-status').innerText = `Đã nhận ${currentClaimed}/7 ngày`;
-            if (currentClaimed >= 7) {
-                document.getElementById('modal-att-day').value = 'completed';
-            } else if (currentClaimed === 6) {
-                document.getElementById('modal-att-day').value = 'claim_7';
-            } else {
-                document.getElementById('modal-att-day').value = 'claim_' + currentNext;
+            // Build attendance state for all events from user
+            currentModalUserAttData = {};
+            const attMap = u.attendance_map || {};
+            for (const k of ['1', '3', '202110', '202111', '2']) {
+                let d = 0;
+                let y = 0;
+                if (attMap[k]) {
+                    d = attMap[k].day || 0;
+                    y = attMap[k].ymd || 0;
+                } else if (k === '1') {
+                    d = u.attendance_day || 0;
+                    y = u.attendance_ymd || 0;
+                } else if (k === '3') {
+                    d = u.ch2_attendance_day || 0;
+                    y = u.ch2_attendance_ymd || 0;
+                }
+                const maxD = ATT_EVENTS_INFO[k]?.totalDays || 7;
+                currentModalUserAttData[k] = {
+                    day: d,
+                    ymd: y,
+                    target_day: d >= maxD ? maxD : d + 1,
+                    mode: d >= maxD ? 'complete' : 'claim_day',
+                    unlock_today: true,
+                    grant_all: false,
+                    modified: false
+                };
             }
-            document.getElementById('modal-att-unlock').checked = true;
-            document.getElementById('modal-att-direct-grant').checked = false;
+            document.getElementById('modal-att-event-select').value = '1';
+            renderModalAttEvent('1');
 
-            // Attendance (Event 3 - Cửa hàng tiện lợi hạnh phúc)
-            const ch2Claimed = u.ch2_attendance_day || 0;
-            const ch2Next = Math.min(7, ch2Claimed + 1);
-            document.getElementById('modal-ch2-att-status').innerText = `Đã nhận ${ch2Claimed}/7 ngày`;
-            if (ch2Claimed >= 7) {
-                document.getElementById('modal-ch2-att-day').value = 'completed';
-            } else if (ch2Claimed === 6) {
-                document.getElementById('modal-ch2-att-day').value = 'claim_7';
-            } else {
-                document.getElementById('modal-ch2-att-day').value = 'claim_' + ch2Next;
-            }
-            document.getElementById('modal-ch2-att-unlock').checked = true;
-            document.getElementById('modal-ch2-direct-grant').checked = false;
+            // Chapter 2 Unlock (Danger / Test mode)
+            document.getElementById('modal-unlock-ch2').checked = !!u.ch2_unlocked;
 
             document.getElementById('modal-send-mail').checked = false;
             document.getElementById('user-event-modal').classList.add('active');
@@ -1665,37 +1797,12 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             const add_like = parseFloat(document.getElementById('modal-add-like').value) || 0;
             const set_like_val = document.getElementById('modal-set-like').value.trim();
 
-            const attVal = document.getElementById('modal-att-day').value;
-            let attendance_day = null;
-            let attendance_mode = 'claim_day';
-            if (attVal === 'reset') {
-                attendance_day = 0;
-            } else if (attVal === 'completed') {
-                attendance_day = 7;
-                attendance_mode = 'complete';
-            } else if (attVal.startsWith('claim_')) {
-                attendance_day = parseInt(attVal.replace('claim_', ''));
-            }
-
-            const unlock_today = document.getElementById('modal-att-unlock').checked;
-            const grant_rewards = document.getElementById('modal-att-direct-grant').checked;
-
-            const ch2Val = document.getElementById('modal-ch2-att-day').value;
-            let ch2_attendance_day = null;
-            let ch2_attendance_mode = 'claim_day';
-            if (ch2Val === 'reset') {
-                ch2_attendance_day = 0;
-            } else if (ch2Val === 'completed') {
-                ch2_attendance_day = 7;
-                ch2_attendance_mode = 'complete';
-            } else if (ch2Val.startsWith('claim_')) {
-                ch2_attendance_day = parseInt(ch2Val.replace('claim_', ''));
-            }
-
-            const ch2_unlock_today = document.getElementById('modal-ch2-att-unlock').checked;
-            const grant_ch2_rewards = document.getElementById('modal-ch2-direct-grant').checked;
-
+            const unlock_ch2 = document.getElementById('modal-unlock-ch2').checked;
             const send_mail = document.getElementById('modal-send-mail').checked;
+
+            // Backward-compatible fallback fields for Event 1 and Event 3
+            const att1State = currentModalUserAttData['1'] || {};
+            const att3State = currentModalUserAttData['3'] || {};
 
             try {
                 const res = await fetch('/admin/api/user/event_settings', {
@@ -1710,14 +1817,16 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                         add_candy,
                         add_like,
                         set_like: set_like_val ? set_like_val : null,
-                        attendance_day,
-                        attendance_mode,
-                        attendance_unlock_today: unlock_today,
-                        grant_rewards,
-                        ch2_attendance_day,
-                        ch2_attendance_mode,
-                        ch2_unlock_today,
-                        grant_ch2_rewards,
+                        attendance_events_custom: currentModalUserAttData,
+                        attendance_day: att1State.target_day,
+                        attendance_mode: att1State.mode,
+                        attendance_unlock_today: att1State.unlock_today,
+                        grant_rewards: att1State.grant_all,
+                        ch2_attendance_day: att3State.target_day,
+                        ch2_attendance_mode: att3State.mode,
+                        ch2_unlock_today: att3State.unlock_today,
+                        grant_ch2_rewards: att3State.grant_all,
+                        unlock_ch2,
                         send_mail
                     })
                 });

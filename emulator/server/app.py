@@ -121,6 +121,8 @@ class Handler(BaseHTTPRequestHandler):
             users_list = []
             conn = state.get_db()
             rows = conn.execute('SELECT uuid, device_uuid, u_id, u_seq, u_cp, u_candy, u_like, attendance_count, is_banned, user_contents_json FROM user_data ORDER BY u_seq ASC').fetchall()
+            f12_rows = conn.execute("SELECT uuid, level FROM user_inventory WHERE item_type = 'follower' AND item_id = 12").fetchall()
+            f12_map = {fr['uuid']: int(fr['level'] or 0) for fr in f12_rows}
             conn.close()
             for r in rows:
                 try:
@@ -148,6 +150,13 @@ class Handler(BaseHTTPRequestHandler):
                 att_3_day = att_info_3.get('day', 0)
                 att_3_ymd = att_info_3.get('ymd', 0)
 
+                areas = data.get('areas', {}) or {}
+                a1 = areas.get('1') or areas.get(1) or {}
+                a1_grade = int(a1.get('i_UserFanGrade', 1) or 1)
+                followers = data.get('user_follower', []) or []
+                f12_level = f12_map.get(r['uuid']) or next((int(f.get('i_Level', 0) or 0) for f in followers if int(f.get('i_id', 0) or 0) == 12), 0)
+                ch2_unlocked = bool(a1_grade >= 4 and f12_level >= 15)
+
                 users_list.append({
                     'uuid': r['uuid'],
                     'device_uuid': r['device_uuid'],
@@ -163,6 +172,8 @@ class Handler(BaseHTTPRequestHandler):
                     'attendance_ymd': att_1_ymd,
                     'ch2_attendance_day': att_3_day,
                     'ch2_attendance_ymd': att_3_ymd,
+                    'attendance_map': data.get('attendance', {}) or {},
+                    'ch2_unlocked': ch2_unlocked,
                     'is_gold': is_gold,
                     'star_point': cur_point,
                     'star_step': cur_step,
@@ -360,99 +371,172 @@ class Handler(BaseHTTPRequestHandler):
 
                     # 3. Update attendance count & board progress
                     att_dict = user.setdefault('attendance', {})
-                    att_1 = att_dict.setdefault('1', {'day': 0, 'ymd': 0})
-                    ud = user.setdefault('userdata', {})
                     today_ymd = int(time.strftime('%Y%m%d', time.localtime()))
-                    unlock_today = bool(data.get('attendance_unlock_today', True))
-                    att_mode = data.get('attendance_mode', 'claim_day')
+                    ud = user.setdefault('userdata', {})
 
-                    # Priority: attendance_day or attendance_count
-                    target_att = data.get('attendance_day')
-                    if target_att is None:
-                        target_att = data.get('attendance_count')
+                    custom_atts = data.get('attendance_events_custom')
+                    if isinstance(custom_atts, dict) and any(bool(v.get('modified')) for v in custom_atts.values() if isinstance(v, dict)):
+                        from server.handlers.reward import _give_reward, _get_event_rewards
+                        all_rewards = _get_event_rewards()
+                        for eidx, ev_cfg in custom_atts.items():
+                            if not isinstance(ev_cfg, dict) or not ev_cfg.get('modified'):
+                                continue
+                            e_str = str(eidx)
+                            att_entry = att_dict.setdefault(e_str, {'day': 0, 'ymd': 0})
+                            max_days = 14 if e_str in ('2', '202110') else 7
+                            t_day = ev_cfg.get('target_day')
+                            mode = ev_cfg.get('mode', 'claim_day')
+                            unl = bool(ev_cfg.get('unlock_today', True))
 
-                    if target_att is not None and str(target_att).strip() != '':
-                        target_day = int(target_att)
-                        if target_day >= 7:
-                            if att_mode == 'complete':
-                                att_1['day'] = 7
-                                att_1['ymd'] = today_ymd
-                                ud['attendance_count'] = 7
-                                ud['attendance_date'] = today_ymd
+                            if ev_cfg.get('grant_all'):
+                                e_rews = all_rewards.get(e_str, {})
+                                for d_num in range(1, max_days + 1):
+                                    rew = e_rews.get(str(d_num))
+                                    if rew:
+                                        _give_reward(user, rew)
+                                att_entry['day'] = max_days
+                                att_entry['ymd'] = today_ymd
+                            elif t_day is not None and str(t_day).strip() != '':
+                                d_val = int(t_day)
+                                if d_val >= max_days:
+                                    if mode == 'complete':
+                                        att_entry['day'] = max_days
+                                        att_entry['ymd'] = today_ymd
+                                    else:
+                                        att_entry['day'] = max_days - 1
+                                        att_entry['ymd'] = 0 if unl else today_ymd
+                                elif d_val <= 0:
+                                    att_entry['day'] = 0
+                                    att_entry['ymd'] = 0
+                                else:
+                                    att_entry['day'] = d_val - 1
+                                    att_entry['ymd'] = 0 if unl else today_ymd
+
+                            if e_str == '1':
+                                ud['attendance_count'] = att_entry['day'] if mode == 'complete' else (att_entry['day'] + 1)
+                                ud['attendance_date'] = att_entry['ymd']
+                                conn = state.get_db()
+                                conn.execute('UPDATE user_data SET attendance_count = ?, attendance_date = ? WHERE uuid = ?',
+                                             (ud['attendance_count'], ud['attendance_date'], user['uuid']))
+                                conn.commit()
+                                conn.close()
+                    else:
+                        # Fallback for individual Event 1 & 3 fields
+                        att_1 = att_dict.setdefault('1', {'day': 0, 'ymd': 0})
+                        unlock_today = bool(data.get('attendance_unlock_today', True))
+                        att_mode = data.get('attendance_mode', 'claim_day')
+
+                        target_att = data.get('attendance_day')
+                        if target_att is None:
+                            target_att = data.get('attendance_count')
+
+                        if target_att is not None and str(target_att).strip() != '':
+                            target_day = int(target_att)
+                            if target_day >= 7:
+                                if att_mode == 'complete':
+                                    att_1['day'] = 7
+                                    att_1['ymd'] = today_ymd
+                                    ud['attendance_count'] = 7
+                                    ud['attendance_date'] = today_ymd
+                                else:
+                                    att_1['day'] = 6
+                                    att_1['ymd'] = 0 if unlock_today else today_ymd
+                                    ud['attendance_count'] = 7
+                                    ud['attendance_date'] = 0 if unlock_today else today_ymd
+                            elif target_day <= 0:
+                                att_1['day'] = 0
+                                att_1['ymd'] = 0
+                                ud['attendance_count'] = 0
+                                ud['attendance_date'] = 0
                             else:
-                                # Ready to claim Day 7 in-game
-                                att_1['day'] = 6
+                                att_1['day'] = target_day - 1
                                 att_1['ymd'] = 0 if unlock_today else today_ymd
-                                ud['attendance_count'] = 7
+                                ud['attendance_count'] = target_day
                                 ud['attendance_date'] = 0 if unlock_today else today_ymd
-                        elif target_day <= 0:
-                            att_1['day'] = 0
-                            att_1['ymd'] = 0
-                            ud['attendance_count'] = 0
-                            ud['attendance_date'] = 0
-                        else:
-                            # Ready to claim Day target_day (e.g. Day 2 -> day=1, ymd=0)
-                            att_1['day'] = target_day - 1
-                            att_1['ymd'] = 0 if unlock_today else today_ymd
-                            ud['attendance_count'] = target_day
-                            ud['attendance_date'] = 0 if unlock_today else today_ymd
 
-                        # Sync SQLite columns
-                        conn = state.get_db()
-                        conn.execute('UPDATE user_data SET attendance_count = ?, attendance_date = ? WHERE uuid = ?',
-                                     (ud['attendance_count'], ud['attendance_date'], user['uuid']))
-                        conn.commit()
-                        conn.close()
+                            conn = state.get_db()
+                            conn.execute('UPDATE user_data SET attendance_count = ?, attendance_date = ? WHERE uuid = ?',
+                                         (ud['attendance_count'], ud['attendance_date'], user['uuid']))
+                            conn.commit()
+                            conn.close()
 
-                    # Direct grant 7-day rewards if requested
-                    if data.get('grant_7d_rewards'):
-                        from server.handlers.reward import _give_reward, _get_event_rewards
-                        rewards = _get_event_rewards().get('1', {})
-                        for d_num in range(1, 8):
-                            rew = rewards.get(str(d_num))
-                            if rew:
-                                _give_reward(user, rew)
-                        att_1['day'] = 7
-                        att_1['ymd'] = today_ymd
-                        ud['attendance_count'] = 7
-                        ud['attendance_date'] = today_ymd
-                        conn = state.get_db()
-                        conn.execute('UPDATE user_data SET attendance_count = 7, attendance_date = ? WHERE uuid = ?',
-                                     (today_ymd, user['uuid']))
-                        conn.commit()
-                        conn.close()
+                        if data.get('grant_7d_rewards'):
+                            from server.handlers.reward import _give_reward, _get_event_rewards
+                            rewards = _get_event_rewards().get('1', {})
+                            for d_num in range(1, 8):
+                                rew = rewards.get(str(d_num))
+                                if rew:
+                                    _give_reward(user, rew)
+                            att_1['day'] = 7
+                            att_1['ymd'] = today_ymd
+                            ud['attendance_count'] = 7
+                            ud['attendance_date'] = today_ymd
+                            conn = state.get_db()
+                            conn.execute('UPDATE user_data SET attendance_count = 7, attendance_date = ? WHERE uuid = ?',
+                                         (today_ymd, user['uuid']))
+                            conn.commit()
+                            conn.close()
 
-                    # Event 3: Cửa Hàng Tiện Lợi Hạnh Phúc (Chapter 2)
-                    att_3 = att_dict.setdefault('3', {'day': 0, 'ymd': 0})
-                    ch2_target_att = data.get('ch2_attendance_day')
-                    ch2_unlock_today = bool(data.get('ch2_attendance_unlock_today', True))
-                    ch2_att_mode = data.get('ch2_attendance_mode', 'claim_day')
+                        # Event 3: Cửa Hàng Tiện Lợi Hạnh Phúc (Chapter 2)
+                        att_3 = att_dict.setdefault('3', {'day': 0, 'ymd': 0})
+                        ch2_target_att = data.get('ch2_attendance_day')
+                        ch2_unlock_today = bool(data.get('ch2_attendance_unlock_today', True))
+                        ch2_att_mode = data.get('ch2_attendance_mode', 'claim_day')
 
-                    if ch2_target_att is not None and str(ch2_target_att).strip() != '':
-                        ch2_day = int(ch2_target_att)
-                        if ch2_day >= 7:
-                            if ch2_att_mode == 'complete':
-                                att_3['day'] = 7
-                                att_3['ymd'] = today_ymd
+                        if ch2_target_att is not None and str(ch2_target_att).strip() != '':
+                            ch2_day = int(ch2_target_att)
+                            if ch2_day >= 7:
+                                if ch2_att_mode == 'complete':
+                                    att_3['day'] = 7
+                                    att_3['ymd'] = today_ymd
+                                else:
+                                    att_3['day'] = 6
+                                    att_3['ymd'] = 0 if ch2_unlock_today else today_ymd
+                            elif ch2_day <= 0:
+                                att_3['day'] = 0
+                                att_3['ymd'] = 0
                             else:
-                                att_3['day'] = 6
+                                att_3['day'] = ch2_day - 1
                                 att_3['ymd'] = 0 if ch2_unlock_today else today_ymd
-                        elif ch2_day <= 0:
-                            att_3['day'] = 0
-                            att_3['ymd'] = 0
-                        else:
-                            att_3['day'] = ch2_day - 1
-                            att_3['ymd'] = 0 if ch2_unlock_today else today_ymd
 
-                    if data.get('grant_ch2_rewards'):
-                        from server.handlers.reward import _give_reward, _get_event_rewards
-                        rewards_3 = _get_event_rewards().get('3', {})
-                        for d_num in range(1, 8):
-                            rew = rewards_3.get(str(d_num))
-                            if rew:
-                                _give_reward(user, rew)
-                        att_3['day'] = 7
-                        att_3['ymd'] = today_ymd
+                        if data.get('grant_ch2_rewards'):
+                            from server.handlers.reward import _give_reward, _get_event_rewards
+                            rewards_3 = _get_event_rewards().get('3', {})
+                            for d_num in range(1, 8):
+                                rew = rewards_3.get(str(d_num))
+                                if rew:
+                                    _give_reward(user, rew)
+                            att_3['day'] = 7
+                            att_3['ymd'] = today_ymd
+
+                    # 3.5 Chapter 2 Unlock (Test Mode / Danger)
+                    if 'unlock_ch2' in data:
+                        unlock_ch2 = bool(data['unlock_ch2'])
+                        areas = user.setdefault('areas', state._default_areas())
+                        area1 = areas.get('1') or areas.get(1)
+                        if not isinstance(area1, dict):
+                            area1 = {'i_Area': 1, 'i_UserFanGrade': 1, 'i_UserFanCount': 0}
+                        areas['1'] = area1
+                        if 1 in areas:
+                            areas[1] = area1
+                        followers = user.setdefault('user_follower', [])
+                        f12 = next((f for f in followers if int(f.get('i_id', 0) or 0) == 12), None)
+                        if unlock_ch2:
+                            area1['i_UserFanGrade'] = max(int(area1.get('i_UserFanGrade', 1) or 1), 4)
+                            area1['i_UserFanCount'] = max(int(area1.get('i_UserFanCount', 0) or 0), 1000000)
+                            if f12:
+                                f12['i_Level'] = max(int(f12.get('i_Level', 1) or 1), 15)
+                            else:
+                                followers.append({
+                                    'i_id': 12,
+                                    'i_Level': 15,
+                                    'i_ActiveTime': 0,
+                                    'i_BonusLevel': 0,
+                                })
+                        else:
+                            area1['i_UserFanGrade'] = 1
+                            if f12:
+                                f12['i_Level'] = 1
 
                     # 4. Currencies (CP, Candy, Tim/Like)
                     if 'is_banned' in data:

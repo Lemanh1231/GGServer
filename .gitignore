@@ -67,3 +67,7 @@ Thumbs.db
 # Test files
 test_*.py
 emulator/test_*.py
+
+# Screenshots
+*.png
+*.PNG
