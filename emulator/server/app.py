@@ -13,13 +13,17 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import codec
-from server import multipart, dispatch, handlers, state, auth, event_manager, admin
+from server import multipart, dispatch, handlers, state, auth, event_manager, admin, download
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = os.path.dirname(BASE)
 CAP_DIR = os.path.join(BASE, 'captures')
 BANNED_CAP_DIR = os.path.join(CAP_DIR, 'banned')
 GAMEDATA_DIR = os.path.join(BASE, 'gamedata')
 CDN_DIR = os.path.join(BASE, 'cdn_files')
+OUT_DIR = os.path.join(PROJECT_ROOT, 'out')
+APK_FILENAME = 'Guitar_Girl_v8.0.0_NoGooglePlay.apk'
+APK_PATH = os.path.join(OUT_DIR, APK_FILENAME)
 os.makedirs(CAP_DIR, exist_ok=True)
 os.makedirs(BANNED_CAP_DIR, exist_ok=True)
 
@@ -90,6 +94,31 @@ class Handler(BaseHTTPRequestHandler):
         except Exception:
             pass
 
+    def _send_file(self, fpath, filename=None, ctype='application/vnd.android.package-archive'):
+        if not os.path.isfile(fpath):
+            self._send(b'File Not Found', 404)
+            return
+        size = os.path.getsize(fpath)
+        self.send_response(200)
+        self.send_header('Content-Type', ctype)
+        self.send_header('Content-Length', str(size))
+        if filename:
+            self.send_header('Content-Disposition', f'attachment; filename="{filename}"')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Accept-Ranges', 'bytes')
+        self.end_headers()
+        if self.command == 'HEAD':
+            return
+        try:
+            with open(fpath, 'rb') as f:
+                while True:
+                    chunk = f.read(256 * 1024)
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+        except Exception:
+            pass
+
     def _base_url(self):
         # 1) explicit public base (recommended for external/HTTPS-proxy setups)
         pb = CONFIG['public_base']
@@ -101,11 +130,19 @@ class Handler(BaseHTTPRequestHandler):
                  ('https' if isinstance(self.server, _HTTPSMarker) else 'http')
         return f"{scheme}://{host}"
 
-    # ---------------- GET (CDN / health) ----------------
+    # ---------------- GET (CDN / health / admin / download) ----------------
     def do_GET(self):
         path = self.path.split('?', 1)[0]
         if path in ('/', '/health'):
             self._send('GG emulator OK')
+            return
+        if path in ('/download', '/download/', '/tai-game', '/tai-game/'):
+            html = download.get_download_html()
+            self._send(html, 200, 'text/html; charset=utf-8')
+            return
+        if path in ('/download/apk', '/download/' + APK_FILENAME, '/' + APK_FILENAME, '/apk'):
+            self.log_message("DOWNLOAD APK requested: %s", APK_PATH)
+            self._send_file(APK_PATH, filename=APK_FILENAME)
             return
         if path in ('/admin', '/admin/'):
             html = admin.get_admin_html()

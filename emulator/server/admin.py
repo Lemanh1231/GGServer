@@ -663,10 +663,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 <span class="logo-icon">🎸</span>
                 <h1>Guitar Girl - Trung Tâm Quản Trị</h1>
             </div>
-            <p class="subtitle">Hệ thống điều khiển máy chủ, quản lý người chơi và cấu hình sự kiện trực tiếp</p>
-            <div class="server-status">
-                <span class="status-dot"></span>
-                <span>Server Trực Tuyến &bull; Zero-Downtime Hot-Reload</span>
+            <div class="server-status" style="display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;">
+                <div>
+                    <span class="status-dot"></span>
+                    <span>Server Trực Tuyến &bull; Zero-Downtime Hot-Reload</span>
+                </div>
+                <a href="/download" target="_blank" style="text-decoration: none; padding: 5px 14px; border-radius: 20px; background: rgba(255, 94, 151, 0.15); border: 1px solid var(--accent-pink); color: var(--accent-pink); font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                    📥 Tải Game APK (458 MB)
+                </a>
             </div>
         </header>
 
