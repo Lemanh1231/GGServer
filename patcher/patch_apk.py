@@ -91,6 +91,42 @@ def replace_entry_grow(apk_path, name, new_bytes):
         shutil.rmtree(td, ignore_errors=True)
 
 
+def patch_classes3_dex(dex_bytes):
+    """Patch classes3.dex to redirect Google Play login to GuestAuth and disarm Play Games activities."""
+    import hashlib, zlib
+    dex = bytearray(dex_bytes)
+    # 5 const-class opcodes: change 0x1b76 (GooglePlayAuth) and 0x1b7f (GamePlayLogin) to 0x1b7a (GuestAuth)
+    patches = [
+        (3824612, b'\x1c\x02\x76\x1b', b'\x1c\x02\x7a\x1b'),
+        (3827718, b'\x1c\x06\x76\x1b', b'\x1c\x06\x7a\x1b'),
+        (3817222, b'\x1c\x01\x7f\x1b', b'\x1c\x01\x7a\x1b'),
+        (3817290, b'\x1c\x01\x7f\x1b', b'\x1c\x01\x7a\x1b'),
+        (3827940, b'\x1c\x00\x7f\x1b', b'\x1c\x00\x7a\x1b'),
+    ]
+    for off, old, new in patches:
+        if dex[off:off+4] == old:
+            dex[off:off+4] = new
+
+    # Disarm GooglePlayAuth->onCreate: call finish() and return
+    gp_start = 3884488
+    if dex[gp_start:gp_start+6] == bytes.fromhex('6f2022002100'):
+        stub = bytes.fromhex('6f2022002100') + bytes.fromhex('6e1008000100') + bytes.fromhex('0e00')
+        stub += b'\x00' * (50 - len(stub))
+        dex[gp_start:gp_start+50] = stub
+
+    # Disarm GamePlayLogin->onCreate: call finish() and return
+    gl_start = 3886124
+    if dex[gl_start:gl_start+6] == bytes.fromhex('6f2022003200'):
+        stub = bytes.fromhex('6f2022003200') + bytes.fromhex('6e1008000200') + bytes.fromhex('0e00')
+        stub += b'\x00' * (104 - len(stub))
+        dex[gl_start:gl_start+104] = stub
+
+    # Recalculate DEX checksum & SHA-1
+    dex[12:32] = hashlib.sha1(dex[32:]).digest()
+    dex[8:12] = struct.pack('<I', zlib.adler32(dex[12:]) & 0xffffffff)
+    return bytes(dex)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--apk-dir', required=True, help="dir with the 3 split apks")
@@ -121,10 +157,10 @@ def main():
         print(f"[1/3] size changed ({len(meta)} -> {len(patched)}) -> rebuilding zip entry")
         replace_entry_grow(base_out, META_ENTRY, bytes(patched))
 
-    # 2) patch AndroidManifest.xml in com.neowiz.game.guitargirl.apk (disabling Google Play Games)
+    # 2) patch AndroidManifest.xml & classes3.dex in com.neowiz.game.guitargirl.apk (disabling Google Play Games)
     main_in = os.path.join(a.apk_dir, 'com.neowiz.game.guitargirl.apk')
     main_out = os.path.join(a.out, 'com.neowiz.game.guitargirl.apk')
-    print(f"[2/4] patching AndroidManifest.xml in com.neowiz.game.guitargirl.apk (disabling Google Play Games)")
+    print(f"[2/4] patching AndroidManifest.xml & classes3.dex in com.neowiz.game.guitargirl.apk (disabling Google Play Games)")
     with zipfile.ZipFile(main_in) as zb:
         manifest = zb.read('AndroidManifest.xml')
         patched_manifest, n = merge_apk.patch_manifest_axml(manifest)
@@ -132,6 +168,10 @@ def main():
         with zipfile.ZipFile(temp_main, 'w') as zo:
             for zi in zb.infolist():
                 if zi.filename == 'AndroidManifest.xml' or zi.filename.startswith('META-INF/'):
+                    continue
+                if zi.filename == 'classes3.dex':
+                    dex_data = patch_classes3_dex(zb.read(zi.filename))
+                    zo.writestr(zi, dex_data, compress_type=zi.compress_type)
                     continue
                 zo.writestr(zi, zb.read(zi.filename), compress_type=zi.compress_type)
             mi = zipfile.ZipInfo('AndroidManifest.xml')

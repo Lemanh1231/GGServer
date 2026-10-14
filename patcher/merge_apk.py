@@ -173,6 +173,52 @@ def patch_manifest_axml(data):
                 struct.pack_into('<HBB I', buf, init_order_offset + 12, 8, 0, 0x12, 0)
                 changed += 1
 
+    # Pass 4: Empty com.google.android.gms.games.APP_ID
+    app_id_idx = strings.index('com.google.android.gms.games.APP_ID') if 'com.google.android.gms.games.APP_ID' in strings else None
+    if app_id_idx is not None and empty_data is not None:
+        for ctype, coff, csize in chunks:
+            if ctype != RES_XML_START_ELEMENT: continue
+            tag_idx = struct.unpack_from('<I', buf, coff + 20)[0]
+            tag_name = strings[tag_idx] if tag_idx < len(strings) else ''
+            if tag_name != 'meta-data': continue
+            attr_start = coff + 16 + struct.unpack_from('<H', buf, coff + 24)[0]
+            attr_size  = struct.unpack_from('<H', buf, coff + 26)[0]
+            attr_count = struct.unpack_from('<H', buf, coff + 28)[0]
+            for i in range(attr_count):
+                ab = attr_start + i * attr_size
+                name_idx = struct.unpack_from('<I', buf, ab + 4)[0]
+                res_id = attr_id(name_idx)
+                dtype = buf[ab + 15]
+                data_val = struct.unpack_from('<I', buf, ab + 16)[0]
+                if res_id == 0x01010003 and dtype == 0x03 and data_val == app_id_idx:
+                    struct.pack_into('<I', buf, ab + 8, empty_raw)
+                    struct.pack_into('<I', buf, ab + 16, empty_data)
+                    changed += 1
+
+    # Pass 5: Redirect GooglePlayAuth and GamePlayLogin activities to GuestAuth
+    guest_auth_idx = strings.index('com.pmangplus.ui.activity.firebase.GuestAuth') if 'com.pmangplus.ui.activity.firebase.GuestAuth' in strings else None
+    if guest_auth_idx is not None:
+        for ctype, coff, csize in chunks:
+            if ctype != RES_XML_START_ELEMENT: continue
+            tag_idx = struct.unpack_from('<I', buf, coff + 20)[0]
+            tag_name = strings[tag_idx] if tag_idx < len(strings) else ''
+            if tag_name != 'activity': continue
+            attr_start = coff + 16 + struct.unpack_from('<H', buf, coff + 24)[0]
+            attr_size  = struct.unpack_from('<H', buf, coff + 26)[0]
+            attr_count = struct.unpack_from('<H', buf, coff + 28)[0]
+            for i in range(attr_count):
+                ab = attr_start + i * attr_size
+                name_idx = struct.unpack_from('<I', buf, ab + 4)[0]
+                res_id = attr_id(name_idx)
+                dtype = buf[ab + 15]
+                data_val = struct.unpack_from('<I', buf, ab + 16)[0]
+                if res_id == 0x01010003 and dtype == 0x03:
+                    act_name = strings[data_val] if data_val < len(strings) else ''
+                    if act_name in ('com.pmangplus.ui.activity.firebase.GooglePlayAuth', 'com.pmangplus.ui.activity.login.GamePlayLogin'):
+                        struct.pack_into('<I', buf, ab + 8, guest_auth_idx)
+                        struct.pack_into('<I', buf, ab + 16, guest_auth_idx)
+                        changed += 1
+
     return bytes(buf), changed
 
 
