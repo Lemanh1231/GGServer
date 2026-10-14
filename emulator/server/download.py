@@ -179,7 +179,7 @@ DOWNLOAD_HTML = """<!DOCTYPE html>
         <p class="subtitle">Bản cài đặt APK chính thức &bull; Phiên bản v8.0.0 Standalone</p>
 
         <div class="badge-list">
-            <span class="badge highlight">🟢 Server Online (kotori.click)</span>
+            <span class="badge highlight">🟢 Server Online</span>
             <span class="badge">🚫 Đã tách Google Play</span>
             <span class="badge">📦 1 File Cài Đơn</span>
             <span class="badge">☁️ Tự Động Lưu Cloud</span>

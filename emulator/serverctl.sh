@@ -6,11 +6,14 @@
 #   ./serverctl.sh status    # xem đang chạy / port / health
 #   ./serverctl.sh log       # theo dõi log realtime (Ctrl-C để thoát)
 #
-# Tuỳ biến: PORT=8080  GG_PUBLIC_BASE=https://ggserver.kotori.click  ./serverctl.sh start
+# Tuỳ biến: PORT=8080  GG_PUBLIC_BASE=https://your-domain.example  ./serverctl.sh start
 HERE="$(cd "$(dirname "$0")" && pwd)"
+[ -f "$HERE/../.env" ] && set -a && . "$HERE/../.env" && set +a
+[ -f "$HERE/.env" ] && set -a && . "$HERE/.env" && set +a
+
 PORT="${PORT:-8080}"
 LOG="${GG_LOG:-/tmp/gg_server.log}"
-GG_PUBLIC_BASE="${GG_PUBLIC_BASE:-https://kotori.click}"
+GG_PUBLIC_BASE="${GG_PUBLIC_BASE:-http://localhost:8080}"
 
 # PID nghe trên cổng PORT (chắc chắn đúng tiến trình, không khớp nhầm shell như pgrep)
 listen_pid() { ss -ltnp 2>/dev/null | grep ":${PORT} " | grep -oP 'pid=\K[0-9]+' | head -1; }

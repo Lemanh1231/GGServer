@@ -10,21 +10,46 @@
 # Any URL length is supported (the patcher grows the metadata heap when needed).
 set -e
 HERE="$(cd "$(dirname "$0")" && pwd)"
+
+# Load .env if present (allows local configuration without committing to git)
+[ -f "$HERE/../.env" ] && set -a && . "$HERE/../.env" && set +a
+[ -f "$HERE/.env" ] && set -a && . "$HERE/.env" && set +a
+
 DEFAULT_APK_DIR="$HERE/../orig_apk"
-if [ ! -d "$DEFAULT_APK_DIR" ]; then
-  DEFAULT_APK_DIR="/Users/furiri/Downloads/Guitar+Girl_8.0.0_APKPure"
-fi
 APK_DIR="${GG_APK_DIR:-$DEFAULT_APK_DIR}"
 OUT="${GG_OUT:-$HERE/../out/patched-apks}"
 
+# Check that the original APK directory exists and has files
+if [ ! -d "$APK_DIR" ] || [ -z "$(ls -A "$APK_DIR" 2>/dev/null)" ]; then
+  echo "=========================================================================="
+  echo "LỖI: Không tìm thấy file APK gốc trong: $APK_DIR"
+  echo "Hướng dẫn cho người dùng mới:"
+  echo "1. Tải bản Guitar Girl v8.0.0 (XAPK hoặc Split APKs từ APKPure)."
+  echo "2. Đặt 3 file APK vào thư mục orig_apk/:"
+  echo "   - base_assets.apk"
+  echo "   - com.neowiz.game.guitargirl.apk"
+  echo "   - config.arm64_v8a.apk"
+  echo "   (Hoặc đặt biến môi trường: export GG_APK_DIR=/path/to/apks)"
+  echo "=========================================================================="
+  exit 1
+fi
+
 ARG="$1"
-if [ -z "$ARG" ]; then
-  TARGET="https://kotori.click"
-elif [[ "$ARG" == http://* || "$ARG" == https://* ]]; then
-  TARGET="$ARG"
+if [ -n "$ARG" ]; then
+  if [[ "$ARG" == http://* || "$ARG" == https://* ]]; then
+    TARGET="$ARG"
+  else
+    TARGET="http://$ARG"
+  fi
+elif [ -n "$GG_PUBLIC_BASE" ]; then
+  TARGET="$GG_PUBLIC_BASE"
 else
-  # bare host[:port] -> assume http
-  TARGET="http://$ARG"
+  # Auto-detect local LAN IP or fallback to localhost:8080
+  LOCAL_IP="$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')"
+  [ -z "$LOCAL_IP" ] && LOCAL_IP="$(ipconfig getifaddr en0 2>/dev/null)"
+  [ -z "$LOCAL_IP" ] && LOCAL_IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
+  [ -z "$LOCAL_IP" ] && LOCAL_IP="localhost"
+  TARGET="http://${LOCAL_IP}:8080"
 fi
 TARGET="${TARGET%/}"
 

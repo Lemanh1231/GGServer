@@ -19,6 +19,12 @@ ref/
 out/
 orig_apk/
 
+# Environment files
+.env
+.env.local
+.env.*
+!.env.example
+
 # Runtime player state and decoded traffic are local-only.
 emulator/captures/
 emulator/data/database.db

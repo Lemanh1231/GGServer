@@ -56,8 +56,8 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
   dexdump: Failure to verify dex file: String longer than indicated size 0
   ```
 - **Nguyên nhân**:
-  1. Thay thế chuỗi `www.neonapi.com/api` (19 ký tự) bằng `kotori.click/api` (16 ký tự) và chèn các byte `\x00` padding. Trình kiểm tra `DexFileVerifier` của ART quét tuần tự từng byte trong string data section; các byte `0x00` bị hiểu nhầm là chuỗi độ dài 0 không có terminator hợp lệ.
-  2. Bảng định danh chuỗi (`string_ids`) trong file DEX bắt buộc phải sắp xếp theo thứ tự bảng chữ cái (lexicographical MUTF-8 order). Chuỗi `kotori.click` (bắt đầu bằng `'k'`) nằm giữa `www.gstatic` và `www.recaptcha` (bắt đầu bằng `'w'`) làm sai lệch trật tự sắp xếp của file DEX.
+  1. Thay thế chuỗi `www.neonapi.com/api` (19 ký tự) bằng domain ngắn hơn (ví dụ 16 ký tự) và chèn các byte `\x00` padding. Trình kiểm tra `DexFileVerifier` của ART quét tuần tự từng byte trong string data section; các byte `0x00` bị hiểu nhầm là chuỗi độ dài 0 không có terminator hợp lệ.
+  2. Bảng định danh chuỗi (`string_ids`) trong file DEX bắt buộc phải sắp xếp theo thứ tự bảng chữ cái (lexicographical MUTF-8 order). Một chuỗi mới có chữ cái đầu lệch vị trí sẽ phá vỡ trật tự bảng chữ cái của file DEX.
 - **Cách khắc phục**:
   - Không sửa đổi trực tiếp vào String Table của file DEX. 
   - Toàn bộ URL cấu hình dịch vụ mạng (bao gồm các domain `neonapi.com` và `pmang.cloud`) đều đã được điều hướng sạch sẽ thông qua `patch_metadata.py` trong `global-metadata.dat` của Unity C#, giúp `classes3.dex` duy trì cấu trúc nhị phân nguyên bản 100% hợp lệ.
@@ -101,7 +101,7 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
 - **Hiện tượng**: Ứng dụng gọi các API xác thực tài khoản như `/accounts/v3/global/login`, `/referrer/save`, `/gcm/...` nhưng Nginx trả về lỗi `404 Not Found`.
 - **Nguyên nhân**: Cấu hình Nginx trước đây chỉ proxy các request bắt đầu bằng `^/api/`, trong khi SDK PmangPlus gọi cả hai dạng: có `/api/` và không có `/api/`.
 - **Cách khắc phục**:
-  - Cập nhật cấu hình `/etc/nginx/sites-available/kotori.click`:
+  - Cập nhật cấu hình Nginx (ví dụ `/etc/nginx/sites-available/your-domain.conf`):
     ```nginx
     location ~ ^/(api/|accounts/|eula/|referrer/|gcm/|app/|store/|main/|user/) {
         proxy_pass http://127.0.0.1:8080;
@@ -185,16 +185,21 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
 ## 5. Quy trình Build, Cài đặt và Kiểm tra chuẩn
 
 ### 5.1. Build APK không Google Play
-Chạy script build với domain máy chủ:
+Chạy script build với domain máy chủ (hoặc IP LAN):
 ```bash
-bash patcher/build.sh https://kotori.click
+# Với domain riêng (HTTPS):
+bash patcher/build.sh https://your-domain.example
+
+# Hoặc với IP LAN:
+bash patcher/build.sh http://192.168.1.50:8080
 ```
 Script sẽ tự động:
-1. Vá URL trong `global-metadata.dat` sang domain máy chủ đích.
-2. Áp dụng các bản vá Dalvik bytecode trong `classes3.dex` (auto-login, auto-agree EULA, disarm validator).
-3. Hợp nhất các file Split APKs thành bản Universal APK duy nhất.
-4. Ký số APK bằng `uber-apk-signer` với scheme v1, v2, v3.
-5. Xuất file tại: `out/Guitar_Girl_v8.0.0_NoGooglePlay.apk`.
+1. Nạp cấu hình từ `.env` nếu có (hoặc dùng tham số truyền vào).
+2. Vá URL trong `global-metadata.dat` sang domain máy chủ đích.
+3. Áp dụng các bản vá Dalvik bytecode trong `classes3.dex` (auto-login, auto-agree EULA, disarm validator).
+4. Hợp nhất các file Split APKs thành bản Universal APK duy nhất.
+5. Ký số APK bằng `uber-apk-signer` với scheme v1, v2, v3.
+6. Xuất file tại: `out/Guitar_Girl_v8.0.0_NoGooglePlay.apk`.
 
 ### 5.2. Cài đặt lên thiết bị Android qua ADB
 ```bash
@@ -210,4 +215,4 @@ adb -s <DEVICE_IP:PORT> shell am start -n com.neowiz.game.guitargirl/com.google.
 cd /root/project/GGServer
 python3 emulator/run.py --port 8080
 ```
-Server chạy phía sau Nginx HTTPS reverse proxy (`https://kotori.click`).
+Server có thể chạy trực tiếp hoặc đứng sau Nginx / Cloudflare Tunnel HTTPS reverse proxy (`https://your-domain.example`).

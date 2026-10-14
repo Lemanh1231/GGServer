@@ -107,11 +107,11 @@ def h_get_event_rank(req, player, ctx):
     p = _payload(req)
     uuid = p.get('uuid') or ctx.get('uuid')
     user = state.get_user(uuid) if uuid else None
-    my_nick = 'Kotori'
+    my_nick = 'Guitarist'
     my_score = 1000
     if user:
         ud = user.get('userdata', {})
-        my_nick = ud.get('u_nick', 'Kotori') or 'Kotori'
+        my_nick = ud.get('u_nick', 'Guitarist') or 'Guitarist'
         my_score = int(ud.get('u_event_point', 0) or ud.get('u_fans', 1000) or 1000)
     ranks = [
         {'u_seq': 1, 'u_nick': my_nick, 'u_id': uuid or 'user1', 'u_avatar': 1, 'u_country': 'VN', 'u_title': 1, 'rank': 1, 'score': my_score},
