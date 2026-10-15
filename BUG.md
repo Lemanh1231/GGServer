@@ -254,6 +254,32 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
 
 ---
 
+### 4.7. Lỗi Hòm thư hệ thống nhận hàng loạt Thư thông báo cũ khi tạo Tài khoản mới (Honkai: Star Rail Mailbox Rule)
+- **Hiện tượng**:
+  - Khi một tài khoản mới được tạo (tân thủ), ngay khi mở Hòm thư (Post / Mailbox) lần đầu, người chơi nhận tới hàng chục lá thư thông báo cũ đã phát hành từ trước đó (như các thông báo bảo trì, sự kiện trực tiếp cũ...).
+  - Ngược lại với các game gacha / online hiện đại như *Honkai: Star Rail* hay *Genshin Impact*, người chơi mới chỉ được nhận Thư chào mừng khởi đầu (Welcome Starter Mail), tuyệt đối không nhận lại các thư thông báo phát sóng (broadcast mail) đã gửi trước thời điểm đăng ký tài khoản.
+- **Nguyên nhân chi tiết**:
+  1. Trong [post.py](file:///root/project/GGServer/emulator/server/handlers/post.py), hàm `_get_user_posts(user)` đọc toàn bộ danh sách thông báo từ `emulator/broadcast_posts.json` và chèn tất cả các mục chưa có trong `user['posts']` mà không kiểm tra thời điểm gửi của thư (`create_time`) so với thời gian tạo tài khoản (`created_at`).
+  2. Không kiểm tra hạn sử dụng của thư (`del_time`): các thư đã hết hạn (`del_time <= now`) vẫn tồn tại trong file broadcast và bị nhồi vào hòm thư người chơi mới.
+  3. Cấu trúc `user_data` ban đầu chưa theo dõi chính xác timestamp đăng ký tài khoản `created_at` (chỉ có trường `u_create_time` dạng ngày `YYYYMMDD` trong userdata hoặc `last_save_time`).
+- **Cách khắc phục triệt để**:
+  1. **Theo dõi thời điểm khởi tạo tài khoản (`created_at`)**:
+     - Trong [state.py](file:///root/project/GGServer/emulator/server/state.py):
+       - Khi tạo mới user (`create_user`), gán `'created_at': now_ts`, khởi tạo danh sách rỗng `'posts': []`, `'deleted_post_indices': []`, và `'welcome_post_sent': False`.
+       - Trong `_reconstruct_user`, nếu tài khoản chưa có trường `created_at`, tự động phân giải từ `u_create_time` (`YYYYMMDD`) hoặc `last_save_time`.
+  2. **Áp dụng quy tắc Honkai: Star Rail & Lọc thư quá hạn (Expiration Pruning)**:
+     - Trong [post.py](file:///root/project/GGServer/emulator/server/handlers/post.py):
+       - Khi gửi thư qua `send_post`: bổ sung tham số `applies_to_new_users=False`. Mặc định thư phát sóng chỉ gửi đến những người chơi đã tồn tại. Nếu muốn thư phát cho cả người chơi tương lai (như quà tân thủ mở rộng), có thể bật cờ này. Đồng thời tự động dọn dẹp các thư phát sóng đã quá hạn khi lưu file `broadcast_posts.json`.
+       - Trong `_get_user_posts`:
+         - Bổ sung cơ chế dọn dẹp các thư đã quá hạn (`del_time <= now and not unlimit_flg`).
+         - Dọn dẹp các thư phát sóng cũ đã lỡ nạp vào tài khoản nếu thư đó được gửi trước thời điểm người chơi đăng ký (`b_create < user_created_at`). Thư Chào mừng khởi đầu (`idx: 1`) luôn được bảo lưu cho tân thủ.
+         - Trong vòng lặp nạp broadcast: chỉ gửi thư phát sóng nếu thư chưa hết hạn VÀ (`applies_to_new_users == True` HOẶC `b_create >= user_created_at`).
+         - Đảm bảo Thư chào mừng (`_default_welcome_post`) chỉ được gửi 1 lần duy nhất cho tân thủ.
+  3. **Kiểm thử tự động toàn diện**:
+     - Bổ sung kịch bản kiểm thử quy tắc Honkai: Star Rail trong [test_notification.py](file:///root/project/GGServer/emulator/test_notification.py), kiểm tra và đảm bảo tài khoản mới tạo sau khi phát thông báo hoàn toàn không nhận thư cũ mà chỉ nhận duy nhất Thư chào mừng.
+
+---
+
 ## 5. Quy trình Build, Cài đặt và Kiểm tra chuẩn
 
 ### 5.1. Build APK không Google Play

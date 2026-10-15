@@ -21,7 +21,7 @@ def _save_broadcast_posts(posts):
     except Exception:
         pass
 
-def send_post(uuid=None, title='Thông báo', memo='', items=None, notice_type=1):
+def send_post(uuid=None, title='Thông báo', memo='', items=None, notice_type=1, applies_to_new_users=False):
     """Send an in-game post/notification to a specific user or broadcast to all users."""
     now = int(time.time())
     item_list = []
@@ -81,6 +81,7 @@ def send_post(uuid=None, title='Thông báo', memo='', items=None, notice_type=1
         'item_list': item_list,
         'url': '',
         'image_resource_name': '',
+        'applies_to_new_users': applies_to_new_users,
     }
 
     if target_user:
@@ -90,7 +91,12 @@ def send_post(uuid=None, title='Thông báo', memo='', items=None, notice_type=1
         return post
     else:
         broadcasts.append(post)
-        _save_broadcast_posts(broadcasts)
+        # Prune expired broadcasts from broadcast_posts.json to keep it clean
+        valid_broadcasts = [
+            b for b in broadcasts
+            if b.get('unlimit_flg') or (b.get('del_time', 0) > now)
+        ]
+        _save_broadcast_posts(valid_broadcasts)
         conn = state.get_db()
         rows = conn.execute('SELECT uuid FROM user_data').fetchall()
         conn.close()
@@ -156,13 +162,61 @@ def _get_user_posts(user):
         user['deleted_post_indices'] = list(deleted_indices)
         dirty = True
 
-    # Purge any posts that have been deleted
+    # User registration timestamp
+    user_created_at = user.get('created_at')
+    if not user_created_at:
+        ud = user.get('userdata', {})
+        uct = ud.get('u_create_time')
+        if uct and len(str(uct)) == 8:
+            try:
+                user_created_at = int(time.mktime(time.strptime(str(uct), '%Y%m%d')))
+            except Exception:
+                user_created_at = user.get('last_save_time') or now
+        else:
+            user_created_at = user.get('last_save_time') or now
+        user['created_at'] = user_created_at
+        dirty = True
+
+    # 1. Purge any posts that have been explicitly deleted
     if any(p.get('idx') in deleted_indices for p in posts):
         posts = [p for p in posts if p.get('idx') not in deleted_indices]
         user['posts'] = posts
         dirty = True
 
-    # Normalize existing posts:
+    # 2. Purge expired posts and old broadcast posts sent before account creation (Honkai Star Rail rule)
+    broadcasts = _load_broadcast_posts()
+    broadcast_indices = {bp.get('idx') for bp in broadcasts if bp.get('idx')}
+
+    valid_posts = []
+    for p in posts:
+        p_idx = p.get('idx')
+        p_del = p.get('del_time', 0)
+        p_create = p.get('create_time', 0)
+
+        # Remove expired mail
+        if p_del and p_del <= now and not p.get('unlimit_flg'):
+            if p_idx:
+                deleted_indices.add(p_idx)
+            dirty = True
+            continue
+
+        # Remove historical broadcast mail sent before account was registered
+        # (Idx 1 is the Welcome Mail, which is always retained for the user).
+        if p_idx != 1 and (p_idx in broadcast_indices) and not p.get('applies_to_new_users') and user_created_at and p_create < user_created_at:
+            if p_idx:
+                deleted_indices.add(p_idx)
+            dirty = True
+            continue
+
+        valid_posts.append(p)
+
+    if len(valid_posts) != len(posts):
+        posts = valid_posts
+        user['posts'] = posts
+        user['deleted_post_indices'] = list(deleted_indices)
+        dirty = True
+
+    # 3. Normalize existing posts:
     # If a post has no unclaimed reward or is marked status 1,
     # client expects BOTH status=1 (claimed/processed) AND flg=1 (read),
     # otherwise client's AnyoneConfirm() checks flg at offset 0x1A and sees unread mail!
@@ -175,22 +229,40 @@ def _get_user_posts(user):
                 p['flg'] = 1
                 dirty = True
 
-    if not posts and not user.get('welcome_post_sent'):
-        posts.append(_default_welcome_post(now))
+    # 4. Welcome post for new users (Honkai: Star Rail starter mail)
+    if not user.get('welcome_post_sent'):
+        posts.insert(0, _default_welcome_post(now))
         user['welcome_post_sent'] = True
         dirty = True
 
     existing_indices = {p.get('idx') for p in posts if p.get('idx')}
-    broadcasts = _load_broadcast_posts()
+
+    # 5. Deliver eligible broadcast mails from broadcast_posts.json:
+    # Only if:
+    #   - Mail is NOT expired (del_time > now or unlimit_flg)
+    #   - Mail was sent AFTER or AT user account creation time (b_create >= user_created_at)
+    #   - Mail has not been deleted or already delivered
     for bp in broadcasts:
         b_idx = bp.get('idx')
-        if b_idx not in existing_indices and b_idx not in deleted_indices:
-            user_post = dict(bp)
-            user_post['status'] = bp.get('status', 0)
-            user_post['flg'] = bp.get('flg', 0)
-            posts.append(user_post)
-            existing_indices.add(b_idx)
-            dirty = True
+        if not b_idx or b_idx in existing_indices or b_idx in deleted_indices:
+            continue
+
+        # Check expiration
+        b_del = bp.get('del_time', 0)
+        if b_del and b_del <= now and not bp.get('unlimit_flg'):
+            continue
+
+        # Check account creation time (Honkai Star Rail rule: new accounts do not receive past broadcasts)
+        b_create = bp.get('create_time', 0)
+        if not bp.get('applies_to_new_users') and user_created_at and b_create < user_created_at:
+            continue
+
+        user_post = dict(bp)
+        user_post['status'] = bp.get('status', 0)
+        user_post['flg'] = bp.get('flg', 0)
+        posts.append(user_post)
+        existing_indices.add(b_idx)
+        dirty = True
 
     if dirty:
         state.save_user(user)

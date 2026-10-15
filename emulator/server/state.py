@@ -205,8 +205,17 @@ def _reconstruct_user(row):
     ud['u_like'] = row['u_like']
     ud['u_fans'] = row['u_fans']
     ud['attendance_count'] = row['attendance_count']
-    ud['attendance_date'] = row['attendance_date']
     data['is_banned'] = bool(row['is_banned'] if 'is_banned' in row.keys() else 0)
+    if 'created_at' not in data:
+        uct = ud.get('u_create_time')
+        if uct and len(str(uct)) == 8:
+            try:
+                data['created_at'] = int(time.mktime(time.strptime(str(uct), '%Y%m%d')))
+            except Exception:
+                data['created_at'] = data.get('last_save_time') or int(time.time())
+        else:
+            data['created_at'] = data.get('last_save_time') or int(time.time())
+
 
     # Sync like currency to active areas so client in-game HUD displays the hearts
     from server import currency
@@ -264,6 +273,10 @@ def create_user(uuid, device_uuid):
         now_ts = int(time.time())
         user = {
             'uuid': uuid,
+            'created_at': now_ts,
+            'posts': [],
+            'welcome_post_sent': False,
+            'deleted_post_indices': [],
             'userdata': _default_userdata(seq, u_id, uuid, device_uuid),
             'needs_client_reset': True,
             'last_save_time': now_ts,
