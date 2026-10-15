@@ -374,6 +374,87 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
 
 ---
 
+### 4.11. Lỗi sự kiện Nhiệm vụ người theo dõi Joy (`FollowerQuest` - #ỦnghộGuitarGirl) không nhận được quà dù đã đạt đủ điều kiện (`image.png`)
+- **Dump dữ liệu sự kiện (Table 26 & Table 13)**:
+  - Sự kiện trong hình ảnh là **Nhiệm vụ người theo dõi (Follower Quest)**, định nghĩa tại Bảng 26 (`followerquest`).
+  - **Điều kiện mở khóa**: Người theo dõi 1 (Joy) đạt Cấp độ 250 (`i_UnlockFollowerLevel: 250`, `b_IsActive: 1`).
+  - Chuỗi nhiệm vụ gồm 3 yêu cầu con:
+    1. `SubID: 1` (`BigHeartTouchCount: 5`) -> Nhóm quà `500101`: 3.000 Lượt thích (`Type: 1, ID: 4, Value: 3000`).
+    2. `SubID: 2` (`SkillUseCount: 1`) -> Nhóm quà `500102`: 10 Bánh quy / Cookie AP (`Type: 1, ID: 11, Value: 10`).
+    3. `SubID: 3` (`AchievementPopupTime: 3`) -> Nhóm quà `500103`: 10 Socola / CP (`Type: 1, ID: 1, Value: 10`).
+- **Nguyên nhân lỗi bấm nút "Nhận" (Claim) không phản hồi**:
+  - Khi hoàn thành điều kiện, client gửi Thrift RPC `user.setUserFollowerQuest(i_CurrentID, i_SubID, d_ConditionValue)`.
+  - Trong implementation cũ của [follower.py](file:///root/project/GGServer/emulator/server/handlers/follower.py), handler luôn trả về `i_RewardReceived1/2/3 = 0`, `next_flg = 0`, và mảng `reward_data: []` rỗng, đồng thời không hề cấp phát tiền tệ (Lượt thích, CP, Cookie) vào tài khoản người chơi.
+  - Tại RVA `0x1E2E394` trong `libil2cpp.so` (`GgUIFollowerQuestManagerSGT.OnRecv(setUserFollowerQuest)`), client kiểm tra `reward_data.Count > 0` và cờ trạng thái. Do server trả về dữ liệu rỗng, client coi như thất bại, tiếp tục giữ nguyên nút "Nhận" thay vì chuyển sang trạng thái "Đã nhận" (Received), khiến người chơi không thể lấy thưởng và không thể hoàn thành sự kiện.
+- **Cách khắc phục triệt để trên Server**:
+  1. Trong [follower.py](file:///root/project/GGServer/emulator/server/handlers/follower.py), nạp Table 26 (`followerquest`) và Table 13 (`reward_group`).
+  2. Xác định chính xác nhóm phần thưởng theo `i_SubID` (`13` cho Sub 1, `14` cho Sub 2, `15` cho Sub 3).
+  3. Cấp phát đúng tiền tệ tương ứng cho người chơi thông qua `_grant_follower_quest_reward` (Socola `u_cp`, Kẹo `u_candy`, Lượt thích `u_like`, Fans `u_fans`, Bánh quy `state.add_ap`, hoặc Vé sưu tập `user_ticketcollection`).
+  4. Cập nhật `i_RewardReceived{sub_id} = 1`. Khi cả 3 nhiệm vụ con hoàn thành (`r1 == 1 and r2 == 1 and r3 == 1`), gán `next_flg = 1` và `i_CompleteID = cur_id`.
+  5. Đưa `user_follower_quest` vào danh sách `_user_contents` trong [auth.py](file:///root/project/GGServer/emulator/server/handlers/auth.py) và lưu bền vững qua `userSave`.
+
+---
+
+### 4.12. Lỗi mở khóa người theo dõi ở Chương 1 (Bạn tiệm tiện lợi, Giáo viên chủ nhiệm, Tiền bối trầm lặng...) nhưng không có tin nhắn / phòng chat biến mất (`image copy.png` & `image copy 2.png`)
+- **Hiện tượng**:
+  - Khi người chơi đạt cấp độ mở khóa các người theo dõi Chương 1 (ID 2: Bạn tiệm tiện lợi, ID 3: Giáo viên chủ nhiệm, ID 4: Tiền bối trầm lặng...), trong ứng dụng Messenger trong game không xuất hiện phòng chat hoặc danh sách tin nhắn bị trống trơn.
+- **Nguyên nhân chi tiết từ ARM64 Disassembly (`0x1F7B8C0` - `GgUIInGameMessengerManager_Chatting`)**:
+  - Khi duyệt danh sách phòng chat trong `user_messenger`, client gọi hàm kiểm tra tiến trình `GetProceedingIndex(roomId)`.
+  - Tại RVA `0x1F7BBE0`:
+    - Nếu `roomId != 1`:
+      - Nếu `GetProceedingIndex(roomId) < 0`: client gọi tiếp `GetLastCompleteProgressGroup(roomId)`.
+      - Nếu `GetLastCompleteProgressGroup < 1`, lệnh `b.lt #0x1f7bd88` **bỏ qua hoàn toàn và ẩn giấu phòng chat khỏi giao diện Messenger!**
+  - Trước đây trong `follower.py` và `state.py`, các phòng chat CH1 được khởi tạo với `i_LastConfirmIndex: -1` (với suy đoán là người chơi chưa đọc tin nào). Giá trị `-1` này khiến `GetProceedingIndex` trả về `-1`, và do nhóm tiến trình ban đầu chưa hoàn thành (`< 1`), client đã ẩn phòng chat đi hoàn toàn!
+- **Cách khắc phục triệt để**:
+  1. Trong [follower.py](file:///root/project/GGServer/emulator/server/handlers/follower.py) và [state.py](file:///root/project/GGServer/emulator/server/state.py), khởi tạo `i_LastConfirmIndex: 0` cho toàn bộ các người theo dõi được mở khóa (cả CH1 lẫn CH2).
+  2. Bổ sung vòng lặp an toàn trong `_sync_follower_messenger`: tự động chuẩn hóa mọi phòng chat có `i_LastConfirmIndex < 0` về `0`.
+  3. Khi `i_LastConfirmIndex: 0`, `GetProceedingIndex` trả về `0 >= 0`, client hiển thị ngay lập tức phòng chat trong danh sách Messenger kèm tin nhắn đầu tiên và huy hiệu chấm đỏ thông báo tin nhắn mới.
+
+---
+
+### 4.13. Lỗi mất hướng dẫn (Tutorial) của Moa tại CH3: Trường cấp 3 Sunshine khi mở khóa Moa lần đầu
+- **Hiện tượng**:
+  - Khi một tài khoản lần đầu mở khóa người theo dõi Moa ở Chương 3 (Sunshine High School), game không kích hoạt kịch bản hướng dẫn tân thủ (Tutorial) của Moa mà nhảy thẳng vào màn hình thường.
+- **Nguyên nhân chi tiết từ ARM64 Disassembly (`0x1CF4080` & `0x1CF41C0` - `GgUIInGame1ManagerSGT.CheckUnlockChThird`)**:
+  - Chuỗi hướng dẫn Chương 3 của game diễn ra tuần tự:
+    - *Area 3 Tutorial* (Tutorial ID 43, 44) -> *Area 4 Tutorial* (Tutorial ID 45..55) -> *Stage 1001 Play* -> *Area 5 Tutorial* (Tutorial ID 56..59).
+  - Tại `0x1CF4080`, phương thức kiểm tra `CheckUnlockChThird` đếm số lượng màn chơi trong danh sách `user_chthird_stage.Count`.
+  - Nếu `Count > 0`, client thiết lập cờ `[x20, #0x89] = 1`, coi như người chơi **đã hoàn thành giai đoạn giới thiệu Chapter 3 từ trước**, và bỏ qua vĩnh viễn toàn bộ chuỗi hướng dẫn của Moa!
+  - Trên server cũ (`auth.py`, `state.py`, `ch_third.py`), các tài khoản mới bị gán sẵn màn 1001 hoàn thành: `[{'i_id': 1001, 'i_ChapterId': 1, 'i_StageIndex': 1, 'i_Star': 3}]`. Do đó `Count = 1 > 0`, làm client lập tức tắt chuỗi hướng dẫn của Moa.
+- **Cách khắc phục triệt để**:
+  1. Trong [state.py](file:///root/project/GGServer/emulator/server/state.py) và [auth.py](file:///root/project/GGServer/emulator/server/handlers/auth.py), mặc định `user_ch_third_stage` và `user_chthird_stage` là mảng rỗng `[]` cho tài khoản mới chưa chơi Chapter 3.
+  2. Trong [ch_third.py](file:///root/project/GGServer/emulator/server/handlers/ch_third.py), cả `h_get_ch_third` và `h_ch_third_stage` đều giữ nguyên mảng rỗng `[]` nếu người chơi chưa bắt đầu chơi.
+  3. Khi người chơi lần đầu bước vào CH3, client thấy mảng `user_chthird_stage` rỗng (`Count == 0`), kích hoạt trọn vẹn kịch bản hướng dẫn sinh động của Moa.
+  4. Khi người chơi hoàn thành màn chơi hướng dẫn 1001, logic `is_tutorial = (stage_id == 1001)` trong `h_ch_third_stage` tự động cấp 3 sao và lưu màn 1001 vào hồ sơ người chơi.
+
+---
+
+### 4.14. Kiểm tra đĩa nhạc (Music Discs) và tỉ lệ nhận Quà tặng biểu diễn (Encore Gift Drop Rates)
+- **1. Danh mục Đĩa nhạc (Music Discs)**:
+  - Bảng 2 trong `game_data.json` định nghĩa toàn bộ **50 bản nhạc**:
+    - **26 bài hát Khu vực 1** (ID 1 đến 26): bắt đầu từ bài *Cô gái với những giấc mơ* (ID 1 - *Girl with Dreams*).
+    - **24 bài hát Khu vực 2** (ID 201 đến 224): bắt đầu từ bài *Hơi thở mùa xuân* (ID 201 - *Spring Breeze*).
+  - Tài khoản mới tạo được cấp sẵn 2 bài hát khởi đầu: Bài 1 và Bài 201 trong `user_music`.
+  - Toàn bộ 48 bài hát còn lại được mở khóa và nâng cấp chuẩn xác thông qua thăng cấp người theo dõi, đạt mốc danh tiếng hoặc mua trong Cửa hàng qua API `buyMusic` ([shop.py](file:///root/project/GGServer/emulator/server/handlers/shop.py)).
+- **2. Tỉ lệ nhận Quà tặng biểu diễn tiếp (Encore Gift / Biểu diễn encore)**:
+  - **Tỉ lệ xuất hiện Encore**: Khi người chơi kết thúc bài hát, client tính toán tỉ lệ xuất hiện Quà tặng Biểu diễn tiếp dựa trên Bảng 11 cột 2 (`f_EncoreBonusAppearRate`):
+    - Cấp 1: 10% cơ hội xuất hiện.
+    - Tăng dần theo cấp độ bài hát (+5% mỗi cấp): Cấp 2 (15%), Cấp 3 (20%), Cấp 4 (25%), Cấp 5 (30%)... đến Cấp 10 đạt 100% cơ hội xuất hiện.
+  - **Phần thưởng Encore ([music.py](file:///root/project/GGServer/emulator/server/handlers/music.py))**:
+    - Khi bấm nhận thưởng quà encore (`getMusicReward`), server cấp phát:
+      - 10 Kẹo cơ bản (`_i_EncoreBonusGiftAmount` - Table 11 Col 6).
+      - Thưởng Kẹo cộng thêm từ cấp độ Người theo dõi phụ trách encore (`i_AddCandy` - Table 31).
+      - 50 EXP hồ sơ người theo dõi (`_i_EncoreFollowerProfileExp` - Table 11 Col 7).
+      - 10 Điểm Thẻ Sao (Star Pass Point).
+  - **Khắc phục tỉ lệ rơi Quà tặng người theo dõi ở Chapter 3 ([ch_third.py](file:///root/project/GGServer/emulator/server/handlers/ch_third.py))**:
+    - Trong chế độ Tour Chapter 3, mỗi màn chơi liên kết với các nhóm quà trong Bảng 36 (`percent`).
+    - Trước đây `_stage_rewards` luôn chọn cố định phần tử đầu tiên của mỗi nhóm (deterministic selection), dẫn đến:
+      - Nhóm có tỉ lệ rơi 50% (1 rớt, 1 không rớt) bị biến thành 100% luôn rớt.
+      - Nhóm có số lượng quà ngẫu nhiên từ 1 đến 4 luôn chỉ rơi đúng 1 cái (0% cơ hội nhận 2, 3, 4).
+    - Đã cập nhật thuật toán lấy mẫu ngẫu nhiên có trọng số (`random.choices(candidates, weights=weights)`). Nhờ đó, tỉ lệ rơi quà tặng biểu diễn tại Chapter 3 hoàn toàn trùng khớp 100% với tỉ lệ gốc của nhà phát triển Neowiz.
+
+---
+
 ## 5. Quy trình Build, Cài đặt và Kiểm tra chuẩn
 
 ### 5.1. Build APK không Google Play

@@ -269,7 +269,7 @@ def create_user(uuid, device_uuid):
         
         seq = _next_seq()
         u_id = f'guest_{seq}'
-        starter_stage = [{'i_id': 1001, 'i_ChapterId': 1, 'i_StageIndex': 1, 'i_Star': 3}]
+        starter_stage = []
         now_ts = int(time.time())
         user = {
             'uuid': uuid,
@@ -306,7 +306,7 @@ def create_user(uuid, device_uuid):
             'user_messenger': [
                 {
                     'i_MessengerChatRoomId': 1,
-                    'i_LastConfirmIndex': -1,
+                    'i_LastConfirmIndex': 0,
                     's_UnlockGroupList': '1',
                     'l_UpdateTimeTicks': 0,
                 }

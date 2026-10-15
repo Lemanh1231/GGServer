@@ -196,12 +196,14 @@ def _sync_follower_messenger(user):
     if 1 not in existing_rooms:
         r1 = {
             'i_MessengerChatRoomId': 1,
-            'i_LastConfirmIndex': -1,
+            'i_LastConfirmIndex': 0,
             's_UnlockGroupList': '1',
             'l_UpdateTimeTicks': 0,
         }
         ms.append(r1)
         existing_rooms[1] = r1
+    elif existing_rooms[1].get('i_LastConfirmIndex', -1) < 0:
+        existing_rooms[1]['i_LastConfirmIndex'] = 0
 
     followers = user.get('user_follower', [])
     f_levels = {}
@@ -219,11 +221,10 @@ def _sync_follower_messenger(user):
             continue  # Handled with special room/group routing below
         if fid in FOLLOWER_MESSENGER_MAP:
             room_id, init_group = FOLLOWER_MESSENGER_MAP[fid]
-            init_confirm = 0 if fid >= 200 else -1
             if room_id not in existing_rooms:
                 new_room = {
                     'i_MessengerChatRoomId': room_id,
-                    'i_LastConfirmIndex': init_confirm,
+                    'i_LastConfirmIndex': 0,
                     's_UnlockGroupList': str(init_group),
                     'l_UpdateTimeTicks': 0,
                 }
@@ -231,7 +232,7 @@ def _sync_follower_messenger(user):
                 existing_rooms[room_id] = new_room
             else:
                 r = existing_rooms[room_id]
-                if fid >= 200 and r.get('i_LastConfirmIndex', -1) < 0:
+                if r.get('i_LastConfirmIndex', -1) < 0:
                     r['i_LastConfirmIndex'] = 0
                 if not r.get('s_UnlockGroupList'):
                     r['s_UnlockGroupList'] = str(init_group)
@@ -336,7 +337,7 @@ def _sync_follower_messenger(user):
         if f_levels.get(1, 0) >= 1250 and 16 not in existing_rooms:
             r16 = {
                 'i_MessengerChatRoomId': 16,
-                'i_LastConfirmIndex': -1,
+                'i_LastConfirmIndex': 0,
                 's_UnlockGroupList': '76',
                 'l_UpdateTimeTicks': 0,
             }
@@ -346,15 +347,17 @@ def _sync_follower_messenger(user):
         if f_levels.get(201, 0) >= 650 and 17 not in existing_rooms:
             r17 = {
                 'i_MessengerChatRoomId': 17,
-                'i_LastConfirmIndex': -1,
+                'i_LastConfirmIndex': 0,
                 's_UnlockGroupList': '139',
                 'l_UpdateTimeTicks': 0,
             }
             ms.append(r17)
             existing_rooms[17] = r17
 
-    # Ensure each room has a valid s_UnlockGroupList
+    # Ensure each room has a valid s_UnlockGroupList and non-negative confirm index
     for rid, r in existing_rooms.items():
+        if r.get('i_LastConfirmIndex', -1) < 0:
+            r['i_LastConfirmIndex'] = 0
         if not r.get('s_UnlockGroupList'):
             if rid == 16:
                 r['s_UnlockGroupList'] = '76'
@@ -622,14 +625,80 @@ def h_set_follower_quest_infinite(req, player, ctx):
         'user_follower_quest': quest
     }, OK
 
+def _load_follower_quest_tables():
+    """Load Table 26 (followerquest) and Table 13 (reward_group)."""
+    try:
+        with open(_GAME_DATA_PATH, encoding='utf-8') as f:
+            data = json.load(f)
+        quests = {int(r['1']): r for r in data.get('26', [])}
+        rewards = {}
+        for r in data.get('13', []):
+            rewards.setdefault(int(r.get('2', r['1'])), []).append(r)
+        return quests, rewards
+    except Exception:
+        return {}, {}
+
+def _grant_follower_quest_reward(user, rtype, rid, rval):
+    if not user:
+        return
+    ud = user.setdefault('userdata', {})
+    uuid = user.get('uuid')
+    if rtype == 1:  # Consume / Currencies
+        cp = 0
+        candy = 0.0
+        like = 0.0
+        fans = 0
+        if rid == 1:  # Chocolate / CP
+            cp = int(rval)
+            ud['u_cp'] = int(ud.get('u_cp', 0) or 0) + cp
+        elif rid == 2:  # Candy
+            candy = float(rval)
+            ud['u_candy'] = float(ud.get('u_candy', 0.0) or 0.0) + candy
+        elif rid in (3, 4):  # Likes
+            like = float(rval)
+            ud['u_like'] = float(ud.get('u_like', 0.0) or 0.0) + like
+        elif rid == 8:  # Fans
+            fans = int(rval)
+            ud['u_fans'] = int(ud.get('u_fans', 0) or 0) + fans
+        elif rid == 11:  # Cookie / AP
+            state.add_ap(user, int(rval))
+        if uuid and (cp or candy or like or fans):
+            state.increment_currency(uuid, cp=cp, candy=candy, like=like, fans=fans)
+    elif rtype == 10:  # Ticket
+        tickets = user.setdefault('user_ticketcollection', [])
+        if not any(int(t.get('i_id', 0) or 0) == int(rid) for t in tickets):
+            tickets.append({'i_id': int(rid)})
+
 @cmd('setUserFollowerQuest')
 def h_set_user_follower_quest(req, player, ctx):
     p = _payload(req)
     uuid = p.get('uuid') or ctx.get('uuid')
     user = state.get_user(uuid)
-    cur_id = int(p.get('i_CurrentID', 0) or 0)
-    sub_id = int(p.get('i_SubID', 1) or 1)
-    cond_val = float(p.get('d_ConditionValue', 0.0) or 0.0)
+    cur_id = int(p.get('i_CurrentID') or p.get('CurrentID') or p.get('current_id', 0) or 0)
+    sub_id = int(p.get('i_SubID') or p.get('SubID') or p.get('sub_id', 1) or 1)
+    cond_val = float(p.get('d_ConditionValue') or p.get('ConditionValue') or p.get('condition_value', 0.0) or 0.0)
+
+    quests_def, rewards_def = _load_follower_quest_tables()
+    quest_row = quests_def.get(cur_id, {})
+
+    # Determine reward group from Table 26
+    rg_key = '13' if sub_id == 1 else ('14' if sub_id == 2 else '15')
+    rg_id = int(quest_row.get(rg_key, 0) or 0)
+
+    reward_data = []
+    if rg_id and rg_id in rewards_def:
+        for r in rewards_def[rg_id]:
+            rtype = int(r.get('3', 0) or 0)
+            rid = int(r.get('4', 0) or 0)
+            rval = float(r.get('5', 0) or 0)
+            if user:
+                _grant_follower_quest_reward(user, rtype, rid, rval)
+            reward_data.append({
+                'reward_type': rtype,
+                'reward_id': rid,
+                'reward_value': rval,
+            })
+
     quest = {
         'i_CurrentID': cur_id,
         'i_CompleteID': 0,
@@ -640,7 +709,7 @@ def h_set_user_follower_quest(req, player, ctx):
         'i_RewardReceived2': 0,
         'i_RewardReceived3': 0,
         'next_flg': 0,
-        'reward_data': [],
+        'reward_data': reward_data,
     }
     if user:
         quests = user.setdefault('user_follower_quest', [])
@@ -648,12 +717,37 @@ def h_set_user_follower_quest(req, player, ctx):
         if not found_quest:
             found_quest = dict(quest)
             quests.append(found_quest)
+
         if sub_id == 1:
             found_quest['d_ConditionValue1'] = cond_val
+            found_quest['i_RewardReceived1'] = 1
         elif sub_id == 2:
             found_quest['d_ConditionValue2'] = cond_val
+            found_quest['i_RewardReceived2'] = 1
         elif sub_id == 3:
             found_quest['d_ConditionValue3'] = cond_val
+            found_quest['i_RewardReceived3'] = 1
+
+        r1 = int(found_quest.get('i_RewardReceived1', 0) or 0)
+        r2 = int(found_quest.get('i_RewardReceived2', 0) or 0)
+        r3 = int(found_quest.get('i_RewardReceived3', 0) or 0)
+        if r1 == 1 and r2 == 1 and r3 == 1:
+            found_quest['next_flg'] = 1
+            found_quest['i_CompleteID'] = cur_id
+        else:
+            found_quest['next_flg'] = 0
+
         state.save_user(user)
-        quest = found_quest
+        quest = {
+            'i_CurrentID': cur_id,
+            'i_CompleteID': int(found_quest.get('i_CompleteID', 0) or 0),
+            'd_ConditionValue1': float(found_quest.get('d_ConditionValue1', 0.0) or 0.0),
+            'd_ConditionValue2': float(found_quest.get('d_ConditionValue2', 0.0) or 0.0),
+            'd_ConditionValue3': float(found_quest.get('d_ConditionValue3', 0.0) or 0.0),
+            'i_RewardReceived1': int(found_quest.get('i_RewardReceived1', 0) or 0),
+            'i_RewardReceived2': int(found_quest.get('i_RewardReceived2', 0) or 0),
+            'i_RewardReceived3': int(found_quest.get('i_RewardReceived3', 0) or 0),
+            'next_flg': int(found_quest.get('next_flg', 0) or 0),
+            'reward_data': reward_data,
+        }
     return quest, OK

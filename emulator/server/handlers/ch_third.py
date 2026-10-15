@@ -1,6 +1,7 @@
 """Chapter 3 story energy (Cookie / AP) handlers."""
 import json
 import os
+import random
 import time
 
 from server import state, event_manager
@@ -43,14 +44,17 @@ def _stage_rewards(stage):
             rows = json.load(f).get('36', [])
         rewards = []
         for group_id in group_ids:
-            # Each group is a weighted/random reward list in the original
-            # game.  The emulator deterministically selects its first item.
-            row = next((row for row in rows if int(row.get('1', 0)) == group_id), None)
-            if row:
+            candidates = [row for row in rows if int(row.get('1', 0)) == group_id]
+            if not candidates:
+                continue
+            weights = [float(c.get('5', 1) or 1) for c in candidates]
+            chosen = random.choices(candidates, weights=weights, k=1)[0]
+            val = int(chosen.get('4', 0) or 0)
+            if val > 0:
                 rewards.append({
-                    'reward_type': int(row.get('2', 11) or 11),
-                    'reward_id': int(row.get('3', 0) or 0),
-                    'reward_value': int(row.get('4', 0) or 0),
+                    'reward_type': int(chosen.get('2', 11) or 11),
+                    'reward_id': int(chosen.get('3', 0) or 0),
+                    'reward_value': val,
                 })
         return rewards
     except (OSError, ValueError, TypeError, json.JSONDecodeError):
@@ -175,11 +179,9 @@ def h_get_ch_third(req, player, ctx):
     if not user:
         return {}, OK
     ap = _user_ap(user)
-    stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage')
-    if not stages:
-        stages = [{'i_id': 1001, 'i_ChapterId': 1, 'i_StageIndex': 1, 'i_Star': 3}]
-        user['user_ch_third_stage'] = stages
-        user['user_chthird_stage'] = stages
+    stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage') or []
+    user['user_ch_third_stage'] = stages
+    user['user_chthird_stage'] = stages
     state.save_user(user)
     return {
         'u_seq': user['userdata']['u_seq'],
@@ -208,9 +210,7 @@ def h_ch_third_stage(req, player, ctx):
     else:
         ap = _user_ap(user)
 
-    stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage')
-    if not stages:
-        stages = [{'i_id': 1001, 'i_ChapterId': 1, 'i_StageIndex': 1, 'i_Star': 3}]
+    stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage') or []
     user['user_ch_third_stage'] = stages
     user['user_chthird_stage'] = stages
     stage = next((x for x in stages if int(x.get('i_id', 0)) == stage_id), None)

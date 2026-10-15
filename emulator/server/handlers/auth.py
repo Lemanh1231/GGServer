@@ -391,7 +391,7 @@ def _user_contents(user):
         if not any(int(u.get('i_id', 0) or 0) == 1 for u in units):
             units.append({'i_id': 1, 'i_Level': 1})
 
-    ch3_stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage') or [{'i_id': 1001, 'i_ChapterId': 1, 'i_StageIndex': 1, 'i_Star': 3}]
+    ch3_stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage') or []
     user['user_ch_third_stage'] = ch3_stages
     user['user_chthird_stage'] = ch3_stages
 
@@ -446,6 +446,7 @@ def _user_contents(user):
         'user_follower_profile_reward': user.setdefault('user_follower_profile_reward', []),
         'user_follower_profile': profiles,
         'user_follower_giftitem': user.setdefault('user_follower_giftitem', [{'i_id': 1, 'i_Value': 141}]),
+        'user_follower_quest': user.setdefault('user_follower_quest', []),
         'user_chthird_stage': ch3_stages,
         'user_tutorial': user.setdefault('user_tutorial', [{'i_id': i} for i in range(1, 8)]),
         'user_ad_level': [{'i_id': 210010, 'i_Level': 1, 'i_EXP': 1}],
@@ -630,6 +631,13 @@ def h_user_save(req, player, ctx):
             if 'user_daily_mission' in p: _normalise_daily_missions(user, p['user_daily_mission'])
             if 'user_prop' in p:        user['user_prop'] = _safe_merge_items(user.get('user_prop', []), p['user_prop'])
             if 'user_candy_shop' in p:  user['user_candy_shop'] = p['user_candy_shop']
+            if 'user_follower_quest' in p: user['user_follower_quest'] = p['user_follower_quest']
+            if 'user_chthird_stage' in p:
+                user['user_chthird_stage'] = p['user_chthird_stage']
+                user['user_ch_third_stage'] = p['user_chthird_stage']
+            if 'user_ch_third_stage' in p:
+                user['user_ch_third_stage'] = p['user_ch_third_stage']
+                user['user_chthird_stage'] = p['user_ch_third_stage']
 
             # Apply any pending server-side grants
             pending = user.pop('pending_grants', None)
