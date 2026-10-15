@@ -368,9 +368,10 @@ class Handler(BaseHTTPRequestHandler):
                         raise ValueError(f'Không tìm thấy người chơi với ID {target_uuid}!')
 
                     active_season = event_manager.get_active_star_pass_season()
+                    sp_enabled = event_manager.is_star_pass_enabled()
 
-                    # 1. Update Gold Pass for this individual user
-                    if 'is_gold' in data:
+                    # 1. Update Gold Pass for this individual user (ONLY if Star Pass is enabled globally)
+                    if sp_enabled and 'is_gold' in data:
                         is_gold = bool(data['is_gold'])
                         shop_items = user.setdefault('user_shop', [])
                         subs = user.setdefault('user_subscribe_list', [])
@@ -415,8 +416,8 @@ class Handler(BaseHTTPRequestHandler):
                                     s['i_ActiveTime'] = 0
                             user['user_ticketcollection'] = [t for t in tickets if int(t.get('i_id', 0) or 0) not in (active_season, target_shop_id)]
 
-                    # 2. Update Star Pass Points
-                    if 'star_point' in data and data['star_point'] is not None:
+                    # 2. Update Star Pass Points (ONLY if Star Pass is enabled globally)
+                    if sp_enabled and 'star_point' in data and data['star_point'] is not None:
                         new_point = max(0, int(data['star_point']))
                         from server.handlers.reward import _get_step_for_points, _get_pass_version
                         new_step = _get_step_for_points(active_season, new_point)
@@ -451,6 +452,8 @@ class Handler(BaseHTTPRequestHandler):
                             if not isinstance(ev_cfg, dict) or not ev_cfg.get('modified'):
                                 continue
                             e_str = str(eidx)
+                            if not event_manager.is_attendance_event_enabled(e_str):
+                                continue  # Do not modify or seed attendance for globally disabled events
                             att_entry = att_dict.setdefault(e_str, {'day': 0, 'ymd': 0})
                             max_days = 14 if e_str in ('2', '202110') else 7
                             t_day = ev_cfg.get('target_day')

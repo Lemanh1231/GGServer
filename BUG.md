@@ -326,6 +326,54 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
 
 ---
 
+### 4.9. Lỗi Sự kiện Kỷ niệm 1 năm (1st Anniversary Event) tự động mở trong game dù trên Web Dashboard không bật
+- **Hiện tượng**:
+  - Dù trên Web Dashboard Admin không bật Sự kiện kỷ niệm 1 năm (Event 2 - `1st Anniversary Event`), hoặc người quản trị đã tắt, nhưng khi người chơi vào game, sự kiện 1 năm vẫn tự động mở, hiển thị popup nhận thưởng 14 ngày và biểu tượng ngoài sảnh chính.
+- **Nguyên nhân chi tiết (Reverse-Engineering qua ARM64 Disassembly & Cấu trúc Dữ liệu)**:
+  1. **Cơ chế kiểm tra `IsOpen()` của Client bỏ qua ngày kết thúc**:
+     - Trong `libil2cpp.so` tại RVA `0x225590c` (phương thức kiểm tra sự kiện mở `IsOpen()`):
+       - Đối với sự kiện loại 3 (`DailyReward_PeriodCheck_First` / Event 2):
+       - Client gọi `UserDailyReward.Get(2)`. Nếu người chơi đã từng có dữ liệu điểm danh sự kiện 2, hoặc có slot quà chưa nhận (`x20 != null`), tại offset `0x22559cc`, lệnh `cbnz x20, #0x2255a6c` **rẽ nhánh trực tiếp đến lệnh trả về 1 (True - Luôn Mở)!**
+       - Client hoàn toàn **bỏ qua** cờ `b_IsActive` và bỏ qua ngày kết thúc `end_date`!
+  2. **Handler `gamedata.py` vẫn gửi sự kiện bị tắt xuống Client**:
+     - Handler `build_filtered_ret()` trong `gamedata.py` trước đây vẫn gửi toàn bộ các sự kiện điểm danh trong `ret['event_list']` (chỉ gán `b_IsActive: 0`, `start_date: 2020`, `end_date: 2020`).
+     - Do game vẫn thấy Event 2 nằm trong bảng `event_list` nạp vào `EventManager`, kết hợp với nhánh `0x22559cc` bỏ qua ngày hết hạn, game lập tức coi sự kiện là đang diễn ra và mở giao diện lên.
+  3. **Biến chứng do Unit Test làm thay đổi file cấu hình trên đĩa**:
+     - Kịch bản test `test_event_manager.py` trước đây sử dụng `dict(self.original_config)` (shallow copy), làm thay đổi ngầm `self.original_config` khi gán `post_data['attendance_events']['2']['enabled'] = True`. Sau khi test chạy xong, `tearDown()` đã lưu đè giá trị `enabled: True` của Event 2 vào file cấu hình trên đĩa `event_config.json`.
+- **Cách khắc phục triệt để**:
+  1. **Lọc sạch `event_list` trong [gamedata.py](file:///root/project/GGServer/emulator/server/handlers/gamedata.py)**:
+     - Nếu sự kiện điểm danh đang bị tắt (`not is_attendance_event_enabled(eidx)`), **loại bỏ hoàn toàn khỏi `ret['event_list']`** (dùng `continue`), không gửi xuống client.
+     - Khi client không nhận được định nghĩa Event 2 trong `event_list`, `EventManager.Get(2)` trả về `null`, client tuyệt đối không bao giờ mở hay kích hoạt sự kiện 1 năm.
+  2. **Đồng bộ hóa kiểm tra Server trong [reward.py](file:///root/project/GGServer/emulator/server/handlers/reward.py) và [app.py](file:///root/project/GGServer/emulator/server/app.py)**:
+     - `getEventRewardList` bỏ qua hoàn toàn các sự kiện chưa được bật.
+     - API lưu cấu hình người chơi `/admin/api/user/event_settings` chặn không cho ghi đè dữ liệu điểm danh của sự kiện đang bị tắt trên máy chủ.
+  3. **Làm sạch cấu hình & Khắc phục test**:
+     - Cập nhật `event_config.json` đặt Event 2 về `enabled: false`, `state: ended`.
+     - Sử dụng `copy.deepcopy` trong `test_event_manager.py` và khôi phục cấu hình ngay sau bài test.
+     - Dọn dẹp dữ liệu điểm danh rác Event 2 trong cơ sở dữ liệu người dùng (`database.db`).
+
+---
+
+### 4.10. Khóa điều khiển Thẻ Sao (Star Pass / Star Card) trong Admin khi máy chủ chưa kích hoạt Thẻ Sao
+- **Hiện tượng**:
+  - Trong Web Admin Dashboard (modal Cài đặt cá nhân người chơi), admin vẫn có thể bật Thẻ Sao Gold (`is_gold`) và chỉnh Điểm Thẻ Sao (`star_point`) ngay cả khi Thẻ Sao (Star Pass) toàn server đang bị TẮT trong tab Sự Kiện.
+  - Việc cấp thẻ sao hoặc cộng điểm khi mùa giải chưa mở khiến dữ liệu client bị xung đột, không thể tính toán mốc quà hoặc gây lỗi logic trong game.
+- **Cách khắc phục triệt để**:
+  1. **Khóa giao diện Web Admin ([admin.py](file:///root/project/GGServer/emulator/server/admin.py))**:
+     - Trong modal người chơi, kiểm tra `currentConfig?.star_pass?.enabled`. Nếu Thẻ Sao đang tắt:
+       - Vô hiệu hóa checkbox `modal-is-gold` (`disabled = true`, `checked = false`).
+       - Vô hiệu hóa ô nhập `modal-star-point` (`disabled = true`).
+       - Giảm độ mờ (`opacity: 0.45`) và vô hiệu hóa tương tác click (`pointer-events: none`).
+       - Hiển thị banner cảnh báo màu đỏ: *"⚠️ Thẻ Sao (Star Pass) hiện đang TẮT trong Cài Đặt Sự Kiện. Không thể chỉnh vé Thẻ Sao Gold hoặc Điểm Thẻ Sao cho người chơi (cần kích hoạt Thẻ Sao trong tab Sự Kiện trước để tránh lỗi dữ liệu game)."*
+     - Trong bảng danh sách người chơi (Players Table): Cột Thẻ Sao hiển thị nhãn `Thẻ Sao (Đang Tắt)` và badge `⚪ Đang tắt` thay vì hiển thị mùa giải đang hoạt động.
+     - Trong tùy chỉnh điểm danh sự kiện: Hiển thị nhãn cảnh báo đỏ nếu sự kiện được chọn đang tắt trên máy chủ.
+  2. **Bảo vệ Backend API ([app.py](file:///root/project/GGServer/emulator/server/app.py))**:
+     - Trong handler `/admin/api/user/event_settings`:
+       - Thêm điều kiện kiểm tra `sp_enabled = event_manager.is_star_pass_enabled()`.
+       - Nếu `sp_enabled` là `False`, bỏ qua hoàn toàn việc chỉnh sửa `is_gold`, `star_point`, không cập nhật `user_shop`, `user_subscribe_list`, `user_ticketcollection` hay `user_event_point` cho Thẻ Sao.
+
+---
+
 ## 5. Quy trình Build, Cài đặt và Kiểm tra chuẩn
 
 ### 5.1. Build APK không Google Play

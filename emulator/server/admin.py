@@ -1030,7 +1030,12 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 </div>
 
                 <!-- 1. Star Pass Toggle -->
-                <div class="event-item" style="padding: 10px 0;">
+                <div id="modal-sp-disabled-notice" style="display:none; margin-bottom:12px; padding:10px 14px; background:rgba(235, 77, 75, 0.12); border:1px solid rgba(235, 77, 75, 0.4); border-radius:8px; font-size:0.8rem; color:#ff7675; line-height:1.45;">
+                    ⚠️ <b>Thẻ Sao (Star Pass) hiện đang TẮT trong Cài Đặt Sự Kiện.</b><br>
+                    Không thể chỉnh vé Thẻ Sao Gold hoặc Điểm Thẻ Sao cho người chơi (cần kích hoạt Thẻ Sao trong tab Sự Kiện trước để tránh lỗi dữ liệu game).
+                </div>
+
+                <div class="event-item" id="modal-sp-group" style="padding: 10px 0;">
                     <div class="event-info">
                         <div class="event-name">⭐ Thẻ Sao Gold Trả Phí (Paid Pass)</div>
                         <div class="event-desc">Mở khóa vé Thẻ Sao Gold riêng cho tài khoản người chơi này</div>
@@ -1042,7 +1047,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 </div>
 
                 <!-- 2. Star Pass Points -->
-                <div class="form-group" style="margin-top:10px; padding-top:10px;">
+                <div class="form-group" id="modal-sp-point-group" style="margin-top:10px; padding-top:10px;">
                     <label class="form-label">Điểm Thẻ Sao (Star Points):</label>
                     <input type="number" id="modal-star-point" min="0" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                     <div style="font-size:0.75rem; color:var(--text-sub); margin-top:4px;">Cập nhật điểm để nhận quà các cấp độ mốc sao (Tự động tính level quà tương ứng).</div>
@@ -1559,6 +1564,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 return;
             }
 
+            const spEnabled = !!currentConfig?.star_pass?.enabled;
+
             let html = `
                 <table class="user-table">
                     <thead>
@@ -1567,7 +1574,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                             <th>Đăng Nhập Gần Nhất</th>
                             <th>Tài Nguyên</th>
                             <th>Sự Kiện Điểm Danh</th>
-                            <th>Thẻ Sao (Mùa ${currentActiveSeason})</th>
+                            <th>Thẻ Sao ${spEnabled ? `(Mùa ${currentActiveSeason})` : '(Đang Tắt)'}</th>
                             <th style="text-align: right;">Thao Tác</th>
                         </tr>
                     </thead>
@@ -1575,9 +1582,11 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             `;
 
             users.forEach(u => {
-                const passBadge = u.is_gold
-                    ? `<span class="user-badge-gold">⭐ Gold Pass</span>`
-                    : `<span class="user-badge-free">⚪ Free Pass</span>`;
+                const passBadge = !spEnabled
+                    ? `<span style="display:inline-block; font-size:0.75rem; color:#888; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:4px; border:1px solid rgba(255,255,255,0.08);">⚪ Đang tắt</span>`
+                    : (u.is_gold
+                        ? `<span class="user-badge-gold">⭐ Gold Pass</span>`
+                        : `<span class="user-badge-free">⚪ Free Pass</span>`);
                 const banBadge = u.is_banned
                     ? `<span class="user-badge-banned">🚫 BANNED</span>`
                     : '';
@@ -1617,7 +1626,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                         <td>
                             <div>${passBadge}</div>
                             <div style="font-size: 0.76rem; color: var(--text-sub); margin-top: 3px;">
-                                ${Number(u.star_point || 0).toLocaleString()} điểm &bull; Cấp ${u.star_step || 0}
+                                ${spEnabled ? `${Number(u.star_point || 0).toLocaleString()} điểm &bull; Cấp ${u.star_step || 0}` : '<span style="color:#666;">Chưa kích hoạt</span>'}
                             </div>
                         </td>
                         <td style="text-align: right; white-space: nowrap;">
@@ -1758,7 +1767,16 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             const grantElem = document.getElementById('modal-att-direct-grant');
             const grantLabel = document.getElementById('modal-att-grant-label');
 
-            statusElem.innerText = `Đã nhận ${state.day}/${meta.totalDays} ngày`;
+            const isEvEnabled = !!currentConfig?.attendance_events?.[eventKey]?.enabled;
+            if (!isEvEnabled) {
+                statusElem.innerText = `⚠️ Đang TẮT trên hệ thống (Đã nhận ${state.day}/${meta.totalDays} ngày)`;
+                statusElem.style.background = 'rgba(235, 77, 75, 0.2)';
+                statusElem.style.color = '#ff6b6b';
+            } else {
+                statusElem.innerText = `Đã nhận ${state.day}/${meta.totalDays} ngày`;
+                statusElem.style.background = 'rgba(162,155,254,0.15)';
+                statusElem.style.color = '#a29bfe';
+            }
             grantLabel.innerText = `🎁 Nhận ngay trọn bộ quà vào tài khoản (${meta.rewardsDesc})`;
 
             // Populate options for day select
@@ -1834,8 +1852,52 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             document.getElementById('modal-user-sub').innerText = `ID: ${u.u_id || '-'} | Seq: #${u.u_seq} | UUID: ${u.uuid || '-'}`;
             document.getElementById('modal-user-lastlogin').innerText = `🕒 Đăng nhập gần nhất: ${u.u_last_login}`;
             document.getElementById('modal-is-banned').checked = !!u.is_banned;
-            document.getElementById('modal-is-gold').checked = !!u.is_gold;
-            document.getElementById('modal-star-point').value = u.star_point || 0;
+
+            // Star Pass activation check: do not allow editing if Star Pass is not active globally
+            const spEnabled = !!currentConfig?.star_pass?.enabled;
+            const spNotice = document.getElementById('modal-sp-disabled-notice');
+            const isGoldEl = document.getElementById('modal-is-gold');
+            const starPointEl = document.getElementById('modal-star-point');
+            const spGroup = document.getElementById('modal-sp-group');
+            const spPointGroup = document.getElementById('modal-sp-point-group');
+
+            if (!spEnabled) {
+                if (spNotice) spNotice.style.display = 'block';
+                if (isGoldEl) {
+                    isGoldEl.checked = false;
+                    isGoldEl.disabled = true;
+                }
+                if (starPointEl) {
+                    starPointEl.value = u.star_point || 0;
+                    starPointEl.disabled = true;
+                }
+                if (spGroup) {
+                    spGroup.style.opacity = '0.45';
+                    spGroup.style.pointerEvents = 'none';
+                }
+                if (spPointGroup) {
+                    spPointGroup.style.opacity = '0.45';
+                    spPointGroup.style.pointerEvents = 'none';
+                }
+            } else {
+                if (spNotice) spNotice.style.display = 'none';
+                if (isGoldEl) {
+                    isGoldEl.checked = !!u.is_gold;
+                    isGoldEl.disabled = false;
+                }
+                if (starPointEl) {
+                    starPointEl.value = u.star_point || 0;
+                    starPointEl.disabled = false;
+                }
+                if (spGroup) {
+                    spGroup.style.opacity = '1';
+                    spGroup.style.pointerEvents = 'auto';
+                }
+                if (spPointGroup) {
+                    spPointGroup.style.opacity = '1';
+                    spPointGroup.style.pointerEvents = 'auto';
+                }
+            }
 
             // Currencies
             document.getElementById('modal-user-like').innerText = 'Hiện có: ' + formatNumber(u.u_like) + ' Tim';
@@ -1890,8 +1952,9 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             const uuid = document.getElementById('modal-uuid').value;
             const uSeq = document.getElementById('modal-useq').value;
             const is_banned = document.getElementById('modal-is-banned').checked;
-            const is_gold = document.getElementById('modal-is-gold').checked;
-            const star_point = parseInt(document.getElementById('modal-star-point').value) || 0;
+            const spEnabled = !!currentConfig?.star_pass?.enabled;
+            const is_gold = spEnabled ? document.getElementById('modal-is-gold').checked : undefined;
+            const star_point = spEnabled ? (parseInt(document.getElementById('modal-star-point').value) || 0) : undefined;
 
             const add_cp = parseInt(document.getElementById('modal-add-cp').value) || 0;
             const add_candy = parseFloat(document.getElementById('modal-add-candy').value) || 0;
