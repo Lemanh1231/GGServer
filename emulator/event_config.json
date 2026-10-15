@@ -8,7 +8,7 @@
     "2": {
       "name": "Điểm danh kỷ niệm 1 năm",
       "description": "Sự kiện 1st Anniversary mừng sinh nhật game (14 ngày)",
-      "enabled": false
+      "enabled": true
     },
     "3": {
       "name": "Điểm danh hằng ngày",
@@ -73,8 +73,8 @@
     },
     "2": {
       "name": "Điểm danh kỷ niệm 1 năm",
-      "enabled": false,
-      "state": "ended"
+      "enabled": true,
+      "state": "active"
     },
     "3": {
       "name": "Điểm danh hằng ngày",

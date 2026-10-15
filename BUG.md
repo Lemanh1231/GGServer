@@ -280,6 +280,52 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
 
 ---
 
+### 4.8. Lỗi Người theo dõi ở Chương 2 (Tiệm bánh hạnh phúc) khi mở khóa không có tin nhắn / không hiển thị phòng chat
+- **Hiện tượng**:
+  - Ở Chương 2: Tiệm bánh hạnh phúc (Chapter 2: Happy Bakery), khi người chơi mở khóa các Người theo dõi mới (Follower 203..208: Reading Fox, Bạn Ruby, Bạn Alex, Busking TV, Bạn Sora, Jessica) hoặc chuyển giao Người theo dõi cũ từ Chương 1 (Joy 201, Moa 202):
+    1. Phòng chat của Người theo dõi mới hoàn toàn không hiển thị trong danh sách Messenger của game ("ko có tin nhắn của người theo dõi đó").
+    2. Nếu có hiển thị, khi bấm vào phòng chat hoàn toàn trống trơn không có tin nhắn nào, không có huy hiệu thông báo tin nhắn chưa đọc.
+    3. Người theo dõi cũ (Joy 201, Moa 202) không kích hoạt các đoạn hội thoại độc quyền của Chương 2.
+- **Phân tích Reverse-Engineering Client (IL2CPP + ARM64 Disassembly + SQLite Game Tables)**:
+  1. **Nguyên nhân phòng chat bị ẩn hoàn toàn khỏi giao diện**:
+     - Trong `libil2cpp.so` tại RVA `0x1F7B1E8` và `0x1F7BBE0` (`GgUIInGameMessengerManager_Chatting` - hàm dựng danh sách phòng chat Messenger):
+       - Client duyệt qua tất cả phòng chat trong `user_messenger`.
+       - Với mỗi phòng, client kiểm tra: nếu `GetProceedingIndex(roomId) < 0` VÀ `GetLastCompleteProgressGroup(roomId) < 1`:
+         - Nếu `roomId == 1` (Joy tân thủ): Game có ngoại lệ fallback tại `0x1f7ad24`.
+         - Nếu `roomId != 1`: Lệnh rẽ nhánh `b.ne 0x1f7b844` **BỎ QUA HOÀN TOÀN PHÒNG CHAT ĐÓ KHỎI GIAO DIỆN!**
+       - Khi server trước đây khởi tạo phòng mới với `i_LastConfirmIndex: -1` và một nhóm ban đầu (ví dụ `'114'`), nhóm đó trở thành nhóm đang tiến hành (`m_iProceedingGroup`), còn danh sách nhóm hoàn thành (`m_listCompleteProgressGroup`) rỗng (`Count == 0`). Do đó `GetLastCompleteProgressGroup` trả về `-1`, và `GetProceedingIndex` trả về `-1`. Kết quả là client ẩn vĩnh viễn phòng chat khỏi UI.
+  2. **Nguyên nhân phòng chat trống không có tin nhắn**:
+     - Tại RVA `0x1EF1CF8` (`GgUIInGameMessengerManager_ChattingDetail` - hiển thị chi tiết tin nhắn trong phòng):
+       - Nếu `GetCompleteProgressGroupList` rỗng và `proceedingIndex < 0`, không có tin nhắn nào được thêm vào khung chat (`m_listViewChattingItem`).
+  3. **Chuỗi điều kiện tiên quyết liên phòng (`CheckRequirement` & `Contains_CompleteProgressGroup`)**:
+     - Tại RVA `0x2242928` (`CheckRequirement(groupId)`):
+       - Mỗi nhóm tin nhắn trong `table_db.ab` (bảng `Messenger`) có các điều kiện tiên quyết: yêu cầu cấp độ người theo dõi và đặc biệt là nhóm tin nhắn trước đó ở phòng liên quan phải nằm trong `m_listCompleteProgressGroup` (`Contains_CompleteProgressGroup(reqRoomId, reqGroupId)`).
+       - Cụ thể theo đồ thị quan hệ trong game:
+         - Follower 203 (Reading Fox - Nhóm 114) yêu cầu Nhóm 103 ở Phòng 12 (Happy Bakery).
+         - Follower 204 (Ruby - Nhóm 127) yêu cầu Nhóm 118 ở Phòng 16 (Group chat Joy & Moa).
+         - Follower 205 (Alex - Nhóm 138) yêu cầu Nhóm 132 ở Phòng 16.
+         - Follower 206 (Busking TV - Nhóm 178) yêu cầu Nhóm 173 ở Phòng 17 (Group chat 4 người).
+         - Follower 207 (Sora - Nhóm 181) và Follower 208 (Jessica - Nhóm 186) yêu cầu Nhóm 171 ở Phòng 16.
+       - Nếu chuỗi hoàn thành ở các phòng trung gian 12, 16, 17 chưa đạt đến nhóm yêu cầu, client từ chối mở khóa tiến trình tiếp theo.
+  4. **Cơ chế Người theo dõi cũ (CH1 sang CH2)**:
+     - Người theo dõi 201 (Joy CH2) và 202 (Moa CH2) trong `MessengerChatRoom` không có ID phòng 201 hay 202 riêng. Họ dùng chung Phòng 1 (Joy) và Phòng 5 (Moa), kết hợp các Phòng chat nhóm 16 và 17.
+     - Ở CH2, Joy có nhóm độc quyền 111 (Phòng 1), Moa có nhóm độc quyền 110 (Phòng 5).
+- **Cách khắc phục triệt để trên Server ([follower.py](file:///root/project/GGServer/emulator/server/handlers/follower.py))**:
+  1. **Hiển thị ngay phòng chat với tin nhắn chào mừng và huy hiệu chưa đọc**:
+     - Khi mở khóa bất kỳ người theo dõi Chương 2 nào (201..208), khởi tạo `i_LastConfirmIndex: 0` (thay vì `-1`). Điều này giúp `GetProceedingIndex >= 0`, vượt qua điều kiện kiểm tra ở `0x1F7BBE0`, phòng chat xuất hiện ngay lập tức trong Messenger với tin nhắn thứ 0 và icon chấm đỏ chưa đọc.
+  2. **Bắc cầu phòng chat Phòng 12 (Happy Bakery)**:
+     - Tự động hoàn thành nhóm 103 và mở nhóm 109 (`'80,103,109'`) khi người chơi vào Chương 2 để đáp ứng điều kiện tiên quyết cho Reading Fox (203) và câu chuyện Joy CH2.
+  3. **Đồng bộ chuỗi câu chuyện Phòng 16 & Phòng 17**:
+     - Phòng 16 (Joy & Moa Group Chat): Duyệt chuỗi tiến trình (`[76, 78, 79, 81, 82, 104]`), tự động mở rộng qua `118` khi có Ruby (204), qua `132` khi có Alex (205), và qua `171` khi có Sora (207) / Jessica (208).
+     - Phòng 17 (Group Chat Joy, Moa, Ruby, Alex): Tự động mở khi mở khóa 204..208, hoàn thành qua `173` khi mở khóa Busking TV (206).
+  4. **Tách biệt và đồng bộ Người theo dõi cũ (Joy & Moa)**:
+     - Follower 201 nhận nhóm 111 tại Phòng 1.
+     - Follower 202 nhận nhóm 110 tại Phòng 5 (`'13,110'`).
+  5. **Bảo toàn tiến trình đọc của người chơi**:
+     - Dùng hàm `_merge_groups_seq` bảo toàn các nhóm người chơi đã xem / hoàn thành, không ghi đè hoặc hạ lùi tiến trình.
+
+---
+
 ## 5. Quy trình Build, Cài đặt và Kiểm tra chuẩn
 
 ### 5.1. Build APK không Google Play
