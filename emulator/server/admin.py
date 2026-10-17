@@ -2,12 +2,12 @@
 import json
 from server import event_manager
 
-DASHBOARD_HTML = """<!DOCTYPE html>
+DASHBOARD_HTML = r"""<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guitar Girl - Quản lý Sự kiện & Quản Lý Người Chơi</title>
+    <title data-i18n="doc_title">Guitar Girl - Admin Dashboard</title>
     <style>
         :root {
             --bg-color: #0f111a;
@@ -802,7 +802,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <div class="card">
                 <div class="card-header">
                     <div class="card-title" data-i18n="card_att_title">📅 Sự kiện Điểm danh & Đăng nhập</div>
-                    <span style="font-size:0.8rem; color:var(--text-sub)">Daily Attendance</span>
+                    <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="att_sub">Daily Attendance</span>
                 </div>
                 <div id="attendance-list">
                     <!-- Injected via JS -->
@@ -850,7 +850,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <div class="card">
                 <div class="card-header">
                     <div class="card-title" data-i18n="card_sale_title">🏷️ Cửa hàng Giảm giá Star Pass (Pass Goods Sale)</div>
-                    <span style="font-size:0.8rem; color:var(--text-sub)">Merch Shop & LIVE SALE</span>
+                    <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="sale_sub">Merch Shop & LIVE SALE</span>
                 </div>
                 <div class="event-item">
                     <div class="event-info">
@@ -868,7 +868,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <div class="card">
                 <div class="card-header">
                     <div class="card-title" data-i18n="card_mf_title">🐱 Sự kiện Nuôi Mèo Meowfest (SamSeck)</div>
-                    <span style="font-size:0.8rem; color:var(--text-sub)">SamSaek Event</span>
+                    <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="mf_sub">SamSaek Event</span>
                 </div>
                 <div class="event-item">
                     <div class="event-info">
@@ -886,7 +886,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <div class="card">
                 <div class="card-header">
                     <div class="card-title" data-i18n="card_c3_title">🏫 Tour Sân khấu Sunshine High School (CH3)</div>
-                    <span style="font-size:0.8rem; color:var(--text-sub)">Chapter 3 Tour</span>
+                    <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="c3_sub">Chapter 3 Tour</span>
                 </div>
                 <div class="event-item">
                     <div class="event-info">
@@ -906,7 +906,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     <div class="card-title" data-i18n="card_wf_title">❄️🌸 Hiệu Ứng Thời Tiết Mùa (Seasonal Weather)</div>
                     <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="card_wf_sub">Chọn 1 hiệu ứng duy nhất</span>
                 </div>
-                <div style="font-size:0.85rem; color:var(--text-sub); margin-bottom:14px; line-height:1.4;">
+                <div style="font-size:0.85rem; color:var(--text-sub); margin-bottom:14px; line-height:1.4;" data-i18n="wf_desc">
                     Hệ thống chỉ kích hoạt <b>1 hiệu ứng thời tiết duy nhất</b> tại một thời điểm để phân chia rõ ràng, tránh bị chồng đè hạt hiệu ứng lên nhau trong màn chơi:
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -944,7 +944,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     </label>
                 </div>
 
-                <div style="margin-top: 12px; padding: 10px 14px; background: rgba(255, 118, 117, 0.08); border-left: 3px solid #ff7675; border-radius: 6px; font-size: 0.8rem; color: #fab1a0; line-height: 1.45;">
+                <div id="wf-note-box" style="margin-top: 12px; padding: 10px 14px; background: rgba(255, 118, 117, 0.08); border-left: 3px solid #ff7675; border-radius: 6px; font-size: 0.8rem; color: #fab1a0; line-height: 1.45;" data-i18n="wf_note">
                     💡 <b>Lưu ý về Mùa hoa anh đào:</b> Theo thiết kế đồ họa gốc của nhà sản xuất game, hiệu ứng <b>Cánh hoa anh đào rơi</b> chỉ xuất hiện tại cảnh <b>Chapter 2 (Phố Hongdae / Tiệm bánh)</b>; trong khi hiệu ứng <b>Tuyết rơi</b> xuất hiện ở cả Chapter 1 & Chapter 2. Nếu tài khoản chưa mở Chapter 2, hãy sang tab <b>👥 Quản Lý Người Chơi &gt; ⚙️ Setting &gt; Bật "Mở khóa Chapter 2"</b> để test ngay!
                 </div>
             </div>
@@ -953,7 +953,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <div class="card">
                 <div class="card-header">
                     <div class="card-title" data-i18n="card_fac_title">🎨 Trang phục Bản giới hạn Fan Art 2021</div>
-                    <span style="font-size:0.8rem; color:var(--text-sub)">Fan Art Grand Prize</span>
+                    <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="fac_sub">Fan Art Grand Prize</span>
                 </div>
                 <div class="event-item">
                     <div class="event-info">
@@ -971,7 +971,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <div class="card">
                 <div class="card-header">
                     <div class="card-title" data-i18n="card_er_title">🏆 Đua Top Xếp Hạng Sự Kiện (Event Ranking)</div>
-                    <span style="font-size:0.8rem; color:var(--text-sub)">Live Leaderboard</span>
+                    <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="er_sub">Live Leaderboard</span>
                 </div>
                 <div class="event-item">
                     <div class="event-info">
@@ -991,28 +991,28 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     <div class="card-title" data-i18n="card_mail_title">📬 Gửi Thư & Tặng Quà Toàn Server (Broadcast Mail)</div>
                     <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="card_mail_sub">Đồng bộ tức thì không cần out game</span>
                 </div>
-                <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom: 12px;">
+                <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom: 12px;" data-i18n="mail_intro">
                     Gửi thư thông báo và tặng tài nguyên trực tiếp vào Hộp thư in-game của toàn bộ người chơi. Client đang chơi game sẽ tự động hiện dấu chấm đỏ (Red Dot) lập tức mà không cần thoát game!
                 </p>
                 <div class="form-group" style="margin-bottom: 10px;">
-                    <label class="form-label">Tiêu đề thư:</label>
+                    <label class="form-label" data-i18n="mail_lbl_title">Tiêu đề thư:</label>
                     <input type="text" id="mail-title" value="Quà tặng Sự kiện Hệ thống" style="width:100%; padding:8px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 10px;">
-                    <label class="form-label">Nội dung thư:</label>
+                    <label class="form-label" data-i18n="mail_lbl_memo">Nội dung thư:</label>
                     <input type="text" id="mail-memo" value="Chúc bạn chơi game vui vẻ! Hãy nhận quà tặng đặc biệt từ hệ thống nhé." style="width:100%; padding:8px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                 </div>
                 <div style="display:flex; gap:10px; margin-bottom: 14px;">
                     <div style="flex:1;">
-                        <label class="form-label">Socola (CP):</label>
+                        <label class="form-label" data-i18n="mail_lbl_cp">🍫 Socola (CP):</label>
                         <input type="number" id="mail-cp" value="500" style="width:100%; padding:8px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                     </div>
                     <div style="flex:1;">
-                        <label class="form-label">Kẹo (Candy):</label>
+                        <label class="form-label" data-i18n="mail_lbl_candy">🍬 Kẹo (Candy):</label>
                         <input type="number" id="mail-candy" value="100" style="width:100%; padding:8px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                     </div>
                     <div style="flex:1;">
-                        <label class="form-label">Bánh quy (AP):</label>
+                        <label class="form-label" data-i18n="mail_lbl_cookies">🍪 Bánh quy (AP):</label>
                         <input type="number" id="mail-cookies" value="50" style="width:100%; padding:8px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                     </div>
                 </div>
@@ -1025,7 +1025,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     <div class="card-title" data-i18n="card_cli_title">💻 Lệnh điều khiển Terminal (CLI)</div>
                 </div>
                 <p style="font-size:0.85rem; color:var(--text-sub)" data-i18n="cli_sub">Bạn cũng có thể điều khiển trực tiếp trên terminal server bằng lệnh:</p>
-                <div class="cli-box">
+                <div class="cli-box" id="cli-box-content" data-i18n="cli_box_content">
                     ./emulator/eventctl.sh list<br>
                     ./emulator/eventctl.sh enable 3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Bật điểm danh CH2<br>
                     ./emulator/eventctl.sh season 13 &nbsp;&nbsp;&nbsp;# Đặt Star Pass Mùa 13<br>
@@ -1067,7 +1067,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 </div>
 
                 <!-- 1. Star Pass Toggle -->
-                <div id="modal-sp-disabled-notice" style="display:none; margin-bottom:12px; padding:10px 14px; background:rgba(235, 77, 75, 0.12); border:1px solid rgba(235, 77, 75, 0.4); border-radius:8px; font-size:0.8rem; color:#ff7675; line-height:1.45;">
+                <div id="modal-sp-disabled-notice" style="display:none; margin-bottom:12px; padding:10px 14px; background:rgba(235, 77, 75, 0.12); border:1px solid rgba(235, 77, 75, 0.4); border-radius:8px; font-size:0.8rem; color:#ff7675; line-height:1.45;" data-i18n="modal_sp_disabled_notice">
                     ⚠️ <b>Thẻ Sao (Star Pass) hiện đang TẮT trong Cài Đặt Sự Kiện.</b><br>
                     Không thể chỉnh vé Thẻ Sao Gold hoặc Điểm Thẻ Sao cho người chơi (cần kích hoạt Thẻ Sao trong tab Sự Kiện trước để tránh lỗi dữ liệu game).
                 </div>
@@ -1165,7 +1165,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                         </span>
                         <span class="badge" style="background:#eb4d4b; color:#fff; font-size:0.68rem; padding:2px 8px; border-radius:4px; font-weight:700;"><span data-i18n="modal_ch2_badge">NGUY HIỂM / TEST</span></span>
                     </div>
-                    <div style="font-size:0.77rem; color:#ccc; margin-bottom:8px; line-height:1.45;">
+                    <div style="font-size:0.77rem; color:#ccc; margin-bottom:8px; line-height:1.45;" data-i18n="modal_ch2_desc">
                         Tự động nâng <b>Độ nổi tiếng Khu vực 1 lên cấp 4</b> và <b>Tiệm bánh Hạnh phúc (Follower 12) lên cấp 15</b> để vượt qua điều kiện gốc, lập tức mở bản đồ Chapter 2 (Hongdae) để test sự kiện & hiệu ứng hoa anh đào.
                     </div>
                     <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.84rem; color:#ff7675; cursor:pointer; font-weight:600;">
@@ -1196,7 +1196,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="modal-overlay" id="mail-modal">
         <div class="modal-dialog">
             <div class="modal-header">
-                <h3 id="mail-modal-title">✉️ Gửi Thư & Quà Riêng Cho Người Chơi</h3>
+                <h3 id="mail-modal-title" data-i18n="mail_modal_title">✉️ Gửi Thư & Quà Riêng Cho Người Chơi</h3>
                 <button class="modal-close" onclick="closeMailModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -1204,24 +1204,24 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 <div id="modal-mail-target-info" style="margin-bottom: 14px; padding: 10px 14px; background: rgba(108, 92, 231, 0.12); border: 1px solid rgba(108, 92, 231, 0.3); border-radius: 8px; font-size: 0.85rem; color: #a29bfe; font-weight: 600;"></div>
                 
                 <div class="form-group" style="margin-bottom: 10px;">
-                    <label class="form-label">Tiêu đề thư:</label>
+                    <label class="form-label" data-i18n="mail_lbl_title">Tiêu đề thư:</label>
                     <input type="text" id="modal-mail-title" value="Quà Tặng Từ Quản Trị Viên" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label class="form-label">Nội dung thư:</label>
+                    <label class="form-label" data-i18n="mail_lbl_memo">Nội dung thư:</label>
                     <input type="text" id="modal-mail-memo" value="Chúc bạn chơi game Guitar Girl thật vui vẻ! Hãy nhận phần quà này nhé." style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                 </div>
                 <div style="display:flex; gap:10px; margin-bottom: 14px;">
                     <div style="flex:1;">
-                        <label class="form-label">🍫 Socola (CP):</label>
+                        <label class="form-label" data-i18n="mail_lbl_cp">🍫 Socola (CP):</label>
                         <input type="number" id="modal-mail-cp" value="500" style="width:100%; padding:9px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                     </div>
                     <div style="flex:1;">
-                        <label class="form-label">🍬 Kẹo (Candy):</label>
+                        <label class="form-label" data-i18n="mail_lbl_candy">🍬 Kẹo (Candy):</label>
                         <input type="number" id="modal-mail-candy" value="100" style="width:100%; padding:9px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                     </div>
                     <div style="flex:1;">
-                        <label class="form-label">🍪 Bánh quy (AP):</label>
+                        <label class="form-label" data-i18n="mail_lbl_cookies">🍪 Bánh quy (AP):</label>
                         <input type="number" id="modal-mail-cookies" value="50" style="width:100%; padding:9px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                     </div>
                 </div>
@@ -1238,6 +1238,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     <script>
         const I18N = {
             vi: {
+                doc_title: "Guitar Girl - Quản lý Sự kiện & Quản Lý Người Chơi",
                 app_title: "Guitar Girl - Trung Tâm Quản Trị",
                 server_status: "Server Trực Tuyến &bull; Zero-Downtime Hot-Reload",
                 download_apk: "📥 Tải Game APK (458 MB)",
@@ -1266,6 +1267,9 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 players_list_title: "📋 Danh Sách Chi Tiết Toàn Bộ Người Chơi",
                 players_list_sub: "Quản lý độc lập từng tài khoản",
                 empty_users_filter: "Không tìm thấy người chơi nào phù hợp với bộ lọc.<br><span style='font-size:0.8rem; margin-top:4px; display:inline-block;'>Hãy thử xóa bộ lọc hoặc kiểm tra lại từ khóa tìm kiếm.</span>",
+                loading_players: "Đang tải danh sách người chơi...",
+                not_activated: "Chưa kích hoạt",
+                currently_prefix: "Hiện có:",
                 th_player: "Người Chơi",
                 th_last_login: "Đăng Nhập Gần Nhất",
                 th_resources: "Tài Nguyên",
@@ -1293,6 +1297,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 btn_save_events: "💾 Lưu thay đổi sự kiện",
                 chk_auto_notify: "📬 Tự động gửi thư thông báo vào game khi lưu sự kiện",
                 card_att_title: "📅 Sự kiện Điểm danh & Đăng nhập",
+                att_sub: "Daily Attendance",
                 card_sp_title: "⭐ Vé Sao / Star Pass",
                 card_sp_sub: "13 Mùa giải",
                 sp_enable_title: "Kích hoạt Thẻ Sao (Star Pass)",
@@ -1301,12 +1306,15 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 sp_gold_desc: "Tặng vé Gold Pass toàn bộ người chơi (Khuyên dùng nút Setting trong Tab Người chơi để cấp riêng)",
                 sp_season_label: "Chọn Mùa giải Star Pass hoạt động:",
                 card_sale_title: "🏷️ Cửa hàng Giảm giá Star Pass (Pass Goods Sale)",
+                sale_sub: "Merch Shop & LIVE SALE",
                 pgs_name: "Cửa hàng Giảm giá Star Pass",
                 pgs_desc: "Mở biểu tượng nút Sale trên sảnh chính để mua lại toàn bộ Trang phục & Guitar của 13 mùa Star Pass đã qua với giá ưu đãi Socola (50-200 CP)",
                 card_mf_title: "🐱 Sự kiện Nuôi Mèo Meowfest (SamSeck)",
+                mf_sub: "SamSaek Event",
                 mf_name: "Sự kiện Nuôi Mèo Meowfest",
                 mf_desc: "Mở khóa 3 cột mốc nuôi mèo Tam Thể nhận Cây cào móng (Guitar 10), Quần yếm (Costume 13), Bé mèo Navi (Unit 1)",
                 card_c3_title: "🏫 Tour Sân khấu Sunshine High School (CH3)",
+                c3_sub: "Chapter 3 Tour",
                 c3_name: "Tour Chapter 3 (Sunshine High School)",
                 c3_desc: "Biểu diễn sân khấu Sunshine High School 20 màn với Năng lượng Cookie / AP",
                 card_wf_title: "❄️🌸 Hiệu Ứng Thời Tiết Mùa (Seasonal Weather)",
@@ -1321,20 +1329,33 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 wf_none_title: "🚫 Tắt toàn bộ hiệu ứng thời tiết",
                 wf_none_desc: "Trở về không gian ban đầu mặc định của trò chơi, không có hạt thời tiết rơi",
                 wf_none_tag: "Mặc định",
+                wf_note: '💡 <b>Lưu ý về Mùa hoa anh đào:</b> Theo thiết kế đồ họa gốc của nhà sản xuất game, hiệu ứng <b>Cánh hoa anh đào rơi</b> chỉ xuất hiện tại cảnh <b>Chapter 2 (Phố Hongdae / Tiệm bánh)</b>; trong khi hiệu ứng <b>Tuyết rơi</b> xuất hiện ở cả Chapter 1 & Chapter 2. Nếu tài khoản chưa mở Chapter 2, hãy sang tab <b>👥 Quản Lý Người Chơi &gt; ⚙️ Setting &gt; Bật "Mở khóa Chapter 2"</b> để test ngay!',
                 card_fac_title: "🎨 Trang phục Bản giới hạn Fan Art 2021",
+                fac_sub: "Fan Art Grand Prize",
                 fac_name: "Trang phục Thiết kế Fan Art",
                 fac_desc: "Kích hoạt bộ trang phục Nàng tiên mùa xuân (Spring Fairy) và Guitar Giai điệu nàng tiên (Fairy's Melody)",
                 card_er_title: "🏆 Đua Top Xếp Hạng Sự Kiện (Event Ranking)",
+                er_sub: "Live Leaderboard",
                 er_name: "Bảng Xếp Hạng Đua Top Sự Kiện",
                 er_desc: "Kích hoạt tính năng đua top điểm sự kiện trực tiếp với bảng xếp hạng Top 100 cao thủ",
                 card_mail_title: "📬 Gửi Thư & Tặng Quà Toàn Server (Broadcast Mail)",
                 card_mail_sub: "Đồng bộ tức thì không cần out game",
+                mail_intro: "Gửi thư thông báo và tặng tài nguyên trực tiếp vào Hộp thư in-game của toàn bộ người chơi. Client đang chơi game sẽ tự động hiện dấu chấm đỏ (Red Dot) lập tức mà không cần thoát game!",
+                mail_lbl_title: "Tiêu đề thư:",
+                mail_lbl_memo: "Nội dung thư:",
+                mail_lbl_cp: "🍫 Socola (CP):",
+                mail_lbl_candy: "🍬 Kẹo (Candy):",
+                mail_lbl_cookies: "🍪 Bánh quy (AP):",
+                mail_default_title: "Quà tặng Sự kiện Hệ thống",
+                mail_default_memo: "Chúc bạn chơi game vui vẻ! Hãy nhận quà tặng đặc biệt từ hệ thống nhé.",
                 btn_send_broadcast: "🚀 Gửi Thư & Quà Tới Toàn Server",
                 card_cli_title: "💻 Lệnh điều khiển Terminal (CLI)",
                 cli_sub: "Bạn cũng có thể điều khiển trực tiếp trên terminal server bằng lệnh:",
+                cli_box_content: "./emulator/eventctl.sh list<br>./emulator/eventctl.sh enable 3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Bật điểm danh CH2<br>./emulator/eventctl.sh season 13 &nbsp;&nbsp;&nbsp;# Đặt Star Pass Mùa 13<br>./emulator/eventctl.sh enable sale &nbsp;&nbsp;# Bật Giảm giá Star Pass<br>./emulator/eventctl.sh enable snow &nbsp;&nbsp;# Bật Tuyết rơi mùa đông<br>./emulator/eventctl.sh enable cherry # Bật Hoa anh đào rơi",
                 modal_user_title: "⚙️ Cài Đặt Cá Nhân Người Chơi",
                 modal_ban_title: "🚫 Khóa Tài Khoản (Ban Player)",
                 modal_ban_desc: "Khóa tài khoản người chơi. Game sẽ hiện thông báo 'Tài khoản đã bị KHÓA' thay vì lỗi mạng.",
+                modal_sp_disabled_notice: "⚠️ <b>Thẻ Sao (Star Pass) hiện đang TẮT trong Cài Đặt Sự Kiện.</b><br>Không thể chỉnh vé Thẻ Sao Gold hoặc Điểm Thẻ Sao cho người chơi (cần kích hoạt Thẻ Sao trong tab Sự Kiện trước để tránh lỗi dữ liệu game).",
                 modal_sp_gold_title: "⭐ Thẻ Sao Gold Trả Phí (Paid Pass)",
                 modal_sp_gold_desc: "Mở khóa vé Thẻ Sao Gold riêng cho tài khoản người chơi này",
                 modal_sp_points_lbl: "Điểm Thẻ Sao (Star Points):",
@@ -1351,14 +1372,17 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 modal_att_grant_lbl: "🎁 Nhận ngay trọn bộ quà sự kiện này vào tài khoản",
                 modal_ch2_title: "⚠️ Mở khóa Ch2: Tiệm bánh Hạnh phúc",
                 modal_ch2_badge: "NGUY HIỂM / TEST",
+                modal_ch2_desc: "Tự động nâng <b>Độ nổi tiếng Khu vực 1 lên cấp 4</b> và <b>Tiệm bánh Hạnh phúc (Follower 12) lên cấp 15</b> để vượt qua điều kiện gốc, lập tức mở bản đồ Chapter 2 (Hongdae) để test sự kiện & hiệu ứng hoa anh đào.",
                 modal_ch2_enable: "🔓 Bật Mở Khóa Chapter 2 Ngay Cho Người Chơi Này",
                 modal_sendmail_chk: "📬 Gửi kèm thư thông báo vào Hòm thư in-game của người chơi",
+                mail_modal_title: "✉️ Gửi Thư & Quà Riêng Cho Người Chơi",
                 btn_cancel: "Hủy",
                 btn_save_user: "💾 Lưu Cài Đặt Riêng",
                 btn_delete_user: "🗑️ Xóa Toàn Bộ Dữ Liệu Tài Khoản Này (Reset Sạch Về Đầu)",
                 btn_send_now: "🚀 Gửi Ngay Vào Game"
             },
             en: {
+                doc_title: "Guitar Girl - Admin Dashboard",
                 app_title: "Guitar Girl - Admin Dashboard",
                 server_status: "Server Online &bull; Zero-Downtime Hot-Reload",
                 download_apk: "📥 Download Game APK (458 MB)",
@@ -1387,6 +1411,9 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 players_list_title: "📋 Detailed Player List",
                 players_list_sub: "Manage each account individually",
                 empty_users_filter: "No players found matching your filter.<br><span style='font-size:0.8rem; margin-top:4px; display:inline-block;'>Try clearing filters or search keywords.</span>",
+                loading_players: "Loading player list...",
+                not_activated: "Not Activated",
+                currently_prefix: "Currently:",
                 th_player: "Player",
                 th_last_login: "Last Login",
                 th_resources: "Resources",
@@ -1414,6 +1441,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 btn_save_events: "💾 Save Changes",
                 chk_auto_notify: "📬 Send notification mail in-game when saving",
                 card_att_title: "📅 Attendance & Login Events",
+                att_sub: "Daily Attendance",
                 card_sp_title: "⭐ Star Pass",
                 card_sp_sub: "13 Seasons",
                 sp_enable_title: "Enable Star Pass",
@@ -1422,12 +1450,15 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 sp_gold_desc: "Grant Gold Pass to all players (Recommended to use Setting button in Players tab for individuals)",
                 sp_season_label: "Select Active Star Pass Season:",
                 card_sale_title: "🏷️ Pass Goods Sale",
+                sale_sub: "Merch Shop & LIVE SALE",
                 pgs_name: "Pass Goods Sale",
                 pgs_desc: "Open Sale icon on main lobby to rebuy Costumes & Guitars from past 13 Star Pass seasons at discounted CP prices (50-200 CP)",
                 card_mf_title: "🐱 Meowfest Event (SamSeck)",
+                mf_sub: "SamSaek Event",
                 mf_name: "Meowfest Raising Cat Event",
                 mf_desc: "Unlock 3 Calico cat raising milestones for Scratching Post (Guitar 10), Overalls (Costume 13), Navi Cat (Unit 1)",
                 card_c3_title: "🏫 Sunshine High School Tour (CH3)",
+                c3_sub: "Chapter 3 Tour",
                 c3_name: "Chapter 3 Tour (Sunshine High School)",
                 c3_desc: "Perform 20 Sunshine High School tour stages with Cookie / AP Energy",
                 card_wf_title: "❄️🌸 Seasonal Weather Effects",
@@ -1442,20 +1473,33 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 wf_none_title: "🚫 Disable All Weather Effects",
                 wf_none_desc: "Return to default clean room atmosphere with no weather particles",
                 wf_none_tag: "Default",
+                wf_note: '💡 <b>Note about Cherry Blossom season:</b> According to the game\'s original graphic design, the <b>Falling Cherry Blossom Petals</b> effect only appears in <b>Chapter 2 (Hongdae Street / Bakery)</b>; while the <b>Snowfall</b> effect appears in both Chapter 1 & Chapter 2. If the account hasn\'t unlocked Chapter 2 yet, go to <b>👥 Player Management &gt; ⚙️ Setting &gt; Enable "Unlock Chapter 2"</b> to test immediately!',
                 card_fac_title: "🎨 Fan Art 2021 Limited Costumes",
+                fac_sub: "Fan Art Grand Prize",
                 fac_name: "Fan Art Design Costumes",
                 fac_desc: "Activate Spring Fairy costume and Fairy's Melody guitar",
                 card_er_title: "🏆 Event Ranking Leaderboard",
+                er_sub: "Live Leaderboard",
                 er_name: "Event Top Leaderboard",
                 er_desc: "Enable real-time event score race with Top 100 players leaderboard",
                 card_mail_title: "📬 Server Broadcast Mail & Gifts",
                 card_mail_sub: "Instant sync without leaving the game",
+                mail_intro: "Send notification letters and gift resources directly to in-game mailboxes of all players. Active players will instantly see the in-game notification dot without restarting!",
+                mail_lbl_title: "Mail Title:",
+                mail_lbl_memo: "Mail Content / Memo:",
+                mail_lbl_cp: "🍫 Chocolates (CP):",
+                mail_lbl_candy: "🍬 Candy:",
+                mail_lbl_cookies: "🍪 Cookies (AP):",
+                mail_default_title: "System Event Gift",
+                mail_default_memo: "Enjoy playing Guitar Girl! Please receive this special gift from the server.",
                 btn_send_broadcast: "🚀 Send Mail & Gifts to Server",
                 card_cli_title: "💻 Terminal Commands (CLI)",
                 cli_sub: "You can also manage server events directly via terminal commands:",
+                cli_box_content: "./emulator/eventctl.sh list<br>./emulator/eventctl.sh enable 3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Enable CH2 Attendance<br>./emulator/eventctl.sh season 13 &nbsp;&nbsp;&nbsp;# Set Star Pass Season 13<br>./emulator/eventctl.sh enable sale &nbsp;&nbsp;# Enable Star Pass Sale<br>./emulator/eventctl.sh enable snow &nbsp;&nbsp;# Enable Winter Snow<br>./emulator/eventctl.sh enable cherry # Enable Cherry Blossom",
                 modal_user_title: "⚙️ Individual Player Settings",
                 modal_ban_title: "🚫 Ban Player Account",
                 modal_ban_desc: "Ban player account. The game will show 'Account is BANNED' message instead of connection error.",
+                modal_sp_disabled_notice: "⚠️ <b>Star Pass is currently DISABLED in Server Event Configuration.</b><br>Cannot modify Gold Star Pass or Star Points for players (please enable Star Pass in the Server Events tab first to prevent game data errors).",
                 modal_sp_gold_title: "⭐ Paid Gold Star Pass",
                 modal_sp_gold_desc: "Unlock Gold Star Pass entitlement exclusively for this player",
                 modal_sp_points_lbl: "Star Pass Points:",
@@ -1472,12 +1516,61 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 modal_att_grant_lbl: "🎁 Directly grant all milestone rewards for this event",
                 modal_ch2_title: "⚠️ Unlock Ch2: Happy Bakery",
                 modal_ch2_badge: "DANGER / TEST",
+                modal_ch2_desc: "Automatically raises <b>Area 1 Fame to Level 4</b> and <b>Happy Bakery (Follower 12) to Level 15</b> to meet native requirements, instantly unlocking Chapter 2 (Hongdae) map to test events & cherry blossom effects.",
                 modal_ch2_enable: "🔓 Enable Chapter 2 Unlock For This Player",
                 modal_sendmail_chk: "📬 Send notification mail to player's in-game mailbox",
+                mail_modal_title: "✉️ Send Private Mail & Gifts to Player",
                 btn_cancel: "Cancel",
                 btn_save_user: "💾 Save Individual Settings",
                 btn_delete_user: "🗑️ Delete All Account Data (Clean Reset to Start)",
                 btn_send_now: "🚀 Send In-Game Now"
+            }
+        };
+
+        const ATTENDANCE_I18N = {
+            vi: {
+                '1': {
+                    name: 'Điểm danh 7 ngày',
+                    desc: 'Nhận CP, Kẹo, Trang phục và Nhạc trong 7 ngày đầu'
+                },
+                '2': {
+                    name: 'Điểm danh kỷ niệm 1 năm',
+                    desc: 'Sự kiện 1st Anniversary mừng sinh nhật game (14 ngày)'
+                },
+                '3': {
+                    name: 'Điểm danh hằng ngày',
+                    desc: 'Điểm danh hằng ngày Cửa hàng tiện lợi Chapter 2 (7 ngày bánh gừng, kẹo, AP)'
+                },
+                '202110': {
+                    name: 'Sự kiện đăng nhập tháng 10/2021',
+                    desc: 'Sự kiện đăng nhập lễ hội Halloween 14 ngày'
+                },
+                '202111': {
+                    name: 'Sự kiện đăng nhập tháng 11/2021',
+                    desc: 'Sự kiện chọn quà đăng nhập tân thủ 7 ngày'
+                }
+            },
+            en: {
+                '1': {
+                    name: '7-Day Attendance',
+                    desc: 'Receive CP, Candy, Costumes, and Music in the first 7 days'
+                },
+                '2': {
+                    name: '1st Anniversary Attendance',
+                    desc: '1st Anniversary game birthday celebration event (14 days)'
+                },
+                '3': {
+                    name: 'Daily Attendance',
+                    desc: 'Chapter 2 Convenience Store daily attendance (7-day gingerbread, candy, AP)'
+                },
+                '202110': {
+                    name: 'October 2021 Login Event',
+                    desc: 'Halloween 14-day festival login event'
+                },
+                '202111': {
+                    name: 'November 2021 Login Event',
+                    desc: '7-day novice gift selection login event'
+                }
             }
         };
 
@@ -1494,6 +1587,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             currentLang = lang;
             localStorage.setItem('gg_admin_lang', lang);
             document.documentElement.lang = lang;
+            document.title = t('doc_title', 'Guitar Girl - Admin Dashboard');
 
             const btnVi = document.getElementById('lang-btn-vi');
             const btnEn = document.getElementById('lang-btn-en');
@@ -1518,6 +1612,16 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     el.setAttribute('placeholder', I18N[lang][key]);
                 }
             });
+
+            // Update default mail templates if unmodified
+            const mailTitleInput = document.getElementById('mail-title');
+            const mailMemoInput = document.getElementById('mail-memo');
+            if (mailTitleInput && (mailTitleInput.value === I18N.vi.mail_default_title || mailTitleInput.value === I18N.en.mail_default_title)) {
+                mailTitleInput.value = I18N[lang].mail_default_title;
+            }
+            if (mailMemoInput && (mailMemoInput.value === I18N.vi.mail_default_memo || mailMemoInput.value === I18N.en.mail_default_memo)) {
+                mailMemoInput.value = I18N[lang].mail_default_memo;
+            }
 
             // Re-render UI elements
             renderUI();
@@ -1553,7 +1657,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
         function copyToClipboard(text, label = 'UUID') {
             navigator.clipboard.writeText(text).then(() => {
-                showToast(`📋 Đã sao chép ${label}!`);
+                showToast(currentLang === 'en' ? `📋 Copied ${label}!` : `📋 Đã sao chép ${label}!`);
             }).catch(() => {
                 const input = document.createElement('input');
                 input.value = text;
@@ -1561,7 +1665,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 input.select();
                 document.execCommand('copy');
                 document.body.removeChild(input);
-                showToast(`📋 Đã sao chép ${label}!`);
+                showToast(currentLang === 'en' ? `📋 Copied ${label}!` : `📋 Đã sao chép ${label}!`);
             });
         }
 
@@ -1575,7 +1679,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 seasonsList = data.seasons || [];
                 renderUI();
             } catch (e) {
-                showToast('Lỗi tải cấu hình: ' + e.message, true);
+                showToast((currentLang === 'en' ? 'Failed to load config: ' : 'Lỗi tải cấu hình: ') + e.message, true);
             }
         }
 
@@ -1591,16 +1695,20 @@ DASHBOARD_HTML = """<!DOCTYPE html>
         function renderUI() {
             if (!currentConfig) return;
 
-            // Attendance list
+            // Attendance list with language support
             const attContainer = document.getElementById('attendance-list');
             attContainer.innerHTML = '';
+            const attDict = ATTENDANCE_I18N[currentLang] || ATTENDANCE_I18N.vi;
             for (const [id, ev] of Object.entries(currentConfig.attendance_events || {})) {
+                const itemI18n = attDict[id];
+                const name = itemI18n ? itemI18n.name : (ev.name || `Event ${id}`);
+                const desc = itemI18n ? itemI18n.desc : (ev.description || '');
                 const div = document.createElement('div');
                 div.className = 'event-item';
                 div.innerHTML = `
                     <div class="event-info">
-                        <div class="event-name">${ev.name}</div>
-                        <div class="event-desc">${ev.description}</div>
+                        <div class="event-name">${escapeHtml(name)}</div>
+                        <div class="event-desc">${escapeHtml(desc)}</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="att-${id}" ${ev.enabled ? 'checked' : ''}>
@@ -1620,10 +1728,10 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             seasonsList.forEach(s => {
                 const opt = document.createElement('option');
                 opt.value = s.id;
-                const nameVi = s.name_vi || s.name || `Mùa ${s.id}`;
-                const nameEn = s.name_en ? ` (${s.name_en})` : '';
-                const dateInfo = (s.month && s.year) ? ` [T${s.month}/${s.year}]` : '';
-                opt.text = `Mùa ${s.id}: ${nameVi}${nameEn}${dateInfo}`;
+                const seasonLabel = currentLang === 'en' ? 'Season' : 'Mùa';
+                const nameDisplay = currentLang === 'en' ? (s.name_en || s.name || `Season ${s.id}`) : (s.name_vi || s.name || `Mùa ${s.id}`);
+                const dateInfo = (s.month && s.year) ? (currentLang === 'en' ? ` [M${s.month}/${s.year}]` : ` [T${s.month}/${s.year}]`) : '';
+                opt.text = `${seasonLabel} ${s.id}: ${nameDisplay}${dateInfo}`;
                 if (s.id === currentConfig.star_pass.active_season) opt.selected = true;
                 seasonSelect.appendChild(opt);
             });
@@ -1631,19 +1739,23 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             // Pass Goods Sale
             if (currentConfig.pass_goods_sale) {
                 document.getElementById('pgs-enabled').checked = !!currentConfig.pass_goods_sale.enabled;
-                if (currentConfig.pass_goods_sale.name) document.getElementById('pgs-name').innerText = currentConfig.pass_goods_sale.name;
-                if (currentConfig.pass_goods_sale.description) document.getElementById('pgs-desc').innerText = currentConfig.pass_goods_sale.description;
+                document.getElementById('pgs-name').innerHTML = t('pgs_name', 'Cửa hàng Giảm giá Star Pass');
+                document.getElementById('pgs-desc').innerHTML = t('pgs_desc', 'Mở biểu tượng nút Sale trên sảnh chính để mua lại toàn bộ Trang phục & Guitar của 13 mùa Star Pass đã qua với giá ưu đãi Socola (50-200 CP)');
             }
 
             // Meowfest
-            document.getElementById('mf-enabled').checked = !!currentConfig.meowfest.enabled;
-            if (currentConfig.meowfest.name) document.getElementById('mf-name').innerText = currentConfig.meowfest.name;
-            if (currentConfig.meowfest.description) document.getElementById('mf-desc').innerText = currentConfig.meowfest.description;
+            if (currentConfig.meowfest) {
+                document.getElementById('mf-enabled').checked = !!currentConfig.meowfest.enabled;
+                document.getElementById('mf-name').innerHTML = t('mf_name', 'Sự kiện Nuôi Mèo Meowfest');
+                document.getElementById('mf-desc').innerHTML = t('mf_desc', 'Mở khóa 3 cột mốc nuôi mèo Tam Thể nhận Cây cào móng (Guitar 10), Quần yếm (Costume 13), Bé mèo Navi (Unit 1)');
+            }
 
             // Chapter 3 Tour
-            document.getElementById('c3-enabled').checked = !!currentConfig.chapter3_tour.enabled;
-            if (currentConfig.chapter3_tour.name) document.getElementById('c3-name').innerText = currentConfig.chapter3_tour.name;
-            if (currentConfig.chapter3_tour.description) document.getElementById('c3-desc').innerText = currentConfig.chapter3_tour.description;
+            if (currentConfig.chapter3_tour) {
+                document.getElementById('c3-enabled').checked = !!currentConfig.chapter3_tour.enabled;
+                document.getElementById('c3-name').innerHTML = t('c3_name', 'Tour Chapter 3 (Sunshine High School)');
+                document.getElementById('c3-desc').innerHTML = t('c3_desc', 'Biểu diễn sân khấu Sunshine High School 20 màn với Năng lượng Cookie / AP');
+            }
 
             // Weather Festival (Mutually Exclusive)
             if (currentConfig.weather_festival) {
@@ -1656,15 +1768,15 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             // Fan Art
             if (currentConfig.fan_art_costume) {
                 document.getElementById('fac-enabled').checked = !!currentConfig.fan_art_costume.enabled;
-                if (currentConfig.fan_art_costume.name) document.getElementById('fac-name').innerText = currentConfig.fan_art_costume.name;
-                if (currentConfig.fan_art_costume.description) document.getElementById('fac-desc').innerText = currentConfig.fan_art_costume.description;
+                document.getElementById('fac-name').innerHTML = t('fac_name', 'Trang phục Thiết kế Fan Art');
+                document.getElementById('fac-desc').innerHTML = t('fac_desc', 'Kích hoạt bộ trang phục Nàng tiên mùa xuân (Spring Fairy) và Guitar Giai điệu nàng tiên (Fairy\'s Melody)');
             }
 
             // Event Ranking
             if (currentConfig.event_ranking) {
                 document.getElementById('er-enabled').checked = !!currentConfig.event_ranking.enabled;
-                if (currentConfig.event_ranking.name) document.getElementById('er-name').innerText = currentConfig.event_ranking.name;
-                if (currentConfig.event_ranking.description) document.getElementById('er-desc').innerText = currentConfig.event_ranking.description;
+                document.getElementById('er-name').innerHTML = t('er_name', 'Bảng Xếp Hạng Đua Top Sự Kiện');
+                document.getElementById('er-desc').innerHTML = t('er_desc', 'Kích hoạt tính năng đua top điểm sự kiện trực tiếp với bảng xếp hạng Top 100 cao thủ');
             }
         }
 
@@ -1710,15 +1822,17 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 if (!data.success) throw new Error(data.error || 'Lưu thất bại');
                 currentConfig = data.config;
                 renderUI();
-                showToast('✅ Đã lưu và áp dụng cấu hình sự kiện thành công!');
+                showToast(currentLang === 'en' ? '✅ Event configuration saved and applied successfully!' : '✅ Đã lưu và áp dụng cấu hình sự kiện thành công!');
             } catch (e) {
-                showToast('❌ Lỗi khi lưu: ' + e.message, true);
+                showToast((currentLang === 'en' ? '❌ Error saving config: ' : '❌ Lỗi khi lưu: ') + e.message, true);
             }
         }
 
         async function sendDirectMail() {
-            const title = document.getElementById('mail-title').value.trim() || 'Thông báo Quản trị';
-            const memo = document.getElementById('mail-memo').value.trim() || 'Quà tặng từ quản trị viên';
+            const defTitle = currentLang === 'en' ? 'Admin Notice' : 'Thông báo Quản trị';
+            const defMemo = currentLang === 'en' ? 'Special gift from the administrator' : 'Quà tặng từ quản trị viên';
+            const title = document.getElementById('mail-title').value.trim() || defTitle;
+            const memo = document.getElementById('mail-memo').value.trim() || defMemo;
             const cp = parseInt(document.getElementById('mail-cp').value) || 0;
             const candy = parseFloat(document.getElementById('mail-candy').value) || 0;
             const cookies = parseInt(document.getElementById('mail-cookies').value) || 0;
@@ -1731,9 +1845,9 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 });
                 const data = await res.json();
                 if (!data.success) throw new Error(data.error || 'Gửi thất bại');
-                showToast('🚀 Đã gửi thư và quà thành công vào game! Người chơi sẽ thấy chấm đỏ.');
+                showToast(currentLang === 'en' ? '🚀 Mail and gifts sent successfully! Active players will see the red dot.' : '🚀 Đã gửi thư và quà thành công vào game! Người chơi sẽ thấy chấm đỏ.');
             } catch (e) {
-                showToast('❌ Lỗi khi gửi thư: ' + e.message, true);
+                showToast((currentLang === 'en' ? '❌ Failed to send mail: ' : '❌ Lỗi khi gửi thư: ') + e.message, true);
             }
         }
 
@@ -1776,21 +1890,23 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             if (!inputStr) return '';
             const trimmed = inputStr.trim();
             if (!trimmed || trimmed === '0') return '';
-            const m = trimmed.match(/^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)\\s*([a-zA-Z]*)$/);
+            const m = trimmed.match(/^([+-]?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*([a-zA-Z]*)$/);
             if (!m) return '';
             const num = parseFloat(m[1]);
             const unit = m[2].toUpperCase();
             if (isNaN(num)) return '';
+            const unitName = currentLang === 'en' ? 'Likes' : 'Tim';
+            const prefix = currentLang === 'en' ? 'Converted: ' : 'Quy đổi: ';
             if (!unit) {
-                return 'Quy đổi: ' + formatNumber(num) + ' Tim';
+                return prefix + formatNumber(num) + ' ' + unitName;
             }
             const idx = GAME_UNITS.indexOf(unit);
             if (idx === -1) {
-                if (unit === 'K') return 'Quy đổi: ' + (num * 1e3).toLocaleString() + ' Tim (10.000A)';
-                return '⚠️ Đơn vị không hợp lệ (hợp lệ: A, B, C... G, H... ZZ)';
+                if (unit === 'K') return prefix + (num * 1e3).toLocaleString() + ' ' + unitName + ' (10.000A)';
+                return currentLang === 'en' ? '⚠️ Invalid unit (valid: A, B, C... G, H... ZZ)' : '⚠️ Đơn vị không hợp lệ (hợp lệ: A, B, C... G, H... ZZ)';
             }
             const exp = (idx + 1) * 3;
-            return `✨ Đơn vị game: ${num.toFixed(3)}${unit} (10^${exp})`;
+            return currentLang === 'en' ? `✨ Game unit: ${num.toFixed(3)}${unit} (10^${exp})` : `✨ Đơn vị game: ${num.toFixed(3)}${unit} (10^${exp})`;
         }
 
         function updateLikePreviews() {
@@ -1810,14 +1926,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             try {
                 const res = await fetch('/admin/api/users');
                 const data = await res.json();
-                if (!data.success) throw new Error('Không thể tải danh sách người chơi');
+                if (!data.success) throw new Error(currentLang === 'en' ? 'Failed to load players list' : 'Không thể tải danh sách người chơi');
                 cachedUsers = data.users || [];
                 currentActiveSeason = data.active_season || 13;
 
                 updateUserStats();
                 filterUsers();
             } catch (e) {
-                container.innerHTML = `<div style="color: var(--danger); padding: 16px; text-align: center;">Lỗi tải dữ liệu người chơi: ${e.message}</div>`;
+                container.innerHTML = `<div style="color: var(--danger); padding: 16px; text-align: center;">${currentLang === 'en' ? 'Error loading player data: ' : 'Lỗi tải dữ liệu người chơi: '}${e.message}</div>`;
             }
         }
 
@@ -1863,7 +1979,10 @@ DASHBOARD_HTML = """<!DOCTYPE html>
         }
 
         async function cleanupTestUsers() {
-            if (!confirm('Bạn có chắc chắn muốn DỌN DẸP toàn bộ tài khoản test tự động không?\\nCác thiết bị người chơi thật sẽ được bảo toàn nguyên vẹn 100%.')) return;
+            const confirmMsg = currentLang === 'en'
+                ? 'Are you sure you want to CLEAN UP all auto test accounts?\nReal player devices will be 100% preserved.'
+                : 'Bạn có chắc chắn muốn DỌN DẸP toàn bộ tài khoản test tự động không?\nCác thiết bị người chơi thật sẽ được bảo toàn nguyên vẹn 100%.';
+            if (!confirm(confirmMsg)) return;
             try {
                 const res = await fetch('/admin/api/users/cleanup_tests', {
                     method: 'POST',
@@ -1871,11 +1990,11 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     body: JSON.stringify({})
                 });
                 const data = await res.json();
-                if (!data.success) throw new Error(data.error || 'Dọn dẹp thất bại');
+                if (!data.success) throw new Error(data.error || (currentLang === 'en' ? 'Cleanup failed' : 'Dọn dẹp thất bại'));
                 showToast('🧹 ' + data.message);
                 loadUsers();
             } catch (e) {
-                showToast('❌ Lỗi: ' + e.message, true);
+                showToast((currentLang === 'en' ? '❌ Error: ' : '❌ Lỗi: ') + e.message, true);
             }
         }
 
@@ -1884,8 +2003,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             if (users.length === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; color: var(--text-sub); padding: 32px; background: rgba(0,0,0,0.2); border-radius: 10px;">
-                        Không tìm thấy người chơi nào phù hợp với bộ lọc.<br>
-                        <span style="font-size:0.8rem; margin-top:4px; display:inline-block;">Hãy thử xóa bộ lọc hoặc kiểm tra lại từ khóa tìm kiếm.</span>
+                        ${t('empty_users_filter', 'Không tìm thấy người chơi nào phù hợp với bộ lọc.')}
                     </div>
                 `;
                 return;
@@ -1933,7 +2051,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                                 <span style="background:rgba(85,239,196,0.12); border:1px solid rgba(85,239,196,0.3); padding:1px 6px; border-radius:4px;">UID: #${u.u_seq}</span>
                                 <span style="color:var(--text-sub); font-weight:400; font-size:0.75rem;">${escapeHtml(u.u_id || '-')}</span>
                             </div>
-                            <div class="uuid-pill" onclick="copyToClipboard('${u.uuid}', 'UUID')" title="Bấm để sao chép toàn bộ UUID">
+                            <div class="uuid-pill" onclick="copyToClipboard('${u.uuid}', 'UUID')" title="${currentLang === 'en' ? 'Click to copy full UUID' : 'Bấm để sao chép toàn bộ UUID'}">
                                 📋 ${escapeHtml(shortUuid)}
                             </div>
                         </td>
@@ -1960,16 +2078,16 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                         </td>
                         <td style="text-align: right; white-space: nowrap;">
                             <div style="display: inline-flex; gap: 6px; align-items: center; justify-content: flex-end;">
-                                <button class="btn-setting-event" onclick="openUserModal('${u.uuid || ""}', ${u.u_seq})" title="Cài đặt sự kiện & tài nguyên cá nhân">
+                                <button class="btn-setting-event" onclick="openUserModal('${u.uuid || ""}', ${u.u_seq})" title="${currentLang === 'en' ? 'Individual player settings' : 'Cài đặt sự kiện & tài nguyên cá nhân'}">
                                     ⚙️ Setting
                                 </button>
-                                <button class="btn-mail" onclick="openSendMailModal('${u.uuid || ""}', '${escapeHtml(u.u_nick)}')" title="Gửi thư và quà riêng cho người chơi này">
+                                <button class="btn-mail" onclick="openSendMailModal('${u.uuid || ""}', '${escapeHtml(u.u_nick)}')" title="${currentLang === 'en' ? 'Send private mail & gifts' : 'Gửi thư và quà riêng cho người chơi này'}">
                                     ✉️ ${t('btn_mail', 'Thư')}
                                 </button>
-                                <button class="${u.is_banned ? 'btn-unban' : 'btn-ban'}" onclick="toggleBan('${u.uuid || ""}', ${!u.is_banned}, ${u.u_seq})" title="${u.is_banned ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}">
+                                <button class="${u.is_banned ? 'btn-unban' : 'btn-ban'}" onclick="toggleBan('${u.uuid || ""}', ${!u.is_banned}, ${u.u_seq})" title="${u.is_banned ? (currentLang === 'en' ? 'Unban account' : 'Mở khóa tài khoản') : (currentLang === 'en' ? 'Ban account' : 'Khóa tài khoản')}">
                                     ${u.is_banned ? '✅ ' + t('btn_unban', 'Mở') : '🚫 ' + t('btn_ban', 'Ban')}
                                 </button>
-                                <button class="btn-delete-user" onclick="deleteUser('${u.uuid || ""}', '${escapeHtml(u.u_nick)}', ${u.u_seq})" title="Xóa toàn bộ dữ liệu">
+                                <button class="btn-delete-user" onclick="deleteUser('${u.uuid || ""}', '${escapeHtml(u.u_nick)}', ${u.u_seq})" title="${currentLang === 'en' ? 'Delete player data' : 'Xóa toàn bộ dữ liệu'}">
                                     🗑️ ${t('btn_delete', 'Xóa')}
                                 </button>
                             </div>
@@ -1988,8 +2106,13 @@ DASHBOARD_HTML = """<!DOCTYPE html>
         }
 
         async function toggleBan(uuid, banState, uSeq) {
-            const actionText = banState ? 'KHÓA (BAN)' : 'MỞ KHÓA';
-            if (!confirm(`Bạn có chắc chắn muốn ${actionText} tài khoản người chơi này?\n${banState ? 'Khi bị khóa, game sẽ hiển thị thông báo "Tài khoản của bạn đã bị KHÓA" thay vì lỗi mạng.' : 'Sau khi mở khóa, người chơi sẽ có thể đăng nhập bình thường.'}`)) return;
+            const actionText = currentLang === 'en'
+                ? (banState ? 'BAN' : 'UNBAN')
+                : (banState ? 'KHÓA (BAN)' : 'MỞ KHÓA');
+            const confirmMsg = currentLang === 'en'
+                ? `Are you sure you want to ${actionText} this player account?\n${banState ? 'When banned, the game will display "Your account has been BANNED" instead of a network error.' : 'After unbanning, the player can log in normally.'}`
+                : `Bạn có chắc chắn muốn ${actionText} tài khoản người chơi này?\n${banState ? 'Khi bị khóa, game sẽ hiển thị thông báo "Tài khoản của bạn đã bị KHÓA" thay vì lỗi mạng.' : 'Sau khi mở khóa, người chơi sẽ có thể đăng nhập bình thường.'}`;
+            if (!confirm(confirmMsg)) return;
             try {
                 const res = await fetch('/admin/api/user/ban', {
                     method: 'POST',
@@ -1997,18 +2120,19 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     body: JSON.stringify({ uuid: (uuid && uuid !== 'null') ? uuid : '', banned: banState, u_seq: uSeq })
                 });
                 const data = await res.json();
-                if (!data.success) throw new Error(data.error || 'Thao tác thất bại');
-                showToast(data.message || 'Thành công!');
+                if (!data.success) throw new Error(data.error || (currentLang === 'en' ? 'Operation failed' : 'Thao tác thất bại'));
+                showToast(data.message || (currentLang === 'en' ? 'Success!' : 'Thành công!'));
                 loadUsers();
             } catch (e) {
-                showToast('❌ Lỗi: ' + e.message, true);
+                showToast((currentLang === 'en' ? '❌ Error: ' : '❌ Lỗi: ') + e.message, true);
             }
         }
 
         async function deleteUser(uuid, nick, uSeq) {
-            if (!confirm(`⚠️ CẢNH BÁO NGUY HIỂM!\n\nBạn có chắc chắn muốn XÓA TOÀN BỘ DỮ LIỆU của người chơi [${nick}]?\nToàn bộ tiến trình, Tim, CP, sự kiện sẽ bị xóa vĩnh viễn khỏi server. Khi vào lại game sẽ là tài khoản mới tinh.`)) {
-                return;
-            }
+            const confirmMsg = currentLang === 'en'
+                ? `⚠️ DANGER WARNING!\n\nAre you sure you want to DELETE ALL DATA for player [${nick}]?\nAll progress, Likes, CP, and event data will be permanently wiped from the server. The player will start fresh on next login.`
+                : `⚠️ CẢNH BÁO NGUY HIỂM!\n\nBạn có chắc chắn muốn XÓA TOÀN BỘ DỮ LIỆU của người chơi [${nick}]?\nToàn bộ tiến trình, Tim, CP, sự kiện sẽ bị xóa vĩnh viễn khỏi server. Khi vào lại game sẽ là tài khoản mới tinh.`;
+            if (!confirm(confirmMsg)) return;
             try {
                 const res = await fetch('/admin/api/user/delete', {
                     method: 'POST',
@@ -2016,11 +2140,11 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     body: JSON.stringify({ uuid: (uuid && uuid !== 'null') ? uuid : '', u_seq: uSeq })
                 });
                 const data = await res.json();
-                if (!data.success) throw new Error(data.error || 'Xóa thất bại');
-                showToast(data.message || '✅ Đã xóa toàn bộ dữ liệu người chơi!');
+                if (!data.success) throw new Error(data.error || (currentLang === 'en' ? 'Deletion failed' : 'Xóa thất bại'));
+                showToast(data.message || (currentLang === 'en' ? '✅ Successfully deleted all player data!' : '✅ Đã xóa toàn bộ dữ liệu người chơi!'));
                 loadUsers();
             } catch (e) {
-                showToast('❌ Lỗi: ' + e.message, true);
+                showToast((currentLang === 'en' ? '❌ Error: ' : '❌ Lỗi: ') + e.message, true);
             }
         }
 
@@ -2034,51 +2158,101 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
         // Metadata for all Attendance Events
         const ATT_EVENTS_INFO = {
-            '1': {
-                name: '📅 Tân thủ 7 ngày (Event 1)',
-                totalDays: 7,
-                rewardsDesc: 'Nhạc 13 + Váy 9 + 600 CP + 100 Kẹo',
-                dayNames: {
-                    1: '100 CP',
-                    2: 'Váy đầm hoa tuyết',
-                    3: '200 CP',
-                    4: '50 Kẹo',
-                    5: '300 CP',
-                    6: '50 Kẹo',
-                    7: 'Nhạc Bông hoa chưa được đặt tên'
+            vi: {
+                '1': {
+                    name: '📅 Tân thủ 7 ngày (Event 1)',
+                    totalDays: 7,
+                    rewardsDesc: 'Nhạc 13 + Váy 9 + 600 CP + 100 Kẹo',
+                    dayNames: {
+                        1: '100 CP',
+                        2: 'Váy đầm hoa tuyết',
+                        3: '200 CP',
+                        4: '50 Kẹo',
+                        5: '300 CP',
+                        6: '50 Kẹo',
+                        7: 'Nhạc Bông hoa chưa được đặt tên'
+                    }
+                },
+                '3': {
+                    name: '🏪 Cửa hàng tiện lợi (CH2 - Event 3)',
+                    totalDays: 7,
+                    rewardsDesc: '250 AP + 100 Kẹo + 150 CP',
+                    dayNames: {
+                        1: '50 AP Bánh quy',
+                        2: '50 Kẹo',
+                        3: '50 AP Bánh quy',
+                        4: '50 Kẹo',
+                        5: '50 AP Bánh quy',
+                        6: '100 AP Bánh quy',
+                        7: '150 CP Socola'
+                    }
+                },
+                '202110': {
+                    name: '🎃 Halloween 14 ngày (Event 202110)',
+                    totalDays: 14,
+                    rewardsDesc: 'Trang phục & Guitar Halloween + CP + Kẹo',
+                    dayNames: {}
+                },
+                '202111': {
+                    name: '🎁 Chọn quà Tân thủ (Event 202111)',
+                    totalDays: 7,
+                    rewardsDesc: 'Bộ quà chọn Tân thủ 7 ngày',
+                    dayNames: {}
+                },
+                '2': {
+                    name: '🎂 Kỷ niệm 1 năm (14 ngày - Event 2)',
+                    totalDays: 14,
+                    rewardsDesc: 'Trọn bộ quà kỷ niệm 1 năm 14 ngày',
+                    dayNames: {}
                 }
             },
-            '3': {
-                name: '🏪 Cửa hàng tiện lợi (CH2 - Event 3)',
-                totalDays: 7,
-                rewardsDesc: '250 AP + 100 Kẹo + 150 CP',
-                dayNames: {
-                    1: '50 AP Bánh quy',
-                    2: '50 Kẹo',
-                    3: '50 AP Bánh quy',
-                    4: '50 Kẹo',
-                    5: '50 AP Bánh quy',
-                    6: '100 AP Bánh quy',
-                    7: '150 CP Socola'
+            en: {
+                '1': {
+                    name: '📅 7-Day Novice (Event 1)',
+                    totalDays: 7,
+                    rewardsDesc: 'Song 13 + Dress 9 + 600 CP + 100 Candy',
+                    dayNames: {
+                        1: '100 CP',
+                        2: 'Snowflake Dress',
+                        3: '200 CP',
+                        4: '50 Candy',
+                        5: '300 CP',
+                        6: '50 Candy',
+                        7: 'Song: Unnamed Flower'
+                    }
+                },
+                '3': {
+                    name: '🏪 Convenience Store (CH2 - Event 3)',
+                    totalDays: 7,
+                    rewardsDesc: '250 AP + 100 Candy + 150 CP',
+                    dayNames: {
+                        1: '50 AP Cookies',
+                        2: '50 Candy',
+                        3: '50 AP Cookies',
+                        4: '50 Candy',
+                        5: '50 AP Cookies',
+                        6: '100 AP Cookies',
+                        7: '150 CP Chocolates'
+                    }
+                },
+                '202110': {
+                    name: '🎃 Halloween 14-Day (Event 202110)',
+                    totalDays: 14,
+                    rewardsDesc: 'Halloween Costume & Guitar + CP + Candy',
+                    dayNames: {}
+                },
+                '202111': {
+                    name: '🎁 Novice Gift Choice (Event 202111)',
+                    totalDays: 7,
+                    rewardsDesc: '7-day Novice Gift Selection Pack',
+                    dayNames: {}
+                },
+                '2': {
+                    name: '🎂 1st Anniversary (14-Day - Event 2)',
+                    totalDays: 14,
+                    rewardsDesc: 'Complete 1st Anniversary 14-day pack',
+                    dayNames: {}
                 }
-            },
-            '202110': {
-                name: '🎃 Halloween 14 ngày (Event 202110)',
-                totalDays: 14,
-                rewardsDesc: 'Trang phục & Guitar Halloween + CP + Kẹo',
-                dayNames: {}
-            },
-            '202111': {
-                name: '🎁 Chọn quà Tân thủ (Event 202111)',
-                totalDays: 7,
-                rewardsDesc: 'Bộ quà chọn Tân thủ 7 ngày',
-                dayNames: {}
-            },
-            '2': {
-                name: '🎂 Kỷ niệm 1 năm (14 ngày - Event 2)',
-                totalDays: 14,
-                rewardsDesc: 'Trọn bộ quà kỷ niệm 1 năm 14 ngày',
-                dayNames: {}
             }
         };
 
@@ -2087,7 +2261,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
         function renderModalAttEvent(eventKey) {
             currentModalAttEventKey = eventKey;
-            const meta = ATT_EVENTS_INFO[eventKey] || { name: 'Sự kiện ' + eventKey, totalDays: 7, rewardsDesc: 'Quà sự kiện', dayNames: {} };
+            const eventDict = ATT_EVENTS_INFO[currentLang] || ATT_EVENTS_INFO.vi;
+            const meta = eventDict[eventKey] || { name: (currentLang === 'en' ? 'Event ' : 'Sự kiện ') + eventKey, totalDays: 7, rewardsDesc: (currentLang === 'en' ? 'Event Rewards' : 'Quà sự kiện'), dayNames: {} };
             const state = currentModalUserAttData[eventKey] || { day: 0, unlock_today: true, grant_all: false, modified: false, mode: 'claim_day' };
 
             const statusElem = document.getElementById('modal-att-status');
@@ -2098,24 +2273,36 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
             const isEvEnabled = !!currentConfig?.attendance_events?.[eventKey]?.enabled;
             if (!isEvEnabled) {
-                statusElem.innerText = `⚠️ Đang TẮT trên hệ thống (Đã nhận ${state.day}/${meta.totalDays} ngày)`;
+                statusElem.innerText = currentLang === 'en'
+                    ? `⚠️ DISABLED on server (Claimed ${state.day}/${meta.totalDays} days)`
+                    : `⚠️ Đang TẮT trên hệ thống (Đã nhận ${state.day}/${meta.totalDays} ngày)`;
                 statusElem.style.background = 'rgba(235, 77, 75, 0.2)';
                 statusElem.style.color = '#ff6b6b';
             } else {
-                statusElem.innerText = `Đã nhận ${state.day}/${meta.totalDays} ngày`;
+                statusElem.innerText = currentLang === 'en'
+                    ? `Claimed ${state.day}/${meta.totalDays} days`
+                    : `Đã nhận ${state.day}/${meta.totalDays} ngày`;
                 statusElem.style.background = 'rgba(162,155,254,0.15)';
                 statusElem.style.color = '#a29bfe';
             }
-            grantLabel.innerText = `🎁 Nhận ngay trọn bộ quà vào tài khoản (${meta.rewardsDesc})`;
+            grantLabel.innerText = currentLang === 'en'
+                ? `🎁 Instantly grant all rewards to account (${meta.rewardsDesc})`
+                : `🎁 Nhận ngay trọn bộ quà vào tài khoản (${meta.rewardsDesc})`;
 
             // Populate options for day select
             let opts = '';
-            opts += `<option value="completed">✅ Đã hoàn thành trọn bộ ${meta.totalDays}/${meta.totalDays} ngày</option>`;
+            opts += currentLang === 'en'
+                ? `<option value="completed">✅ Completed all ${meta.totalDays}/${meta.totalDays} days</option>`
+                : `<option value="completed">✅ Đã hoàn thành trọn bộ ${meta.totalDays}/${meta.totalDays} ngày</option>`;
             for (let d = meta.totalDays; d >= 1; d--) {
                 const desc = meta.dayNames[d] ? `: ${meta.dayNames[d]}` : '';
-                opts += `<option value="claim_${d}">📅 Mở sẵn nhận Ngày ${d}${desc}</option>`;
+                opts += currentLang === 'en'
+                    ? `<option value="claim_${d}">📅 Ready to claim Day ${d}${desc}</option>`
+                    : `<option value="claim_${d}">📅 Mở sẵn nhận Ngày ${d}${desc}</option>`;
             }
-            opts += `<option value="reset">🔄 Đặt lại từ đầu (0/${meta.totalDays} ngày)</option>`;
+            opts += currentLang === 'en'
+                ? `<option value="reset">🔄 Reset to beginning (0/${meta.totalDays} days)</option>`
+                : `<option value="reset">🔄 Đặt lại từ đầu (0/${meta.totalDays} ngày)</option>`;
             daySelect.innerHTML = opts;
 
             // Set current value
@@ -2138,7 +2325,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
         function onModalAttDayChange() {
             const val = document.getElementById('modal-att-day').value;
-            const meta = ATT_EVENTS_INFO[currentModalAttEventKey] || { totalDays: 7 };
+            const eventDict = ATT_EVENTS_INFO[currentLang] || ATT_EVENTS_INFO.vi;
+            const meta = eventDict[currentModalAttEventKey] || { totalDays: 7 };
             const state = currentModalUserAttData[currentModalAttEventKey] || { day: 0 };
             state.modified = true;
 
@@ -2172,14 +2360,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
         function openUserModal(uuid, uSeq) {
             const u = cachedUsers.find(x => (uuid && uuid !== 'null' && x.uuid === uuid) || (uSeq !== undefined && x.u_seq === Number(uSeq)));
             if (!u) {
-                showToast('Không tìm thấy người chơi!', true);
+                showToast(currentLang === 'en' ? 'Player not found!' : 'Không tìm thấy người chơi!', true);
                 return;
             }
             document.getElementById('modal-uuid').value = u.uuid || '';
             document.getElementById('modal-useq').value = u.u_seq;
             document.getElementById('modal-user-name').innerText = u.u_nick;
             document.getElementById('modal-user-sub').innerText = `🆔 UID: #${u.u_seq} • ID: ${u.u_id || '-'} • UUID: ${u.uuid || '-'}`;
-            document.getElementById('modal-user-lastlogin').innerText = `🕒 Đăng nhập gần nhất: ${u.u_last_login}`;
+            document.getElementById('modal-user-lastlogin').innerText = (currentLang === 'en' ? '🕒 Last Login: ' : '🕒 Đăng nhập gần nhất: ') + u.u_last_login;
             document.getElementById('modal-is-banned').checked = !!u.is_banned;
 
             // Star Pass activation check: do not allow editing if Star Pass is not active globally
@@ -2229,7 +2417,9 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             }
 
             // Currencies
-            document.getElementById('modal-user-like').innerText = 'Hiện có: ' + formatNumber(u.u_like) + ' Tim';
+            const currentLikesLabel = currentLang === 'en' ? 'Currently: ' : 'Hiện có: ';
+            const likesUnit = currentLang === 'en' ? 'Likes' : 'Tim';
+            document.getElementById('modal-user-like').innerText = currentLikesLabel + formatNumber(u.u_like) + ' ' + likesUnit;
             document.getElementById('modal-add-like').value = '';
             document.getElementById('modal-add-cp').value = 0;
             document.getElementById('modal-add-candy').value = 0;
@@ -2239,6 +2429,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             // Build attendance state for all events from user
             currentModalUserAttData = {};
             const attMap = u.attendance_map || {};
+            const eventDict = ATT_EVENTS_INFO[currentLang] || ATT_EVENTS_INFO.vi;
             for (const k of ['1', '3', '202110', '202111', '2']) {
                 let d = 0;
                 let y = 0;
@@ -2252,7 +2443,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     d = u.ch2_attendance_day || 0;
                     y = u.ch2_attendance_ymd || 0;
                 }
-                const maxD = ATT_EVENTS_INFO[k]?.totalDays || 7;
+                const maxD = eventDict[k]?.totalDays || 7;
                 currentModalUserAttData[k] = {
                     day: d,
                     ymd: y,
@@ -2263,7 +2454,17 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     modified: false
                 };
             }
-            document.getElementById('modal-att-event-select').value = '1';
+            
+            // Rebuild event select dropdown with current language names
+            const attSelect = document.getElementById('modal-att-event-select');
+            attSelect.innerHTML = `
+                <option value="1">${eventDict['1'].name}</option>
+                <option value="3">${eventDict['3'].name}</option>
+                <option value="202110">${eventDict['202110'].name}</option>
+                <option value="202111">${eventDict['202111'].name}</option>
+                <option value="2">${eventDict['2'].name}</option>
+            `;
+            attSelect.value = '1';
             renderModalAttEvent('1');
 
             // Chapter 2 Unlock (Danger / Test mode)
@@ -2325,12 +2526,12 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     })
                 });
                 const data = await res.json();
-                if (!data.success) throw new Error(data.error || 'Lưu thất bại');
-                showToast('✅ Cập nhật tài khoản người chơi thành công!');
+                if (!data.success) throw new Error(data.error || (currentLang === 'en' ? 'Update failed' : 'Lưu thất bại'));
+                showToast(currentLang === 'en' ? '✅ Player settings updated successfully!' : '✅ Cập nhật tài khoản người chơi thành công!');
                 closeUserModal();
                 loadUsers();
             } catch (e) {
-                showToast('❌ Lỗi khi cập nhật: ' + e.message, true);
+                showToast((currentLang === 'en' ? '❌ Update error: ' : '❌ Lỗi khi cập nhật: ') + e.message, true);
             }
         }
 
@@ -2339,14 +2540,22 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             document.getElementById('modal-mail-uuid').value = targetUuid || '';
             const titleElem = document.getElementById('mail-modal-title');
             const infoElem = document.getElementById('modal-mail-target-info');
+            const titleInput = document.getElementById('modal-mail-title');
+            const memoInput = document.getElementById('modal-mail-memo');
 
             if (targetUuid && targetNick) {
-                titleElem.innerText = `✉️ Gửi Thư Riêng Cho [${targetNick}]`;
-                infoElem.innerText = `Thư và quà sẽ được gửi đích danh cho người chơi ${targetNick} (ID: ${targetUuid.substring(0, 16)}...)`;
+                titleElem.innerText = currentLang === 'en' ? `✉️ Send Private Mail to [${targetNick}]` : `✉️ Gửi Thư Riêng Cho [${targetNick}]`;
+                infoElem.innerText = currentLang === 'en'
+                    ? `Mail and gifts will be sent directly to player ${targetNick} (ID: ${targetUuid.substring(0, 16)}...)`
+                    : `Thư và quà sẽ được gửi đích danh cho người chơi ${targetNick} (ID: ${targetUuid.substring(0, 16)}...)`;
             } else {
-                titleElem.innerText = '✉️ Gửi Thư & Quà Toàn Bộ Server';
-                infoElem.innerText = 'Thư và quà sẽ được gửi tới TẤT CẢ người chơi trên máy chủ';
+                titleElem.innerText = currentLang === 'en' ? '✉️ Send Mail & Gifts to All Players' : '✉️ Gửi Thư & Quà Toàn Bộ Server';
+                infoElem.innerText = currentLang === 'en'
+                    ? 'Mail and gifts will be sent to ALL players on the server'
+                    : 'Thư và quà sẽ được gửi tới TẤT CẢ người chơi trên máy chủ';
             }
+            titleInput.value = currentLang === 'en' ? 'Gift from Administrator' : 'Quà Tặng Từ Quản Trị Viên';
+            memoInput.value = currentLang === 'en' ? 'Enjoy playing Guitar Girl! Please receive this special gift.' : 'Chúc bạn chơi game Guitar Girl thật vui vẻ! Hãy nhận phần quà này nhé.';
             document.getElementById('mail-modal').classList.add('active');
         }
 
@@ -2356,8 +2565,10 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
         async function sendModalMail() {
             const targetUuid = document.getElementById('modal-mail-uuid').value.trim() || null;
-            const title = document.getElementById('modal-mail-title').value.trim() || 'Thông báo Quản trị';
-            const memo = document.getElementById('modal-mail-memo').value.trim() || 'Quà tặng từ quản trị viên';
+            const defTitle = currentLang === 'en' ? 'Gift from Administrator' : 'Quà Tặng Từ Quản Trị Viên';
+            const defMemo = currentLang === 'en' ? 'Enjoy playing Guitar Girl! Please receive this special gift.' : 'Chúc bạn chơi game Guitar Girl thật vui vẻ! Hãy nhận phần quà này nhé.';
+            const title = document.getElementById('modal-mail-title').value.trim() || defTitle;
+            const memo = document.getElementById('modal-mail-memo').value.trim() || defMemo;
             const cp = parseInt(document.getElementById('modal-mail-cp').value) || 0;
             const candy = parseFloat(document.getElementById('modal-mail-candy').value) || 0;
             const cookies = parseInt(document.getElementById('modal-mail-cookies').value) || 0;
@@ -2369,11 +2580,13 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     body: JSON.stringify({ uuid: targetUuid, title, memo, cp, candy, cookies })
                 });
                 const data = await res.json();
-                if (!data.success) throw new Error(data.error || 'Gửi thất bại');
-                showToast(targetUuid ? '🚀 Đã gửi thư và quà riêng cho người chơi thành công!' : '🚀 Đã gửi thư và quà cho toàn bộ server thành công!');
+                if (!data.success) throw new Error(data.error || (currentLang === 'en' ? 'Sending failed' : 'Gửi thất bại'));
+                showToast(targetUuid
+                    ? (currentLang === 'en' ? '🚀 Private mail & gifts sent to player successfully!' : '🚀 Đã gửi thư và quà riêng cho người chơi thành công!')
+                    : (currentLang === 'en' ? '🚀 Server-wide mail & gifts sent successfully!' : '🚀 Đã gửi thư và quà cho toàn bộ server thành công!'));
                 closeMailModal();
             } catch (e) {
-                showToast('❌ Lỗi khi gửi: ' + e.message, true);
+                showToast((currentLang === 'en' ? '❌ Error sending mail: ' : '❌ Lỗi khi gửi thư: ') + e.message, true);
             }
         }
 
