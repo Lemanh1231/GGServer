@@ -14,10 +14,24 @@ def _login(form):
     now_ms = int(time.time() * 1000)
     app_id = form.get('app_id', '0')
     device_cd = form.get('device_cd', '')
-    access_token = f"{_MEMBER_ID}|{app_id}|{device_cd}|{_SERVER_LOCALE}|{_UNKNOWN_OPT}|{now_ms}"
+
+    # Map member_id directly to player's sequence ID (u_seq)
+    member_id = _MEMBER_ID
+    u_nick = 'Guitarist'
+    if device_cd:
+        try:
+            from server import state
+            user = state.create_user(device_cd, device_cd)
+            if user and 'userdata' in user:
+                member_id = int(user['userdata'].get('u_seq') or _MEMBER_ID)
+                u_nick = user['userdata'].get('u_nick') or 'Guitarist'
+        except Exception:
+            pass
+
+    access_token = f"{member_id}|{app_id}|{device_cd}|{_SERVER_LOCALE}|{_UNKNOWN_OPT}|{now_ms}"
     member = {
-        'crt_dt': now_ms, 'upd_dt': now_ms, 'status_cd': 'OK', 'member_id': _MEMBER_ID,
-        'nickname': 'User', 'profile_img_url': None, 'feeling': None, 'adult_auth_yn': 'N',
+        'crt_dt': now_ms, 'upd_dt': now_ms, 'status_cd': 'OK', 'member_id': member_id,
+        'nickname': u_nick, 'profile_img_url': None, 'feeling': None, 'adult_auth_yn': 'N',
         'adult_auth_dt': None, 'recent_login_dt': None, 'recent_app_id': _int(app_id),
         'email': None, 'anonymous_yn': 'N', 'friend_accept_cd': None, 'reg_path': None,
         'recent_app_title': 'Guitar Girl', 'last_msg_dt': None, 'new_msg_yn': None,

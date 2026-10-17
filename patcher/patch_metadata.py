@@ -31,6 +31,12 @@ TARGET_URLS = [
     "https://qa-www.neonapi.com/api",
 ]
 
+# Custom string literal rewrites (in-place or appended)
+CUSTOM_LITERALS = [
+    ("USN: {0}({1})", "UID: {0}({1})"),
+    ("USN", "UID"),
+]
+
 _HOST_RE = re.compile(r'^(https?://)([^/]+)(.*)$')
 _N_HEADER_PAIRS = 31   # IL2CPP v31 header: magic+version + 31*(offset,size) = 0x100 bytes
 
@@ -70,6 +76,21 @@ def patch(data, target_base, verbose=True):
         else:
             appends.append((i, repl, sld_off + di, length))   # also zero the old bytes
         report.append((url, repl.decode(), 'inplace' if len(repl) <= length else 'append', length, len(repl)))
+
+    # Custom string literal rewrites (USN -> UID)
+    for orig_str, repl_str in CUSTOM_LITERALS:
+        ub = orig_str.encode('ascii')
+        repl = repl_str.encode('ascii')
+        hit = next(((i, ln, di) for (i, ln, di) in entries
+                    if ln == len(ub) and bytes(data[sld_off + di: sld_off + di + ln]) == ub), None)
+        if not hit:
+            continue
+        i, length, di = hit
+        if len(repl) <= length:
+            inplace.append((i, sld_off + di, repl, length))
+        else:
+            appends.append((i, repl, sld_off + di, length))
+        report.append((orig_str, repl_str, 'inplace' if len(repl) <= length else 'append', length, len(repl)))
 
     # in-place overwrites (no size change)
     for (i, ad, repl, length) in inplace:

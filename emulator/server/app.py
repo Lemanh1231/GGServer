@@ -150,6 +150,13 @@ class Handler(BaseHTTPRequestHandler):
             self.log_message("DOWNLOAD APK requested: %s", APK_PATH)
             self._send_file(APK_PATH, filename=APK_FILENAME)
             return
+        if path.startswith('/download/') or path.endswith('.apk'):
+            req_file = os.path.basename(path)
+            candidate = os.path.join(OUT_DIR, req_file)
+            if os.path.isfile(candidate) and req_file.endswith('.apk'):
+                self.log_message("DOWNLOAD specific APK requested: %s", candidate)
+                self._send_file(candidate, filename=req_file)
+                return
         if path in ('/admin', '/admin/'):
             html = admin.get_admin_html()
             self._send(html, 200, 'text/html; charset=utf-8')
@@ -410,10 +417,7 @@ class Handler(BaseHTTPRequestHandler):
                         else:
                             # Revoke Gold Pass for this season
                             user['user_shop'] = [item for item in shop_items if int(item.get('i_id', 0) or 0) not in (active_season, 1000 + active_season, 2000 + active_season, 3000 + active_season)]
-                            for s in subs:
-                                if int(s.get('i_SubscribeID', 0) or 0) in sub_ids:
-                                    s['i_isActive'] = 0
-                                    s['i_ActiveTime'] = 0
+                            user['user_subscribe_list'] = [s for s in subs if int(s.get('i_SubscribeID', 0) or 0) not in sub_ids]
                             user['user_ticketcollection'] = [t for t in tickets if int(t.get('i_id', 0) or 0) not in (active_season, target_shop_id)]
 
                     # 2. Update Star Pass Points (ONLY if Star Pass is enabled globally)

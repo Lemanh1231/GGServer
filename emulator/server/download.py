@@ -180,6 +180,8 @@ DOWNLOAD_HTML = """<!DOCTYPE html>
 
         <div class="badge-list">
             <span class="badge highlight">🟢 Server Online</span>
+            <span class="badge highlight">✨ Đồng Bộ UID Chuẩn (#u_seq)</span>
+            <span class="badge">👥 Fix Follower CH1/CH2</span>
             <span class="badge">🚫 Đã tách Google Play</span>
             <span class="badge">📦 1 File Cài Đơn</span>
             <span class="badge">☁️ Tự Động Lưu Cloud</span>
@@ -191,8 +193,11 @@ DOWNLOAD_HTML = """<!DOCTYPE html>
                 <span>Dung lượng: <strong>~458 MB</strong></span>
             </div>
             <a href="/download/apk" class="btn-download">
-                ⬇️ TẢI GAME APK NGAY
+                ⬇️ TẢI GAME APK NGAY (KHUYÊN DÙNG)
             </a>
+            <div style="margin-top: 14px; font-size: 0.85rem; color: var(--text-sub);">
+                Hoặc tải bản Universal: <a href="/download/Guitar_Girl_v8.0.0_Universal.apk" style="color: var(--accent-cyan); text-decoration: underline; font-weight: 600;">Guitar_Girl_v8.0.0_Universal.apk</a>
+            </div>
         </div>
 
         <div class="guide-box">
@@ -202,7 +207,8 @@ DOWNLOAD_HTML = """<!DOCTYPE html>
                 <li><strong>Giả lập PC (BlueStacks / LDPlayer / Nox)</strong>: Tải file APK về &rarr; Kéo thả trực tiếp file APK vào cửa sổ giả lập để cài đặt.</li>
             </ol>
             <p style="margin-top: 8px; font-size: 0.8rem; color: #94a3b8;">
-                <em>* Lưu ý: Hãy gỡ bản game cũ trước khi cài đặt bản mới để tránh xung đột chữ ký.</em>
+                <em>* Lưu ý: Hãy gỡ bản game cũ trước khi cài đặt bản mới để tránh xung đột chữ ký.</em><br>
+                <em>* Bản vá mới đã đồng bộ hiển thị <strong>UID</strong> (thay cho mã USN cũ) trùng khớp 100% với số thứ tự tài khoản trên Web Admin.</em>
             </p>
         </div>
 

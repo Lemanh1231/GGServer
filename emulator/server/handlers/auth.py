@@ -262,41 +262,60 @@ def _normalise_subscribe_list(user):
         if 'i_ActiveTime' not in s:
             s['i_ActiveTime'] = 0
 
+    shop_items = user.get('user_shop', []) or []
+    bought_ids = {int(sh.get('i_id', 0) or 0) for sh in shop_items if int(sh.get('i_Count', sh.get('i_TotalCount', 0)) or 0) > 0}
+
+    # CRITICAL: In libil2cpp.so at 0x20C81E4 (UserSubscribeList.GetSubscribe(seasonId)),
+    # the client scans user_subscribe_list and returns the entry if SubscribeID matches,
+    # WITHOUT checking i_isActive!
+    # If user_subscribe_list contains an inactive entry (i_isActive == 0), the client
+    # treats the pass as active, which sets m_cLiveData.field_0x40 != null, locks the
+    # Live Slot as "Đã đăng ký", disables clicking/purchasing, and throws "Không thể mua thêm".
+    # Therefore, user_subscribe_list must ONLY contain truly active subscriptions (i_isActive == 1).
     if not event_manager.is_star_pass_enabled():
+        valid_subs = []
         for s in subs:
-            s['i_isActive'] = 0
-        return subs
+            sid = int(s.get('i_SubscribeID', 0) or 0)
+            s_season = sid % 1000 if sid > 1000 else sid
+            if s_season and (1000 + s_season in bought_ids or 2000 + s_season in bought_ids or 3000 + s_season in bought_ids):
+                s['i_isActive'] = 1
+                valid_subs.append(s)
+        user['user_subscribe_list'] = valid_subs
+        return valid_subs
 
     active_season = event_manager.get_active_star_pass_season()
     paid_enabled = event_manager.is_paid_star_card_enabled()
-
-    # Check if user legitimately bought active season in shop
-    shop_items = user.get('user_shop', []) or []
-    bought_ids = {int(sh.get('i_id', 0) or 0) for sh in shop_items if int(sh.get('i_Count', sh.get('i_TotalCount', 0)) or 0) > 0}
     season_bought = (1000 + active_season in bought_ids or 2000 + active_season in bought_ids or 3000 + active_season in bought_ids)
 
-    paid_sub = next((s for s in subs if s.get('i_SubscribeID') in (active_season, 1000 + active_season)), None)
-    if paid_enabled or season_bought:
-        if not paid_sub:
-            subs.append({'i_SubscribeID': active_season, 'i_isActive': 1, 'i_ActiveTime': 2147483647 if paid_enabled else int(time.time())})
-        else:
-            paid_sub['i_isActive'] = 1
-            if paid_sub.get('i_ActiveTime', 0) == 0:
-                paid_sub['i_ActiveTime'] = 2147483647 if paid_enabled else int(time.time())
-    else:
-        if paid_sub:
-            paid_sub['i_isActive'] = 0
-            paid_sub['i_ActiveTime'] = 0
+    valid_subs = []
+    seen_ids = set()
 
     for s in subs:
-        sid = s.get('i_SubscribeID', 0)
+        sid = int(s.get('i_SubscribeID', 0) or 0)
         s_season = sid % 1000 if sid > 1000 else sid
-        if s_season != active_season:
+        if s_season == active_season:
+            if (paid_enabled or season_bought) and sid not in seen_ids:
+                s['i_isActive'] = 1
+                if not s.get('i_ActiveTime'):
+                    s['i_ActiveTime'] = 2147483647 if paid_enabled else int(time.time())
+                valid_subs.append(s)
+                seen_ids.add(sid)
+        else:
             s_bought = (1000 + s_season in bought_ids or 2000 + s_season in bought_ids or 3000 + s_season in bought_ids)
-            if not s_bought:
-                s['i_isActive'] = 0
+            if s_bought and sid not in seen_ids:
+                s['i_isActive'] = 1
+                valid_subs.append(s)
+                seen_ids.add(sid)
 
-    return subs
+    if (paid_enabled or season_bought) and active_season not in seen_ids and (1000 + active_season) not in seen_ids:
+        valid_subs.append({
+            'i_SubscribeID': active_season,
+            'i_isActive': 1,
+            'i_ActiveTime': 2147483647 if paid_enabled else int(time.time())
+        })
+
+    user['user_subscribe_list'] = valid_subs
+    return valid_subs
 
 
 def _normalise_ticketcollection(user):

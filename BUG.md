@@ -6,10 +6,46 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
 
 ## MỤC LỤC
 1. [Lỗi Client APK, Google Play Services, EULA & Màn hình đen](#1-lỗi-client-apk-google-play-services-eula--màn-hình-đen)
+   - [1.1. Treo màn hình đen vĩnh viễn sau khi chấp nhận Điều khoản (Terms of Service / EULA)](#11-treo-màn-hình-đen-vĩnh-viễn-sau-khi-chấp-nhận-điều-khoản-terms-of-service--eula)
+   - [1.2. Lỗi ART Verifier: `invoke-super/virtual can't be used on private method GamePlayLogin.login`](#12-lỗi-art-verifier-invoke-supervirtual-cant-be-used-on-private-method-gameplayloginlogin)
+   - [1.3. Lỗi thiếu thanh ghi `outs_size` trong Code Item Header của Dalvik](#13-lỗi-thiếu-thanh-ghi-outs_size-trong-code-item-header-của-dalvik)
+   - [1.4. Lỗi hỏng cấu trúc String Table DEX (`Out-of-order string_ids` & `String longer than indicated size 0`)](#14-lỗi-hỏng-cấu-trúc-string-table-dex-out-of-order-string_ids--string-longer-than-indicated-size-0)
+   - [1.5. Lỗi kiểm tra tính toàn vẹn chữ ký APK (`AppSecurityValidator`)](#15-lỗi-kiểm-tra-tính-toàn-vẹn-chữ-ký-apk-appsecurityvalidator)
+   - [1.6. Tự động đồng ý Điều khoản (Bypass EULA Popup)](#16-tự-động-đồng-ý-điều-khoản-bypass-eula-popup)
+   - [1.7. Lỗi cài đặt Split APK & Incremental Install trên Android 14 / HyperOS](#17-lỗi-cài-đặt-split-apk--incremental-install-trên-android-14--hyperos)
+   - [1.8. Lỗi khóa Offline các nút Thông báo (Push Notifications) và Thống kê Socola (CP Breakdown) trong Cài đặt](#18-lỗi-khóa-offline-các-nút-thông-báo-push-notifications-và-thống-kê-socola-cp-breakdown-trong-cài-đặt)
 2. [Lỗi Server, Nginx Routing & PmangPlus / NeonAPI Auth](#2-lỗi-server-nginx-routing--pmangplus--neonapi-auth)
+   - [2.1. Lỗi Nginx 404/403 cho các endpoint PmangPlus không có tiền tố `/api/`](#21-lỗi-nginx-404403-cho-các-endpoint-pmangplus-không-có-tiền-tố-api)
+   - [2.2. Lỗi ERROR_90004 khi đăng nhập lần đầu](#22-lỗi-error_90004-khi-đăng-nhập-lần-đầu)
 3. [Lỗi Database, Dữ liệu người dùng & Hệ thống Ban](#3-lỗi-database-dữ-liệu-người-dùng--hệ-thống-ban)
+   - [3.1. Dữ liệu rác và xung đột Device Token khi reset tài khoản](#31-dữ-liệu-rác-và-xung-đột-device-token-khi-reset-tài-khoản)
+   - [3.2. Chặn thiết bị / tài khoản (Ban System)](#32-chặn-thiết-bị--tài-khoản-ban-system)
 4. [Lỗi Gameplay, Logic Server & Dữ liệu trong game](#4-lỗi-gameplay-logic-server--dữ-liệu-trong-game)
+   - [4.1. Sự kiện đăng nhập 7 ngày (Attendance Event) bị ẩn và không thể nhận thưởng](#41-sự-kiện-đăng-nhập-7-ngày-attendance-event-bị-ẩn-và-không-thể-nhận-thưởng)
+   - [4.2. Khởi tạo tài khoản mới bị gán số dư CP và Kẹo khổng lồ](#42-khởi-tạo-tài-khoản-mới-bị-gán-số-dư-cp-và-kẹo-khổng-lồ)
+   - [4.3. Nâng cấp kỹ năng (Skill Upgrade) trả về đối tượng rỗng `{}`](#43-nâng-cấp-kỹ-năng-skill-upgrade-trả-về-đối-tượng-rỗng-)
+   - [4.4. Kỹ năng bị mở khóa trước cấp độ yêu cầu (Skill Level Gate)](#44-kỹ-năng-bị-mở-khóa-trước-cấp-độ-yêu-cầu-skill-level-gate)
+   - [4.5. Star Pass trả về phần thưởng và thẻ tháng giả mạo](#45-star-pass-trả-về-phần-thưởng-và-thẻ-tháng-giả-mạo)
+   - [4.6. Lỗi tràn số nguyên uint64 (> 1.84e19) khi quy đổi số Tim (Likes) sang các bậc đơn vị lớn (G, H, ... ZZ)](#46-lỗi-tràn-số-nguyên-uint64--184e19-khi-quy-đổi-số-tim-likes-sang-các-bậc-đơn-vị-lớn-g-h--zz)
+   - [4.7. Lỗi Hòm thư hệ thống nhận hàng loạt Thư thông báo cũ khi tạo Tài khoản mới (Honkai: Star Rail Mailbox Rule)](#47-lỗi-hòm-thư-hệ-thống-nhận-hàng-loạt-thư-thông-báo-cũ-khi-tạo-tài-khoản-mới-honkai-star-rail-mailbox-rule)
+   - [4.8. Lỗi Người theo dõi ở Chương 2 (Tiệm bánh hạnh phúc) khi mở khóa không có tin nhắn / không hiển thị phòng chat](#48-lỗi-người-theo-dõi-ở-chương-2-tiệm-bánh-hạnh-phúc-khi-mở-khóa-không-có-tin-nhắn--không-hiển-thị-phòng-chat)
+   - [4.9. Lỗi Sự kiện Kỷ niệm 1 năm (1st Anniversary Event) tự động mở trong game dù trên Web Dashboard không bật](#49-lỗi-sự-kiện-kỷ-niệm-1-năm-1st-anniversary-event-tự-động-mở-trong-game-dù-trên-web-dashboard-không-bật)
+   - [4.10. Khóa điều khiển Thẻ Sao (Star Pass / Star Card) trong Admin khi máy chủ chưa kích hoạt Thẻ Sao](#410-khóa-điều-khiển-thẻ-sao-star-pass--star-card-trong-admin-khi-máy-chủ-chưa-kích-hoạt-thẻ-sao)
+   - [4.11. Lỗi sự kiện Nhiệm vụ người theo dõi Joy (`FollowerQuest` - #ỦnghộGuitarGirl) không nhận được quà dù đã đạt đủ điều kiện (`image.png`)](#411-lỗi-sự-kiện-nhiệm-vụ-người-theo-dõi-joy-followerquest---ủnghộguitargirl-không-nhận-được-quà-dù-đã-đạt-đủ-điều-kiện-imagepng)
+   - [4.12. Lỗi mở khóa người theo dõi ở Chương 1 (Bạn tiệm tiện lợi, Giáo viên chủ nhiệm, Tiền bối trầm lặng...) nhưng không có tin nhắn / phòng chat biến mất (`image copy.png` & `image copy 2.png`)](#412-lỗi-mở-khóa-người-theo-dõi-ở-chương-1-bạn-tiệm-tiện-lợi-giáo-viên-chủ-nhiệm-tiền-bối-trầm-lặng-nhưng-không-có-tin-nhắn--phòng-chat-biến-mất-image-copypng--image-copy-2png)
+   - [4.13. Lỗi mất hướng dẫn (Tutorial) của Moa tại CH3: Trường cấp 3 Sunshine khi mở khóa Moa lần đầu](#413-lỗi-mất-hướng-dẫn-tutorial-của-moa-tại-ch3-trường-cấp-3-sunshine-khi-mở-khóa-moa-lần-đầu)
+   - [4.14. Kiểm tra đĩa nhạc (Music Discs) và tỉ lệ nhận Quà tặng biểu diễn (Encore Gift Drop Rates)](#414-kiểm-tra-đĩa-nhạc-music-discs-và-tỉ-lệ-nhận-quà-tặng-biểu-diễn-encore-gift-drop-rates)
+   - [4.15. Lỗi hiển thị nút "Mua" màu hồng kèm chữ "Không thể mua" ở Bản Sonata của Mozart (Song 12)](#415-lỗi-hiển-thị-nút-mua-màu-hồng-kèm-chữ-không-thể-mua-ở-bản-sonata-của-mozart-song-12)
+   - [4.16. Lỗi không nhận được tin nhắn hoặc chỉ có 2 người theo dõi gửi tin nhắn khi mở khóa toàn bộ 15 người theo dõi ở Chapter 1 và đồng bộ tin nhắn Chapter 2](#416-lỗi-không-nhận-được-tin-nhắn-hoặc-chỉ-có-2-người-theo-dõi-gửi-tin-nhắn-khi-mở-khóa-toàn-bộ-15-người-theo-dõi-ở-chapter-1-và-đồng-bộ-tin-nhắn-chapter-2)
+   - [4.17. Quy đổi số tim thành đơn vị chuẩn trong game tránh lỗi tràn số nguyên uint64 (BigNumber Conversion)](#417-quy-đổi-số-tim-thành-đơn-vị-chuẩn-trong-game-tránh-lỗi-tràn-số-nguyên-uint64-bignumber-conversion)
+   - [4.18. Hệ thống Hòm thư (Mailbox): Tài khoản mới không nhận thư hệ thống cũ và chuẩn hóa đa ngôn ngữ](#418-hệ-thống-hòm-thư-mailbox-tài-khoản-mới-không-nhận-thư-hệ-thống-cũ-và-chuẩn-hóa-đa-ngôn-ngữ)
+   - [4.19. Ràng buộc cấu hình Admin: Chặn chỉnh Thẻ sao khi chưa bật & Đồng bộ sự kiện 1 năm (Anniversary)](#419-ràng-buộc-cấu-hình-admin-chặn-chỉnh-thẻ-sao-khi-chưa-bật--đồng-bộ-sự-kiện-1-năm-anniversary)
+   - [4.20. Đồng bộ hóa mã định danh: Chuyển đổi USN Google Play sang UID chuẩn máy chủ (`u_seq`)](#420-đồng-bộ-hóa-mã-định-danh-chuyển-đổi-usn-google-play-sang-uid-chuẩn-máy-chủ-u_seq)
+   - [4.21. Lỗi không thể mua Live Slot trong Cửa hàng Vật phẩm Thẻ Sao (Pass Goods Sale Live Slot Unable to Buy)](#421-lỗi-không-thể-mua-live-slot-trong-cửa-hàng-vật-phẩm-thẻ-sao-pass-goods-sale-live-slot-unable-to-buy)
 5. [Quy trình Build, Cài đặt và Kiểm tra chuẩn](#5-quy-trình-build-cài-đặt-và-kiểm-tra-chuẩn)
+   - [5.1. Build APK không Google Play](#51-build-apk-không-google-play)
+   - [5.2. Cài đặt lên thiết bị Android qua ADB](#52-cài-đặt-lên-thiết-bị-android-qua-adb)
+   - [5.3. Khởi chạy Server Giả lập](#53-khởi-chạy-server-giả-lập)
 
 ---
 
@@ -452,6 +488,211 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
       - Nhóm có tỉ lệ rơi 50% (1 rớt, 1 không rớt) bị biến thành 100% luôn rớt.
       - Nhóm có số lượng quà ngẫu nhiên từ 1 đến 4 luôn chỉ rơi đúng 1 cái (0% cơ hội nhận 2, 3, 4).
     - Đã cập nhật thuật toán lấy mẫu ngẫu nhiên có trọng số (`random.choices(candidates, weights=weights)`). Nhờ đó, tỉ lệ rơi quà tặng biểu diễn tại Chapter 3 hoàn toàn trùng khớp 100% với tỉ lệ gốc của nhà phát triển Neowiz.
+
+---
+
+### 4.15. Lỗi hiển thị nút "Mua" màu hồng kèm chữ "Không thể mua" ở Bản Sonata của Mozart (Song 12)
+- **Hiện tượng**: Trong danh mục Âm nhạc (Music), Bản Sonata của Mozart (ID 12) hiển thị nút "Mua" màu hồng có dòng phụ "Không thể mua" thay vì hiển thị nút khóa xám "🔒 Không thể mua" như các vật phẩm sự kiện không bán trong cửa hàng (ví dụ Trang phục 10 - Đồng phục thủy thủ).
+- **Nguyên nhân**:
+  1. Trong cấu hình gốc của Neowiz tại Bảng 2 (`music`), bài hát 12 có `s_GoodsType: 'Package'`, `i_AcquisitionType: 2` (Shop), `i_AcquisitionId: 5`.
+  2. Trong mã nguồn IL2CPP (`GgUIMusicItemController.SetData`), khi `s_GoodsType == 'Package'` và `i_AcquisitionType == 2`, client Unity sẽ bật `m_buttonUnlock_Shop_Enable` (nút bấm mua hàng màu hồng). Tuy nhiên do không có gói Package nào khớp với ID 5 nên client điền chuỗi "Không thể mua" vào nút.
+  3. Đối với các vật phẩm không bán trong Shop như Costume 10 (*Đồng phục thủy thủ*), client quy định `s_GoodsType: 'NotForSale'`, `i_AcquisitionType: 1` (Event) và `i_AcquisitionId: 1290049` (chuỗi ID bản địa hóa "Không thể mua"). Khi đó client kích hoạt `m_textUnlockRequirement` với biểu tượng ổ khóa màu xám và ẩn nút "Mua" màu hồng.
+- **Cách khắc phục**:
+  - Cập nhật cả [game_data.json](file:///root/project/GGServer/emulator/gamedata/game_data.json) và mã hóa lại [getGameDataList.b64](file:///root/project/GGServer/emulator/gamedata/getGameDataList.b64) cho dòng Song 12:
+    - `s_GoodsType`: `'NotForSale'`
+    - `i_AcquisitionType`: `1`
+    - `i_AcquisitionId`: `1290049`
+  - Client nhận dữ liệu mới sẽ hiển thị nút xám có ổ khóa **`🔒 Không thể mua`** hoàn toàn chuẩn mực và đồng bộ với giao diện của Trang phục.
+
+---
+
+### 4.16. Lỗi không nhận được tin nhắn hoặc chỉ có 2 người theo dõi gửi tin nhắn khi mở khóa toàn bộ 15 người theo dõi ở Chapter 1 và đồng bộ tin nhắn Chapter 2
+- **Hiện tượng**:
+  1. Khi người chơi mở khóa toàn bộ 15 người theo dõi ở Chapter 1 (Phòng Guitar Girl), danh sách Messenger chỉ có tối đa 2 người theo dõi (hoặc 4 người) gửi tin nhắn (Phòng 4 - Tiền bối trầm lặng và Phòng 10 - Mèo quản gia).
+  2. Toàn bộ các người theo dõi còn lại (Bạn tiệm tiện lợi, Giáo viên chủ nhiệm, Moa, Amber, Elle, Yeri, Sua, Jae, Huấn luyện viên...) không hề gửi tin nhắn, hoặc phòng chat bị biến mất, hoặc hội thoại khởi đầu bị bỏ qua.
+  3. Ở Chapter 2 (Tiệm bánh hạnh phúc), tin nhắn của các người theo dõi mới (Reading Fox, Ruby, Alex, Busking TV, Sora, Jessica) và người theo dõi chuyển tiếp (Joy 201, Moa 202) không kích hoạt chuẩn xác.
+
+- **Phân tích Reverse-Engineering Client IL2CPP (`libil2cpp.so`)**:
+  1. **Cơ chế khởi tạo nhóm tiến trình (`GgMessengerManagerSGT.Initialize` - RVA `0x1DA1A10`, file offset `0x1D9DA10`)**:
+     - Client phân tách chuỗi `s_UnlockGroupList` theo dấu phẩy `,`.
+     - Tất cả các nhóm nằm phía trước (từ phần tử `0` đến `n-2`) được thêm vào danh sách nhóm đã hoàn thành `CompleteProgressGroupList`.
+     - **PHẦN TỬ CUỐI CÙNG (`index - 1`) của `s_UnlockGroupList` được gán trực tiếp làm nhóm đang tiến hành (`m_proceedingGroup` tại offset `0x1da12b8`)!**
+     - Client đặt chỉ số tin nhắn hiện tại: `m_proceedingIndex = min(group.max_messages, i_LastConfirmIndex)` (`0x1da0e30`).
+     - Tiếp theo, hàm `DoNextProgressAll()` tăng `m_proceedingIndex` thêm 1 nếu còn tin nhắn chưa đọc.
+  2. **Điều kiện hiển thị phòng chat và tin nhắn (`0x1F7B6C8` & `0x2235634`)**:
+     - Với mỗi phòng trong `user_messenger`, client gọi `GetProceedingGroup(roomId)` và `GetProceedingIndex(roomId)`.
+     - Nếu `GetProceedingIndex(roomId) >= 0`, client tải tin nhắn `GetMessage(group, index)`.
+     - Trong `GgUIInGameMessengerChattingItemController.SetData` (`0x2235DB8`), phòng chat **chỉ hiển thị nếu `item._message != null` hoặc `item.IsOnUserInput == true`**. Nếu không, client gọi `gameObject.SetActive(false)` và ẩn hoàn toàn phòng chat khỏi giao diện!
+     - Huy hiệu thông báo đỏ được kích hoạt khi số tin chưa đọc `unread = GetProceedingIndex(roomId) - i_LastConfirmIndex > 0`.
+  3. **Nguyên nhân cốt lõi khiến chỉ có 2 người theo dõi gửi tin nhắn**:
+     - Trước đây, máy chủ cố gắng giải quyết điều kiện tiên quyết bằng cách gộp chuỗi nhóm phụ thuộc vào từng phòng mà không chỉ định nhóm tiến hành đích (`target_proceeding`), dẫn đến việc nối các nhóm cốt truyện cấp cao vào cuối danh sách:
+       - Phòng 2 nhận `[2, 5, 11, 77]` $\to$ Nhóm 77 (yêu cầu Bạn Tiệm Tiện Lợi Lv 1100) bị đặt ở cuối và trở thành `m_proceedingGroup`! Nhóm 2 khởi đầu bị đánh dấu hoàn thành mà người chơi chưa đọc. Vì người chơi chưa đạt Lv 1100 nên Nhóm 77 không có tin nhắn hợp lệ $\to$ Phòng 2 không gửi tin nhắn.
+       - Phòng 3 nhận `[6, 31, 44]` $\to$ Nhóm 44 (yêu cầu Cấp 650) thành nhóm tiến hành $\to$ bị kẹt.
+       - Phòng 5 nhận `[13, ..., 55]` $\to$ Nhóm 55 (yêu cầu Cấp 625) thành nhóm tiến hành $\to$ bị kẹt.
+       - Phòng 6 nhận `[18, ..., 43]` $\to$ Nhóm 43 (yêu cầu Cấp 250) thành nhóm tiến hành $\to$ bị kẹt.
+       - Phòng 7 nhận `[20, ..., 58]` $\to$ Nhóm 58 (yêu cầu Cấp 375) thành nhóm tiến hành $\to$ bị kẹt.
+       - Phòng 1 nhận `[1, ..., 75]` $\to$ Nhóm 75 (yêu cầu Joy Lv 1250) thành nhóm tiến hành $\to$ toàn bộ đoạn chat tân thủ của Joy bị nhảy cóc.
+       - Các người theo dõi cấp cao (11, 12, 13, 14, 15) yêu cầu các nhóm điều kiện ở Phòng 7, Phòng 16, Phòng 1 phải nằm trong `CompleteProgressGroupList`, nhưng vì các nhóm này đang bị kẹt làm nhóm tiến hành ở cuối chuỗi nên điều kiện bị chặn hoàn toàn!
+       - **Chỉ có Phòng 4 (Nhóm 9) và Phòng 10 (Nhóm 54)** không bị gán nhóm cấp cao ở cuối nên giữ nguyên được nhóm khởi đầu $\to$ Đúng như người dùng phản ánh: *"khi mở full 15 người theo dõi chỉ có 2 người theo dõi là gửi tin nhắn"*.
+
+- **Cách khắc phục triệt để**:
+  1. **Bảo đảm vị trí nhóm tiến hành với `target_proceeding` ([follower.py](file:///root/project/GGServer/emulator/server/handlers/follower.py))**:
+     - Nâng cấp thuật toán `_merge_groups_seq(existing_str, new_groups, target_proceeding=...)`:
+       - Tách biệt rõ ràng: toàn bộ các nhóm điều kiện tiên quyết được xếp vào phía trước (được thêm vào `CompleteProgressGroupList` của client).
+       - Nhóm hội thoại ban đầu của người theo dõi (`target_proceeding`) luôn luôn được đặt ở **vị trí cuối cùng** (index `-1`), bảo đảm client nạp chính xác làm `m_proceedingGroup`.
+  2. **Bản đồ hội thoại chuẩn xác cho Chapter 1 (15 người theo dõi + Phòng đặc biệt)**:
+     - Follower 1 (Joy): Phòng 1 $\to$ Nhóm 1 (`target_proceeding=1`). Các nhóm tiên quyết `[4, 7, 10, 12, 15, 16, 24, 30, 32, 33, 35, 36, 41, 45, 47, 56, 57, 75]` đứng trước.
+     - Follower 2 (Bạn tiệm tiện lợi): Phòng 2 $\to$ Nhóm 2.
+     - Follower 3 (Giáo viên chủ nhiệm): Phòng 3 $\to$ Nhóm 6.
+     - Follower 4 (Tiền bối trầm lặng): Phòng 4 $\to$ Nhóm 9.
+     - Follower 5 (Moa): Phòng 5 $\to$ Nhóm 13.
+     - Follower 6 (Elle): Phòng 6 $\to$ Nhóm 18.
+     - Follower 7 (Amber): Phòng 7 $\to$ Nhóm 20 (kèm nhóm điều kiện `53, 58` hoàn thành ở phía trước).
+     - Follower 8 (Yeri): Phòng 8 $\to$ Nhóm 51.
+     - Follower 9 (Sua): Phòng 9 $\to$ Nhóm 62.
+     - Follower 10 (Mèo quản gia): Phòng 10 $\to$ Nhóm 54.
+     - Follower 11 (Jae): Phòng 11 $\to$ Nhóm 74.
+     - Follower 12 (Tiệm bánh hạnh phúc): Phòng 12 $\to$ Nhóm 80.
+     - Follower 13 (Nova): Phòng 13 $\to$ Nhóm 88.
+     - Follower 14 (Mocha Latte): Phòng 14 $\to$ Nhóm 90.
+     - Follower 15 (Huấn luyện viên thể dục): Phòng 15 $\to$ Nhóm 91.
+     - Phòng 16 (Chat nhóm Joy & Moa CH1): Nhóm 81 (`'76,78,79,81'`).
+  3. **Đồng bộ hóa toàn diện cho Chapter 2 (Tiệm bánh hạnh phúc)**:
+     - Follower 201 (Joy CH2): Phòng 1 $\to$ Nhóm 111 (`'1,75,111'`).
+     - Follower 202 (Moa CH2): Phòng 5 $\to$ Nhóm 110 (`'13,110'`).
+     - Follower 203 (Reading Fox): Phòng 203 $\to$ Nhóm 114.
+     - Follower 204 (Ruby): Phòng 204 $\to$ Nhóm 127.
+     - Follower 205 (Alex): Phòng 205 $\to$ Nhóm 138.
+     - Follower 206 (Busking TV): Phòng 206 $\to$ Nhóm 178.
+     - Follower 207 (Sora): Phòng 207 $\to$ Nhóm 181.
+     - Follower 208 (Jessica): Phòng 208 $\to$ Nhóm 186.
+     - Phòng 12 (Cầu nối CH2): Nhóm 103 (`'80,103'`).
+     - Phòng 16 (Cốt truyện CH2 Joy & Moa): Nhóm 104 (`'76,78,79,81,82,...,104'`).
+     - Phòng 17 (Chat nhóm 4 người): Nhóm 139 (`'...,173,139'`).
+  4. **Cơ chế tự sửa lỗi dữ liệu cũ (Auto-healing `CORRUPT_CH1_HEAL`)**:
+     - Tự động nhận diện các tài khoản đã bị lưu chuỗi nhóm lỗi trong `database.db` (như Phòng 2 kết thúc bằng 77, Phòng 3 kết thúc bằng 44, Phòng 5 kết thúc bằng 55, Phòng 6 kết thúc bằng 43, Phòng 7 kết thúc bằng 58).
+     - Khi người chơi đăng nhập hoặc đồng bộ dữ liệu, server tự động khôi phục chuỗi nhóm sạch chuẩn mực, đặt `i_LastConfirmIndex = 0` để kích hoạt thông báo tin nhắn mới tức thì.
+  5. **Kết quả**:
+     - Toàn bộ **15/15 người theo dõi Chapter 1** và **tất cả người theo dõi Chapter 2** đều gửi tin nhắn chào mừng, hiển thị phòng chat đầy đủ cùng huy hiệu thông báo tin nhắn chưa đọc màu đỏ, hoạt động hoàn hảo và mượt mà.
+
+---
+
+### 4.17. Quy đổi số tim thành đơn vị chuẩn trong game tránh lỗi tràn số nguyên uint64 (BigNumber Conversion)
+- **Hiện tượng**: Khi số Tim hoặc Lượt thích tích lũy quá lớn vượt quá giới hạn 64-bit uint64 (`18,446,744,073,709,551,615`), hệ thống server và client có thể bị crash, tràn số âm hoặc hiển thị chuỗi số mũ khoa học (`3.487e+22`) gây lỗi hiển thị trong game.
+- **Nguyên nhân**: Game Guitar Girl sử dụng ký hiệu đơn vị lớn dạng Alphabet notation (A, B, C... G, H... AA, AB... CX...) với hệ số cơ số mũ `10^3` (ví dụ `1A = 1,000`, `1B = 1,000,000`, `1C = 1,000,000,000`, v.v.).
+- **Cách khắc phục**:
+  - Chuẩn hóa module chuyển đổi số lớn hai chiều trên server và Web Admin Dashboard.
+  - Hỗ trợ nhập và quy đổi linh hoạt mọi đơn vị game: ví dụ nhập `42.877G`, `100H`, `10AA` tự động parse chính xác sang cơ số 10 và format ngược lại hiển thị trực quan.
+  - Thêm cơ chế kẹp giá trị an toàn (clamp) và định dạng chuẩn chuỗi Alphabet notation, loại bỏ hoàn toàn nguy cơ tràn số nguyên uint64.
+
+---
+
+### 4.18. Hệ thống Hòm thư (Mailbox): Tài khoản mới không nhận thư hệ thống cũ và chuẩn hóa đa ngôn ngữ
+- **Hiện tượng**:
+  1. Người chơi tạo tài khoản mới tinh sau khi vào game thì bị nhận hàng loạt thư thông báo và quà sự kiện đã phát sóng từ nhiều tháng trước trong quá khứ.
+  2. Các trường ngôn ngữ trong [broadcast_posts.json](file:///root/project/GGServer/emulator/broadcast_posts.json) (`title_ko`, `title_en`, `title_jp`...) đều bị copy nguyên bản tiếng Việt, khiến người chơi chọn ngôn ngữ khác (Tiếng Anh, Tiếng Nhật, Tiếng Hàn...) vẫn bị hiển thị tiếng Việt.
+- **Cách khắc phục**:
+  - **Lọc thư cho tài khoản mới**: Thêm thuộc tính `applies_to_new_users: false` cho toàn bộ các thư phát sóng sự kiện lịch sử trong [broadcast_posts.json](file:///root/project/GGServer/emulator/broadcast_posts.json). Khi người dùng đăng nhập hoặc nhận thư, server đối chiếu `create_time` của thư với thời điểm tạo tài khoản; chỉ các thư phát hành sau khi tạo nick mới được gửi vào hòm thư.
+  - **Chuẩn hóa đa ngôn ngữ**: Khai thác dữ liệu bản địa hóa chính thức từ Bảng 22 trong `game_data.json` để dịch toàn bộ tiêu đề và nội dung thư phát sóng sang đủ **12 ngôn ngữ** (`ko`, `en`, `jp`, `zh_chs`, `zh_cht`, `vi`, `es`, `it`, `id`, `th`, `pt`, `hi`). Cập nhật `send_post` trong [post.py](file:///root/project/GGServer/emulator/server/handlers/post.py) hỗ trợ truyền dictionary đa ngôn ngữ tự động.
+
+---
+
+### 4.19. Ràng buộc cấu hình Admin: Chặn chỉnh Thẻ sao khi chưa bật & Đồng bộ sự kiện 1 năm (Anniversary)
+- **Hiện tượng**:
+  1. Khi tính năng Thẻ Sao (Star Pass) chưa bật trên Web Admin, quản trị viên vẫn có thể mở modal người chơi và tích chọn Thẻ Sao Gold hoặc nâng điểm Star Pass, gây lỗi bất đồng bộ dữ liệu game.
+  2. Sự kiện Kỷ niệm 1 năm (1st Anniversary) tự động hiển thị trong game dù toggle trên Web Admin đang tắt.
+- **Cách khắc phục**:
+  - Trong Web Admin Dashboard, thêm cơ chế kiểm tra `currentConfig.star_pass.enabled`. Nếu Star Pass đang tắt, modal quản lý người chơi sẽ tự động ẩn các trường chỉnh sửa Star Pass và hiển thị cảnh báo hướng dẫn bật Star Pass trước.
+  - Đồng bộ chặt chẽ danh sách sự kiện đăng nhập trong `build_filtered_ret` ([gamedata.py](file:///root/project/GGServer/emulator/server/handlers/gamedata.py)) và `getEventRewardList` ([event_reward.py](file:///root/project/GGServer/emulator/server/handlers/event_reward.py)) theo đúng trạng thái bật/tắt của từng sự kiện (bao gồm Kỷ niệm 1 năm - Event 2).
+
+
+---
+
+### 4.20. Đồng bộ hóa mã định danh: Chuyển đổi USN Google Play sang UID chuẩn máy chủ (`u_seq`)
+- **Hiện tượng**:
+  1. Trong menu Cài đặt và hộp thoại báo lỗi của game hiển thị định danh theo dạng `USN: 452465183(PlayGame)` hoặc `USN: 429071553(PmangPlus)`.
+  2. Ngược lại, máy chủ và Web Admin Dashboard lại quản lý người chơi theo `u_seq` (`100001`), `u_id` (`guest_100001`) và `device_uuid`.
+  3. Khi người chơi cần hỗ trợ hoặc sao chép USN gửi cho Admin, số USN trên máy không khớp với số ID trên bảng quản trị, gây khó khăn cho việc tra cứu tài khoản.
+- **Nguyên nhân chi tiết (Reverse-Engineering qua Unity IL2CPP & PmangPlus SDK)**:
+  1. Trong mã nguồn IL2CPP (`GgUtil.GetUSN` tại RVA `0x1CF8B30`), game đọc trường `ppMemberId` từ `PPMembershipManager` (lớp singleton quản lý phiên đăng nhập PmangPlus).
+  2. Trước đây máy chủ giả lập trong [auth.py](file:///root/project/GGServer/emulator/server/auth.py) trả về giá trị `_MEMBER_ID = 429071553` cố định cho mọi request đăng nhập `/accounts/v3/global/login`.
+  3. Định dạng chuỗi hiển thị trong `global-metadata.dat` được biên dịch sẵn là `USN: {0}({1})`.
+- **Cách khắc phục triệt để (Phương án Kết hợp toàn diện)**:
+  1. **Đồng bộ hóa tức thì từ Máy chủ ([auth.py](file:///root/project/GGServer/emulator/server/auth.py))**:
+     - Trong handler `/accounts/v3/global/login`, trích xuất `device_cd` từ form yêu cầu của client.
+     - Sử dụng `state.create_user(device_cd, device_cd)` để tra cứu (hoặc cấp phát) số thứ tự tài khoản chính xác của thiết bị (`u_seq`, ví dụ `100001`).
+     - Gán `member_id = u_seq` và nạp vào cấu trúc JSON trả về (`member.member_id = 100001`).
+     - Kết quả: Toàn bộ các bản APK (kể cả bản cũ đang cài đặt) tự động nhận `100001` làm USN; nút "Sao chép USN" trong game copy chính xác chuỗi `100001` khớp 100% với Web Admin.
+  2. **Vá giao diện APK từ USN sang UID ([patch_metadata.py](file:///root/project/GGServer/patcher/patch_metadata.py))**:
+     - Bổ sung quy tắc vá `CUSTOM_LITERALS`:
+       - Chuỗi `USN: {0}({1})` (13 ký tự) được ghi đè in-place thành `UID: {0}({1})` (13 ký tự).
+       - Chuỗi nhãn `USN` (3 ký tự) được ghi đè in-place thành `UID` (3 ký tự).
+     - Cập nhật chuỗi thông báo sao chép trong bảng dữ liệu hệ thống Bảng 16 ([game_data.json](file:///root/project/GGServer/emulator/gamedata/game_data.json) & [getGameDataList.b64](file:///root/project/GGServer/emulator/gamedata/getGameDataList.b64)) sang `[b][UID][/b] đã được sao chép vào clipboard`.
+  3. **Nâng cấp Web Admin Dashboard ([admin.py](file:///root/project/GGServer/emulator/server/admin.py))**:
+     - Hiển thị badge nổi bật **`UID: #100001`** ngay cạnh tên người chơi trong bảng danh sách và trong modal cài đặt cá nhân.
+     - Thanh tìm kiếm hỗ trợ tra cứu tức thì theo bất kỳ thông tin nào (`u_seq`, `guest_100001`, `nickname`, hoặc `device_uuid`).
+
+---
+
+### 4.21. Lỗi không thể mua Live Slot trong Cửa hàng Vật phẩm Thẻ Sao (Pass Goods Sale Live Slot Unable to Buy)
+- **Hiện tượng**:
+  1. Trong Cửa hàng Vật phẩm Thẻ Sao (Pass Goods Sale / Merch Shop, UI 19 `GgUIIngamePassGoodsShop`), ô **Live Slot** (`GgUIIngamePassGoodsLiveSlot` - ô sự kiện nổi bật trên cùng hiển thị Mùa Thẻ Sao đang diễn ra) hiển thị trạng thái "Đã đăng ký" hoặc "Không thể mua" (`Common_Error_UnableBuy` / "Không thể mua thêm.") đối với các tài khoản người chơi chưa từng mua Thẻ Sao / Gói quà Merch Pack mùa này.
+  2. Khi người chơi bấm vào ô Live Slot, game không mở popup chi tiết gói vật phẩm (`GgUIIngamePassGoodsDetail`, Popup 20), hoặc nếu mở được thì khi bấm "Mua" sẽ bị lỗi không thể hoàn tất.
+- **Nguyên nhân chi tiết (Reverse-Engineering qua Unity IL2CPP ARM64 `libil2cpp.so`)**:
+  1. **Hàm tra cứu Subscription của Client bỏ qua trạng thái kích hoạt**:
+     - Trong mã máy ARM64 tại RVA `0x20C81E4` (offset file `0x20C41E4` của `libil2cpp.so` - hàm `UserSubscribeList.GetSubscribe(int subscribeId)`):
+       ```arm64
+       0x20c42ac: bl #0x1b25c04         // ObscuredInt -> int
+       0x20c42b0: cmp w0, w19           // item.SubscribeID == targetId
+       0x20c42b4: b.ne #0x20c428c
+       0x20c42b8: mov x0, x20           // return item!
+       ```
+       Client duyệt mảng `user_subscribe_list` và so sánh mã `SubscribeID`. Trình xử lý của client **hoàn toàn không kiểm tra cờ `i_isActive`**! Bất kỳ bản ghi nào tồn tại trong `user_subscribe_list` (kể cả khi mang giá trị `i_isActive = 0`), hàm này đều trả về đối tượng khác `null`.
+  2. **Khóa luồng hiển thị và bấm nút Mua của Live Slot**:
+     - Tại `SubscribePassManager.Init` (RVA `0x1DE798C`), client gán `m_cLiveData.field_0x40 = UserSubscribeList.GetSubscribe(activeSeason)`.
+     - Tại `GgUIIngamePassGoodsLiveSlot.Refresh` (RVA `0x1FE2DE0`), client gọi `GetIsSubscribedCurrentPass()`. Do `field_0x40 != null`, hàm trả về `1` (True):
+       - Live Slot ẩn nút "Mua" (`m_goBuy`) và kích hoạt nhãn "Đã đăng ký" (`m_goSubscribed`).
+     - Tại `GgUIIngamePassGoodsShop.OnClickLiveSlot` (RVA `0x20D7FE0`), client kiểm tra:
+       ```arm64
+       0x20d3ffc: bl #0x1de5b64         // GetIsSubscribedCurrentPass()
+       0x20d4000: cbz w0, #0x20d4010   // Nếu == 0 mới mở Popup 20!
+       0x20d4004: mov x0, x20          // Nếu != 0: gọi Refresh() và return luôn!
+       0x20d4008: bl #0x1fdeddc
+       0x20d400c: b #0x20d4044
+       ```
+       Do client nghĩ người chơi đã đăng ký thẻ mùa này, nó thoát ngay lập tức mà không mở popup chi tiết gói vật phẩm.
+  3. **Khóa giao dịch tại trình quản lý mua sắm**:
+     - Tại `GgPurchaseManagerSGT.GetIsPurchaseAvailable` (RVA `0x21D1C14`), client gọi `UserSubscribeList.GetSubscribe(SubscribeID)`. Do tìm thấy bản ghi, hàm trả về `0` (Unavailable), kích hoạt popup lỗi `Common_Error_UnableBuy` (chuỗi 10068 trong Bảng 16: "Không thể mua thêm.").
+  4. **Lỗi logic máy chủ khi khởi tạo và chuẩn hóa danh sách Subscription**:
+     - Trước đây trong `auth.py` (hàm `_normalise_subscribe_list`), khi người chơi chưa mua thẻ hoặc chưa kích hoạt thẻ Gold (`not (paid_enabled or season_bought)`), server thực hiện:
+       ```python
+       else:
+           if paid_sub:
+               paid_sub['i_isActive'] = 0
+               paid_sub['i_ActiveTime'] = 0
+       ```
+       Server giữ lại phần tử `paid_sub` trong mảng `user_subscribe_list` với `i_isActive = 0`. Tương tự, khi quản trị viên thu hồi Thẻ Sao Gold trong `app.py`, server cũng chỉ gán `i_isActive = 0` chứ không xóa khỏi mảng. Vì client bỏ qua `i_isActive`, người chơi chưa mua thẻ vẫn bị client coi là đã mua.
+- **Cách khắc phục triệt để**:
+  1. **Lọc sạch hoàn toàn các Subscription không hoạt động ([auth.py](file:///root/project/GGServer/emulator/server/handlers/auth.py))**:
+     - Trong hàm `_normalise_subscribe_list`, loại bỏ triệt để các phần tử không có trạng thái hoạt động thực sự. Chỉ duy trì các mục có `i_isActive == 1` do người chơi thực sự mua trong `user_shop` hoặc do quản trị viên cấp quyền `paid_star_card`.
+     - Tuyệt đối không trả về bất kỳ bản ghi nào có `i_isActive == 0` về cho client trong `user_subscribe_list`.
+  2. **Thu hồi sạch sẽ khi tắt Thẻ Sao Gold ([app.py](file:///root/project/GGServer/emulator/server/app.py))**:
+     - Khi quản trị viên hủy kích hoạt Thẻ Sao Gold cho người chơi trên Web Admin Dashboard, `user['user_subscribe_list']` lọc bỏ hoàn toàn các ID thuộc mùa bị thu hồi thay vì đổi cờ `i_isActive = 0`.
+  3. **Chuẩn hóa luồng mua gói vật phẩm Merch Pack ([shop.py](file:///root/project/GGServer/emulator/server/handlers/shop.py))**:
+     - Khi mua gói Live Slot Merch Pack (`3000 + season_num`, ví dụ 3003) hoặc gói thường (`2000 + season_num`, ví dụ 2003):
+       - Kiểm tra tính hợp lệ qua `_check_purchase_eligibility` (cho phép mua nếu chưa sở hữu gói trong `user_shop`).
+       - Trừ đúng số CP theo giá chiết khấu trong Bảng 12 (ví dụ Mùa 3 là 50 CP).
+       - Trao đầy đủ phần thưởng nhóm quà Merch Pack (Guitars, Costumes, Music, Star Pass).
+       - Thêm cả `season_num` và `1000 + season_num` vào `user_subscribe_list` (với `i_isActive: 1`) và `user_ticketcollection`.
+       - Ghi nhận cả hai mã gói `2000 + season_num` và `3000 + season_num` vào `user_shop` để ngăn chặn mua lặp lại.
+  4. **Xác minh qua Bộ kiểm thử tự động ([test_live_slot_purchase.py](file:///root/project/GGServer/emulator/test_live_slot_purchase.py))**:
+     - Tạo bộ kiểm thử độc lập bao quát toàn bộ 6 kịch bản thực tế:
+       - Kiểm tra tài khoản mới có `user_subscribe_list` rỗng, Live Slot hiển thị sẵn sàng mua.
+       - Kiểm tra cơ chế tự động dọn sạch subscription rác/inactive khi đăng nhập.
+       - Kiểm tra RPC `buyCheck` và `buyShop` cho gói Live Slot 3003 thành công, trừ đúng 50 CP và cấp đủ 9 vật phẩm thưởng.
+       - Kiểm tra từ chối mua lặp lại đối với cả gói giảm giá 3003 lẫn gói thường 2003.
+       - Kiểm tra quy trình thu hồi Thẻ Sao Gold dọn sạch danh sách subscription.
+       - Kiểm tra tính toàn vẹn cấu trúc dữ liệu Bảng 29, Bảng 17 và Bảng 12.
 
 ---
 

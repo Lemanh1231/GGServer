@@ -180,6 +180,9 @@ def h_get_ch_third(req, player, ctx):
         return {}, OK
     ap = _user_ap(user)
     stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage') or []
+    if not stages:
+        from server.state import _all_ch_third_stages
+        stages = _all_ch_third_stages()
     user['user_ch_third_stage'] = stages
     user['user_chthird_stage'] = stages
     state.save_user(user)

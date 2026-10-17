@@ -3,7 +3,7 @@
     "1": {
       "name": "Điểm danh 7 ngày",
       "description": "Nhận CP, Kẹo, Trang phục và Nhạc trong 7 ngày đầu",
-      "enabled": false
+      "enabled": true
     },
     "2": {
       "name": "Điểm danh kỷ niệm 1 năm",
@@ -29,19 +29,19 @@
   "star_pass": {
     "name": "Thẻ Sao / Star Pass",
     "description": "Vé mùa Star Pass với chuỗi nhiệm vụ và phần thưởng độc quyền 13 mùa giải",
-    "enabled": false,
-    "active_season": 1,
+    "enabled": true,
+    "active_season": 3,
     "paid_card_enabled": false
   },
   "pass_goods_sale": {
     "name": "Cửa hàng Giảm giá Star Pass (Pass Goods Sale)",
     "description": "Mở biểu tượng nút Sale trên sảnh chính để mua lại toàn bộ Trang phục & Guitar của 13 mùa Star Pass đã qua",
-    "enabled": false
+    "enabled": true
   },
   "meowfest": {
     "name": "Sự kiện Nuôi Mèo Meowfest (SamSeck)",
     "description": "Mở khóa 3 mốc nuôi mèo Tam Thể nhận Cây cào móng (Guitar 10), Quần yếm (Costume 13), Bé mèo Navi (Unit 1)",
-    "enabled": false
+    "enabled": true
   },
   "chapter3_tour": {
     "name": "Tour Chapter 3 (Sunshine High School)",
@@ -51,9 +51,9 @@
   "weather_festival": {
     "name": "Lễ hội Hiệu ứng Thời tiết Mùa",
     "description": "Hiệu ứng tuyết rơi mùa đông (Snow Festival) hoặc cánh hoa anh đào rơi mùa xuân (Cherry Blossom Date)",
-    "snow_enabled": false,
+    "snow_enabled": true,
     "cherry_blossom_enabled": false,
-    "mode": "none"
+    "mode": "snow"
   },
   "fan_art_costume": {
     "name": "Trang phục Thiết kế Fan Art",
@@ -68,8 +68,8 @@
   "events": {
     "1": {
       "name": "Điểm danh 7 ngày",
-      "enabled": false,
-      "state": "ended"
+      "enabled": true,
+      "state": "active"
     },
     "2": {
       "name": "Điểm danh kỷ niệm 1 năm",

@@ -45,33 +45,15 @@ def send_post(uuid=None, title='Thông báo', memo='', items=None, notice_type=1
 
     next_idx = max(all_indices) + 1
 
+    LANGS = ('ko', 'en', 'jp', 'zh_chs', 'zh_cht', 'vi', 'es', 'it', 'id', 'th', 'pt', 'hi')
+    title_dict = title if isinstance(title, dict) else {}
+    memo_dict = memo if isinstance(memo, dict) else {}
+    def_title = title if isinstance(title, str) else title_dict.get('vi', title_dict.get('en', 'Thông báo'))
+    def_memo = memo if isinstance(memo, str) else memo_dict.get('vi', memo_dict.get('en', ''))
+
     post = {
         'idx': next_idx,
         'notice_type': notice_type,
-        'title_ko': title,
-        'memo_ko': memo,
-        'title_en': title,
-        'memo_en': memo,
-        'title_jp': title,
-        'memo_jp': memo,
-        'title_zh_chs': title,
-        'memo_zh_chs': memo,
-        'title_zh_cht': title,
-        'memo_zh_cht': memo,
-        'title_vi': title,
-        'memo_vi': memo,
-        'title_es': title,
-        'memo_es': memo,
-        'title_it': title,
-        'memo_it': memo,
-        'title_id': title,
-        'memo_id': memo,
-        'title_th': title,
-        'memo_th': memo,
-        'title_pt': title,
-        'memo_pt': memo,
-        'title_hi': title,
-        'memo_hi': memo,
         'have_reward': 1 if item_list else 0,
         'status': 0,
         'unlimit_flg': 0,
@@ -83,6 +65,9 @@ def send_post(uuid=None, title='Thông báo', memo='', items=None, notice_type=1
         'image_resource_name': '',
         'applies_to_new_users': applies_to_new_users,
     }
+    for lang in LANGS:
+        post[f'title_{lang}'] = title_dict.get(lang, def_title)
+        post[f'memo_{lang}'] = memo_dict.get(lang, def_memo)
 
     if target_user:
         posts = target_user.setdefault('posts', [])

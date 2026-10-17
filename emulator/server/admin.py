@@ -85,6 +85,37 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             box-shadow: 0 0 8px var(--accent-cyan);
         }
 
+        
+        /* Language Switcher */
+        .lang-switch-group {
+            display: inline-flex;
+            gap: 4px;
+            background: rgba(24, 27, 41, 0.95);
+            padding: 4px;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            padding: 5px 14px;
+            border-radius: 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .lang-btn:hover {
+            color: var(--text-main);
+        }
+        .lang-btn.active {
+            background: linear-gradient(135deg, #ff5e97, #ff8eb6);
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(255, 94, 151, 0.4);
+        }
+
         /* Top Navigation Tabs */
         .nav-tabs {
             display: flex;
@@ -659,17 +690,23 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 <body>
     <div class="container">
         <header>
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                <div class="lang-switch-group">
+                    <button type="button" id="lang-btn-vi" class="lang-btn active" onclick="setLanguage('vi')">🇻🇳 Tiếng Việt</button>
+                    <button type="button" id="lang-btn-en" class="lang-btn" onclick="setLanguage('en')">🇬🇧 English</button>
+                </div>
+            </div>
             <div class="logo-title">
                 <span class="logo-icon">🎸</span>
-                <h1>Guitar Girl - Trung Tâm Quản Trị</h1>
+                <h1 data-i18n="app_title">Guitar Girl - Trung Tâm Quản Trị</h1>
             </div>
             <div class="server-status" style="display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;">
                 <div>
                     <span class="status-dot"></span>
-                    <span>Server Trực Tuyến &bull; Zero-Downtime Hot-Reload</span>
+                    <span data-i18n="server_status">Server Trực Tuyến &bull; Zero-Downtime Hot-Reload</span>
                 </div>
                 <a href="/download" target="_blank" style="text-decoration: none; padding: 5px 14px; border-radius: 20px; background: rgba(255, 94, 151, 0.15); border: 1px solid var(--accent-pink); color: var(--accent-pink); font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-                    📥 Tải Game APK (458 MB)
+                    <span data-i18n="download_apk">📥 Tải Game APK (458 MB)</span>
                 </a>
             </div>
         </header>
@@ -678,12 +715,12 @@ DASHBOARD_HTML = """<!DOCTYPE html>
         <nav class="nav-tabs">
             <button class="nav-tab active" id="tab-btn-users" onclick="switchTab('users')">
                 <span style="font-size: 1.1rem;">👥</span>
-                <span>Quản Lý Toàn Bộ Người Chơi</span>
+                <span data-i18n="tab_users">Quản Lý Toàn Bộ Người Chơi</span>
                 <span class="tab-badge" id="tab-users-count">0</span>
             </button>
             <button class="nav-tab" id="tab-btn-events" onclick="switchTab('events')">
                 <span style="font-size: 1.1rem;">🎉</span>
-                <span>Cấu Hình Sự Kiện Server</span>
+                <span data-i18n="tab_events">Cấu Hình Sự Kiện Server</span>
             </button>
         </nav>
 
@@ -692,23 +729,23 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 1. Stats Grid -->
             <div class="stat-grid">
                 <div class="stat-card">
-                    <div class="stat-card-title">👥 Tổng Người Chơi</div>
+                    <div class="stat-card-title" data-i18n="stat_total">👥 Tổng Người Chơi</div>
                     <div class="stat-card-value" id="stat-total-users" style="color: #a29bfe;">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-card-title">📱 Thiết Bị Thật</div>
+                    <div class="stat-card-title" data-i18n="stat_real">📱 Thiết Bị Thật</div>
                     <div class="stat-card-value" id="stat-real-users" style="color: #2ed573;">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-card-title">🧪 Tài Khoản Test Auto</div>
+                    <div class="stat-card-title" data-i18n="stat_test">🧪 Tài Khoản Test Auto</div>
                     <div class="stat-card-value" id="stat-test-users" style="color: #ffa502;">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-card-title">🚫 Đã Khóa (Banned)</div>
+                    <div class="stat-card-title" data-i18n="stat_banned">🚫 Đã Khóa (Banned)</div>
                     <div class="stat-card-value" id="stat-banned-users" style="color: #ff4757;">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-card-title">⭐ Sở Hữu Gold Pass</div>
+                    <div class="stat-card-title" data-i18n="stat_gold">⭐ Sở Hữu Gold Pass</div>
                     <div class="stat-card-value" id="stat-gold-users" style="color: #ffd32a;">0</div>
                 </div>
             </div>
@@ -716,31 +753,31 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 2. Search & Filter Bar -->
             <div class="card" style="padding: 16px; margin-bottom: 18px;">
                 <div class="user-toolbar">
-                    <input type="text" id="user-search-input" class="search-input" placeholder="🔍 Tìm kiếm theo Tên, ID, Seq, UUID..." oninput="filterUsers()">
+                    <input type="text" id="user-search-input" class="search-input" data-i18n-placeholder="search_placeholder" placeholder="🔍 Tìm kiếm theo Tên, ID, Seq, UUID..." oninput="filterUsers()">
                     <select id="user-status-filter" class="filter-select" onchange="filterUsers()">
-                        <option value="all">Tất cả người chơi</option>
-                        <option value="real">📱 Chỉ thiết bị thật (Ẩn test)</option>
-                        <option value="test">🧪 Chỉ tài khoản test tự động</option>
-                        <option value="active">🟢 Đang hoạt động (Bình thường)</option>
-                        <option value="banned">🚫 Đã bị khóa (BANNED)</option>
-                        <option value="gold">⭐ Đã có Thẻ Sao Gold</option>
-                        <option value="free">⚪ Thẻ Sao Thường (Free)</option>
+                        <option value="all" data-i18n="filter_all">Tất cả người chơi</option>
+                        <option value="real" data-i18n="filter_real">📱 Chỉ thiết bị thật (Ẩn test)</option>
+                        <option value="test" data-i18n="filter_test">🧪 Chỉ tài khoản test tự động</option>
+                        <option value="active" data-i18n="filter_active">🟢 Đang hoạt động (Bình thường)</option>
+                        <option value="banned" data-i18n="filter_banned">🚫 Đã bị khóa (BANNED)</option>
+                        <option value="gold" data-i18n="filter_gold">⭐ Đã có Thẻ Sao Gold</option>
+                        <option value="free" data-i18n="filter_free">⚪ Thẻ Sao Thường (Free)</option>
                     </select>
-                    <button class="btn btn-secondary" style="padding: 10px 14px; font-size: 0.88rem; flex: 0 0 auto;" onclick="loadUsers()">🔄 Làm mới</button>
-                    <button class="btn" style="padding: 10px 14px; font-size: 0.88rem; flex: 0 0 auto; background: rgba(255, 71, 87, 0.15); color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.35);" onclick="cleanupTestUsers()" title="Xóa bỏ toàn bộ các tài khoản giả lập tự sinh khi chạy kiểm thử">🧹 Dọn Dẹp Acc Test</button>
-                    <button class="btn btn-primary" style="padding: 10px 14px; font-size: 0.88rem; flex: 0 0 auto;" onclick="openSendMailModal()">✉️ Gửi Thư Toàn Server</button>
+                    <button class="btn btn-secondary" style="padding: 10px 14px; font-size: 0.88rem; flex: 0 0 auto;" onclick="loadUsers()" data-i18n="btn_refresh">🔄 Làm mới</button>
+                    <button class="btn" style="padding: 10px 14px; font-size: 0.88rem; flex: 0 0 auto; background: rgba(255, 71, 87, 0.15); color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.35);" onclick="cleanupTestUsers()" data-i18n="btn_cleanup_tests" data-i18n-title="cleanup_tests_title" title="Xóa bỏ toàn bộ các tài khoản giả lập tự sinh khi chạy kiểm thử">🧹 Dọn Dẹp Acc Test</button>
+                    <button class="btn btn-primary" style="padding: 10px 14px; font-size: 0.88rem; flex: 0 0 auto;" onclick="openSendMailModal()" data-i18n="btn_server_mail">✉️ Gửi Thư Toàn Server</button>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; color: var(--text-sub); padding: 0 4px;">
-                    <div>Đang hiển thị <span id="filtered-count" style="color: #fff; font-weight: 700;">0</span> / <span id="total-count" style="color: #fff; font-weight: 700;">0</span> tài khoản</div>
-                    <div>Nhấp vào UUID để sao chép nhanh</div>
+                    <div><span data-i18n="showing_prefix">Đang hiển thị</span> <span id="filtered-count" style="color: #fff; font-weight: 700;">0</span> / <span id="total-count" style="color: #fff; font-weight: 700;">0</span> <span data-i18n="showing_suffix">tài khoản</span></div>
+                    <div data-i18n="copy_hint">Nhấp vào UUID để sao chép nhanh</div>
                 </div>
             </div>
 
             <!-- 3. Players Table Card -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">📋 Danh Sách Chi Tiết Toàn Bộ Người Chơi</div>
-                    <span style="font-size:0.8rem; color:var(--text-sub)">Quản lý độc lập từng tài khoản</span>
+                    <div class="card-title" data-i18n="players_list_title">📋 Danh Sách Chi Tiết Toàn Bộ Người Chơi</div>
+                    <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="players_list_sub">Quản lý độc lập từng tài khoản</span>
                 </div>
                 <div id="users-table-container" style="overflow-x: auto;">
                     <div style="text-align: center; color: var(--text-sub); padding: 24px;">Đang tải danh sách người chơi...</div>
@@ -751,12 +788,12 @@ DASHBOARD_HTML = """<!DOCTYPE html>
         <!-- ================= TAB 2: CẤU HÌNH SỰ KIỆN (EVENTS) ================= -->
         <div id="tab-events-view" style="display: none;">
             <div class="action-bar" style="flex-wrap: wrap;">
-                <button class="btn btn-secondary" onclick="loadConfig()">🔄 Tải lại cấu hình</button>
-                <button class="btn btn-primary" onclick="saveConfig()">💾 Lưu thay đổi sự kiện</button>
+                <button class="btn btn-secondary" onclick="loadConfig()" data-i18n="btn_reload_cfg">🔄 Tải lại cấu hình</button>
+                <button class="btn btn-primary" onclick="saveConfig()" data-i18n="btn_save_events">💾 Lưu thay đổi sự kiện</button>
                 <div style="width: 100%; display: flex; justify-content: center; margin-top: 4px;">
                     <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-sub); cursor:pointer;">
                         <input type="checkbox" id="auto-notify-mail" checked>
-                        <span>📬 Tự động gửi thư thông báo vào game khi lưu sự kiện</span>
+                        <span data-i18n="chk_auto_notify">📬 Tự động gửi thư thông báo vào game khi lưu sự kiện</span>
                     </label>
                 </div>
             </div>
@@ -764,7 +801,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 1. Attendance Events -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">📅 Sự kiện Điểm danh & Đăng nhập</div>
+                    <div class="card-title" data-i18n="card_att_title">📅 Sự kiện Điểm danh & Đăng nhập</div>
                     <span style="font-size:0.8rem; color:var(--text-sub)">Daily Attendance</span>
                 </div>
                 <div id="attendance-list">
@@ -775,14 +812,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 2. Star Pass -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">⭐ Vé Sao / Star Pass</div>
-                    <span style="font-size:0.8rem; color:var(--text-sub)">13 Mùa giải</span>
+                    <div class="card-title" data-i18n="card_sp_title">⭐ Vé Sao / Star Pass</div>
+                    <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="card_sp_sub">13 Mùa giải</span>
                 </div>
                 
                 <div class="event-item">
                     <div class="event-info">
-                        <div class="event-name">Kích hoạt Thẻ Sao (Star Pass)</div>
-                        <div class="event-desc">Bật/tắt thanh tiến trình Star Pass và icon sự kiện ngoài sảnh chính</div>
+                        <div class="event-name" data-i18n="sp_enable_title">Kích hoạt Thẻ Sao (Star Pass)</div>
+                        <div class="event-desc" data-i18n="sp_enable_desc">Bật/tắt thanh tiến trình Star Pass và icon sự kiện ngoài sảnh chính</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="sp-enabled">
@@ -792,8 +829,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
                 <div class="event-item">
                     <div class="event-info">
-                        <div class="event-name">Mở khóa Thẻ Sao Gold Trả Phí Toàn Server (Paid Pass)</div>
-                        <div class="event-desc">Tặng vé Gold Pass toàn bộ người chơi (Khuyên dùng nút Setting trong Tab Người chơi để cấp riêng)</div>
+                        <div class="event-name" data-i18n="sp_gold_title">Mở khóa Thẻ Sao Gold Trả Phí Toàn Server (Paid Pass)</div>
+                        <div class="event-desc" data-i18n="sp_gold_desc">Tặng vé Gold Pass toàn bộ người chơi (Khuyên dùng nút Setting trong Tab Người chơi để cấp riêng)</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="sp-gold">
@@ -802,7 +839,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="sp-season">Chọn Mùa giải Star Pass hoạt động:</label>
+                    <label class="form-label" for="sp-season" data-i18n="sp_season_label">Chọn Mùa giải Star Pass hoạt động:</label>
                     <select id="sp-season">
                         <!-- Injected via JS -->
                     </select>
@@ -812,13 +849,13 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 3. Pass Goods Sale -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">🏷️ Cửa hàng Giảm giá Star Pass (Pass Goods Sale)</div>
+                    <div class="card-title" data-i18n="card_sale_title">🏷️ Cửa hàng Giảm giá Star Pass (Pass Goods Sale)</div>
                     <span style="font-size:0.8rem; color:var(--text-sub)">Merch Shop & LIVE SALE</span>
                 </div>
                 <div class="event-item">
                     <div class="event-info">
-                        <div class="event-name" id="pgs-name">Cửa hàng Giảm giá Star Pass</div>
-                        <div class="event-desc" id="pgs-desc">Mở biểu tượng nút Sale trên sảnh chính để mua lại toàn bộ Trang phục & Guitar của 13 mùa Star Pass đã qua với giá ưu đãi Socola (50-200 CP)</div>
+                        <div class="event-name" id="pgs-name" data-i18n="pgs_name">Cửa hàng Giảm giá Star Pass</div>
+                        <div class="event-desc" id="pgs-desc" data-i18n="pgs_desc">Mở biểu tượng nút Sale trên sảnh chính để mua lại toàn bộ Trang phục & Guitar của 13 mùa Star Pass đã qua với giá ưu đãi Socola (50-200 CP)</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="pgs-enabled">
@@ -830,13 +867,13 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 4. Meowfest -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">🐱 Sự kiện Nuôi Mèo Meowfest (SamSeck)</div>
+                    <div class="card-title" data-i18n="card_mf_title">🐱 Sự kiện Nuôi Mèo Meowfest (SamSeck)</div>
                     <span style="font-size:0.8rem; color:var(--text-sub)">SamSaek Event</span>
                 </div>
                 <div class="event-item">
                     <div class="event-info">
-                        <div class="event-name" id="mf-name">Sự kiện Nuôi Mèo Meowfest</div>
-                        <div class="event-desc" id="mf-desc">Mở khóa 3 cột mốc nuôi mèo Tam Thể nhận Cây cào móng (Guitar 10), Quần yếm (Costume 13), Bé mèo Navi (Unit 1)</div>
+                        <div class="event-name" id="mf-name" data-i18n="mf_name">Sự kiện Nuôi Mèo Meowfest</div>
+                        <div class="event-desc" id="mf-desc" data-i18n="mf_desc">Mở khóa 3 cột mốc nuôi mèo Tam Thể nhận Cây cào móng (Guitar 10), Quần yếm (Costume 13), Bé mèo Navi (Unit 1)</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="mf-enabled">
@@ -848,13 +885,13 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 5. Chapter 3 Tour -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">🏫 Tour Sân khấu Sunshine High School (CH3)</div>
+                    <div class="card-title" data-i18n="card_c3_title">🏫 Tour Sân khấu Sunshine High School (CH3)</div>
                     <span style="font-size:0.8rem; color:var(--text-sub)">Chapter 3 Tour</span>
                 </div>
                 <div class="event-item">
                     <div class="event-info">
-                        <div class="event-name" id="c3-name">Tour Chapter 3 (Sunshine High School)</div>
-                        <div class="event-desc" id="c3-desc">Biểu diễn sân khấu Sunshine High School 20 màn với Năng lượng Cookie / AP</div>
+                        <div class="event-name" id="c3-name" data-i18n="c3_name">Tour Chapter 3 (Sunshine High School)</div>
+                        <div class="event-desc" id="c3-desc" data-i18n="c3_desc">Biểu diễn sân khấu Sunshine High School 20 màn với Năng lượng Cookie / AP</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="c3-enabled">
@@ -866,8 +903,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 6. Weather Festival -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">❄️🌸 Hiệu Ứng Thời Tiết Mùa (Seasonal Weather)</div>
-                    <span style="font-size:0.8rem; color:var(--text-sub)">Chọn 1 hiệu ứng duy nhất</span>
+                    <div class="card-title" data-i18n="card_wf_title">❄️🌸 Hiệu Ứng Thời Tiết Mùa (Seasonal Weather)</div>
+                    <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="card_wf_sub">Chọn 1 hiệu ứng duy nhất</span>
                 </div>
                 <div style="font-size:0.85rem; color:var(--text-sub); margin-bottom:14px; line-height:1.4;">
                     Hệ thống chỉ kích hoạt <b>1 hiệu ứng thời tiết duy nhất</b> tại một thời điểm để phân chia rõ ràng, tránh bị chồng đè hạt hiệu ứng lên nhau trong màn chơi:
@@ -877,33 +914,33 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                         <div style="display: flex; align-items: center; gap: 14px;">
                             <input type="radio" name="weather_mode" value="snow" id="wf-mode-snow" style="width: 20px; height: 20px; accent-color: #6c5ce7; cursor: pointer;">
                             <div>
-                                <div style="font-weight: 600; color: #fff; font-size: 0.95rem;">❄️ Lễ hội Tuyết rơi Mùa đông (Snow Festival)</div>
-                                <div style="font-size: 0.8rem; color: var(--text-sub); margin-top: 3px;">Kích hoạt các hạt bông tuyết trắng rơi lãng mạn ngoài khung cửa sổ phòng & sảnh chính</div>
+                                <div style="font-weight: 600; color: #fff; font-size: 0.95rem;" data-i18n="wf_snow_title">❄️ Lễ hội Tuyết rơi Mùa đông (Snow Festival)</div>
+                                <div style="font-size: 0.8rem; color: var(--text-sub); margin-top: 3px;" data-i18n="wf_snow_desc">Kích hoạt các hạt bông tuyết trắng rơi lãng mạn ngoài khung cửa sổ phòng & sảnh chính</div>
                             </div>
                         </div>
-                        <span style="background: rgba(116, 185, 255, 0.15); color: #74b9ff; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight:600;">Mùa đông</span>
+                        <span style="background: rgba(116, 185, 255, 0.15); color: #74b9ff; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight:600;" data-i18n="wf_snow_tag">Mùa đông</span>
                     </label>
 
                     <label class="weather-radio-card" id="card-wf-cherry" onclick="selectWeatherMode('cherry')">
                         <div style="display: flex; align-items: center; gap: 14px;">
                             <input type="radio" name="weather_mode" value="cherry" id="wf-mode-cherry" style="width: 20px; height: 20px; accent-color: #ff5e97; cursor: pointer;">
                             <div>
-                                <div style="font-weight: 600; color: #fff; font-size: 0.95rem;">🌸 Hẹn hò Mùa Hoa Anh Đào (Cherry Blossom Date)</div>
-                                <div style="font-size: 0.8rem; color: var(--text-sub); margin-top: 3px;">Kích hoạt những cánh hoa anh đào màu hồng bay bay trong không gian mùa xuân</div>
+                                <div style="font-weight: 600; color: #fff; font-size: 0.95rem;" data-i18n="wf_cherry_title">🌸 Hẹn hò Mùa Hoa Anh Đào (Cherry Blossom Date)</div>
+                                <div style="font-size: 0.8rem; color: var(--text-sub); margin-top: 3px;" data-i18n="wf_cherry_desc">Kích hoạt những cánh hoa anh đào màu hồng bay bay trong không gian mùa xuân</div>
                             </div>
                         </div>
-                        <span style="background: rgba(255, 118, 117, 0.15); color: #ff7675; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight:600;">Mùa xuân</span>
+                        <span style="background: rgba(255, 118, 117, 0.15); color: #ff7675; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight:600;" data-i18n="wf_cherry_tag">Mùa xuân</span>
                     </label>
 
                     <label class="weather-radio-card" id="card-wf-none" onclick="selectWeatherMode('none')">
                         <div style="display: flex; align-items: center; gap: 14px;">
                             <input type="radio" name="weather_mode" value="none" id="wf-mode-none" style="width: 20px; height: 20px; accent-color: #a4b0be; cursor: pointer;">
                             <div>
-                                <div style="font-weight: 600; color: #fff; font-size: 0.95rem;">🚫 Tắt toàn bộ hiệu ứng thời tiết</div>
-                                <div style="font-size: 0.8rem; color: var(--text-sub); margin-top: 3px;">Trở về không gian ban đầu mặc định của trò chơi, không có hạt thời tiết rơi</div>
+                                <div style="font-weight: 600; color: #fff; font-size: 0.95rem;" data-i18n="wf_none_title">🚫 Tắt toàn bộ hiệu ứng thời tiết</div>
+                                <div style="font-size: 0.8rem; color: var(--text-sub); margin-top: 3px;" data-i18n="wf_none_desc">Trở về không gian ban đầu mặc định của trò chơi, không có hạt thời tiết rơi</div>
                             </div>
                         </div>
-                        <span style="background: rgba(255, 255, 255, 0.08); color: var(--text-sub); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight:600;">Mặc định</span>
+                        <span style="background: rgba(255, 255, 255, 0.08); color: var(--text-sub); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight:600;" data-i18n="wf_none_tag">Mặc định</span>
                     </label>
                 </div>
 
@@ -915,13 +952,13 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 7. Fan Art Costume -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">🎨 Trang phục Bản giới hạn Fan Art 2021</div>
+                    <div class="card-title" data-i18n="card_fac_title">🎨 Trang phục Bản giới hạn Fan Art 2021</div>
                     <span style="font-size:0.8rem; color:var(--text-sub)">Fan Art Grand Prize</span>
                 </div>
                 <div class="event-item">
                     <div class="event-info">
-                        <div class="event-name" id="fac-name">Trang phục Thiết kế Fan Art</div>
-                        <div class="event-desc" id="fac-desc">Kích hoạt bộ trang phục Nàng tiên mùa xuân (Spring Fairy) và Guitar Giai điệu nàng tiên (Fairy's Melody)</div>
+                        <div class="event-name" id="fac-name" data-i18n="fac_name">Trang phục Thiết kế Fan Art</div>
+                        <div class="event-desc" id="fac-desc" data-i18n="fac_desc">Kích hoạt bộ trang phục Nàng tiên mùa xuân (Spring Fairy) và Guitar Giai điệu nàng tiên (Fairy's Melody)</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="fac-enabled">
@@ -933,13 +970,13 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 8. Event Ranking -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">🏆 Đua Top Xếp Hạng Sự Kiện (Event Ranking)</div>
+                    <div class="card-title" data-i18n="card_er_title">🏆 Đua Top Xếp Hạng Sự Kiện (Event Ranking)</div>
                     <span style="font-size:0.8rem; color:var(--text-sub)">Live Leaderboard</span>
                 </div>
                 <div class="event-item">
                     <div class="event-info">
-                        <div class="event-name" id="er-name">Bảng Xếp Hạng Đua Top Sự Kiện</div>
-                        <div class="event-desc" id="er-desc">Kích hoạt tính năng đua top điểm sự kiện trực tiếp với bảng xếp hạng Top 100 cao thủ</div>
+                        <div class="event-name" id="er-name" data-i18n="er_name">Bảng Xếp Hạng Đua Top Sự Kiện</div>
+                        <div class="event-desc" id="er-desc" data-i18n="er_desc">Kích hoạt tính năng đua top điểm sự kiện trực tiếp với bảng xếp hạng Top 100 cao thủ</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="er-enabled">
@@ -951,8 +988,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <!-- 9. Live In-Game Push & Mailbox -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">📬 Gửi Thư & Tặng Quà Toàn Server (Broadcast Mail)</div>
-                    <span style="font-size:0.8rem; color:var(--text-sub)">Đồng bộ tức thì không cần out game</span>
+                    <div class="card-title" data-i18n="card_mail_title">📬 Gửi Thư & Tặng Quà Toàn Server (Broadcast Mail)</div>
+                    <span style="font-size:0.8rem; color:var(--text-sub)" data-i18n="card_mail_sub">Đồng bộ tức thì không cần out game</span>
                 </div>
                 <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom: 12px;">
                     Gửi thư thông báo và tặng tài nguyên trực tiếp vào Hộp thư in-game của toàn bộ người chơi. Client đang chơi game sẽ tự động hiện dấu chấm đỏ (Red Dot) lập tức mà không cần thoát game!
@@ -979,15 +1016,15 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                         <input type="number" id="mail-cookies" value="50" style="width:100%; padding:8px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                     </div>
                 </div>
-                <button class="btn btn-primary" style="width:100%; padding:10px;" onclick="sendDirectMail()">🚀 Gửi Thư & Quà Tới Toàn Server</button>
+                <button class="btn btn-primary" style="width:100%; padding:10px;" onclick="sendDirectMail()" data-i18n="btn_send_broadcast">🚀 Gửi Thư & Quà Tới Toàn Server</button>
             </div>
 
             <!-- CLI Guide Card -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">💻 Lệnh điều khiển Terminal (CLI)</div>
+                    <div class="card-title" data-i18n="card_cli_title">💻 Lệnh điều khiển Terminal (CLI)</div>
                 </div>
-                <p style="font-size:0.85rem; color:var(--text-sub)">Bạn cũng có thể điều khiển trực tiếp trên terminal server bằng lệnh:</p>
+                <p style="font-size:0.85rem; color:var(--text-sub)" data-i18n="cli_sub">Bạn cũng có thể điều khiển trực tiếp trên terminal server bằng lệnh:</p>
                 <div class="cli-box">
                     ./emulator/eventctl.sh list<br>
                     ./emulator/eventctl.sh enable 3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Bật điểm danh CH2<br>
@@ -1004,7 +1041,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="modal-overlay" id="user-event-modal">
         <div class="modal-dialog">
             <div class="modal-header">
-                <h3>⚙️ Cài Đặt Cá Nhân Người Chơi</h3>
+                <h3 data-i18n="modal_user_title">⚙️ Cài Đặt Cá Nhân Người Chơi</h3>
                 <button class="modal-close" onclick="closeUserModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -1020,8 +1057,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 <!-- 0. Ban Switch -->
                 <div class="event-item" style="padding: 10px 0; margin-bottom: 12px; background: rgba(255, 71, 87, 0.08); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 71, 87, 0.25);">
                     <div class="event-info">
-                        <div class="event-name" style="color: #ff6b81;">🚫 Khóa Tài Khoản (Ban Player)</div>
-                        <div class="event-desc">Khóa tài khoản người chơi. Game sẽ hiện thông báo "Tài khoản đã bị KHÓA" thay vì lỗi mạng.</div>
+                        <div class="event-name" style="color: #ff6b81;" data-i18n="modal_ban_title">🚫 Khóa Tài Khoản (Ban Player)</div>
+                        <div class="event-desc" data-i18n="modal_ban_desc">Khóa tài khoản người chơi. Game sẽ hiện thông báo "Tài khoản đã bị KHÓA" thay vì lỗi mạng.</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="modal-is-banned">
@@ -1037,8 +1074,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
                 <div class="event-item" id="modal-sp-group" style="padding: 10px 0;">
                     <div class="event-info">
-                        <div class="event-name">⭐ Thẻ Sao Gold Trả Phí (Paid Pass)</div>
-                        <div class="event-desc">Mở khóa vé Thẻ Sao Gold riêng cho tài khoản người chơi này</div>
+                        <div class="event-name" data-i18n="modal_sp_gold_title">⭐ Thẻ Sao Gold Trả Phí (Paid Pass)</div>
+                        <div class="event-desc" data-i18n="modal_sp_gold_desc">Mở khóa vé Thẻ Sao Gold riêng cho tài khoản người chơi này</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="modal-is-gold">
@@ -1048,32 +1085,32 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
                 <!-- 2. Star Pass Points -->
                 <div class="form-group" id="modal-sp-point-group" style="margin-top:10px; padding-top:10px;">
-                    <label class="form-label">Điểm Thẻ Sao (Star Points):</label>
+                    <label class="form-label" data-i18n="modal_sp_points_lbl">Điểm Thẻ Sao (Star Points):</label>
                     <input type="number" id="modal-star-point" min="0" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
-                    <div style="font-size:0.75rem; color:var(--text-sub); margin-top:4px;">Cập nhật điểm để nhận quà các cấp độ mốc sao (Tự động tính level quà tương ứng).</div>
+                    <div style="font-size:0.75rem; color:var(--text-sub); margin-top:4px;" data-i18n="modal_sp_points_sub">Cập nhật điểm để nhận quà các cấp độ mốc sao (Tự động tính level quà tương ứng).</div>
                 </div>
 
                 <!-- 3. Currencies (Tim/Likes, Socola/CP, Kẹo/Candy) -->
                 <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
-                    <div style="font-weight:600; font-size:0.9rem; color:#fff; margin-bottom:8px;">💰 Tài Nguyên (Tim, Socola, Kẹo)</div>
+                    <div style="font-weight:600; font-size:0.9rem; color:#fff; margin-bottom:8px;" data-i18n="modal_curr_title">💰 Tài Nguyên (Tim, Socola, Kẹo)</div>
                     <div style="display:flex; gap:10px; margin-bottom:10px;">
                         <div style="flex:1;">
-                            <label class="form-label">Thêm Tim (Likes):</label>
+                            <label class="form-label" data-i18n="modal_add_likes">Thêm Tim (Likes):</label>
                             <input type="text" id="modal-add-like" value="0" placeholder="vd: 1000, 10A, 42.877G..." oninput="updateLikePreviews()" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                             <div id="modal-add-like-preview" style="font-size:0.75rem; color:#ff6b81; margin-top:3px; min-height:16px;"></div>
                         </div>
                         <div style="flex:1;">
-                            <label class="form-label">Thêm Socola (CP):</label>
+                            <label class="form-label" data-i18n="modal_add_cp">Thêm Socola (CP):</label>
                             <input type="number" id="modal-add-cp" value="0" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                         </div>
                         <div style="flex:1;">
-                            <label class="form-label">Thêm Kẹo (Candy):</label>
+                            <label class="form-label" data-i18n="modal_add_candy">Thêm Kẹo (Candy):</label>
                             <input type="number" id="modal-add-candy" value="0" style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
                         </div>
                     </div>
                     <div>
                         <label class="form-label" style="display:flex; justify-content:space-between;">
-                            <span>❤️ Đặt chính xác số Tim (Hỗ trợ đơn vị game: 42.877G, 100H, 10AA...):</span>
+                            <span data-i18n="modal_set_likes">❤️ Đặt chính xác số Tim (Hỗ trợ đơn vị game: 42.877G, 100H, 10AA...):</span>
                             <span id="modal-user-like" style="color:#ff6b81; font-weight:600;">Hiện có: 0</span>
                         </label>
                         <input type="text" id="modal-set-like" oninput="updateLikePreviews()" placeholder="Nhập số Tim (ví dụ: 1000, 42.877G, 100H, 10AA)..." style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
@@ -1085,14 +1122,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 <div style="margin-top:14px; padding:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <span style="font-weight:600; font-size:0.9rem; color:#fff; display:inline-flex; align-items:center; gap:6px;">
-                            📅 Tùy Chỉnh Điểm Danh Sự Kiện
+                            <span data-i18n="modal_att_title">📅 Tùy Chỉnh Điểm Danh Sự Kiện</span>
                         </span>
                         <span id="modal-att-status" style="font-size:0.8rem; color:#a29bfe; font-weight:600; background:rgba(162,155,254,0.15); padding:2px 8px; border-radius:6px;"></span>
                     </div>
 
                     <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:10px; margin-bottom:10px;">
                         <div>
-                            <label class="form-label" style="font-size:0.78rem; color:var(--text-sub); margin-bottom:4px;">Sự kiện muốn chỉnh:</label>
+                            <label class="form-label" style="font-size:0.78rem; color:var(--text-sub); margin-bottom:4px;" data-i18n="modal_att_target">Sự kiện muốn chỉnh:</label>
                             <select id="modal-att-event-select" onchange="onModalAttEventChange()" style="width:100%; padding:8px 10px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px; font-size:0.85rem;">
                                 <option value="1">📅 Tân thủ 7 ngày (Event 1)</option>
                                 <option value="3">🏪 Cửa hàng tiện lợi (CH2 - Event 3)</option>
@@ -1102,7 +1139,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                             </select>
                         </div>
                         <div>
-                            <label class="form-label" style="font-size:0.78rem; color:var(--text-sub); margin-bottom:4px;">Mốc ngày đặt:</label>
+                            <label class="form-label" style="font-size:0.78rem; color:var(--text-sub); margin-bottom:4px;" data-i18n="modal_att_day_lbl">Mốc ngày đặt:</label>
                             <select id="modal-att-day" onchange="onModalAttDayChange()" style="width:100%; padding:8px 10px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px; font-size:0.85rem;">
                             </select>
                         </div>
@@ -1111,11 +1148,11 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     <div style="display:flex; flex-direction:column; gap:8px;">
                         <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; color:var(--text-sub); cursor:pointer;">
                             <input type="checkbox" id="modal-att-unlock" onchange="onModalAttUnlockChange()" checked>
-                            <span>🔓 Mở khóa nhận quà ngay hôm nay (Xóa giới hạn chờ 24h)</span>
+                            <span data-i18n="modal_att_unlock_lbl">🔓 Mở khóa nhận quà ngay hôm nay (Xóa giới hạn chờ 24h)</span>
                         </label>
                         <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; color:#f5cd79; cursor:pointer;">
                             <input type="checkbox" id="modal-att-direct-grant" onchange="onModalAttGrantChange()">
-                            <span id="modal-att-grant-label">🎁 Nhận ngay trọn bộ quà sự kiện này vào tài khoản</span>
+                            <span id="modal-att-grant-label" data-i18n="modal_att_grant_lbl">🎁 Nhận ngay trọn bộ quà sự kiện này vào tài khoản</span>
                         </label>
                     </div>
                 </div>
@@ -1124,16 +1161,16 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 <div style="margin-top:14px; padding:12px; background:rgba(235, 77, 75, 0.08); border:1px solid rgba(235, 77, 75, 0.35); border-radius:10px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                         <span style="font-weight:700; font-size:0.88rem; color:#ff6b6b; display:inline-flex; align-items:center; gap:6px;">
-                            ⚠️ Mở khóa Ch2: Tiệm bánh Hạnh phúc
+                            <span data-i18n="modal_ch2_title">⚠️ Mở khóa Ch2: Tiệm bánh Hạnh phúc</span>
                         </span>
-                        <span class="badge" style="background:#eb4d4b; color:#fff; font-size:0.68rem; padding:2px 8px; border-radius:4px; font-weight:700;">NGUY HIỂM / TEST</span>
+                        <span class="badge" style="background:#eb4d4b; color:#fff; font-size:0.68rem; padding:2px 8px; border-radius:4px; font-weight:700;"><span data-i18n="modal_ch2_badge">NGUY HIỂM / TEST</span></span>
                     </div>
                     <div style="font-size:0.77rem; color:#ccc; margin-bottom:8px; line-height:1.45;">
                         Tự động nâng <b>Độ nổi tiếng Khu vực 1 lên cấp 4</b> và <b>Tiệm bánh Hạnh phúc (Follower 12) lên cấp 15</b> để vượt qua điều kiện gốc, lập tức mở bản đồ Chapter 2 (Hongdae) để test sự kiện & hiệu ứng hoa anh đào.
                     </div>
                     <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.84rem; color:#ff7675; cursor:pointer; font-weight:600;">
                         <input type="checkbox" id="modal-unlock-ch2" style="width:17px; height:17px; accent-color:#eb4d4b;">
-                        <span>🔓 Bật Mở Khóa Chapter 2 Ngay Cho Người Chơi Này</span>
+                        <span data-i18n="modal_ch2_enable">🔓 Bật Mở Khóa Chapter 2 Ngay Cho Người Chơi Này</span>
                     </label>
                 </div>
 
@@ -1141,14 +1178,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
                     <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-sub); cursor:pointer;">
                         <input type="checkbox" id="modal-send-mail">
-                        <span>📬 Gửi kèm thư thông báo vào Hòm thư in-game của người chơi</span>
+                        <span data-i18n="modal_sendmail_chk">📬 Gửi kèm thư thông báo vào Hòm thư in-game của người chơi</span>
                     </label>
                 </div>
             </div>
             <div class="modal-footer" style="flex-wrap: wrap;">
-                <button type="button" class="btn btn-secondary" onclick="closeUserModal()" style="flex:1;">Hủy</button>
-                <button type="button" class="btn btn-primary" onclick="saveUserModal()" style="flex:1;">💾 Lưu Cài Đặt Riêng</button>
-                <button type="button" class="btn btn-delete-user" onclick="deleteCurrentModalUser()" style="width:100%; margin-top:8px; padding:10px;">
+                <button type="button" class="btn btn-secondary" onclick="closeUserModal()" style="flex:1;" data-i18n="btn_cancel">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="saveUserModal()" style="flex:1;" data-i18n="btn_save_user">💾 Lưu Cài Đặt Riêng</button>
+                <button type="button" class="btn btn-delete-user" onclick="deleteCurrentModalUser()" style="width:100%; margin-top:8px; padding:10px;" data-i18n="btn_delete_user">
                     🗑️ Xóa Toàn Bộ Dữ Liệu Tài Khoản Này (Reset Sạch Về Đầu)
                 </button>
             </div>
@@ -1190,8 +1227,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeMailModal()" style="flex:1;">Hủy</button>
-                <button type="button" class="btn btn-primary" onclick="sendModalMail()" style="flex:1;">🚀 Gửi Ngay Vào Game</button>
+                <button type="button" class="btn btn-secondary" onclick="closeMailModal()" style="flex:1;" data-i18n="btn_cancel">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="sendModalMail()" style="flex:1;" data-i18n="btn_send_now">🚀 Gửi Ngay Vào Game</button>
             </div>
         </div>
     </div>
@@ -1199,6 +1236,296 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     <div id="toast"></div>
 
     <script>
+        const I18N = {
+            vi: {
+                app_title: "Guitar Girl - Trung Tâm Quản Trị",
+                server_status: "Server Trực Tuyến &bull; Zero-Downtime Hot-Reload",
+                download_apk: "📥 Tải Game APK (458 MB)",
+                tab_users: "Quản Lý Toàn Bộ Người Chơi",
+                tab_events: "Cấu Hình Sự Kiện Server",
+                stat_total: "👥 Tổng Người Chơi",
+                stat_real: "📱 Thiết Bị Thật",
+                stat_test: "🧪 Tài Khoản Test Auto",
+                stat_banned: "🚫 Đã Khóa (Banned)",
+                stat_gold: "⭐ Sở Hữu Gold Pass",
+                search_placeholder: "🔍 Tìm kiếm theo Tên, ID, Seq, UUID...",
+                filter_all: "Tất cả người chơi",
+                filter_real: "📱 Chỉ thiết bị thật (Ẩn test)",
+                filter_test: "🧪 Chỉ tài khoản test tự động",
+                filter_active: "🟢 Đang hoạt động (Bình thường)",
+                filter_banned: "🚫 Đã bị khóa (BANNED)",
+                filter_gold: "⭐ Đã có Thẻ Sao Gold",
+                filter_free: "⚪ Thẻ Sao Thường (Free)",
+                btn_refresh: "🔄 Làm mới",
+                btn_cleanup_tests: "🧹 Dọn Dẹp Acc Test",
+                cleanup_tests_title: "Xóa bỏ toàn bộ các tài khoản giả lập tự sinh khi chạy kiểm thử",
+                btn_server_mail: "✉️ Gửi Thư Toàn Server",
+                showing_prefix: "Đang hiển thị",
+                showing_suffix: "tài khoản",
+                copy_hint: "Nhấp vào UUID để sao chép nhanh",
+                players_list_title: "📋 Danh Sách Chi Tiết Toàn Bộ Người Chơi",
+                players_list_sub: "Quản lý độc lập từng tài khoản",
+                empty_users_filter: "Không tìm thấy người chơi nào phù hợp với bộ lọc.<br><span style='font-size:0.8rem; margin-top:4px; display:inline-block;'>Hãy thử xóa bộ lọc hoặc kiểm tra lại từ khóa tìm kiếm.</span>",
+                th_player: "Người Chơi",
+                th_last_login: "Đăng Nhập Gần Nhất",
+                th_resources: "Tài Nguyên",
+                th_attendance: "Sự Kiện Điểm Danh",
+                th_starpass: "Thẻ Sao",
+                th_actions: "Thao Tác",
+                badge_banned: "🚫 BANNED",
+                badge_test: "🧪 Test Auto",
+                badge_real: "📱 Máy Thật",
+                badge_gold: "⭐ Gold Pass",
+                badge_free: "⚪ Free Pass",
+                badge_disabled: "⚪ Đang tắt",
+                lbl_newbie: "📅 Tân Thủ",
+                lbl_bakery: "🏪 Tiện Lợi",
+                lbl_ch2_opened: "🔓 CH2: Đã mở",
+                lbl_ch2_locked: "🔒 CH2: Chưa mở",
+                currency_tim: "Tim",
+                lbl_pts: "điểm",
+                lbl_tier: "Cấp",
+                btn_mail: "Thư",
+                btn_unban: "Mở",
+                btn_ban: "Ban",
+                btn_delete: "Xóa",
+                btn_reload_cfg: "🔄 Tải lại cấu hình",
+                btn_save_events: "💾 Lưu thay đổi sự kiện",
+                chk_auto_notify: "📬 Tự động gửi thư thông báo vào game khi lưu sự kiện",
+                card_att_title: "📅 Sự kiện Điểm danh & Đăng nhập",
+                card_sp_title: "⭐ Vé Sao / Star Pass",
+                card_sp_sub: "13 Mùa giải",
+                sp_enable_title: "Kích hoạt Thẻ Sao (Star Pass)",
+                sp_enable_desc: "Bật/tắt thanh tiến trình Star Pass và icon sự kiện ngoài sảnh chính",
+                sp_gold_title: "Mở khóa Thẻ Sao Gold Trả Phí Toàn Server (Paid Pass)",
+                sp_gold_desc: "Tặng vé Gold Pass toàn bộ người chơi (Khuyên dùng nút Setting trong Tab Người chơi để cấp riêng)",
+                sp_season_label: "Chọn Mùa giải Star Pass hoạt động:",
+                card_sale_title: "🏷️ Cửa hàng Giảm giá Star Pass (Pass Goods Sale)",
+                pgs_name: "Cửa hàng Giảm giá Star Pass",
+                pgs_desc: "Mở biểu tượng nút Sale trên sảnh chính để mua lại toàn bộ Trang phục & Guitar của 13 mùa Star Pass đã qua với giá ưu đãi Socola (50-200 CP)",
+                card_mf_title: "🐱 Sự kiện Nuôi Mèo Meowfest (SamSeck)",
+                mf_name: "Sự kiện Nuôi Mèo Meowfest",
+                mf_desc: "Mở khóa 3 cột mốc nuôi mèo Tam Thể nhận Cây cào móng (Guitar 10), Quần yếm (Costume 13), Bé mèo Navi (Unit 1)",
+                card_c3_title: "🏫 Tour Sân khấu Sunshine High School (CH3)",
+                c3_name: "Tour Chapter 3 (Sunshine High School)",
+                c3_desc: "Biểu diễn sân khấu Sunshine High School 20 màn với Năng lượng Cookie / AP",
+                card_wf_title: "❄️🌸 Hiệu Ứng Thời Tiết Mùa (Seasonal Weather)",
+                card_wf_sub: "Chọn 1 hiệu ứng duy nhất",
+                wf_desc: "Hệ thống chỉ kích hoạt <b>1 hiệu ứng thời tiết duy nhất</b> tại một thời điểm để phân chia rõ ràng, tránh bị chồng đè hạt hiệu ứng lên nhau trong màn chơi:",
+                wf_snow_title: "❄️ Lễ hội Tuyết rơi Mùa đông (Snow Festival)",
+                wf_snow_desc: "Kích hoạt các hạt bông tuyết trắng rơi lãng mạn ngoài khung cửa sổ phòng & sảnh chính",
+                wf_snow_tag: "Mùa đông",
+                wf_cherry_title: "🌸 Hẹn hò Mùa Hoa Anh Đào (Cherry Blossom Date)",
+                wf_cherry_desc: "Kích hoạt những cánh hoa anh đào màu hồng bay bay trong không gian mùa xuân",
+                wf_cherry_tag: "Mùa xuân",
+                wf_none_title: "🚫 Tắt toàn bộ hiệu ứng thời tiết",
+                wf_none_desc: "Trở về không gian ban đầu mặc định của trò chơi, không có hạt thời tiết rơi",
+                wf_none_tag: "Mặc định",
+                card_fac_title: "🎨 Trang phục Bản giới hạn Fan Art 2021",
+                fac_name: "Trang phục Thiết kế Fan Art",
+                fac_desc: "Kích hoạt bộ trang phục Nàng tiên mùa xuân (Spring Fairy) và Guitar Giai điệu nàng tiên (Fairy's Melody)",
+                card_er_title: "🏆 Đua Top Xếp Hạng Sự Kiện (Event Ranking)",
+                er_name: "Bảng Xếp Hạng Đua Top Sự Kiện",
+                er_desc: "Kích hoạt tính năng đua top điểm sự kiện trực tiếp với bảng xếp hạng Top 100 cao thủ",
+                card_mail_title: "📬 Gửi Thư & Tặng Quà Toàn Server (Broadcast Mail)",
+                card_mail_sub: "Đồng bộ tức thì không cần out game",
+                btn_send_broadcast: "🚀 Gửi Thư & Quà Tới Toàn Server",
+                card_cli_title: "💻 Lệnh điều khiển Terminal (CLI)",
+                cli_sub: "Bạn cũng có thể điều khiển trực tiếp trên terminal server bằng lệnh:",
+                modal_user_title: "⚙️ Cài Đặt Cá Nhân Người Chơi",
+                modal_ban_title: "🚫 Khóa Tài Khoản (Ban Player)",
+                modal_ban_desc: "Khóa tài khoản người chơi. Game sẽ hiện thông báo 'Tài khoản đã bị KHÓA' thay vì lỗi mạng.",
+                modal_sp_gold_title: "⭐ Thẻ Sao Gold Trả Phí (Paid Pass)",
+                modal_sp_gold_desc: "Mở khóa vé Thẻ Sao Gold riêng cho tài khoản người chơi này",
+                modal_sp_points_lbl: "Điểm Thẻ Sao (Star Points):",
+                modal_sp_points_sub: "Cập nhật điểm để nhận quà các cấp độ mốc sao (Tự động tính level quà tương ứng).",
+                modal_curr_title: "💰 Tài Nguyên (Tim, Socola, Kẹo)",
+                modal_add_likes: "Thêm Tim (Likes):",
+                modal_add_cp: "Thêm Socola (CP):",
+                modal_add_candy: "Thêm Kẹo (Candy):",
+                modal_set_likes: "❤️ Đặt chính xác số Tim (Hỗ trợ đơn vị game: 42.877G, 100H, 10AA...):",
+                modal_att_title: "📅 Tùy Chỉnh Điểm Danh Sự Kiện",
+                modal_att_target: "Sự kiện muốn chỉnh:",
+                modal_att_day_lbl: "Mốc ngày đặt:",
+                modal_att_unlock_lbl: "🔓 Mở khóa nhận quà ngay hôm nay (Xóa giới hạn chờ 24h)",
+                modal_att_grant_lbl: "🎁 Nhận ngay trọn bộ quà sự kiện này vào tài khoản",
+                modal_ch2_title: "⚠️ Mở khóa Ch2: Tiệm bánh Hạnh phúc",
+                modal_ch2_badge: "NGUY HIỂM / TEST",
+                modal_ch2_enable: "🔓 Bật Mở Khóa Chapter 2 Ngay Cho Người Chơi Này",
+                modal_sendmail_chk: "📬 Gửi kèm thư thông báo vào Hòm thư in-game của người chơi",
+                btn_cancel: "Hủy",
+                btn_save_user: "💾 Lưu Cài Đặt Riêng",
+                btn_delete_user: "🗑️ Xóa Toàn Bộ Dữ Liệu Tài Khoản Này (Reset Sạch Về Đầu)",
+                btn_send_now: "🚀 Gửi Ngay Vào Game"
+            },
+            en: {
+                app_title: "Guitar Girl - Admin Dashboard",
+                server_status: "Server Online &bull; Zero-Downtime Hot-Reload",
+                download_apk: "📥 Download Game APK (458 MB)",
+                tab_users: "Player Management",
+                tab_events: "Server Event Configuration",
+                stat_total: "👥 Total Players",
+                stat_real: "📱 Real Devices",
+                stat_test: "🧪 Auto Test Accounts",
+                stat_banned: "🚫 Banned Accounts",
+                stat_gold: "⭐ Gold Pass Holders",
+                search_placeholder: "🔍 Search by Name, ID, Seq, UUID...",
+                filter_all: "All Players",
+                filter_real: "📱 Real Devices Only (Hide Tests)",
+                filter_test: "🧪 Auto Test Accounts Only",
+                filter_active: "🟢 Active (Normal)",
+                filter_banned: "🚫 Banned Accounts",
+                filter_gold: "⭐ Gold Star Pass Holders",
+                filter_free: "⚪ Free Star Pass",
+                btn_refresh: "🔄 Refresh",
+                btn_cleanup_tests: "🧹 Clean Test Accs",
+                cleanup_tests_title: "Delete all auto-generated test accounts from automated test suites",
+                btn_server_mail: "✉️ Server Mail",
+                showing_prefix: "Showing",
+                showing_suffix: "accounts",
+                copy_hint: "Click UUID to quick copy",
+                players_list_title: "📋 Detailed Player List",
+                players_list_sub: "Manage each account individually",
+                empty_users_filter: "No players found matching your filter.<br><span style='font-size:0.8rem; margin-top:4px; display:inline-block;'>Try clearing filters or search keywords.</span>",
+                th_player: "Player",
+                th_last_login: "Last Login",
+                th_resources: "Resources",
+                th_attendance: "Attendance Events",
+                th_starpass: "Star Pass",
+                th_actions: "Actions",
+                badge_banned: "🚫 BANNED",
+                badge_test: "🧪 Test Auto",
+                badge_real: "📱 Real Device",
+                badge_gold: "⭐ Gold Pass",
+                badge_free: "⚪ Free Pass",
+                badge_disabled: "⚪ Disabled",
+                lbl_newbie: "📅 Newbie",
+                lbl_bakery: "🏪 Bakery",
+                lbl_ch2_opened: "🔓 CH2: Unlocked",
+                lbl_ch2_locked: "🔒 CH2: Locked",
+                currency_tim: "Likes",
+                lbl_pts: "pts",
+                lbl_tier: "Tier",
+                btn_mail: "Mail",
+                btn_unban: "Unban",
+                btn_ban: "Ban",
+                btn_delete: "Delete",
+                btn_reload_cfg: "🔄 Reload Config",
+                btn_save_events: "💾 Save Changes",
+                chk_auto_notify: "📬 Send notification mail in-game when saving",
+                card_att_title: "📅 Attendance & Login Events",
+                card_sp_title: "⭐ Star Pass",
+                card_sp_sub: "13 Seasons",
+                sp_enable_title: "Enable Star Pass",
+                sp_enable_desc: "Toggle Star Pass progress bar and lobby event icon",
+                sp_gold_title: "Unlock Paid Gold Pass Server-Wide",
+                sp_gold_desc: "Grant Gold Pass to all players (Recommended to use Setting button in Players tab for individuals)",
+                sp_season_label: "Select Active Star Pass Season:",
+                card_sale_title: "🏷️ Pass Goods Sale",
+                pgs_name: "Pass Goods Sale",
+                pgs_desc: "Open Sale icon on main lobby to rebuy Costumes & Guitars from past 13 Star Pass seasons at discounted CP prices (50-200 CP)",
+                card_mf_title: "🐱 Meowfest Event (SamSeck)",
+                mf_name: "Meowfest Raising Cat Event",
+                mf_desc: "Unlock 3 Calico cat raising milestones for Scratching Post (Guitar 10), Overalls (Costume 13), Navi Cat (Unit 1)",
+                card_c3_title: "🏫 Sunshine High School Tour (CH3)",
+                c3_name: "Chapter 3 Tour (Sunshine High School)",
+                c3_desc: "Perform 20 Sunshine High School tour stages with Cookie / AP Energy",
+                card_wf_title: "❄️🌸 Seasonal Weather Effects",
+                card_wf_sub: "Select 1 single active effect",
+                wf_desc: "The system activates only <b>1 weather effect at a time</b> to keep visuals distinct and prevent overlapping particles:",
+                wf_snow_title: "❄️ Winter Snow Festival",
+                wf_snow_desc: "Enable soft white snowfall particles outside the room window & main lobby",
+                wf_snow_tag: "Winter",
+                wf_cherry_title: "🌸 Cherry Blossom Date",
+                wf_cherry_desc: "Enable pink cherry blossom petals fluttering through the spring atmosphere",
+                wf_cherry_tag: "Spring",
+                wf_none_title: "🚫 Disable All Weather Effects",
+                wf_none_desc: "Return to default clean room atmosphere with no weather particles",
+                wf_none_tag: "Default",
+                card_fac_title: "🎨 Fan Art 2021 Limited Costumes",
+                fac_name: "Fan Art Design Costumes",
+                fac_desc: "Activate Spring Fairy costume and Fairy's Melody guitar",
+                card_er_title: "🏆 Event Ranking Leaderboard",
+                er_name: "Event Top Leaderboard",
+                er_desc: "Enable real-time event score race with Top 100 players leaderboard",
+                card_mail_title: "📬 Server Broadcast Mail & Gifts",
+                card_mail_sub: "Instant sync without leaving the game",
+                btn_send_broadcast: "🚀 Send Mail & Gifts to Server",
+                card_cli_title: "💻 Terminal Commands (CLI)",
+                cli_sub: "You can also manage server events directly via terminal commands:",
+                modal_user_title: "⚙️ Individual Player Settings",
+                modal_ban_title: "🚫 Ban Player Account",
+                modal_ban_desc: "Ban player account. The game will show 'Account is BANNED' message instead of connection error.",
+                modal_sp_gold_title: "⭐ Paid Gold Star Pass",
+                modal_sp_gold_desc: "Unlock Gold Star Pass entitlement exclusively for this player",
+                modal_sp_points_lbl: "Star Pass Points:",
+                modal_sp_points_sub: "Update points to claim tiered milestone rewards (automatically calculates corresponding tier).",
+                modal_curr_title: "💰 Resources (Likes, CP, Candy)",
+                modal_add_likes: "Add Likes (Tim):",
+                modal_add_cp: "Add Chocolate (CP):",
+                modal_add_candy: "Add Candy:",
+                modal_set_likes: "❤️ Set Exact Likes (Supports game units: 42.877G, 100H, 10AA...):",
+                modal_att_title: "📅 Customize Attendance Events",
+                modal_att_target: "Select Event to Edit:",
+                modal_att_day_lbl: "Target Day Milestone:",
+                modal_att_unlock_lbl: "🔓 Unlock reward claiming today (Bypass 24h cooldown)",
+                modal_att_grant_lbl: "🎁 Directly grant all milestone rewards for this event",
+                modal_ch2_title: "⚠️ Unlock Ch2: Happy Bakery",
+                modal_ch2_badge: "DANGER / TEST",
+                modal_ch2_enable: "🔓 Enable Chapter 2 Unlock For This Player",
+                modal_sendmail_chk: "📬 Send notification mail to player's in-game mailbox",
+                btn_cancel: "Cancel",
+                btn_save_user: "💾 Save Individual Settings",
+                btn_delete_user: "🗑️ Delete All Account Data (Clean Reset to Start)",
+                btn_send_now: "🚀 Send In-Game Now"
+            }
+        };
+
+        let currentLang = localStorage.getItem('gg_admin_lang') || 'vi';
+
+        function t(key, fallback = '') {
+            if (I18N[currentLang] && I18N[currentLang][key] !== undefined) {
+                return I18N[currentLang][key];
+            }
+            return fallback || key;
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('gg_admin_lang', lang);
+            document.documentElement.lang = lang;
+
+            const btnVi = document.getElementById('lang-btn-vi');
+            const btnEn = document.getElementById('lang-btn-en');
+            if (btnVi) btnVi.classList.toggle('active', lang === 'vi');
+            if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (I18N[lang] && I18N[lang][key] !== undefined) {
+                    el.innerHTML = I18N[lang][key];
+                }
+            });
+            document.querySelectorAll('[data-i18n-title]').forEach(el => {
+                const key = el.getAttribute('data-i18n-title');
+                if (I18N[lang] && I18N[lang][key] !== undefined) {
+                    el.setAttribute('title', I18N[lang][key]);
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (I18N[lang] && I18N[lang][key] !== undefined) {
+                    el.setAttribute('placeholder', I18N[lang][key]);
+                }
+            });
+
+            // Re-render UI elements
+            renderUI();
+            if (cachedUsers && cachedUsers.length > 0) {
+                filterUsers();
+            }
+        }
+
         let currentConfig = null;
         let seasonsList = [];
         let cachedUsers = [];
@@ -1570,12 +1897,12 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 <table class="user-table">
                     <thead>
                         <tr>
-                            <th>Người Chơi</th>
-                            <th>Đăng Nhập Gần Nhất</th>
-                            <th>Tài Nguyên</th>
-                            <th>Sự Kiện Điểm Danh</th>
-                            <th>Thẻ Sao ${spEnabled ? `(Mùa ${currentActiveSeason})` : '(Đang Tắt)'}</th>
-                            <th style="text-align: right;">Thao Tác</th>
+                            <th>${t('th_player', 'Người Chơi')}</th>
+                            <th>${t('th_last_login', 'Đăng Nhập Gần Nhất')}</th>
+                            <th>${t('th_resources', 'Tài Nguyên')}</th>
+                            <th>${t('th_attendance', 'Sự Kiện Điểm Danh')}</th>
+                            <th>${t('th_starpass', 'Thẻ Sao')} ${spEnabled ? `(${currentLang === 'en' ? 'Season' : 'Mùa'} ${currentActiveSeason})` : `(${t('badge_disabled', 'Đang Tắt')})`}</th>
+                            <th style="text-align: right;">${t('th_actions', 'Thao Tác')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1583,16 +1910,16 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
             users.forEach(u => {
                 const passBadge = !spEnabled
-                    ? `<span style="display:inline-block; font-size:0.75rem; color:#888; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:4px; border:1px solid rgba(255,255,255,0.08);">⚪ Đang tắt</span>`
+                    ? `<span style="display:inline-block; font-size:0.75rem; color:#888; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:4px; border:1px solid rgba(255,255,255,0.08);">${t("badge_disabled", "⚪ Đang tắt")}</span>`
                     : (u.is_gold
-                        ? `<span class="user-badge-gold">⭐ Gold Pass</span>`
-                        : `<span class="user-badge-free">⚪ Free Pass</span>`);
+                        ? `<span class="user-badge-gold">${t("badge_gold", "⭐ Gold Pass")}</span>`
+                        : `<span class="user-badge-free">${t("badge_free", "⚪ Free Pass")}</span>`);
                 const banBadge = u.is_banned
                     ? `<span class="user-badge-banned">🚫 BANNED</span>`
                     : '';
                 const deviceBadge = u.is_test
-                    ? `<span style="display:inline-flex; align-items:center; background:rgba(255,165,2,0.15); color:#ffa502; border:1px solid rgba(255,165,2,0.35); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:700; margin-left:6px;">🧪 Test Auto</span>`
-                    : `<span style="display:inline-flex; align-items:center; background:rgba(46, 213, 115, 0.15); color:#2ed573; border:1px solid rgba(46, 213, 115, 0.35); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:700; margin-left:6px;">📱 Máy Thật</span>`;
+                    ? `<span style="display:inline-flex; align-items:center; background:rgba(255,165,2,0.15); color:#ffa502; border:1px solid rgba(255,165,2,0.35); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:700; margin-left:6px;">${t("badge_test", "🧪 Test Auto")}</span>`
+                    : `<span style="display:inline-flex; align-items:center; background:rgba(46, 213, 115, 0.15); color:#2ed573; border:1px solid rgba(46, 213, 115, 0.35); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:700; margin-left:6px;">${t("badge_real", "📱 Máy Thật")}</span>`;
                 const shortUuid = u.uuid ? (u.uuid.length > 14 ? u.uuid.substring(0, 14) + '...' : u.uuid) : '-';
 
                 html += `
@@ -1602,8 +1929,10 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                                 <span>${escapeHtml(u.u_nick)}</span>
                                 ${deviceBadge}
                                 ${banBadge}
+                            <div style="font-size: 0.8rem; color: #55efc4; font-weight: 700; margin-top: 3px; display:flex; align-items:center; gap:6px;">
+                                <span style="background:rgba(85,239,196,0.12); border:1px solid rgba(85,239,196,0.3); padding:1px 6px; border-radius:4px;">UID: #${u.u_seq}</span>
+                                <span style="color:var(--text-sub); font-weight:400; font-size:0.75rem;">${escapeHtml(u.u_id || '-')}</span>
                             </div>
-                            <div style="font-size: 0.76rem; color: var(--text-sub); margin-top: 2px;">Seq: #${u.u_seq} &bull; ID: ${escapeHtml(u.u_id || '-')}</div>
                             <div class="uuid-pill" onclick="copyToClipboard('${u.uuid}', 'UUID')" title="Bấm để sao chép toàn bộ UUID">
                                 📋 ${escapeHtml(shortUuid)}
                             </div>
@@ -1612,21 +1941,21 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                             <div style="color: var(--text-main); font-size: 0.85rem; font-weight: 500;">🕒 ${escapeHtml(u.u_last_login)}</div>
                         </td>
                         <td>
-                            <div style="font-size: 0.82rem; color: #ff6b81; font-weight: 600;">❤️ ${formatNumber(u.u_like)} Tim</div>
+                            <div style="font-size: 0.82rem; color: #ff6b81; font-weight: 600;">❤️ ${formatNumber(u.u_like)} ${t('currency_tim', 'Tim')}</div>
                             <div style="font-size: 0.82rem; color: #f5cd79; font-weight: 500;">🍫 ${formatNumber(u.u_cp)} CP</div>
                             <div style="font-size: 0.82rem; color: #68d8d6; font-weight: 500;">🍬 ${formatNumber(u.u_candy)} Candy</div>
                         </td>
                         <td>
-                            <div style="font-size: 0.82rem; color: #a29bfe; font-weight: 500;">📅 Tân Thủ: <b>${u.attendance_day || 0}/7</b></div>
-                            <div style="font-size: 0.82rem; color: #55efc4; font-weight: 500; margin-top: 3px;">🏪 Tiện Lợi: <b>${u.ch2_attendance_day || 0}/7</b></div>
+                            <div style="font-size: 0.82rem; color: #a29bfe; font-weight: 500;">${t('lbl_newbie', '📅 Tân Thủ')}: <b>${u.attendance_day || 0}/7</b></div>
+                            <div style="font-size: 0.82rem; color: #55efc4; font-weight: 500; margin-top: 3px;">${t('lbl_bakery', '🏪 Tiện Lợi')}: <b>${u.ch2_attendance_day || 0}/7</b></div>
                             ${u.ch2_unlocked
-                                ? `<div style="font-size: 0.74rem; color: #2ed573; font-weight: 600; margin-top: 3px;">🔓 CH2: Đã mở</div>`
-                                : `<div style="font-size: 0.74rem; color: var(--text-sub); margin-top: 3px;">🔒 CH2: Chưa mở</div>`}
+                                ? `<div style="font-size: 0.74rem; color: #2ed573; font-weight: 600; margin-top: 3px;">${t('lbl_ch2_opened', '🔓 CH2: Đã mở')}</div>`
+                                : `<div style="font-size: 0.74rem; color: var(--text-sub); margin-top: 3px;">${t('lbl_ch2_locked', '🔒 CH2: Chưa mở')}</div>`}
                         </td>
                         <td>
                             <div>${passBadge}</div>
                             <div style="font-size: 0.76rem; color: var(--text-sub); margin-top: 3px;">
-                                ${spEnabled ? `${Number(u.star_point || 0).toLocaleString()} điểm &bull; Cấp ${u.star_step || 0}` : '<span style="color:#666;">Chưa kích hoạt</span>'}
+                                ${spEnabled ? `${Number(u.star_point || 0).toLocaleString()} ${t('lbl_pts', 'điểm')} &bull; ${t('lbl_tier', 'Cấp')} ${u.star_step || 0}` : '<span style="color:#666;">' + t('not_activated', 'Chưa kích hoạt') + '</span>'}
                             </div>
                         </td>
                         <td style="text-align: right; white-space: nowrap;">
@@ -1635,13 +1964,13 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                                     ⚙️ Setting
                                 </button>
                                 <button class="btn-mail" onclick="openSendMailModal('${u.uuid || ""}', '${escapeHtml(u.u_nick)}')" title="Gửi thư và quà riêng cho người chơi này">
-                                    ✉️ Thư
+                                    ✉️ ${t('btn_mail', 'Thư')}
                                 </button>
                                 <button class="${u.is_banned ? 'btn-unban' : 'btn-ban'}" onclick="toggleBan('${u.uuid || ""}', ${!u.is_banned}, ${u.u_seq})" title="${u.is_banned ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}">
-                                    ${u.is_banned ? '✅ Mở' : '🚫 Ban'}
+                                    ${u.is_banned ? '✅ ' + t('btn_unban', 'Mở') : '🚫 ' + t('btn_ban', 'Ban')}
                                 </button>
                                 <button class="btn-delete-user" onclick="deleteUser('${u.uuid || ""}', '${escapeHtml(u.u_nick)}', ${u.u_seq})" title="Xóa toàn bộ dữ liệu">
-                                    🗑️ Xóa
+                                    🗑️ ${t('btn_delete', 'Xóa')}
                                 </button>
                             </div>
                         </td>
@@ -1849,7 +2178,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             document.getElementById('modal-uuid').value = u.uuid || '';
             document.getElementById('modal-useq').value = u.u_seq;
             document.getElementById('modal-user-name').innerText = u.u_nick;
-            document.getElementById('modal-user-sub').innerText = `ID: ${u.u_id || '-'} | Seq: #${u.u_seq} | UUID: ${u.uuid || '-'}`;
+            document.getElementById('modal-user-sub').innerText = `🆔 UID: #${u.u_seq} • ID: ${u.u_id || '-'} • UUID: ${u.uuid || '-'}`;
             document.getElementById('modal-user-lastlogin').innerText = `🕒 Đăng nhập gần nhất: ${u.u_last_login}`;
             document.getElementById('modal-is-banned').checked = !!u.is_banned;
 
@@ -2050,6 +2379,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
         // ================= INITIAL LOAD =================
         document.addEventListener('DOMContentLoaded', () => {
+            setLanguage(currentLang);
             loadConfig();
             loadUsers();
             const savedTab = localStorage.getItem('gg_admin_active_tab') || 'users';

@@ -230,9 +230,37 @@ def save_event_config(cfg, notify_in_game=False):
             sp = normalized.get('star_pass', {})
             s_id = sp.get('active_season', 13)
             s_info = next((s for s in STAR_PASS_SEASONS if s['id'] == s_id), {})
-            title = "Cập nhật Sự kiện Trực tiếp"
-            memo = f"Sự kiện máy chủ đã được đồng bộ! Star Pass: Mùa {s_id} - {s_info.get('name_vi', '')}. Chúc bạn có những phút giây thư giãn tuyệt vời!"
-            post.send_post(uuid=None, title=title, memo=memo)
+            s_name_vi = s_info.get('name_vi', '')
+            s_name_en = s_info.get('name_en', s_name_vi)
+            titles = {
+                'ko': '라이브 이벤트 업데이트',
+                'en': 'Live Event Update',
+                'jp': 'ライブイベントアップデート',
+                'zh_chs': '在线活动更新',
+                'zh_cht': '在線活動更新',
+                'vi': 'Cập nhật Sự kiện Trực tiếp',
+                'es': 'Actualización del Evento en Vivo',
+                'it': 'Aggiornamento Evento dal Vivo',
+                'id': 'Pembaruan Acara Langsung',
+                'th': 'อัปเดตกิจกรรมสด',
+                'pt': 'Atualização do Evento ao Vivo',
+                'hi': 'लाइव इवेंट अपडेट',
+            }
+            memos = {
+                'vi': f"Sự kiện máy chủ đã được đồng bộ! Star Pass: Mùa {s_id} - {s_name_vi}. Chúc bạn có những phút giây thư giãn tuyệt vời!",
+                'en': f"Server event has been synchronized! Star Pass: Season {s_id} - {s_name_en}. Have a relaxing and wonderful time!",
+                'ko': f"서버 이벤트가 동기화되었습니다! 스타 패스: 시즌 {s_id}. 즐거운 힐링 시간 되세요!",
+                'jp': f"サーバーイベントが同期されました！スターパス：シーズン{s_id}。癒しの時間をお楽しみください！",
+                'zh_chs': f"服务器活动已同步！星光通行证：第{s_id}赛季。祝您度过一段温馨美好的时光！",
+                'zh_cht': f"伺服器活動已同步！星光通行證：第{s_id}賽季。祝您度過一段溫馨美好的時光！",
+                'es': f"¡El evento del servidor se ha sincronizado! Pase Estelar: Temporada {s_id} - {s_name_en}. ¡Que tengas un momento maravilloso y relajante!",
+                'it': f"L'evento del server è stato sincronizzato! Pass Stellare: Stagione {s_id} - {s_name_en}. Ti auguriamo fantastici momenti di relax!",
+                'id': f"Acara server telah disinkronkan! Star Pass: Musim {s_id} - {s_name_en}. Semoga Anda menikmati waktu santai yang menyenangkan!",
+                'th': f"กิจกรรมของเซิร์ฟเวอร์ได้รับการซิงค์แล้ว! สตาร์พาส: ซีซั่น {s_id} - {s_name_en} ขอให้มีช่วงเวลาที่ผ่อนคลายและยอดเยี่ยมนะ!",
+                'pt': f"O evento do servidor foi sincronizado! Passe Estelar: Temporada {s_id} - {s_name_en}. Tenha um ótimo e relaxante momento!",
+                'hi': f"सर्वर इवेंट सिंक्रोनाइज़ हो गया है! स्टार पास: सीज़न {s_id} - {s_name_en}। आपके लिए एक आरामदायक और शानदार समय की कामना करते हैं!",
+            }
+            post.send_post(uuid=None, title=titles, memo=memos, applies_to_new_users=False)
         except Exception:
             pass
 
