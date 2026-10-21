@@ -13,7 +13,7 @@
     "3": {
       "name": "Điểm danh hằng ngày",
       "description": "Điểm danh hằng ngày Cửa hàng tiện lợi Chapter 2 (7 ngày bánh gừng, kẹo, AP)",
-      "enabled": false
+      "enabled": true
     },
     "202110": {
       "name": "Sự kiện đăng nhập tháng 10/2021",
@@ -46,7 +46,7 @@
   "chapter3_tour": {
     "name": "Tour Chapter 3 (Sunshine High School)",
     "description": "Biểu diễn sân khấu trường trung học Sunshine 20 màn với Năng lượng Cookie / AP",
-    "enabled": false
+    "enabled": true
   },
   "weather_festival": {
     "name": "Lễ hội Hiệu ứng Thời tiết Mùa",
@@ -78,8 +78,8 @@
     },
     "3": {
       "name": "Điểm danh hằng ngày",
-      "enabled": false,
-      "state": "ended"
+      "enabled": true,
+      "state": "active"
     },
     "202110": {
       "name": "Sự kiện đăng nhập tháng 10/2021",

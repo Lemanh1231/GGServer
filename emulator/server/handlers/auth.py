@@ -529,7 +529,15 @@ def h_user_login(req, player, ctx):
             'errmsg': 'Tài khoản của bạn đã bị KHÓA (BAN) bởi Quản trị viên!\nVui lòng liên hệ Admin để được hỗ trợ.'
         }
     if not user:
-        user = state.create_user(uuid, p.get('device_uuid', ''))
+        client_ip = (ctx or {}).get('client_ip', '')
+        user = state.create_user(uuid, p.get('device_uuid', ''), ip=client_ip)
+    else:
+        client_ip = (ctx or {}).get('client_ip', '')
+        if client_ip:
+            state.update_user_ip(user.get('uuid'), client_ip)
+            user['ip'] = client_ip
+            if 'userdata' in user:
+                user['userdata']['ip'] = client_ip
     u_seq_req = p.get('u_seq', 0) or 0
     if u_seq_req != 0:
         _remove_legacy_currency_grant(user)
@@ -542,11 +550,14 @@ def h_user_login(req, player, ctx):
         cur_like = float(ud.get('u_like', 0.0) or 0.0)
         cur_like_int, cur_like_f, cur_like_str, _ = currency.parse_currency(cur_like)
         for aid, ainfo in areas.items():
-            if cur_like_f > float(ainfo.get('d_Like', 0.0) or 0.0):
-                ainfo['d_Like'] = cur_like_f
-            cur_gp1_int, _, _, _ = currency.parse_currency(ainfo.get('s_Gp1') or '0')
-            if cur_like_int > cur_gp1_int:
-                ainfo['s_Gp1'] = cur_like_str
+            if isinstance(ainfo, dict):
+                old_gp1 = ainfo.get('s_Gp1') or '0'
+                old_int, _, _, _ = currency.parse_currency(old_gp1)
+                target_int = cur_like_int if user.get('force_server_like') else max(cur_like_int, old_int)
+                _, tf, tstr, _ = currency.parse_currency(target_int)
+                ainfo['d_Like'] = tf
+                ainfo['s_Gp1'] = tstr
+        user.pop('force_server_like', None)
         area_map = {int(k): v for k, v in areas.items()}
         ct = str(ud.get('u_create_time', ''))
         if not ct.lstrip('-').isdigit():
@@ -685,7 +696,10 @@ def h_user_save(req, player, ctx):
                     srv_like_int, srv_like_f, srv_like_str, _ = currency.parse_currency(srv_like)
                     c_gp1_int, c_gp1_f, c_gp1_str, _ = currency.parse_currency(c_gp1_raw)
 
-                    if srv_like_int > c_gp1_int:
+                    if user.get('needs_client_reset') or user.get('force_server_like'):
+                        stored['s_Gp1'] = srv_like_str
+                        stored['d_Like'] = srv_like_f
+                    elif srv_like_int > c_gp1_int:
                         stored['s_Gp1'] = srv_like_str
                         stored['d_Like'] = srv_like_f
                     else:

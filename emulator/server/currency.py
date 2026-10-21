@@ -39,23 +39,31 @@ import re
 import sys
 from decimal import Decimal, InvalidOperation
 
-# Max IEEE 754 float64
-MAX_FLOAT = 1.7976931348623157e308
-MAX_DECIMAL = Decimal('1.7976931348623157e308')
+# Max client-supported float & integer:
+# In libil2cpp.so, ShortScaleString..cctor initializes an array of size 0x65 = 101 units:
+# Units A..Z (26) + AA..AZ (26) + BA..BZ (26) + CA..CW (23) = 101 units total.
+# Unit 100 (101st unit) is 'CW' (10^303). Maximum safe number has 306 digits (~999.999CW).
+# Digits >= 307 cause ShortScaleString.parseBigInteger to throw IndexOutOfRangeException!
+MAX_UNITS_COUNT = 101
+MAX_SAFE_DIGITS = 306
+MAX_FLOAT = 9.99999e305
+MAX_DECIMAL = Decimal('9.99999e305')
 
-# Build the 702 units matching ShortScaleString
+# Build the 101 units matching ShortScaleString (A..CW)
 UNITS = []
 for i in range(26):
-    UNITS.append(chr(ord('A') + i))
+    if len(UNITS) < MAX_UNITS_COUNT:
+        UNITS.append(chr(ord('A') + i))
 for i in range(26):
     for j in range(26):
-        UNITS.append(chr(ord('A') + i) + chr(ord('A') + j))
+        if len(UNITS) < MAX_UNITS_COUNT:
+            UNITS.append(chr(ord('A') + i) + chr(ord('A') + j))
 
 GAME_UNITS = UNITS
 
 # Unit to power-of-10 exponent lookup
 # Follows the game's native alphabet scale:
-# A=10^3, B=10^6, C=10^9, D=10^12, E=10^15, F=10^18, G=10^21, H=10^24 ...
+# A=10^3, B=10^6, C=10^9, D=10^12, E=10^15, F=10^18, G=10^21, H=10^24 ... CW=10^303
 UNIT_TO_EXP = {}
 for idx, u in enumerate(UNITS):
     exp = 3 * (idx + 1)

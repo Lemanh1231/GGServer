@@ -74,17 +74,61 @@ class _HTTPSMarker: pass
 class Handler(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
-    def log_message(self, fmt, *a):
-        if CONFIG['verbose']:
-            sys.stderr.write("[gg] " + (fmt % a) + "\n")
+    def do_CONNECT(self):
+        try:
+            self.send_response(400)
+            self.end_headers()
+        except Exception:
+            pass
 
-    def _send(self, body, code=200, ctype='text/plain; charset=utf-8'):
+    def log_error(self, fmt, *a):
+        msg = fmt % a
+        # Suppress scanner noise (unsupported method, bad request syntax, etc.)
+        if any(k in msg for k in ('Unsupported method', 'code 501', 'code 400', 'code 404')):
+            return
+        if CONFIG['verbose']:
+            sys.stderr.write("[gg] " + msg + "\n")
+
+    def log_request(self, code='-', size='-'):
+        # Do not log health checks, admin UI/API polling, or scanner 404s/errors
+        path = getattr(self, 'path', '')
+        if path in ('/health', '/') or path.startswith('/admin') or str(code) in ('404', '400', '501'):
+            return
+        super().log_request(code, size)
+
+    def log_message(self, fmt, *a):
+        msg = fmt % a
+        # Suppress health checks, root pings, admin polling, and scanner probes from log output
+        if any(k in msg for k in ('/health', '"GET / HTTP', '"GET /admin', '"GET /favicon',
+                                  'CONNECT ', '/SDK/', ' 404 -', ' 501 -', ' 400 -')):
+            return
+        if CONFIG['verbose']:
+            sys.stderr.write("[gg] " + msg + "\n")
+
+    def _get_client_ip(self):
+        for hdr in ('CF-Connecting-IP', 'X-Forwarded-For', 'X-Real-IP'):
+            val = self.headers.get(hdr)
+            if val:
+                return val.split(',')[0].strip()
+        if self.client_address and len(self.client_address) > 0:
+            return str(self.client_address[0]).strip()
+        return '127.0.0.1'
+
+    def _send(self, body, code=200, ctype='text/plain; charset=utf-8', headers=None):
         if isinstance(body, str):
             body = body.encode('utf-8')
         self.send_response(code)
         self.send_header('Content-Type', ctype)
         self.send_header('Content-Length', str(len(body)))
         self.send_header('Access-Control-Allow-Origin', '*')
+        if headers:
+            if isinstance(headers, dict):
+                for k, v in headers.items():
+                    self.send_header(k, str(v))
+            elif isinstance(headers, (list, tuple)):
+                for item in headers:
+                    if isinstance(item, (tuple, list)) and len(item) == 2:
+                        self.send_header(str(item[0]), str(item[1]))
         self.end_headers()
         # HEAD must carry the same headers (incl. Content-Length) but no body.
         if self.command == 'HEAD':
@@ -158,9 +202,17 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_file(candidate, filename=req_file)
                 return
         if path in ('/admin', '/admin/'):
+            if not admin.is_admin_authenticated(self.headers):
+                html = admin.get_login_html()
+                self._send(html, 200, 'text/html; charset=utf-8')
+                return
             html = admin.get_admin_html()
             self._send(html, 200, 'text/html; charset=utf-8')
             return
+        if path.startswith('/admin/api/'):
+            if not admin.is_admin_authenticated(self.headers):
+                self._send(json.dumps({'success': False, 'error': 'Unauthorized. Vui lòng đăng nhập lại!'}), 401, 'application/json; charset=utf-8')
+                return
         if path == '/admin/api/events':
             cfg = event_manager.load_event_config()
             resp = {
@@ -174,7 +226,7 @@ class Handler(BaseHTTPRequestHandler):
             active_season = event_manager.get_active_star_pass_season()
             users_list = []
             conn = state.get_db()
-            rows = conn.execute('SELECT uuid, device_uuid, u_id, u_seq, u_cp, u_candy, u_like, attendance_count, is_banned, user_contents_json FROM user_data ORDER BY u_seq ASC').fetchall()
+            rows = conn.execute('SELECT uuid, device_uuid, u_id, u_seq, u_cp, u_candy, u_like, attendance_count, is_banned, ip, user_contents_json FROM user_data ORDER BY u_seq ASC').fetchall()
             f12_rows = conn.execute("SELECT uuid, level FROM user_inventory WHERE item_type = 'follower' AND item_id = 12").fetchall()
             f12_map = {fr['uuid']: int(fr['level'] or 0) for fr in f12_rows}
             conn.close()
@@ -217,6 +269,7 @@ class Handler(BaseHTTPRequestHandler):
                     'device_uuid': r['device_uuid'],
                     'u_seq': r['u_seq'],
                     'u_id': r['u_id'],
+                    'ip': r['ip'] if ('ip' in r.keys() and r['ip']) else (ud.get('ip') or ''),
                     'u_nick': ud.get('u_nick') or r['u_id'] or f"Player {r['u_seq']}",
                     'u_last_login': ud.get('u_last_login') or ud.get('u_last_communication') or 'Chưa có',
                     'u_cp': r['u_cp'],
@@ -274,6 +327,36 @@ class Handler(BaseHTTPRequestHandler):
             if path in ('/', '/health'):
                 self._send('GG emulator OK')
                 return
+
+            # --- Admin Authentication APIs ---
+            if path == '/admin/api/login':
+                try:
+                    data = json.loads(body.decode('utf-8'))
+                    password = str(data.get('password', '')).strip()
+                    if password == admin.ADMIN_PASSWORD:
+                        token = admin.create_admin_token()
+                        cookie_val = f"gg_admin_token={token}; Path=/; Max-Age=2592000; HttpOnly; SameSite=Lax"
+                        resp = {'success': True, 'token': token, 'message': 'Đăng nhập thành công!'}
+                        self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8', headers=[('Set-Cookie', cookie_val)])
+                    else:
+                        resp = {'success': False, 'error': 'Mật khẩu quản trị không chính xác!'}
+                        self._send(json.dumps(resp, ensure_ascii=False), 401, 'application/json; charset=utf-8')
+                except Exception as e:
+                    resp = {'success': False, 'error': str(e)}
+                    self._send(json.dumps(resp, ensure_ascii=False), 400, 'application/json; charset=utf-8')
+                return
+
+            if path in ('/admin/api/logout', '/admin/logout'):
+                cookie_val = "gg_admin_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=Lax"
+                resp = {'success': True, 'message': 'Đã đăng xuất thành công!'}
+                self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8', headers=[('Set-Cookie', cookie_val)])
+                return
+
+            # Protect all other /admin/api/ endpoints
+            if path.startswith('/admin/api/'):
+                if not admin.is_admin_authenticated(self.headers):
+                    self._send(json.dumps({'success': False, 'error': 'Unauthorized. Vui lòng đăng nhập lại!'}), 401, 'application/json; charset=utf-8')
+                    return
 
             # --- Admin Event Manager API ---
             if path == '/admin/api/events':
@@ -624,37 +707,78 @@ class Handler(BaseHTTPRequestHandler):
                     add_like = data.get('add_like')
                     from server import currency
 
+                    mail_items = []
+                    needs_reset = False
+
                     if set_like is not None and str(set_like).strip() != '':
                         s_int, s_like, s_str, s_fmt = currency.parse_currency(set_like)
                         state.set_like_currency(user['uuid'], s_str)
                         user.setdefault('userdata', {})['u_like'] = s_like
-                        for a in user.setdefault('areas', state._default_areas()).values():
-                            a['d_Like'] = s_like
-                            a['s_Gp1'] = s_str
+                        user['force_server_like'] = s_str
+                        areas = user.setdefault('areas', state._default_areas())
+                        for a in areas.values():
+                            if isinstance(a, dict):
+                                a['d_Like'] = s_like
+                                a['s_Gp1'] = s_str
+                        needs_reset = True
                         add_like = 0
                     elif add_like is not None and str(add_like).strip() not in ('', '0'):
                         a_int, a_like, a_str, a_fmt = currency.parse_currency(add_like)
                         if a_int != 0:
                             state.increment_currency(user['uuid'], like=a_str)
-                            cur_l = float(user.get('userdata', {}).get('u_like', 0.0) or 0.0) + a_like
+                            cur_l = min(currency.MAX_FLOAT, float(user.get('userdata', {}).get('u_like', 0.0) or 0.0) + a_like)
                             user.setdefault('userdata', {})['u_like'] = cur_l
-                            for a in user.setdefault('areas', state._default_areas()).values():
-                                a['d_Like'] = float(a.get('d_Like', 0.0) or 0.0) + a_like
-                                old_int, _, _, _ = currency.parse_currency(a.get('s_Gp1') or '0')
-                                a['s_Gp1'] = str(max(0, old_int + a_int))
+                            areas = user.setdefault('areas', state._default_areas())
+                            for a in areas.values():
+                                if isinstance(a, dict):
+                                    old_int, _, _, _ = currency.parse_currency(a.get('s_Gp1') or '0')
+                                    new_int = min(currency.MAX_DECIMAL, currency.Decimal(old_int) + currency.Decimal(a_int))
+                                    _, af, astr, _ = currency.parse_currency(new_int)
+                                    a['d_Like'] = af
+                                    a['s_Gp1'] = astr
+                            needs_reset = True
+                            if data.get('send_mail'):
+                                mail_items.append({
+                                    'i_RewardType': 1,
+                                    'i_RewardId': 3,
+                                    'd_RewardQuantity': float(a_like),
+                                    'already_granted': True
+                                })
 
                     if add_cp != 0 or add_candy != 0:
                         state.increment_currency(user['uuid'], cp=add_cp, candy=add_candy)
+                        if add_cp != 0:
+                            user.setdefault('userdata', {})['u_cp'] = int(user.get('userdata', {}).get('u_cp', 0) or 0) + add_cp
+                            if data.get('send_mail'):
+                                mail_items.append({
+                                    'i_RewardType': 1,
+                                    'i_RewardId': 1,
+                                    'd_RewardQuantity': float(add_cp),
+                                    'already_granted': True
+                                })
+                        if add_candy != 0:
+                            user.setdefault('userdata', {})['u_candy'] = float(user.get('userdata', {}).get('u_candy', 0.0) or 0.0) + add_candy
+                            if data.get('send_mail'):
+                                mail_items.append({
+                                    'i_RewardType': 1,
+                                    'i_RewardId': 2,
+                                    'd_RewardQuantity': float(add_candy),
+                                    'already_granted': True
+                                })
+                        needs_reset = True
+
+                    if needs_reset:
+                        user['needs_client_reset'] = True
 
                     # Save user with updated areas and attendance
                     state.save_user(user)
 
                     # 5. Direct Mail notification
                     if data.get('send_mail'):
-                        title = data.get('mail_title') or 'Cập nhật Sự kiện Cá nhân'
-                        memo = data.get('mail_memo') or 'Quản trị viên đã cập nhật quyền lợi sự kiện cho tài khoản của bạn.'
+                        title = data.get('mail_title') or 'Cập nhật Quà tặng từ Quản trị viên'
+                        memo = data.get('mail_memo') or 'Quản trị viên đã gửi quà tặng/quyền lợi vào tài khoản của bạn. Chúc bạn chơi game vui vẻ!'
                         from server.handlers import post
-                        post.send_post(uuid=user['uuid'], title=title, memo=memo, items=[])
+                        post.send_post(uuid=user['uuid'], title=title, memo=memo, items=mail_items)
 
                     resp = {'success': True, 'message': 'Đã cập nhật sự kiện cho người chơi thành công!'}
                     self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
@@ -664,6 +788,7 @@ class Handler(BaseHTTPRequestHandler):
                 return
 
             form = multipart.parse(ctype, body)
+            client_ip = self._get_client_ip()
 
             # --- NeonAPI / PmangPlus auth (JSON) ---
             if path.startswith('/api/') or path.startswith('/accounts/') or path.startswith('/referrer/') or path.startswith('/gcm/') or path.startswith('/app/'):
@@ -671,11 +796,13 @@ class Handler(BaseHTTPRequestHandler):
                 if res is not None:
                     data, ct = res
                     device_cd = form.get('device_cd', '')
+                    if device_cd:
+                        state.update_user_ip(device_cd, client_ip)
                     is_banned = state.is_user_banned(device_cd) if device_cd else False
                     _capture('auth' + path.replace('/', '_'),
                              {'path': path, 'form': {k: str(v)[:120] for k, v in form.items()}},
                              is_banned=is_banned)
-                    self.log_message("AUTH %s (banned=%s)", path, is_banned)
+                    self.log_message("[%s] AUTH %s (banned=%s)", client_ip, path, is_banned)
                     self._send(data, 200, ct)
                     return
 
@@ -690,7 +817,7 @@ class Handler(BaseHTTPRequestHandler):
 
             # static precompiled responses (verbatim)
             if call in STATIC_RESPONSES:
-                self.log_message("%s -> static (%d B)", call, len(STATIC_RESPONSES[call]))
+                self.log_message("[%s] %s -> static (%d B)", client_ip, call, len(STATIC_RESPONSES[call]))
                 _capture(call, {'path': path, 'call': call, 'static': True})
                 self._send(STATIC_RESPONSES[call])
                 return
@@ -699,8 +826,8 @@ class Handler(BaseHTTPRequestHandler):
             if call == 'getGameDataList':
                 from server.handlers import gamedata
                 out_b64 = gamedata.get_game_data_list_b64(category=category)
-                self.log_message("%s -> dynamic (meowfest=%s, %d B)",
-                                 call, event_manager.is_meowfest_enabled(), len(out_b64))
+                self.log_message("[%s] %s -> dynamic (meowfest=%s, %d B)",
+                                 client_ip, call, event_manager.is_meowfest_enabled(), len(out_b64))
                 _capture(call, {'path': path, 'call': call, 'dynamic': True,
                                 'meowfest': event_manager.is_meowfest_enabled()})
                 self._send(out_b64)
@@ -737,6 +864,11 @@ class Handler(BaseHTTPRequestHandler):
                         if val:
                             u_ident = str(val)
                             break
+            if u_ident:
+                state.update_user_ip(u_ident, client_ip)
+            elif uuid:
+                state.update_user_ip(uuid, client_ip)
+
             if u_ident and state.is_user_banned(u_ident):
                 is_banned = True
 
@@ -745,11 +877,11 @@ class Handler(BaseHTTPRequestHandler):
                     self._send('GG emulator OK')
                     return
                 _capture('UNRESOLVED', cap, is_banned=is_banned)
-                self.log_message("UNRESOLVED call=%s fields=%s", call, list(form.keys()))
+                self.log_message("[%s] UNRESOLVED call=%s fields=%s", client_ip, call, list(form.keys()))
                 self._send('')
                 return
 
-            ctx = {'game_url': base_url, 'cdn_url': cdn_url, 'uuid': uuid}
+            ctx = {'game_url': base_url, 'cdn_url': cdn_url, 'uuid': uuid, 'client_ip': client_ip}
 
             # Banned player check
             # DO NOT block bootstrap/system handshake commands (Request, getServerTime, getUpdateTime,
@@ -758,7 +890,7 @@ class Handler(BaseHTTPRequestHandler):
             if cmd_full not in ('main.Request', 'main.getServerTime', 'main.getUpdateTime',
                                 'main.defaultSettingList', 'main.getGameDataList', 'store.getVarietyStore'):
                 if is_banned:
-                    self.log_message("BANNED USER BLOCKED: %s (cmd=%s)", u_ident, cmd_full)
+                    self.log_message("[%s] BANNED USER BLOCKED: %s (cmd=%s)", client_ip, u_ident, cmd_full)
                     error = {
                         'code': 900,
                         'errmsg': 'Tài khoản của bạn đã bị KHÓA (BAN) bởi Quản trị viên!\nVui lòng liên hệ Admin để được hỗ trợ.'
@@ -791,7 +923,7 @@ class Handler(BaseHTTPRequestHandler):
             cap['response_dto'] = rdto
             cap['response'] = env
             _capture(simple, cap, is_banned=is_banned)
-            self.log_message("%s -> %s (%d B)", simple, rdto, len(out_b64))
+            self.log_message("[%s] %s -> %s (%d B)", client_ip, simple, rdto, len(out_b64))
             self._send(out_b64)
 
         except Exception as e:

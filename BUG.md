@@ -696,7 +696,89 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
 
 ---
 
-## 5. Quy trình Build, Cài đặt và Kiểm tra chuẩn
+### 4.22. Lỗi sửa điểm Tim (Likes) trên Web Admin nhưng game không nhận hoặc tràn số thập phân
+- **Hiện tượng**:
+  1. Khi quản trị viên chỉnh sửa số Tim (Likes) của người chơi trên Web Admin Dashboard (ví dụ đặt 1.530E hoặc 1,000,000), hệ thống báo thành công nhưng khi người chơi vào game thì số Tim vẫn giữ nguyên giá trị cũ.
+  2. Với các số lượng Tim lớn (vượt ngưỡng hàng triệu, hiển thị theo ký hiệu chữ cái của game như `A`, `B`, `C`, `D`, `E`...), việc ép kiểu sang float thuần làm mất độ chính xác hoặc tràn số (Overflow Error).
+- **Nguyên nhân chi tiết**:
+  1. Trong kiến trúc client Guitar Girl, dữ liệu Tim được lưu trữ và ưu tiên tại trường `s_Gp1` (chuỗi định dạng tiền tệ như `1.530E`) và `d_Like` trong đối tượng khu vực (`areas['1']` - Phòng của Guitar Girl, `areas['2']` - Tiệm bánh hạnh phúc), thay vì chỉ đọc trường `u_like` trong `user_data`.
+  2. Khi người chơi đăng nhập (`userLogin`), game gửi chuỗi `s_Gp1` hiện tại của client lên. Trước đây logic máy chủ chỉ so sánh số lớn hơn (`max(cur_like_int, old_int)`), khiến các thao tác giảm Tim hoặc đặt lại Tim từ Admin bị client ghi đè ngược trở lại.
+- **Cách khắc phục triệt để**:
+  1. **Tạo module tiền tệ chuyên dụng ([currency.py](file:///root/project/GGServer/emulator/server/currency.py))**:
+     - Hỗ trợ phân tích cú pháp toàn bộ bảng ký hiệu lũy thừa chữ cái của game (`A` = $10^6$, `B` = $10^9$, `C` = $10^{12}$, ..., `E` = $10^{18}$, ..., `Z`).
+     - Tự động chuyển đổi mượt mà giữa số thực `float`, số nguyên lớn `int` và chuỗi định dạng chữ cái (`format_currency`).
+  2. **Đồng bộ hóa 2 chiều có kiểm soát ([app.py](file:///root/project/GGServer/emulator/server/app.py) & [auth.py](file:///root/project/GGServer/emulator/server/handlers/auth.py))**:
+     - Khi Admin chỉnh sửa Tim trên Web, server gắn cờ `force_server_like = True` vào tài khoản.
+     - Khi người chơi đăng nhập hoặc lưu dữ liệu, server ép đồng bộ giá trị mới xuống cả `u_like` trong `userdata`, đồng thời ghi đè trực tiếp `s_Gp1` và `d_Like` ở cả Khu vực 1 và Khu vực 2, sau đó xóa cờ ép buộc.
+
+---
+
+### 4.23. Bảo mật Web Admin Dashboard: Xác thực HMAC-SHA256 Token & Mật khẩu Quản trị
+- **Hiện tượng**:
+  1. Trước đây Web Admin Dashboard (`/admin`) và các API quản trị (`/admin/api/*`) mở công khai, bất kỳ ai biết đường dẫn đều có thể vào xem danh sách người chơi, chỉnh sửa tài nguyên hoặc cấm tài khoản.
+- **Cách khắc phục triệt để**:
+  1. **Hệ thống xác thực mã hóa ([admin.py](file:///root/project/GGServer/emulator/server/admin.py) & [app.py](file:///root/project/GGServer/emulator/server/app.py))**:
+     - Thiết lập mật khẩu quản trị mặc định: `Stingdau@1231@@` (cấu hình qua biến môi trường `GG_ADMIN_PASSWORD`).
+     - Thiết kế giao diện đăng nhập phong cách Cyberpunk/Dark mode, hỗ trợ song ngữ (Việt/Anh) và nút ẩn/hiện mật khẩu.
+     - Cơ chế Token Session mã hóa HMAC-SHA256 kèm dấu thời gian, lưu trữ trong Cookie an toàn (`gg_admin_token`, HttpOnly, SameSite=Lax, hạn 30 ngày).
+     - Khóa toàn bộ các API `/admin/api/*` (trả về mã lỗi `401 Unauthorized` nếu chưa đăng nhập hoặc sai mật khẩu). Hỗ trợ cả Header `Authorization: Bearer <token|password>` phục vụ kiểm thử và gọi API tự động.
+     - Thêm nút **🚪 Đăng xuất (Logout)** trên thanh điều hướng để hủy phiên làm việc.
+
+---
+
+### 4.24. Quản lý Máy chủ Độc lập & Giám sát Tài nguyên Thời gian thực qua run.sh
+- **Hiện tượng**:
+  1. Việc khởi động server thủ công bằng lệnh `python3 run.py` yêu cầu phải duy trì cửa sổ kết nối SSH. Khi ngắt kết nối SSH hoặc mất mạng, tiến trình server lập tức bị hệ điều hành tắt (nhận tín hiệu `SIGHUP`).
+  2. Quản trị viên thiếu công cụ trực quan để theo dõi tài nguyên máy chủ (CPU, RAM, Ổ cứng) và luồng log trực tiếp.
+- **Cách khắc phục triệt để**:
+  1. **Xây dựng bộ công cụ điều khiển [run.sh](file:///root/project/GGServer/run.sh)**:
+     - Khởi chạy ở chế độ Detached Daemon độc lập hoàn toàn (`setsid env ... python3 -u run.py </dev/null >>/tmp/gg_server.log 2>&1 &` kết hợp `disown`). An toàn tuyệt đối khi tắt terminal hoặc ngắt kết nối SSH.
+     - Giao diện giám sát TUI (Terminal User Interface) thời gian thực, tự động làm mới mỗi 2 giây:
+       - Trạng thái Server (PID, Cổng, Uptime, Domain, HTTP Latency).
+       - Thanh đo tài nguyên máy chủ Livetime: CPU %, RAM (dùng/tổng GB), Ổ cứng Disk (dùng/tổng GB).
+       - Cửa sổ Live Log tail 8 dòng mới nhất không làm vỡ khung hiển thị.
+       - Menu phím tắt nhanh: `[1] Khởi động`, `[2] Dừng`, `[3] Khởi động lại`, `[4] Full logs`, `[5] Xóa DB/Captures`, `[6] Chạy unit tests`, `[q] Thoát monitor`.
+     - Hỗ trợ đầy đủ tham số dòng lệnh CLI: `./run.sh {start|stop|restart|status|logs|clear|test}`.
+
+---
+
+### 4.25. Thu thập, Lưu trữ CSDL và Hiển thị Địa chỉ IP Thực của Người Chơi trên Giao diện Quản trị
+- **Hiện tượng**:
+  1. Trên Web Admin Dashboard, danh sách người chơi chỉ hiển thị Tên, UID và UUID mà không có thông tin Địa chỉ IP mạng của người chơi, gây khó khăn cho việc nhận diện thiết bị và phát hiện gian lận.
+- **Cách khắc phục triệt để**:
+  1. **Nâng cấp CSDL SQLite ([state.py](file:///root/project/GGServer/emulator/server/state.py))**:
+     - Bổ sung cột `ip TEXT DEFAULT ''` vào bảng `user_data`. Tự động migrate nếu bảng đã tồn tại từ trước.
+     - Bổ sung hàm `update_user_ip(ident, ip)` cập nhật địa chỉ IP mới nhất của tài khoản mỗi khi có tương tác.
+  2. **Trích xuất IP qua Proxy ([app.py](file:///root/project/GGServer/emulator/server/app.py))**:
+     - Hàm `_get_client_ip()` trích xuất địa chỉ IP thực từ các header chuyển tiếp của Nginx / Cloudflare (`CF-Connecting-IP`, `X-Forwarded-For`, `X-Real-IP`).
+  3. **Hiển thị trên Web Admin ([admin.py](file:///root/project/GGServer/emulator/server/admin.py))**:
+     - Bổ sung huy hiệu `🌐 <IP>` màu xanh dương nổi bật ngay cạnh huy hiệu `[📱 Máy Thật]` và Tên người chơi trong bảng danh sách.
+     - Bổ sung hiển thị `🌐 IP: <IP>` trong modal xem chi tiết cài đặt của người chơi.
+
+---
+
+### 4.26. Cách ly Cổng Máy chủ (127.0.0.1) & Xử lý Triệt để Bot Scanner Ngoại lai (Hikvision probe & HTTP CONNECT)
+- **Hiện tượng**:
+  1. Cửa sổ Live Log của server xuất hiện các dòng lỗi lạ:
+     ```text
+     [gg] "GET /SDK/webLanguage HTTP/1.1" 404 -
+     [gg] code 501, message Unsupported method ('CONNECT')
+     [gg] "CONNECT 185.65.245.10:7227 HTTP/1.1" 501 -
+     ```
+  2. Đây là các request từ botnet scanner trên Internet tự động dò tìm camera IP Hikvision (lỗ hổng CVE-2021-36260 tại `/SDK/webLanguage`) và rà quét tìm máy chủ Open Proxy (`CONNECT`).
+- **Nguyên nhân**:
+  - Máy chủ Python trước đây lắng nghe trên `0.0.0.0:8080` (mở công khai ra toàn bộ các giao diện mạng), khiến các bot quét trên Internet kết nối thẳng vào cổng 8080 thay vì đi qua Nginx.
+- **Cách khắc phục triệt để**:
+  1. **Khóa cổng mạng về Localhost ([run.py](file:///root/project/GGServer/emulator/run.py) & [run.sh](file:///root/project/GGServer/run.sh))**:
+     - Cấu hình server chỉ lắng nghe trên `127.0.0.1:8080`.
+     - Chỉ có Nginx (`https://kotori.click`) cục bộ mới có thể chuyển tiếp request hợp lệ vào server game. Mọi botnet quét cổng 8080 từ bên ngoài Internet đều bị hệ điều hành từ chối kết nối ngay lập tức (Connection Refused).
+  2. **Chặn im lặng các request dị thường ([app.py](file:///root/project/GGServer/emulator/server/app.py))**:
+     - Thêm phương thức `do_CONNECT(self)` trả về 400 Bad Request im lặng.
+     - Ghi đè `log_error` và `log_request` để loại bỏ hoàn toàn các thông báo `501 Unsupported method` và mã lỗi 404 của scanner ngoại lai, giữ cho màn hình log luôn sạch sẽ.
+
+---
+
+## 5. Quy trình Build, Cài đặt và Khởi chạy chuẩn
 
 ### 5.1. Build APK không Google Play
 Chạy script build với domain máy chủ (hoặc IP LAN):
@@ -724,9 +806,19 @@ adb -s <DEVICE_IP:PORT> install --no-incremental -r out/Guitar_Girl_v8.0.0_NoGoo
 adb -s <DEVICE_IP:PORT> shell am start -n com.neowiz.game.guitargirl/com.google.firebase.MessagingUnityPlayerActivity
 ```
 
-### 5.3. Khởi chạy Server Giả lập
+### 5.3. Khởi chạy Server Giả lập qua run.sh
+Khởi chạy server độc lập ở chế độ nền (không lo mất kết nối SSH) và mở bảng điều khiển TUI giám sát tài nguyên:
 ```bash
-cd /root/project/GGServer
-python3 emulator/run.py --port 8080
+./run.sh
 ```
-Server có thể chạy trực tiếp hoặc đứng sau Nginx / Cloudflare Tunnel HTTPS reverse proxy (`https://your-domain.example`).
+Hoặc sử dụng các lệnh CLI nhanh:
+```bash
+./run.sh start    # Khởi động server chạy ngầm
+./run.sh stop     # Dừng server
+./run.sh restart  # Khởi động lại server
+./run.sh status   # Xem trạng thái ngắn gọn
+./run.sh logs     # Xem luồng logs trực tiếp
+./run.sh clear    # Xóa sạch Database và Captures
+./run.sh test     # Chạy toàn bộ 106 unit tests
+```
+- **Web Admin Dashboard**: `https://kotori.click/admin` (Mật khẩu: `Stingdau@1231@@`)

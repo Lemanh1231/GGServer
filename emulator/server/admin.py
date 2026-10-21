@@ -1,6 +1,82 @@
 """Admin Web Dashboard for Guitar Girl Server - Tab-based Management."""
+import os
 import json
+import time
+import hmac
+import hashlib
+import secrets
 from server import event_manager
+
+ADMIN_PASSWORD = os.environ.get('GG_ADMIN_PASSWORD', 'Stingdau@1231@@')
+_SECRET_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'admin_secret.key')
+_SECRET_KEY = None
+
+def get_secret_key():
+    global _SECRET_KEY
+    if _SECRET_KEY is not None:
+        return _SECRET_KEY
+    env_sec = os.environ.get('GG_SECRET_KEY')
+    if env_sec:
+        _SECRET_KEY = env_sec.encode('utf-8')
+        return _SECRET_KEY
+    if os.path.isfile(_SECRET_FILE):
+        try:
+            with open(_SECRET_FILE, 'rb') as f:
+                data = f.read().strip()
+                if data:
+                    _SECRET_KEY = data
+                    return _SECRET_KEY
+        except Exception:
+            pass
+    os.makedirs(os.path.dirname(_SECRET_FILE), exist_ok=True)
+    _SECRET_KEY = secrets.token_bytes(32)
+    try:
+        with open(_SECRET_FILE, 'wb') as f:
+            f.write(_SECRET_KEY)
+    except Exception:
+        pass
+    return _SECRET_KEY
+
+def create_admin_token(ttl=86400 * 30):
+    expires_at = int(time.time() + ttl)
+    sig = hmac.new(get_secret_key(), f"admin:{expires_at}".encode(), hashlib.sha256).hexdigest()
+    return f"{expires_at}.{sig}"
+
+def verify_admin_token(token):
+    if not token or not isinstance(token, str):
+        return False
+    token = token.strip()
+    if token == ADMIN_PASSWORD:
+        return True
+    try:
+        parts = token.split('.', 1)
+        if len(parts) == 2:
+            expires_at = int(parts[0])
+            if time.time() < expires_at:
+                expected_sig = hmac.new(get_secret_key(), f"admin:{expires_at}".encode(), hashlib.sha256).hexdigest()
+                return hmac.compare_digest(parts[1], expected_sig)
+    except Exception:
+        pass
+    return False
+
+def is_admin_authenticated(headers):
+    # 1. Authorization header: Bearer <token_or_password>
+    auth_hdr = headers.get('Authorization', '')
+    if auth_hdr.startswith('Bearer '):
+        token = auth_hdr[7:].strip()
+        if verify_admin_token(token):
+            return True
+
+    # 2. Cookie header: gg_admin_token=<token>
+    cookie_hdr = headers.get('Cookie', '')
+    if cookie_hdr:
+        for item in cookie_hdr.split(';'):
+            item = item.strip()
+            if item.startswith('gg_admin_token='):
+                token = item[len('gg_admin_token='):].strip()
+                if verify_admin_token(token):
+                    return True
+    return False
 
 DASHBOARD_HTML = r"""<!DOCTYPE html>
 <html lang="vi">
@@ -690,11 +766,15 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
 <body>
     <div class="container">
         <header>
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 10px;">
                 <div class="lang-switch-group">
                     <button type="button" id="lang-btn-vi" class="lang-btn active" onclick="setLanguage('vi')">🇻🇳 Tiếng Việt</button>
                     <button type="button" id="lang-btn-en" class="lang-btn" onclick="setLanguage('en')">🇬🇧 English</button>
                 </div>
+                <button type="button" onclick="logoutAdmin()" style="background: rgba(255, 71, 87, 0.15); color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.35); padding: 5px 14px; border-radius: 16px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255, 71, 87, 0.3)'" onmouseout="this.style.background='rgba(255, 71, 87, 0.15)'">
+                    <span>🚪</span>
+                    <span data-i18n="btn_logout">Đăng xuất</span>
+                </button>
             </div>
             <div class="logo-title">
                 <span class="logo-icon">🎸</span>
@@ -1379,7 +1459,8 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
                 btn_cancel: "Hủy",
                 btn_save_user: "💾 Lưu Cài Đặt Riêng",
                 btn_delete_user: "🗑️ Xóa Toàn Bộ Dữ Liệu Tài Khoản Này (Reset Sạch Về Đầu)",
-                btn_send_now: "🚀 Gửi Ngay Vào Game"
+                btn_send_now: "🚀 Gửi Ngay Vào Game",
+                btn_logout: "🚪 Đăng xuất"
             },
             en: {
                 doc_title: "Guitar Girl - Admin Dashboard",
@@ -1523,7 +1604,8 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
                 btn_cancel: "Cancel",
                 btn_save_user: "💾 Save Individual Settings",
                 btn_delete_user: "🗑️ Delete All Account Data (Clean Reset to Start)",
-                btn_send_now: "🚀 Send In-Game Now"
+                btn_send_now: "🚀 Send In-Game Now",
+                btn_logout: "🚪 Logout"
             }
         };
 
@@ -1852,10 +1934,14 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
         }
 
         const GAME_UNITS = [];
-        for (let i = 0; i < 26; i++) GAME_UNITS.push(String.fromCharCode(65 + i)); // A..Z
+        for (let i = 0; i < 26; i++) {
+            if (GAME_UNITS.length < 101) GAME_UNITS.push(String.fromCharCode(65 + i)); // A..Z
+        }
         for (let i = 0; i < 26; i++) {
             for (let j = 0; j < 26; j++) {
-                GAME_UNITS.push(String.fromCharCode(65 + i) + String.fromCharCode(65 + j)); // AA..ZZ
+                if (GAME_UNITS.length < 101) {
+                    GAME_UNITS.push(String.fromCharCode(65 + i) + String.fromCharCode(65 + j)); // AA..CW (101 units max)
+                }
             }
         }
 
@@ -1872,14 +1958,14 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
                 const exp = Math.floor(Math.log10(n));
                 const unitIdx = Math.floor(exp / 3);
                 if (unitIdx <= 0) return Math.floor(n).toLocaleString();
-                const unitName = GAME_UNITS[unitIdx - 1] || 'ZZ';
+                const unitName = GAME_UNITS[unitIdx - 1] || 'CW';
                 const mantissa = n / Math.pow(10, unitIdx * 3);
                 return mantissa.toFixed(3) + unitName;
             }
             const digits = s.length;
             const unitIdx = Math.floor((digits - 1) / 3);
             if (unitIdx <= 0) return Number(s).toLocaleString();
-            const unitName = GAME_UNITS[unitIdx - 1] || 'ZZ';
+            const unitName = GAME_UNITS[unitIdx - 1] || 'CW';
             const intLen = ((digits - 1) % 3) + 1;
             const intPart = s.substring(0, intLen);
             const decPart = s.substring(intLen, intLen + 3).padEnd(3, '0');
@@ -1903,7 +1989,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
             const idx = GAME_UNITS.indexOf(unit);
             if (idx === -1) {
                 if (unit === 'K') return prefix + (num * 1e3).toLocaleString() + ' ' + unitName + ' (10.000A)';
-                return currentLang === 'en' ? '⚠️ Invalid unit (valid: A, B, C... G, H... ZZ)' : '⚠️ Đơn vị không hợp lệ (hợp lệ: A, B, C... G, H... ZZ)';
+                return currentLang === 'en' ? '⚠️ Invalid unit (valid: A, B, C... CW)' : '⚠️ Đơn vị không hợp lệ (hợp lệ: A, B, C... CW)';
             }
             const exp = (idx + 1) * 3;
             return currentLang === 'en' ? `✨ Game unit: ${num.toFixed(3)}${unit} (10^${exp})` : `✨ Đơn vị game: ${num.toFixed(3)}${unit} (10^${exp})`;
@@ -2038,6 +2124,9 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
                 const deviceBadge = u.is_test
                     ? `<span style="display:inline-flex; align-items:center; background:rgba(255,165,2,0.15); color:#ffa502; border:1px solid rgba(255,165,2,0.35); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:700; margin-left:6px;">${t("badge_test", "🧪 Test Auto")}</span>`
                     : `<span style="display:inline-flex; align-items:center; background:rgba(46, 213, 115, 0.15); color:#2ed573; border:1px solid rgba(46, 213, 115, 0.35); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:700; margin-left:6px;">${t("badge_real", "📱 Máy Thật")}</span>`;
+                const ipBadge = u.ip
+                    ? `<span style="display:inline-flex; align-items:center; background:rgba(116, 185, 255, 0.15); color:#74b9ff; border:1px solid rgba(116, 185, 255, 0.35); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:600; margin-left:6px; font-family:monospace;" title="${currentLang === 'en' ? 'Client IP Address' : 'Địa chỉ IP người chơi'}">🌐 ${escapeHtml(u.ip)}</span>`
+                    : `<span style="display:inline-flex; align-items:center; background:rgba(255,255,255,0.05); color:#888; border:1px solid rgba(255,255,255,0.1); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:500; margin-left:6px;">🌐 N/A</span>`;
                 const shortUuid = u.uuid ? (u.uuid.length > 14 ? u.uuid.substring(0, 14) + '...' : u.uuid) : '-';
 
                 html += `
@@ -2046,7 +2135,9 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
                             <div style="font-weight: 700; color: #fff; font-size: 0.95rem; display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
                                 <span>${escapeHtml(u.u_nick)}</span>
                                 ${deviceBadge}
+                                ${ipBadge}
                                 ${banBadge}
+                            </div>
                             <div style="font-size: 0.8rem; color: #55efc4; font-weight: 700; margin-top: 3px; display:flex; align-items:center; gap:6px;">
                                 <span style="background:rgba(85,239,196,0.12); border:1px solid rgba(85,239,196,0.3); padding:1px 6px; border-radius:4px;">UID: #${u.u_seq}</span>
                                 <span style="color:var(--text-sub); font-weight:400; font-size:0.75rem;">${escapeHtml(u.u_id || '-')}</span>
@@ -2366,7 +2457,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
             document.getElementById('modal-uuid').value = u.uuid || '';
             document.getElementById('modal-useq').value = u.u_seq;
             document.getElementById('modal-user-name').innerText = u.u_nick;
-            document.getElementById('modal-user-sub').innerText = `🆔 UID: #${u.u_seq} • ID: ${u.u_id || '-'} • UUID: ${u.uuid || '-'}`;
+            document.getElementById('modal-user-sub').innerText = `🆔 UID: #${u.u_seq} • ID: ${u.u_id || '-'} • UUID: ${u.uuid || '-'} • 🌐 IP: ${u.ip || 'N/A'}`;
             document.getElementById('modal-user-lastlogin').innerText = (currentLang === 'en' ? '🕒 Last Login: ' : '🕒 Đăng nhập gần nhất: ') + u.u_last_login;
             document.getElementById('modal-is-banned').checked = !!u.is_banned;
 
@@ -2590,6 +2681,13 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
             }
         }
 
+        async function logoutAdmin() {
+            try {
+                await fetch('/admin/api/logout', { method: 'POST' });
+            } catch (e) {}
+            location.href = '/admin';
+        }
+
         // ================= INITIAL LOAD =================
         document.addEventListener('DOMContentLoaded', () => {
             setLanguage(currentLang);
@@ -2603,5 +2701,316 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
 </html>
 """
 
+LOGIN_HTML = r"""<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Guitar Girl - Đăng nhập Quản trị</title>
+    <style>
+        :root {
+            --bg-color: #0f111a;
+            --card-bg: #181b29;
+            --card-border: #262c45;
+            --text-main: #f0f3ff;
+            --text-sub: #8b9bb4;
+            --accent-pink: #ff5e97;
+            --accent-cyan: #38ef7d;
+            --accent-blue: #4a90e2;
+            --danger: #ff4757;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at 50% 20%, #1a1e36 0%, var(--bg-color) 75%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 36px 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(255, 94, 151, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff5e97, #6ee7b7, #4a90e2);
+        }
+        .header-top {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+        }
+        .lang-switch-group {
+            display: inline-flex;
+            gap: 4px;
+            background: rgba(15, 17, 26, 0.8);
+            padding: 3px;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn.active {
+            background: var(--accent-pink);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(255, 94, 151, 0.4);
+        }
+        .brand {
+            text-align: center;
+            margin-bottom: 26px;
+        }
+        .brand-icon {
+            font-size: 3rem;
+            display: inline-block;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 4px 12px rgba(255, 94, 151, 0.3));
+        }
+        .brand-title {
+            font-size: 1.55rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff8eb6, #6ee7b7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+        .brand-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+        .input-wrapper {
+            position: relative;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 42px 12px 14px;
+            background: #10121e;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus {
+            border-color: var(--accent-pink);
+            box-shadow: 0 0 0 3px rgba(255, 94, 151, 0.18);
+        }
+        .toggle-pwd {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px;
+        }
+        .toggle-pwd:hover {
+            color: #fff;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #ff5e97, #e0457b);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+            box-shadow: 0 6px 18px rgba(255, 94, 151, 0.35);
+        }
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 22px rgba(255, 94, 151, 0.45);
+        }
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .alert-error {
+            background: rgba(255, 71, 87, 0.15);
+            border: 1px solid rgba(255, 71, 87, 0.4);
+            color: #ff6b81;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 18px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-note {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            margin-top: 24px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="header-top">
+            <div class="lang-switch-group">
+                <button type="button" id="btn-vi" class="lang-btn active" onclick="setLang('vi')">🇻🇳 VN</button>
+                <button type="button" id="btn-en" class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+            </div>
+        </div>
+        <div class="brand">
+            <span class="brand-icon">🎸</span>
+            <h1 class="brand-title">Guitar Girl</h1>
+            <p class="brand-subtitle" id="txt-subtitle">Xác thực Bảng điều khiển Quản trị</p>
+        </div>
+        <div id="error-box" class="alert-error">
+            <span>⚠️</span>
+            <span id="error-msg">Mật khẩu không chính xác!</span>
+        </div>
+        <form id="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label" for="password" id="txt-pwd-label">Mật khẩu Quản trị:</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" class="form-input" placeholder="Nhập mật khẩu quản trị..." required autofocus>
+                    <button type="button" class="toggle-pwd" onclick="togglePassword()" title="Hiển thị/Ẩn">👁️</button>
+                </div>
+            </div>
+            <button type="submit" id="btn-submit" class="btn-submit">🔐 Đăng Nhập</button>
+        </form>
+        <p class="footer-note" id="txt-footer">Guitar Girl Server • Bảo mật & Quản trị riêng tư</p>
+    </div>
+
+    <script>
+        const I18N = {
+            vi: {
+                title: "Guitar Girl - Đăng nhập Quản trị",
+                subtitle: "Xác thực Bảng điều khiển Quản trị",
+                pwd_label: "Mật khẩu Quản trị:",
+                placeholder: "Nhập mật khẩu quản trị...",
+                btn_login: "🔐 Đăng Nhập",
+                btn_logging: "⏳ Đang xác thực...",
+                err_wrong: "Mật khẩu quản trị không chính xác!",
+                err_network: "Không thể kết nối đến máy chủ!",
+                footer: "Guitar Girl Server • Bảo mật & Quản trị riêng tư"
+            },
+            en: {
+                title: "Guitar Girl - Admin Login",
+                subtitle: "Admin Dashboard Authentication",
+                pwd_label: "Admin Password:",
+                placeholder: "Enter admin password...",
+                btn_login: "🔐 Log In",
+                btn_logging: "⏳ Authenticating...",
+                err_wrong: "Invalid admin password!",
+                err_network: "Cannot connect to server!",
+                footer: "Guitar Girl Server • Secure Private Administration"
+            }
+        };
+
+        let currentLang = localStorage.getItem('gg_admin_lang') || 'vi';
+
+        function setLang(lang) {
+            currentLang = lang;
+            localStorage.setItem('gg_admin_lang', lang);
+            document.getElementById('btn-vi').classList.toggle('active', lang === 'vi');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            const t = I18N[lang] || I18N.vi;
+            document.getElementById('page-title').innerText = t.title;
+            document.getElementById('txt-subtitle').innerText = t.subtitle;
+            document.getElementById('txt-pwd-label').innerText = t.pwd_label;
+            document.getElementById('password').placeholder = t.placeholder;
+            document.getElementById('btn-submit').innerText = t.btn_login;
+            document.getElementById('txt-footer').innerText = t.footer;
+        }
+
+        function togglePassword() {
+            const input = document.getElementById('password');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const pwd = document.getElementById('password').value;
+            const errBox = document.getElementById('error-box');
+            const errMsg = document.getElementById('error-msg');
+            const submitBtn = document.getElementById('btn-submit');
+            const t = I18N[currentLang] || I18N.vi;
+
+            errBox.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerText = t.btn_logging;
+
+            try {
+                const res = await fetch('/admin/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pwd })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    location.href = '/admin';
+                } else {
+                    errMsg.innerText = data.error || t.err_wrong;
+                    errBox.style.display = 'flex';
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = t.btn_login;
+                    document.getElementById('password').focus();
+                }
+            } catch (err) {
+                errMsg.innerText = t.err_network;
+                errBox.style.display = 'flex';
+                submitBtn.disabled = false;
+                submitBtn.innerText = t.btn_login;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => setLang(currentLang));
+    </script>
+</body>
+</html>
+"""
+
 def get_admin_html():
     return DASHBOARD_HTML
+
+def get_login_html():
+    return LOGIN_HTML
+

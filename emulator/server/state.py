@@ -54,12 +54,20 @@ def init_db():
                 u_fans INTEGER DEFAULT 0,
                 attendance_count INTEGER DEFAULT 0,
                 attendance_date INTEGER DEFAULT 0,
-                user_contents_json TEXT
+                user_contents_json TEXT,
+                is_banned INTEGER DEFAULT 0,
+                ip TEXT DEFAULT ''
             )
         ''')
         # Automatic Migration
         try:
             conn.execute('ALTER TABLE user_data ADD COLUMN is_banned INTEGER DEFAULT 0')
+            conn.commit()
+        except Exception:
+            pass
+
+        try:
+            conn.execute('ALTER TABLE user_data ADD COLUMN ip TEXT DEFAULT ""')
             conn.commit()
         except Exception:
             pass
@@ -205,6 +213,9 @@ def _reconstruct_user(row):
     ud['u_like'] = row['u_like']
     ud['u_fans'] = row['u_fans']
     ud['attendance_count'] = row['attendance_count']
+    user_ip = row['ip'] if ('ip' in row.keys() and row['ip']) else (ud.get('ip') or '')
+    ud['ip'] = user_ip
+    data['ip'] = user_ip
     data['is_banned'] = bool(row['is_banned'] if 'is_banned' in row.keys() else 0)
     if 'created_at' not in data:
         uct = ud.get('u_create_time')
@@ -217,17 +228,20 @@ def _reconstruct_user(row):
             data['created_at'] = data.get('last_save_time') or int(time.time())
 
 
-    # Sync like currency to active areas so client in-game HUD displays the hearts
+    # Sync like currency to active areas so client in-game HUD displays the hearts safely
     from server import currency
     cur_like = float(row['u_like'] or 0.0)
     cur_like_int, cur_like_f, cur_like_str, _ = currency.parse_currency(cur_like)
+    ud['u_like'] = cur_like_f
     areas = data.setdefault('areas', _default_areas())
     for aid, ainfo in areas.items():
-        if cur_like_f > float(ainfo.get('d_Like', 0.0) or 0.0):
-            ainfo['d_Like'] = cur_like_f
-        cur_gp1_int, _, _, _ = currency.parse_currency(ainfo.get('s_Gp1') or '0')
-        if cur_like_int > cur_gp1_int:
-            ainfo['s_Gp1'] = cur_like_str
+        if isinstance(ainfo, dict):
+            old_gp1 = ainfo.get('s_Gp1') or '0'
+            old_int, _, _, _ = currency.parse_currency(old_gp1)
+            target_int = cur_like_int if data.get('force_server_like') else max(cur_like_int, old_int)
+            _, tf, tstr, _ = currency.parse_currency(target_int)
+            ainfo['d_Like'] = tf
+            ainfo['s_Gp1'] = tstr
 
     return data
 
@@ -248,7 +262,7 @@ def get_user(uuid):
         conn.close()
         return None
 
-def create_user(uuid, device_uuid):
+def create_user(uuid, device_uuid, ip=''):
     with _LOCK:
         if not uuid and not device_uuid:
             import uuid as uuidlib
@@ -265,7 +279,10 @@ def create_user(uuid, device_uuid):
         existing = get_user(device_uuid) if device_uuid else None
         if not existing:
             existing = get_user(uuid)
-        if existing: return existing
+        if existing:
+            if ip and not existing.get('ip'):
+                update_user_ip(existing.get('uuid'), ip)
+            return existing
         
         seq = _next_seq()
         u_id = f'guest_{seq}'
@@ -273,6 +290,7 @@ def create_user(uuid, device_uuid):
         now_ts = int(time.time())
         user = {
             'uuid': uuid,
+            'ip': ip or '',
             'created_at': now_ts,
             'posts': [],
             'welcome_post_sent': False,
@@ -328,13 +346,14 @@ def create_user(uuid, device_uuid):
         conn = get_db()
         conn.execute('''
             INSERT INTO user_data 
-            (uuid, device_uuid, u_id, u_seq, u_cp, u_candy, u_like, u_fans, attendance_count, attendance_date, user_contents_json)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (uuid, device_uuid, u_id, seq, u_cp, u_candy, u_like, u_fans, att_count, att_date, json.dumps(user, ensure_ascii=False)))
+            (uuid, device_uuid, u_id, u_seq, u_cp, u_candy, u_like, u_fans, attendance_count, attendance_date, user_contents_json, ip)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (uuid, device_uuid, u_id, seq, u_cp, u_candy, u_like, u_fans, att_count, att_date, json.dumps(user, ensure_ascii=False), ip or ''))
         conn.commit()
         conn.close()
         
         ud = user['userdata']
+        ud['ip'] = ip or ''
         ud['u_cp'] = u_cp
         ud['u_candy'] = u_candy
         ud['u_like'] = u_like
@@ -404,13 +423,65 @@ def save_user(user):
                     bonus_level=excluded.bonus_level, value=excluded.value, extra_json=excluded.extra_json
                 ''', (uuid, itype, item_id, level, active_time, bonus_level, value, extra_json))
         
-        conn.execute('''
-            UPDATE user_data 
-            SET user_contents_json = ? 
-            WHERE uuid = ?
-        ''', (json.dumps(stored, ensure_ascii=False), uuid))
+        from server import currency
+        u_like_val = min(currency.MAX_FLOAT, float(ud.get('u_like', 0.0) or 0.0))
+        u_cp_val = int(ud.get('u_cp', 0) or 0)
+        u_candy_val = float(ud.get('u_candy', 0.0) or 0.0)
+        u_fans_val = int(ud.get('u_fans', 0) or 0)
+        att_cnt = int(ud.get('attendance_count', 0) or 0)
+        att_dt = int(ud.get('attendance_date', 0) or 0)
+        u_ip = str(user.get('ip') or ud.get('ip') or '').strip()
+
+        if u_ip and u_ip not in ('127.0.0.1', 'localhost', '::1'):
+            conn.execute('''
+                UPDATE user_data 
+                SET user_contents_json = ?,
+                    u_cp = ?,
+                    u_candy = ?,
+                    u_like = ?,
+                    u_fans = ?,
+                    attendance_count = ?,
+                    attendance_date = ?,
+                    ip = ?
+                WHERE uuid = ?
+            ''', (json.dumps(stored, ensure_ascii=False), u_cp_val, u_candy_val, u_like_val, u_fans_val, att_cnt, att_dt, u_ip, uuid))
+        else:
+            conn.execute('''
+                UPDATE user_data 
+                SET user_contents_json = ?,
+                    u_cp = ?,
+                    u_candy = ?,
+                    u_like = ?,
+                    u_fans = ?,
+                    attendance_count = ?,
+                    attendance_date = ?
+                WHERE uuid = ?
+            ''', (json.dumps(stored, ensure_ascii=False), u_cp_val, u_candy_val, u_like_val, u_fans_val, att_cnt, att_dt, uuid))
         conn.commit()
         conn.close()
+
+def update_user_ip(ident, ip):
+    if not ident or not ip:
+        return
+    ip_str = str(ip).strip()
+    if not ip_str:
+        return
+    with _LOCK:
+        try:
+            conn = get_db()
+            ruuid = _resolve_uuid(conn, ident)
+            if ruuid:
+                # If ip_str is localhost and user already has a real IP, do not overwrite
+                if ip_str in ('127.0.0.1', 'localhost', '::1'):
+                    row = conn.execute('SELECT ip FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
+                    if row and row['ip']:
+                        conn.close()
+                        return
+                conn.execute('UPDATE user_data SET ip = ? WHERE uuid = ?', (ip_str, ruuid))
+                conn.commit()
+            conn.close()
+        except Exception:
+            pass
 
 def increment_currency(uuid, cp=0, candy=0.0, like=0.0, fans=0):
     with _LOCK:
@@ -419,26 +490,29 @@ def increment_currency(uuid, cp=0, candy=0.0, like=0.0, fans=0):
         if ruuid is not None:
             from server import currency
             like_int, like_f, like_str, _ = currency.parse_currency(like)
-            # CRITICAL: Bind like_f as float in SQLite to prevent OverflowError on numbers > 2^63-1
             conn.execute('''
                 UPDATE user_data
-                SET u_cp = u_cp + ?, u_candy = u_candy + ?, u_like = u_like + ?, u_fans = u_fans + ?
+                SET u_cp = u_cp + ?, u_candy = u_candy + ?, u_like = MIN(?, u_like + ?), u_fans = u_fans + ?
                 WHERE uuid = ?
-            ''', (int(cp), float(candy), float(like_f), int(fans), ruuid))
-            if like_f != 0:
-                row = conn.execute('SELECT u_like, user_contents_json FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
-                if row and row['user_contents_json']:
-                    try:
-                        d = json.loads(row['user_contents_json'])
-                        new_l = float(row['u_like'] or 0.0)
-                        d.setdefault('userdata', {})['u_like'] = new_l
-                        for a in d.setdefault('areas', {}).values():
+            ''', (int(cp), float(candy), float(currency.MAX_FLOAT), float(like_f), int(fans), ruuid))
+            row = conn.execute('SELECT u_like, user_contents_json FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
+            if row and row['user_contents_json']:
+                try:
+                    d = json.loads(row['user_contents_json'])
+                    new_l = min(currency.MAX_FLOAT, float(row['u_like'] or 0.0))
+                    d.setdefault('userdata', {})['u_like'] = new_l
+                    if like_int != 0 or cp != 0 or candy != 0:
+                        d['needs_client_reset'] = True
+                    for a in d.setdefault('areas', {}).values():
+                        if isinstance(a, dict):
                             a['d_Like'] = new_l
                             old_iv, _, _, _ = currency.parse_currency(a.get('s_Gp1') or '0')
-                            a['s_Gp1'] = str(max(0, old_iv + like_int))
-                        conn.execute('UPDATE user_data SET user_contents_json = ? WHERE uuid = ?', (json.dumps(d, ensure_ascii=False), ruuid))
-                    except Exception:
-                        pass
+                            new_iv = min(currency.MAX_DECIMAL, currency.Decimal(old_iv) + currency.Decimal(like_int))
+                            _, _, nstr, _ = currency.parse_currency(new_iv)
+                            a['s_Gp1'] = nstr
+                    conn.execute('UPDATE user_data SET user_contents_json = ?, u_like = ? WHERE uuid = ?', (json.dumps(d, ensure_ascii=False), float(new_l), ruuid))
+                except Exception:
+                    pass
             conn.commit()
         conn.close()
 
@@ -450,16 +524,18 @@ def set_like_currency(uuid, amount):
             from server import currency
             int_val, float_val, gp_str, formatted = currency.parse_currency(amount)
 
-            # CRITICAL: Always bind float_val into SQLite column
             conn.execute('UPDATE user_data SET u_like = ? WHERE uuid = ?', (float(float_val), ruuid))
             row = conn.execute('SELECT user_contents_json FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
             if row and row['user_contents_json']:
                 try:
                     d = json.loads(row['user_contents_json'])
                     d.setdefault('userdata', {})['u_like'] = float_val
+                    d['needs_client_reset'] = True
+                    d['force_server_like'] = gp_str
                     for a in d.setdefault('areas', {}).values():
-                        a['d_Like'] = float_val
-                        a['s_Gp1'] = gp_str
+                        if isinstance(a, dict):
+                            a['d_Like'] = float_val
+                            a['s_Gp1'] = gp_str
                     conn.execute('UPDATE user_data SET user_contents_json = ? WHERE uuid = ?', (json.dumps(d, ensure_ascii=False), ruuid))
                 except Exception:
                     pass

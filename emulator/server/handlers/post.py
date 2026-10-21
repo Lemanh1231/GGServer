@@ -27,11 +27,14 @@ def send_post(uuid=None, title='Thông báo', memo='', items=None, notice_type=1
     item_list = []
     if items:
         for it in items:
-            item_list.append({
+            it_dict = {
                 'i_RewardType': it.get('i_RewardType', 1),
                 'i_RewardId': it.get('i_RewardId', 1),
                 'd_RewardQuantity': float(it.get('d_RewardQuantity', 1.0))
-            })
+            }
+            if it.get('already_granted'):
+                it_dict['already_granted'] = True
+            item_list.append(it_dict)
 
     broadcasts = _load_broadcast_posts()
     all_indices = [100] + [p.get('idx', 100) for p in broadcasts]
@@ -299,6 +302,8 @@ def h_provide_post(req, player, ctx):
                     candy_add = 0.0
                     for item in post.get('item_list', []):
                         granted_items.append(item)
+                        if item.get('already_granted'):
+                            continue
                         rtype = item.get('i_RewardType', 0)
                         rid = item.get('i_RewardId', 0)
                         qty = float(item.get('d_RewardQuantity', 0))

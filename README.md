@@ -108,6 +108,7 @@ The project faithfully reconstructs the game's Apache Thrift Binary RPC protocol
 
 ```text
 GGServer/
+├── run.sh                           # Unified Server Control Center (TUI, background daemon, metrics)
 ├── emulator/                        # Python 3 Private Server Emulator
 │   ├── run.py                       # Main server entrypoint (HTTP + Thrift API)
 │   ├── serverctl.sh                 # Process management script (start/stop/restart/log)
@@ -199,7 +200,22 @@ adb install --no-incremental -r out/Guitar_Girl_v8.0.0_NoGooglePlay.apk
 
 #### Step 4: Launch the Emulator Server
 
-##### Using the Process Manager (Recommended):
+##### Option A: Using the Unified Control Center `run.sh` (Highly Recommended):
+```bash
+# Launch interactive TUI Dashboard & persistent background daemon:
+./run.sh
+
+# Or manage via CLI commands:
+./run.sh start      # Starts server as detached daemon (survives SSH disconnect)
+./run.sh stop       # Stops running server process
+./run.sh restart    # Restarts server process
+./run.sh status     # Displays status, uptime, PID, resource usage & health
+./run.sh logs       # Live streams filtered server logs
+./run.sh clear      # Cleans database and captures
+./run.sh test       # Runs the complete 106-test automated test suite
+```
+
+##### Option B: Using the Process Manager (`serverctl.sh`):
 ```bash
 # Start server in the background (default port 8080)
 ./emulator/serverctl.sh start
@@ -214,7 +230,7 @@ GG_PUBLIC_BASE="https://your-domain.example" ./emulator/serverctl.sh start
 ./emulator/serverctl.sh log
 ```
 
-##### Or run directly via Python:
+##### Option C: Or run directly via Python:
 ```bash
 python3 emulator/run.py --port 8080
 ```
@@ -227,10 +243,18 @@ Launch Guitar Girl on your device and enjoy!
 
 Access the administration dashboard in your web browser at:
 ```text
-http://<SERVER_IP>:8080/admin
+https://your-domain.example/admin
 ```
-*(Or `https://your-domain.example/admin` if using a reverse proxy).*
+*(Or `http://127.0.0.1:8080/admin` locally).*
 
+- **Password Protection & Authentication**:
+  - Protected by default password: `Stingdau@1231@@` (configurable via `GG_ADMIN_PASSWORD` in `.env`).
+  - Cryptographically secure HMAC-SHA256 session token stored in an HttpOnly cookie (`gg_admin_token`, 30-day validity).
+  - All `/admin/api/*` endpoints strictly require authentication, returning `401 Unauthorized` for unauthenticated requests.
+  - Dedicated **🚪 Logout** button to securely clear the session.
+- **Client IP Tracking**:
+  - Automatically captures the player's real public IP address via reverse proxy headers (`X-Real-IP`, `X-Forwarded-For`, `CF-Connecting-IP`).
+  - Stored in the SQLite database and prominently displayed as a **`🌐 <IP>`** badge alongside the player's nickname and device badge.
 - **Bilingual Interface**: Toggle between 🇻🇳 **Tiếng Việt** and 🇬🇧 **English** at any time. Preference is remembered across browser sessions.
 - **Player Inspection & Editing**: Edit Player Level, Chocolates CP, Candies, AP Cookies, Collection Tickets, and Likes (Hearts). The Likes input field features real-time BigNumber preview (e.g., typing `42.877G` instantly previews `42,877,000,000,000,000,000,000`).
 - **Star Pass Safety Lock**: Automatically prevents editing Star Pass levels when Star Pass is disabled server-wide, preventing database inconsistencies.
@@ -371,6 +395,7 @@ Dự án tái lập chuẩn xác giao thức RPC nhị phân Apache Thrift, cơ 
 
 ```text
 GGServer/
+├── run.sh                           # Trung tâm điều khiển máy chủ độc lập (TUI, daemon nền, đo tài nguyên)
 ├── emulator/                        # Máy chủ giả lập (Python 3 Server)
 │   ├── run.py                       # Điểm khởi chạy server chính (HTTP + Thrift API)
 │   ├── serverctl.sh                 # Script quản lý tiến trình (start/stop/restart/log)
@@ -462,7 +487,22 @@ adb install --no-incremental -r out/Guitar_Girl_v8.0.0_NoGooglePlay.apk
 
 #### Bước 4: Khởi chạy máy chủ giả lập
 
-##### Sử dụng Script Quản lý (Khuyến nghị):
+##### Cách 1: Sử dụng Trung tâm điều khiển `run.sh` (Khuyến nghị hàng đầu):
+```bash
+# Mở bảng điều khiển TUI giám sát tài nguyên thời gian thực & chạy nền bền bỉ:
+./run.sh
+
+# Hoặc quản lý qua các lệnh CLI nhanh:
+./run.sh start      # Khởi chạy server chạy ngầm độc lập (an toàn ngắt kết nối SSH)
+./run.sh stop       # Dừng tiến trình server
+./run.sh restart    # Khởi động lại server
+./run.sh status     # Hiển thị trạng thái, PID, Uptime, tài nguyên và Healthcheck
+./run.sh logs       # Xem luồng logs trực tiếp (đã lọc sạch rác)
+./run.sh clear      # Xóa sạch Database và Captures về trạng thái ban đầu
+./run.sh test       # Chạy kiểm thử toàn bộ 106 test suites tự động
+```
+
+##### Cách 2: Sử dụng Script Quản lý (`serverctl.sh`):
 ```bash
 # Khởi chạy server nền (port mặc định 8080)
 ./emulator/serverctl.sh start
@@ -477,7 +517,7 @@ GG_PUBLIC_BASE="https://your-domain.example" ./emulator/serverctl.sh start
 ./emulator/serverctl.sh log
 ```
 
-##### Hoặc chạy trực tiếp qua Python:
+##### Cách 3: Hoặc chạy trực tiếp qua Python:
 ```bash
 python3 emulator/run.py --port 8080
 ```
@@ -490,10 +530,18 @@ Khởi động game Guitar Girl trên thiết bị và thưởng thức trọn v
 
 Truy cập bảng điều khiển quản trị trên trình duyệt web tại:
 ```text
-http://<IP_MÁY_CHỦ>:8080/admin
+https://your-domain.example/admin
 ```
-*(Hoặc `https://your-domain.example/admin` nếu chạy qua HTTPS reverse proxy).*
+*(Hoặc `http://127.0.0.1:8080/admin` cục bộ).*
 
+- **Bảo mật & Xác thực Mật khẩu**:
+  - Mật khẩu đăng nhập mặc định: `Stingdau@1231@@` (tùy biến qua biến môi trường `GG_ADMIN_PASSWORD` trong file `.env`).
+  - Sử dụng Token Session mã hóa HMAC-SHA256 lưu trong HttpOnly Cookie (`gg_admin_token`, hiệu lực 30 ngày).
+  - Toàn bộ API `/admin/api/*` đều yêu cầu xác thực, trả về `401 Unauthorized` nếu chưa đăng nhập.
+  - Tích hợp nút **🚪 Đăng xuất** trực tiếp trên thanh điều hướng để hủy phiên làm việc.
+- **Theo dõi Địa chỉ IP Người chơi**:
+  - Tự động nhận diện và ghi nhận IP thực của người chơi qua các header proxy (`X-Real-IP`, `X-Forwarded-For`, `CF-Connecting-IP`).
+  - Lưu vào CSDL SQLite và hiển thị huy hiệu **`🌐 <IP>`** màu xanh nổi bật ngay cạnh tên người chơi và trong modal chi tiết.
 - **Chuyển đổi ngôn ngữ tức thì**: Nhấp vào nút `🇻🇳 Tiếng Việt` hoặc `🇬🇧 English` trên thanh tiêu đề. Lựa chọn ngôn ngữ được ghi nhớ tự động qua các phiên duyệt web.
 - **Xem & Chỉnh sửa Người chơi**: Chỉnh sửa Cấp độ, Socola CP, Kẹo, Bánh quy AP, Vé sưu tập và Lượt thích (Tim). Ô nhập Lượt thích hỗ trợ xem trước số lớn BigNumber trực tiếp (ví dụ nhập `42.877G` hiển thị ngay `42,877,000,000,000,000,000,000`).
 - **Khóa an toàn Thẻ Sao**: Tự động khóa trường chỉnh sửa Thẻ Sao khi tính năng Thẻ Sao đang tắt trên server, tránh việc tạo dữ liệu không hợp lệ.

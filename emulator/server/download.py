@@ -212,11 +212,6 @@ DOWNLOAD_HTML = """<!DOCTYPE html>
             </p>
         </div>
 
-        <div class="footer-links">
-            <a href="/admin">⚙️ Web Admin Dashboard</a>
-            <span>&bull;</span>
-            <a href="/health">🩺 Kiểm tra Máy Chủ</a>
-        </div>
     </div>
 </body>
 </html>
