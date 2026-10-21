@@ -87,7 +87,8 @@ class Handler(BaseHTTPRequestHandler):
         if any(k in msg for k in ('Unsupported method', 'code 501', 'code 400', 'code 404')):
             return
         if CONFIG['verbose']:
-            sys.stderr.write("[gg] " + msg + "\n")
+            now_str = time.strftime('%d/%m/%y %H:%M:%S')
+            sys.stderr.write(f"[{now_str}] {msg}\n")
 
     def log_request(self, code='-', size='-'):
         # Do not log health checks, admin UI/API polling, or scanner 404s/errors
@@ -103,7 +104,8 @@ class Handler(BaseHTTPRequestHandler):
                                   'CONNECT ', '/SDK/', ' 404 -', ' 501 -', ' 400 -')):
             return
         if CONFIG['verbose']:
-            sys.stderr.write("[gg] " + msg + "\n")
+            now_str = time.strftime('%d/%m/%y %H:%M:%S')
+            sys.stderr.write(f"[{now_str}] {msg}\n")
 
     def _get_client_ip(self):
         for hdr in ('CF-Connecting-IP', 'X-Forwarded-For', 'X-Real-IP'):

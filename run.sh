@@ -290,7 +290,7 @@ run_gui() {
         [ -z "$disk_pct" ] && disk_pct=0
 
         # Lấy thời gian & Uptime máy chủ
-        local cur_time=$(date "+%Y-%m-%d %H:%M:%S")
+        local cur_time=$(date "+%d/%m/%y %H:%M:%S")
         local sys_uptime=$(uptime -p 2>/dev/null || uptime | awk -F',' '{print $1}')
 
         # Xóa màn hình vẽ lại (Flicker-free)
@@ -330,9 +330,12 @@ run_gui() {
         
         # Hiển thị 8 dòng log mới nhất (lọc bỏ health check, admin ping và scanner bot)
         if [ -f "$LOG_FILE" ]; then
+            local term_cols=$(tput cols 2>/dev/null || echo 120)
+            local max_w=$(( term_cols - 6 ))
+            [ "$max_w" -lt 72 ] && max_w=72
+            [ "$max_w" -gt 130 ] && max_w=130
             tail -n 50 "$LOG_FILE" 2>/dev/null | grep -v -E "(/health|\"GET / HTTP|\"GET /admin|CONNECT|/SDK/| 404 -| 501 -)" | tail -n 8 | while IFS= read -r line; do
-                # Cắt gọn độ dài log để không vỡ khung TUI
-                local clean_line="${line:0:72}"
+                local clean_line="${line:0:$max_w}"
                 echo -e "${BOLD}${MAGENTA}│${NC}  ${DIM}${clean_line}${NC}"
             done
         else
