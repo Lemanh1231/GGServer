@@ -315,34 +315,40 @@ def _sync_follower_messenger(user):
 
     # Special handling for Chapter 2
     else:
+        # Chapter 2 cross-room prerequisite satisfaction:
         # 1. Room 12 (Happy Bakery): Bridge between CH1 and CH2
         # Group 103 (Room 12) is the prerequisite dialogue welcoming player to CH2.
+        # Group 109 is required by Group 110 (Moa Room 5).
+        r12_reqs = [80, 86, 87, 103]
+        r12_proc = 109
         if 12 not in existing_rooms:
             r12 = {
                 'i_MessengerChatRoomId': 12,
                 'i_LastConfirmIndex': 0,
-                's_UnlockGroupList': '80,103',
+                's_UnlockGroupList': _merge_groups_seq('', r12_reqs, target_proceeding=r12_proc),
                 'l_UpdateTimeTicks': 0,
             }
             ms.append(r12)
             existing_rooms[12] = r12
         else:
             r12 = existing_rooms[12]
-            r12['s_UnlockGroupList'] = _merge_groups_seq(r12.get('s_UnlockGroupList', '80'), [80], target_proceeding=103)
+            r12['s_UnlockGroupList'] = _merge_groups_seq(r12.get('s_UnlockGroupList', '80'), r12_reqs, target_proceeding=r12_proc)
             if r12.get('i_LastConfirmIndex', -1) < 0:
                 r12['i_LastConfirmIndex'] = 0
 
-        # 2. Room 16 (Joy, Moa Group Chat): Story backbone for Chapter 2
-        # Starts at Group 104 with previous CH1 prerequisite groups marked completed.
-        r16_reqs = [76, 78, 79, 81, 82]
-        if 204 in f_levels:  # Ruby requires 118 completed
-            r16_reqs.extend([105, 108, 115, 118])
-        if 205 in f_levels:  # Alex requires 132 completed
-            r16_reqs.extend([128, 132])
-        if 207 in f_levels or 208 in f_levels:  # Sora & Jessica require 171 completed
-            r16_reqs.extend([135, 171])
-        r16_proceeding = 104
+        # 2. Room 6: Elle's room has groups 106 and 113 needed for CH2
+        r6_reqs = [18, 26, 43, 106, 113]
+        if 6 in existing_rooms:
+            existing_rooms[6]['s_UnlockGroupList'] = _merge_groups_seq(existing_rooms[6].get('s_UnlockGroupList', '18'), r6_reqs, target_proceeding=18)
 
+        # 3. Room 2: Convenience store friend has group 116 needed by group 118
+        r2_reqs = [2, 5, 11, 77, 116]
+        if 2 in existing_rooms:
+            existing_rooms[2]['s_UnlockGroupList'] = _merge_groups_seq(existing_rooms[2].get('s_UnlockGroupList', '2'), r2_reqs, target_proceeding=2)
+
+        # 4. Room 16 (Joy, Moa Group Chat): Story backbone for Chapter 2
+        r16_reqs = [76, 78, 79, 81, 82, 104, 105, 108, 115, 118, 128, 132, 135, 171]
+        r16_proceeding = 172
         if 16 not in existing_rooms:
             r16 = {
                 'i_MessengerChatRoomId': 16,
@@ -358,16 +364,12 @@ def _sync_follower_messenger(user):
             if r16.get('i_LastConfirmIndex', -1) < 0:
                 r16['i_LastConfirmIndex'] = 0
 
-        # 3. Room 17 (Joy, Moa, Ruby, Alex Group Chat)
-        # Required for CH2 followers 204..208 or Fol 201 Lv >= 650.
-        # Starts at Group 139 with 173 completed if 206 owned.
+        # 5. Room 17 (Joy, Moa, Ruby, Alex Group Chat)
+        # 173 is needed for Busking TV (206)
         needs_r17 = any(fid in f_levels for fid in (204, 205, 206, 207, 208)) or f_levels.get(201, 0) >= 650
         if needs_r17:
-            r17_reqs = [139, 140]
-            if 206 in f_levels:
-                r17_reqs.extend([142, 144, 146, 149, 151, 152, 153, 154, 155, 162, 173])
-            r17_proceeding = 139
-
+            r17_reqs = [139, 140, 142, 144, 146, 149, 151, 152, 153, 154, 155, 162, 173]
+            r17_proceeding = 174
             if 17 not in existing_rooms:
                 r17 = {
                     'i_MessengerChatRoomId': 17,
@@ -383,25 +385,27 @@ def _sync_follower_messenger(user):
                 if r17.get('i_LastConfirmIndex', -1) < 0:
                     r17['i_LastConfirmIndex'] = 0
 
-        # 4. Room 1 (Joy in CH2) -> Group 111
+        # 6. Room 1 (Joy in CH2) -> Group 111 (requires 110 completed)
         r1 = existing_rooms.get(1)
         if r1 and 201 in f_levels:
-            r1['s_UnlockGroupList'] = _merge_groups_seq(r1.get('s_UnlockGroupList', '1'), [1, 75], target_proceeding=111)
+            r1['s_UnlockGroupList'] = _merge_groups_seq(r1.get('s_UnlockGroupList', '1'), [1, 75, 156], target_proceeding=111)
 
-        # 5. Room 5 (Moa in CH2) -> Group 110
+        # 7. Room 5 (Moa in CH2) -> Group 157 (with 110 completed)
         if 202 in f_levels:
+            r5_reqs = [13, 14, 21, 25, 28, 40, 46, 55, 110]
+            r5_proceeding = 157
             if 5 not in existing_rooms:
                 r5 = {
                     'i_MessengerChatRoomId': 5,
                     'i_LastConfirmIndex': 0,
-                    's_UnlockGroupList': '13,110',
+                    's_UnlockGroupList': _merge_groups_seq('', r5_reqs, target_proceeding=r5_proceeding),
                     'l_UpdateTimeTicks': 0,
                 }
                 ms.append(r5)
                 existing_rooms[5] = r5
             else:
                 r5 = existing_rooms[5]
-                r5['s_UnlockGroupList'] = _merge_groups_seq(r5.get('s_UnlockGroupList', '13'), [13], target_proceeding=110)
+                r5['s_UnlockGroupList'] = _merge_groups_seq(r5.get('s_UnlockGroupList', '13'), r5_reqs, target_proceeding=r5_proceeding)
 
     # Ensure each room has a valid s_UnlockGroupList and non-negative confirm index
     for rid, r in existing_rooms.items():

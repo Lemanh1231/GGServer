@@ -134,7 +134,7 @@ GGServer/
 │   └── uber-apk-signer.jar          # Universal APK signing tool (v1, v2, v3)
 ├── orig_apk/                        # Original v8.0.0 APK files (user-supplied)
 ├── out/                             # Output directory for patched & signed APKs
-├── BUG.md                           # Comprehensive documentation of 28+ technical bug fixes
+├── BUG.md                           # Comprehensive documentation of 39+ technical bug fixes
 ├── ANDROID_SETUP.md                 # Setup guide for BlueStacks and Android devices
 ├── PROTOCOL.md                      # Apache Thrift RPC reverse engineering specification
 └── README.md                        # Project documentation (this file)
@@ -316,7 +316,7 @@ PYTHONPATH=emulator python3 -m unittest emulator/test_attendance.py \
 ### 📖 Technical Documentation
 
 For in-depth technical analysis and reverse-engineering findings:
-- 🐞 **[BUG.md](BUG.md)**: Exhaustive documentation of 28+ technical bugs, ARM64 disassembly analysis in `libil2cpp.so`, and solutions.
+- 🐞 **[BUG.md](BUG.md)**: Exhaustive documentation of 39+ technical bugs, ARM64 disassembly analysis in `libil2cpp.so`, and solutions.
 - 📱 **[ANDROID_SETUP.md](ANDROID_SETUP.md)**: Step-by-step setup guide for BlueStacks and physical Android devices without root.
 - 📡 **[PROTOCOL.md](PROTOCOL.md)**: Binary protocol specification for Apache Thrift RPC framing and opcode mappings.
 
@@ -421,7 +421,7 @@ GGServer/
 │   └── uber-apk-signer.jar          # Trình ký số APK (v1, v2, v3 schemes)
 ├── orig_apk/                        # Thư mục chứa 3 file APK gốc v8.0.0 (người dùng tự chuẩn bị)
 ├── out/                             # Thư mục xuất APK thành phẩm đã vá và ký
-├── BUG.md                           # Báo cáo chi tiết 28+ lỗi kỹ thuật & phương án khắc phục
+├── BUG.md                           # Báo cáo chi tiết 39+ lỗi kỹ thuật & phương án khắc phục
 ├── ANDROID_SETUP.md                 # Hướng dẫn chi tiết thiết lập BlueStacks & Android
 ├── PROTOCOL.md                      # Phân tích giao thức Apache Thrift của Guitar Girl
 └── README.md                        # Tài liệu hướng dẫn sử dụng này
@@ -603,7 +603,7 @@ PYTHONPATH=emulator python3 -m unittest emulator/test_attendance.py \
 ### 📖 Tài liệu kỹ thuật liên quan
 
 Để tìm hiểu sâu hơn về kiến trúc kỹ thuật và kết quả phân tích đảo ngược:
-- 🐞 **[BUG.md](BUG.md)**: Tổng hợp chi tiết 28+ lỗi kỹ thuật, mã giả lập, phân tích disassembly ARM64 trong `libil2cpp.so` và hướng dẫn khắc phục triệt để.
+- 🐞 **[BUG.md](BUG.md)**: Tổng hợp chi tiết 39+ lỗi kỹ thuật, mã giả lập, phân tích disassembly ARM64 trong `libil2cpp.so` và hướng dẫn khắc phục triệt để.
 - 📱 **[ANDROID_SETUP.md](ANDROID_SETUP.md)**: Hướng dẫn chi tiết thiết lập môi trường chơi game trên BlueStacks và điện thoại Android không cần quyền Root.
 - 📡 **[PROTOCOL.md](PROTOCOL.md)**: Tài liệu đặc tả cấu trúc gói tin nhị phân Apache Thrift RPC, phân giải opcode và tuần tự hóa dữ liệu.
 

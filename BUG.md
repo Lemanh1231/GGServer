@@ -14,6 +14,7 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
    - [1.6. Tự động đồng ý Điều khoản (Bypass EULA Popup)](#16-tự-động-đồng-ý-điều-khoản-bypass-eula-popup)
    - [1.7. Lỗi cài đặt Split APK & Incremental Install trên Android 14 / HyperOS](#17-lỗi-cài-đặt-split-apk--incremental-install-trên-android-14--hyperos)
    - [1.8. Lỗi khóa Offline các nút Thông báo (Push Notifications) và Thống kê Socola (CP Breakdown) trong Cài đặt](#18-lỗi-khóa-offline-các-nút-thông-báo-push-notifications-và-thống-kê-socola-cp-breakdown-trong-cài-đặt)
+   - [1.9. Vá mã máy ARM64 trong libil2cpp.so: Tương tác ô sự kiện Live Slot (UI 19), hiển thị giá chiết khấu (UI 20) và Tự động làm mới trạng thái "Đã mua" (Auto-Refresh Hook)](#19-vá-mã-máy-arm64-trong-libil2cppso-tương-tác-ô-sự-kiện-live-slot-ui-19-hiển-thị-giá-chiết-khấu-ui-20-và-tự-động-làm-mới-trạng-thái-đã-mua-auto-refresh-hook)
 2. [Lỗi Server, Nginx Routing & PmangPlus / NeonAPI Auth](#2-lỗi-server-nginx-routing--pmangplus--neonapi-auth)
    - [2.1. Lỗi Nginx 404/403 cho các endpoint PmangPlus không có tiền tố `/api/`](#21-lỗi-nginx-404403-cho-các-endpoint-pmangplus-không-có-tiền-tố-api)
    - [2.2. Lỗi ERROR_90004 khi đăng nhập lần đầu](#22-lỗi-error_90004-khi-đăng-nhập-lần-đầu)
@@ -42,6 +43,12 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
    - [4.19. Ràng buộc cấu hình Admin: Chặn chỉnh Thẻ sao khi chưa bật & Đồng bộ sự kiện 1 năm (Anniversary)](#419-ràng-buộc-cấu-hình-admin-chặn-chỉnh-thẻ-sao-khi-chưa-bật--đồng-bộ-sự-kiện-1-năm-anniversary)
    - [4.20. Đồng bộ hóa mã định danh: Chuyển đổi USN Google Play sang UID chuẩn máy chủ (`u_seq`)](#420-đồng-bộ-hóa-mã-định-danh-chuyển-đổi-usn-google-play-sang-uid-chuẩn-máy-chủ-u_seq)
    - [4.21. Lỗi không thể mua Live Slot trong Cửa hàng Vật phẩm Thẻ Sao (Pass Goods Sale Live Slot Unable to Buy)](#421-lỗi-không-thể-mua-live-slot-trong-cửa-hàng-vật-phẩm-thẻ-sao-pass-goods-sale-live-slot-unable-to-buy)
+   - [4.22. Lỗi sửa điểm Tim (Likes) trên Web Admin nhưng game không nhận hoặc tràn số thập phân](#422-lỗi-sửa-điểm-tim-likes-trên-web-admin-nhưng-game-không-nhận-hoặc-tràn-số-thập-phân)
+   - [4.23. Bảo mật Web Admin Dashboard: Xác thực HMAC-SHA256 Token & Mật khẩu Quản trị](#423-bảo-mật-web-admin-dashboard-xác-thực-hmac-sha256-token--mật-khẩu-quản-trị)
+   - [4.24. Quản lý Máy chủ Độc lập & Giám sát Tài nguyên Thời gian thực qua run.sh](#424-quản-lý-máy-chủ-độc-lập--giám-sát-tài-nguyên-thời-gian-thực-qua-runsh)
+   - [4.25. Thu thập, Lưu trữ CSDL và Hiển thị Địa chỉ IP Thực của Người Chơi trên Giao diện Quản trị](#425-thu-thập-lưu-trữ-csdl-và-hiển-thị-địa-chỉ-ip-thực-của-người-chơi-trên-giao-diện-quản-trị)
+   - [4.26. Cách ly Cổng Máy chủ (127.0.0.1) & Xử lý Triệt để Bot Scanner Ngoại lai (Hikvision probe & HTTP CONNECT)](#426-cách-ly-cổng-máy-chủ-127001--xử-lý-triệt-để-bot-scanner-ngoại-lai-hikvision-probe--http-connect)
+   - [4.27. Lỗi khóa Người theo dõi nhưng chỉ nhận 3 tin nhắn: Gating cấp độ, Đồ thị phụ thuộc Messenger DAG & Cơ chế phân tách Tiến trình (Proceeding vs Completed Groups)](#427-lỗi-khóa-người-theo-dõi-nhưng-chỉ-nhận-3-tin-nhắn-gating-cấp-độ-đồ-thị-phụ-thuộc-messenger-dag--cơ-chế-phân-tách-tiến-trình-proceeding-vs-completed-groups)
 5. [Quy trình Build, Cài đặt và Kiểm tra chuẩn](#5-quy-trình-build-cài-đặt-và-kiểm-tra-chuẩn)
    - [5.1. Build APK không Google Play](#51-build-apk-không-google-play)
    - [5.2. Cài đặt lên thiết bị Android qua ADB](#52-cài-đặt-lên-thiết-bị-android-qua-adb)
@@ -167,6 +174,106 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
   2. **Đồng bộ Server PmangPlus Auth & State**:
      - Trong [auth.py](file:///root/project/GGServer/emulator/server/auth.py): Đổi `'is_guest_login': False`, `'anonymous_yn': 'N'`, `'provider_display_name': 'PmangPlus'` trong API `/accounts/v3/global/login`.
      - Trong [state.py](file:///root/project/GGServer/emulator/server/state.py): Đặt `'u_join_type': 1` trong default userdata và trong hàm `_reconstruct_user`, đảm bảo `userLogin` và `userLoad` luôn trả về `u_join_type: 1`.
+
+---
+
+### 1.9. Vá mã máy ARM64 trong libil2cpp.so: Tương tác ô sự kiện Live Slot (UI 19), hiển thị giá chiết khấu (UI 20) và Tự động làm mới trạng thái "Đã mua" (Auto-Refresh Hook)
+- **Hiện tượng**:
+  1. Trong Cửa hàng Vật phẩm Thẻ Sao (Star Pass Goods Shop, UI 19 `GgUIIngamePassGoodsShop`), ô sự kiện nổi bật trên cùng (**Live Slot** `GgUIIngamePassGoodsLiveSlot`) khi người chơi chưa mua Thẻ Sao sẽ hiển thị nút "Mua 80 -> 50". Tuy nhiên, khi chạm vào nút này, game hoàn toàn không phản hồi, không mở Popup chi tiết gói vật phẩm (UI 20 `GgUIIngamePassGoodsDetail`).
+  2. Khi mở Popup chi tiết gói vật phẩm (UI 20), nhãn giá gói vật phẩm đọc giá gốc `80` thay vì giá chiết khấu mùa sự kiện đang diễn ra (`50`).
+  3. Sau khi bấm mua thành công và đóng Popup 20, ô Live Slot trên giao diện UI 19 vẫn giữ nguyên trạng thái nút "Mua 80 -> 50" thay vì chuyển sang "Đã mua" (Purchased / Subscribed), bắt buộc người chơi phải khởi động lại game mới thấy cập nhật.
+- **Nguyên nhân chi tiết (Reverse-Engineering qua Unity IL2CPP ARM64 `libil2cpp.so`)**:
+  1. **Nút bấm Live Slot trỏ vào hàm rỗng (Dead Stub)**:
+     - Trong `libil2cpp.so` kiến trúc `arm64-v8a` (độ lệch Virtual Address VA = File Offset + `0x4000`), sự kiện click của nút Live Slot được Unity Event Trigger ánh xạ vào phương thức obfuscate `GgUIIngamePassGoodsShop.뀁뀈뀎뀌뀊뀊뀃뀏뀅뀌뀅` tại offset file `0x20D3FE0` (VA `0x20D7FE0`).
+     - Phân tích Disassembly mã máy gốc tại `0x20D7FE0`:
+       ```arm64
+       0x20D7FE0: str  x30, [sp, #-0x10]!
+       0x20D7FE4: cbz  x1, #0x20d8008
+       0x20D7FE8: ldr  x8, [x1, #0x78]        // slot.m_cData (PassData)
+       0x20D7FEC: cbz  x8, #0x20d8008
+       0x20D7FF0: ldrb w8, [x8, #0x84]       // kiểm tra cờ trạng thái mua
+       0x20D7FF4: cbz  w8, #0x20d8000        // nếu w8 == 0 -> nhảy tới 0x20D8000
+       0x20D7FF8: ldr  x30, [sp], #0x10
+       0x20D7FFC: b    #0x20d800c
+       0x20D8000: ldr  x30, [sp], #0x10
+       0x20D8004: ret                         // THOÁT NGAY LẬP TỨC (Stub rỗng)!
+       ```
+       Khi người chơi chưa mua thẻ, byte tại `[x8 + 0x84]` mang giá trị 0. Lệnh `cbz w8, #0x20d8000` nhảy thẳng tới `0x20D8000`, khôi phục thanh ghi liên kết `x30` và `ret` thoát ngay lập tức mà không hề gọi lệnh mở UI 20 (`GgUIIngamePassGoodsDetail`).
+  2. **Đọc sai trường dữ liệu giá trong Popup chi tiết gói vật phẩm (UI 20)**:
+     - Tại offset file `0x226230C` (VA `0x226630C`), logic khởi tạo giá của `GgUIIngamePassGoodsDetail`:
+       ```arm64
+       0x226630C: ldr x0, [x19, #0x20]       // Đọc m_cItem (gói tiêu chuẩn không chiết khấu)
+       ```
+     - Trong cấu trúc `PassData`, trường `m_cItem` nằm ở offset `0x20`, còn trường `m_cItem_Active` (chứa dữ liệu gói chiết khấu mùa sự kiện với giá 50 CP) nằm ở offset `0x28`. Do client đọc nhầm `0x20`, giá hiển thị bị cố định ở mức giá thường.
+  3. **Popup 20 khi đóng (OnClosed) không gọi hàm làm mới Live Slot của UI 19**:
+     - Tại offset file `0x2199E64` (VA `0x219DE64`) trong `GgUIIngamePassGoodsDetail.OnClosed()`:
+       ```arm64
+       0x219DE64: ldr x8, [x19, #0xb8]       // Nạp callback delegate OnClosed
+       ```
+     - Giao diện Popup 20 chỉ kích hoạt delegate đóng chung mà hoàn toàn không thông báo cho UI 19 (`GgUIIngamePassGoodsShop`) biết để làm mới ô `m_cLiveSlot`.
+- **Cách khắc phục triệt để bằng Assembly Hook**:
+  1. **Tái cấu trúc 208 bytes vùng nhớ tại `0x20D3FE0` (VA `0x20D7FE0`)**:
+     Thay thế toàn bộ đoạn mã cũ bằng 2 routine chuyên trách tuân thủ chuẩn ARM64 AAPCS calling convention:
+     - **Routine 1: Live Slot Click Handler (`0x20D7FE0` - `0x20D804C`, 112 bytes)**:
+       ```arm64
+       0x20D7FE0: str  x30, [sp, #-0x20]!
+       0x20D7FE4: stp  x20, x19, [sp, #0x10]
+       0x20D7FE8: cbz  x1, #0x20d8044
+       0x20D7FEC: mov  x20, x1               // x20 = slot (GgPassGoodsLiveSlot)
+       0x20D7FF0: ldr  x0, [x20, #0x78]      // x0 = slot.m_cData
+       0x20D7FF4: cbz  x0, #0x20d8010
+       0x20D7FF8: mov  x1, xzr
+       0x20D7FFC: bl   #0x1de9b64            // PassData.GetIsSubscribed()
+       0x20D8000: cbz  w0, #0x20d8010        // Nếu chưa đăng ký -> mở popup
+       0x20D8004: mov  x0, x20               // Nếu đã đăng ký: slot.Refresh()
+       0x20D8008: bl   #0x1fe2ddc
+       0x20D800C: b    #0x20d8044
+       0x20D8010: ldr  x19, [x20, #0x70]     // x19 = slot.m_cData (PassData)
+       0x20D8014: cbz  x19, #0x20d8044
+       0x20D8018: mov  x0, xzr
+       0x20D801C: bl   #0x219e04c            // UIInGameMain.get_Instance()
+       0x20D8020: cbz  x0, #0x20d8044
+       0x20D8024: movz w1, #0x14             // UI ID = 20 (GgUIIngamePassGoodsDetail)
+       0x20D8028: movz w2, #0x1              // bPlaySound = true
+       0x20D802C: mov  x3, xzr
+       0x20D8030: bl   #0x1cbe508            // UIInGameMain.PushUI(20, true, null) -> x0 = popup
+       0x20D8034: cbz  x0, #0x20d8044
+       0x20D8038: mov  x1, x19               // passData
+       0x20D803C: mov  x2, xzr               // callback = null
+       0x20D8040: bl   #0x219ea68            // GgUIIngamePassGoodsDetail.Show(passData, null)
+       0x20D8044: ldp  x20, x19, [sp, #0x10]
+       0x20D8048: ldr  x30, [sp], #0x20
+       0x20D804C: ret
+       ```
+     - **Routine 2: Post-Purchase Auto-Refresh Hook (`0x20D8050` - `0x20D8094`, 72 bytes)**:
+       ```arm64
+       0x20D8050: mov  x0, xzr
+       0x20D8054: bl   #0x219e04c            // UIInGameMain.get_Instance()
+       0x20D8058: cbz  x0, #0x20d8074
+       0x20D805C: movz w1, #0x13             // UI ID = 19 (GgUIIngamePassGoodsShop)
+       0x20D8060: bl   #0x1cbe204            // UIInGameMain.GetUI(19) -> x0 = shop
+       0x20D8064: cbz  x0, #0x20d8074
+       0x20D8068: ldr  x0, [x0, #0x58]       // shop.m_cLiveSlot
+       0x20D806C: cbz  x0, #0x20d8074
+       0x20D8070: bl   #0x1fe2ddc            // slot.Refresh() -> cập nhật "Đã mua"!
+       0x20D8074: ldr  x8, [x19, #0xb8]      // khôi phục lệnh gốc: load delegate
+       0x20D8078: cbz  x8, #0x20d8090
+       0x20D807C: ldr  x0, [x8, #0x40]
+       0x20D8080: ldr  x1, [x8, #0x28]
+       0x20D8084: ldr  x2, [x8, #0x18]
+       0x20D8088: ldp  x30, x19, [sp], #0x10
+       0x20D808C: br   x2                    // gọi delegate OnClosed
+       0x20D8090: ldp  x30, x19, [sp], #0x10
+       0x20D8094: ret
+       ```
+     - **Padding**: 6 lệnh `NOP` (`0x20D8098` - `0x20D80AC`, 24 bytes) để giữ nguyên độ dài nhị phân 208 bytes.
+  2. **Vá lệnh rẽ nhánh trong Popup 20 OnClosed**:
+     - Tại offset file `0x2199E64` (VA `0x219DE64`): Thay `ldr x8, [x19, #0xb8]` (`68 5e 40 f9`) bằng lệnh nhảy `b #0x20D8050` (`7b e8 fc 17`).
+  3. **Vá trường đọc gói Active trong Popup 20**:
+     - Tại offset file `0x226230C` (VA `0x226630C`): Thay `ldr x0, [x19, #0x20]` (`60 12 40 f9`) bằng `ldr x0, [x19, #0x28]` (`60 16 40 f9`) để đọc đúng trường `m_cItem_Active`.
+  4. **Tích hợp tự động vào Pipeline Build ([merge_apk.py](file:///root/project/GGServer/patcher/merge_apk.py))**:
+     - Bổ sung 3 quy tắc vá vào danh sách `LIBIL2CPP_PATCHES`.
+     - Toàn bộ file Universal APK và Split APK khi chạy `./patcher/build.sh` tự động nhận bản vá mã máy vĩnh viễn, không phụ thuộc vào bất kỳ công cụ hook runtime (như Frida) nào.
 
 ---
 
@@ -637,62 +744,54 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
 ### 4.21. Lỗi không thể mua Live Slot trong Cửa hàng Vật phẩm Thẻ Sao (Pass Goods Sale Live Slot Unable to Buy)
 - **Hiện tượng**:
   1. Trong Cửa hàng Vật phẩm Thẻ Sao (Pass Goods Sale / Merch Shop, UI 19 `GgUIIngamePassGoodsShop`), ô **Live Slot** (`GgUIIngamePassGoodsLiveSlot` - ô sự kiện nổi bật trên cùng hiển thị Mùa Thẻ Sao đang diễn ra) hiển thị trạng thái "Đã đăng ký" hoặc "Không thể mua" (`Common_Error_UnableBuy` / "Không thể mua thêm.") đối với các tài khoản người chơi chưa từng mua Thẻ Sao / Gói quà Merch Pack mùa này.
-  2. Khi người chơi bấm vào ô Live Slot, game không mở popup chi tiết gói vật phẩm (`GgUIIngamePassGoodsDetail`, Popup 20), hoặc nếu mở được thì khi bấm "Mua" sẽ bị lỗi không thể hoàn tất.
-- **Nguyên nhân chi tiết (Reverse-Engineering qua Unity IL2CPP ARM64 `libil2cpp.so`)**:
-  1. **Hàm tra cứu Subscription của Client bỏ qua trạng thái kích hoạt**:
-     - Trong mã máy ARM64 tại RVA `0x20C81E4` (offset file `0x20C41E4` của `libil2cpp.so` - hàm `UserSubscribeList.GetSubscribe(int subscribeId)`):
+  2. Sau khi sửa logic máy chủ để ô Live Slot hiển thị nút "Mua 80 -> 50", người chơi chạm vào nút nhưng **game hoàn toàn không có phản hồi** (không mở Popup chi tiết gói vật phẩm UI 20 `GgUIIngamePassGoodsDetail`).
+  3. Khi mở Popup chi tiết (UI 20), giá hiển thị đọc giá gốc không chiết khấu (`80`) thay vì giá ưu đãi sự kiện (`50`).
+  4. Sau khi hoàn tất mua gói và đóng Popup 20, ô Live Slot trên UI 19 vẫn giữ nguyên chữ "Mua" thay vì tự động chuyển sang "Đã mua", buộc người chơi phải khởi động lại game.
+- **Nguyên nhân chi tiết (Reverse-Engineering qua Unity IL2CPP ARM64 `libil2cpp.so` & Server Logic)**:
+  1. **Tầng Máy chủ (Server Logic) - Bỏ sót cờ trạng thái `i_isActive`**:
+     - Client gọi `UserSubscribeList.GetSubscribe(int subscribeId)` tại RVA `0x20C81E4` (offset file `0x20C41E4`):
        ```arm64
-       0x20c42ac: bl #0x1b25c04         // ObscuredInt -> int
-       0x20c42b0: cmp w0, w19           // item.SubscribeID == targetId
+       0x20c42ac: bl   #0x1b25c04       // ObscuredInt -> int
+       0x20c42b0: cmp  w0, w19         // item.SubscribeID == targetId
        0x20c42b4: b.ne #0x20c428c
-       0x20c42b8: mov x0, x20           // return item!
+       0x20c42b8: mov  x0, x20         // return item!
        ```
-       Client duyệt mảng `user_subscribe_list` và so sánh mã `SubscribeID`. Trình xử lý của client **hoàn toàn không kiểm tra cờ `i_isActive`**! Bất kỳ bản ghi nào tồn tại trong `user_subscribe_list` (kể cả khi mang giá trị `i_isActive = 0`), hàm này đều trả về đối tượng khác `null`.
-  2. **Khóa luồng hiển thị và bấm nút Mua của Live Slot**:
-     - Tại `SubscribePassManager.Init` (RVA `0x1DE798C`), client gán `m_cLiveData.field_0x40 = UserSubscribeList.GetSubscribe(activeSeason)`.
-     - Tại `GgUIIngamePassGoodsLiveSlot.Refresh` (RVA `0x1FE2DE0`), client gọi `GetIsSubscribedCurrentPass()`. Do `field_0x40 != null`, hàm trả về `1` (True):
-       - Live Slot ẩn nút "Mua" (`m_goBuy`) và kích hoạt nhãn "Đã đăng ký" (`m_goSubscribed`).
-     - Tại `GgUIIngamePassGoodsShop.OnClickLiveSlot` (RVA `0x20D7FE0`), client kiểm tra:
-       ```arm64
-       0x20d3ffc: bl #0x1de5b64         // GetIsSubscribedCurrentPass()
-       0x20d4000: cbz w0, #0x20d4010   // Nếu == 0 mới mở Popup 20!
-       0x20d4004: mov x0, x20          // Nếu != 0: gọi Refresh() và return luôn!
-       0x20d4008: bl #0x1fdeddc
-       0x20d400c: b #0x20d4044
-       ```
-       Do client nghĩ người chơi đã đăng ký thẻ mùa này, nó thoát ngay lập tức mà không mở popup chi tiết gói vật phẩm.
-  3. **Khóa giao dịch tại trình quản lý mua sắm**:
-     - Tại `GgPurchaseManagerSGT.GetIsPurchaseAvailable` (RVA `0x21D1C14`), client gọi `UserSubscribeList.GetSubscribe(SubscribeID)`. Do tìm thấy bản ghi, hàm trả về `0` (Unavailable), kích hoạt popup lỗi `Common_Error_UnableBuy` (chuỗi 10068 trong Bảng 16: "Không thể mua thêm.").
-  4. **Lỗi logic máy chủ khi khởi tạo và chuẩn hóa danh sách Subscription**:
-     - Trước đây trong `auth.py` (hàm `_normalise_subscribe_list`), khi người chơi chưa mua thẻ hoặc chưa kích hoạt thẻ Gold (`not (paid_enabled or season_bought)`), server thực hiện:
-       ```python
-       else:
-           if paid_sub:
-               paid_sub['i_isActive'] = 0
-               paid_sub['i_ActiveTime'] = 0
-       ```
-       Server giữ lại phần tử `paid_sub` trong mảng `user_subscribe_list` với `i_isActive = 0`. Tương tự, khi quản trị viên thu hồi Thẻ Sao Gold trong `app.py`, server cũng chỉ gán `i_isActive = 0` chứ không xóa khỏi mảng. Vì client bỏ qua `i_isActive`, người chơi chưa mua thẻ vẫn bị client coi là đã mua.
-- **Cách khắc phục triệt để**:
-  1. **Lọc sạch hoàn toàn các Subscription không hoạt động ([auth.py](file:///root/project/GGServer/emulator/server/handlers/auth.py))**:
-     - Trong hàm `_normalise_subscribe_list`, loại bỏ triệt để các phần tử không có trạng thái hoạt động thực sự. Chỉ duy trì các mục có `i_isActive == 1` do người chơi thực sự mua trong `user_shop` hoặc do quản trị viên cấp quyền `paid_star_card`.
-     - Tuyệt đối không trả về bất kỳ bản ghi nào có `i_isActive == 0` về cho client trong `user_subscribe_list`.
-  2. **Thu hồi sạch sẽ khi tắt Thẻ Sao Gold ([app.py](file:///root/project/GGServer/emulator/server/app.py))**:
-     - Khi quản trị viên hủy kích hoạt Thẻ Sao Gold cho người chơi trên Web Admin Dashboard, `user['user_subscribe_list']` lọc bỏ hoàn toàn các ID thuộc mùa bị thu hồi thay vì đổi cờ `i_isActive = 0`.
-  3. **Chuẩn hóa luồng mua gói vật phẩm Merch Pack ([shop.py](file:///root/project/GGServer/emulator/server/handlers/shop.py))**:
-     - Khi mua gói Live Slot Merch Pack (`3000 + season_num`, ví dụ 3003) hoặc gói thường (`2000 + season_num`, ví dụ 2003):
-       - Kiểm tra tính hợp lệ qua `_check_purchase_eligibility` (cho phép mua nếu chưa sở hữu gói trong `user_shop`).
-       - Trừ đúng số CP theo giá chiết khấu trong Bảng 12 (ví dụ Mùa 3 là 50 CP).
-       - Trao đầy đủ phần thưởng nhóm quà Merch Pack (Guitars, Costumes, Music, Star Pass).
-       - Thêm cả `season_num` và `1000 + season_num` vào `user_subscribe_list` (với `i_isActive: 1`) và `user_ticketcollection`.
-       - Ghi nhận cả hai mã gói `2000 + season_num` và `3000 + season_num` vào `user_shop` để ngăn chặn mua lặp lại.
-  4. **Xác minh qua Bộ kiểm thử tự động ([test_live_slot_purchase.py](file:///root/project/GGServer/emulator/test_live_slot_purchase.py))**:
-     - Tạo bộ kiểm thử độc lập bao quát toàn bộ 6 kịch bản thực tế:
-       - Kiểm tra tài khoản mới có `user_subscribe_list` rỗng, Live Slot hiển thị sẵn sàng mua.
-       - Kiểm tra cơ chế tự động dọn sạch subscription rác/inactive khi đăng nhập.
-       - Kiểm tra RPC `buyCheck` và `buyShop` cho gói Live Slot 3003 thành công, trừ đúng 50 CP và cấp đủ 9 vật phẩm thưởng.
-       - Kiểm tra từ chối mua lặp lại đối với cả gói giảm giá 3003 lẫn gói thường 2003.
-       - Kiểm tra quy trình thu hồi Thẻ Sao Gold dọn sạch danh sách subscription.
-       - Kiểm tra tính toàn vẹn cấu trúc dữ liệu Bảng 29, Bảng 17 và Bảng 12.
+       Client chỉ so sánh ID và trả về đối tượng mà **hoàn toàn bỏ qua cờ `i_isActive`**.
+     - Trước đây máy chủ trong [auth.py](file:///root/project/GGServer/emulator/server/handlers/auth.py) khi người chơi chưa mua thẻ vẫn gửi về bản ghi có `i_isActive: 0`. Client nhận được bản ghi này nên hiểu nhầm là đã mua, khóa nút thành `Common_Error_UnableBuy`.
+  2. **Tầng Client APK (ARM64 Binary) - Nút bấm trỏ vào hàm rỗng (Dead Stub)**:
+     - Khi máy chủ dọn sạch subscription rác, ô Live Slot hiển thị đúng nút "Mua 80 -> 50". Tuy nhiên, sự kiện click gắn với phương thức obfuscate `GgUIIngamePassGoodsShop.뀁뀈뀎뀌뀊뀊뀃뀏뀅뀌뀅` tại offset file `0x20D3FE0` (VA `0x20D7FE0`).
+     - Đoạn mã máy gốc kiểm tra byte tại `[slot.m_cData + 0x84]`. Khi chưa mua thẻ, giá trị này bằng 0, kích hoạt lệnh rẽ nhánh nhảy thẳng tới `0x20D8000: ret` (thoát ngay lập tức). Nút bấm trở thành phím chết không thực hiện bất kỳ hành động nào.
+  3. **Tầng Client APK (ARM64 Binary) - Đọc sai trường giá chiết khấu**:
+     - Tại offset file `0x226230C` (VA `0x226630C`), Popup UI 20 thực hiện lệnh `ldr x0, [x19, #0x20]`. Trường tại offset `0x20` là `m_cItem` (gói tiêu chuẩn giá 80 CP), trong khi trường tại `0x28` là `m_cItem_Active` (gói chiết khấu mùa sự kiện giá 50 CP).
+  4. **Tầng Client APK (ARM64 Binary) - Thiếu cơ chế Auto-Refresh khi đóng Popup 20**:
+     - Phương thức `GgUIIngamePassGoodsDetail.OnClosed()` tại offset file `0x2199E64` (VA `0x219DE64`) chỉ gọi delegate đóng chung mà không gọi `slot.Refresh()` của UI 19, dẫn đến việc UI 19 không được cập nhật trạng thái thời gian thực.
+- **Cách khắc phục triệt để (Kết hợp Server + Binary ARM64 Hook)**:
+  1. **Khắc phục triệt để phía Máy chủ**:
+     - **Lọc sạch subscription không hoạt động ([auth.py](file:///root/project/GGServer/emulator/server/handlers/auth.py))**: Loại bỏ toàn bộ các bản ghi `i_isActive == 0` trong `user_subscribe_list`.
+     - **Thu hồi sạch sẽ Thẻ Sao Gold ([app.py](file:///root/project/GGServer/emulator/server/app.py))**: Xóa hẳn mục khỏi mảng khi quản trị viên tắt Thẻ Sao Gold trên Admin Dashboard.
+     - **Chuẩn hóa luồng mua gói Merch Pack ([shop.py](file:///root/project/GGServer/emulator/server/handlers/shop.py))**: Xử lý RPC `buyCheck` và `buyShop` cho gói 3003/3004, trừ đúng số CP ưu đãi, cấp đủ vật phẩm thưởng, và ghi nhận cả mã `2000+` lẫn `3000+` vào `user_shop`.
+     - **Bộ kiểm thử tự động ([test_live_slot_purchase.py](file:///root/project/GGServer/emulator/test_live_slot_purchase.py))**: Xác minh 6 kịch bản mua và thu hồi thẻ pass thành công 100%.
+  2. **Khắc phục triệt để phía Client APK bằng ARM64 Binary Hook**:
+     *(Chi tiết mã máy và sơ đồ thanh ghi xem tại [Mục 1.9](#19-vá-mã-máy-arm64-trong-libil2cppso-tương-tác-ô-sự-kiện-live-slot-ui-19-hiển-thị-giá-chiết-khấu-ui-20-và-tự-động-làm-mới-trạng-thái-đã-mua-auto-refresh-hook))*
+     - **Hook Click Handler (`0x20D7FE0` - `0x20D804C`)**: Kiểm tra `PassData.GetIsSubscribed(0x1DE9B64)`. Nếu chưa mua -> lấy instance `UIInGameMain (0x219E04C)`, đẩy giao diện `PushUI(20) (0x1CBE508)`, và gọi `GgUIIngamePassGoodsDetail.Show(slot.m_cData, null) (0x219EA68)` để mở Popup 20.
+     - **Hook Auto-Refresh (`0x20D8050` - `0x20D8094`)**: Nối vào `OnClosed()` của Popup 20 (offset `0x2199E64`). Khi Popup 20 đóng, hook tự động gọi `UIInGameMain.GetUI(19) (0x1CBE204)` lấy `GgUIIngamePassGoodsShop`, trích xuất `m_cLiveSlot` tại offset `0x58`, gọi `slot.Refresh() (0x1FE2DDC)` để cập nhật trạng thái "Đã mua" ngay tức thì.
+     - **Vá Offset Item Active (`0x226230C`)**: Chuyển `ldr x0, [x19, #0x20]` thành `ldr x0, [x19, #0x28]` để hiển thị chính xác giá chiết khấu mùa sự kiện.
+  3. **Tích hợp tự động vào Pipeline Build ([merge_apk.py](file:///root/project/GGServer/patcher/merge_apk.py))**:
+     - Toàn bộ bản vá được định nghĩa vĩnh viễn trong `LIBIL2CPP_PATCHES`. Mọi lần build APK qua `./patcher/build.sh` đều tự động áp dụng.
+- **Quy trình Kiểm thử và Bằng chứng Thực tế (Verification on Live Device)**:
+  1. **Bước 1 - Hiển thị Live Slot sẵn sàng mua**:
+     - Người chơi mở Cửa hàng Vật phẩm Thẻ Sao (UI 19). Ô Live Slot hiển thị nút **"Mua 80 -> 50"** sẵn sàng tương tác.
+     - ![Bước 1: Live Slot hiển thị nút Mua](docs/screenshots/screen_cur32.png)
+  2. **Bước 2 - Chạm vào Live Slot mở Popup chi tiết UI 20**:
+     - Chạm vào ô Live Slot (tọa độ `820, 770`). Hook `0x20D7FE0` kích hoạt, Popup chi tiết gói vật phẩm Thẻ Sao Mùa 4 (UI 20 `GgUIIngamePassGoodsDetail`) lập tức mở lên mượt mà.
+     - ![Bước 2: Popup chi tiết mở thành công](docs/screenshots/screen_cur33.png)
+  3. **Bước 3 - Tiến hành mua gói**:
+     - Chạm nút mua trên Popup 20 (tọa độ `610, 2070`). Giao dịch mua được gửi lên máy chủ giả lập, trừ CP và nhận đầy đủ vật phẩm thưởng.
+     - ![Bước 3: Mua thành công trong Popup](docs/screenshots/screen_cur34.png)
+  4. **Bước 4 - Tự động làm mới Live Slot sang "Đã mua"**:
+     - Popup 20 đóng lại. Hook `0x20D8050` tại `OnClosed()` được kích hoạt, gọi `m_cLiveSlot.Refresh()`.
+     - Ngay lập tức, ô Live Slot trên giao diện UI 19 chuyển sang nhãn **"Đã mua"** màu xám mờ mà không cần thoát hay khởi động lại game.
+     - ![Bước 4: Live Slot tự động cập nhật Đã mua](docs/screenshots/screen_cur35.png)
 
 ---
 
@@ -775,6 +874,50 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
   2. **Chặn im lặng các request dị thường ([app.py](file:///root/project/GGServer/emulator/server/app.py))**:
      - Thêm phương thức `do_CONNECT(self)` trả về 400 Bad Request im lặng.
      - Ghi đè `log_error` và `log_request` để loại bỏ hoàn toàn các thông báo `501 Unsupported method` và mã lỗi 404 của scanner ngoại lai, giữ cho màn hình log luôn sạch sẽ.
+
+---
+
+### 4.27. Lỗi khóa Người theo dõi nhưng chỉ nhận 3 tin nhắn: Gating cấp độ, Đồ thị phụ thuộc Messenger DAG & Cơ chế phân tách Tiến trình (Proceeding vs Completed Groups)
+- **Hiện tượng**:
+  - Người chơi mở khóa tất cả 15 người theo dõi ở Chương 1 (Phòng Guitar Girl) hoặc 8 người theo dõi ở Chương 2 (Tiệm bánh hạnh phúc), nhưng trong hòm thư Messenger chỉ nhận vỏn vẹn 3 người theo dõi (Follower 1 Joy, Follower 3 Cô giáo, Follower 10 Mèo quản gia), các người theo dõi còn lại hoàn toàn không xuất hiện phòng chat hoặc không nhận được tin nhắn (`[ Viết tin nhắn. ]`).
+- **Phân tích Nguyên nhân Gốc rễ (Reverse Engineering Client libil2cpp & Master SQLite)**:
+  1. **Nguyên nhân 1: Ràng buộc cấp độ người theo dõi (Follower Level Gating)**:
+     - Trong SQLite gốc của Neowiz (`Messenger.sqlite`), hàm kiểm tra điều kiện mở phòng chat `CheckRequirement` (`0x1E7CF38`) kiểm tra `i_RequirementFollowerLevel`:
+       * Follower 1 (Joy): yêu cầu Level >= 30.
+       * Follower 6 (Elle): yêu cầu Level >= 50.
+       * Follower 8 (Hiệu trưởng): yêu cầu Level >= 150.
+       * Follower 9 (Sua): yêu cầu Level >= 100.
+       * Follower 13 (Nova): yêu cầu Level >= 100.
+       * Follower 201 (Joy Ch2): yêu cầu Level >= 150.
+       * Follower 202 (Moa Ch2): yêu cầu Level >= 800 (cho nhóm 157).
+     - Khi người theo dõi chỉ ở Cấp 1, các phòng chat này bị ẩn hoàn toàn khỏi danh sách Messenger.
+  2. **Nguyên nhân 2: Đồ thị phụ thuộc hội thoại (Story Dependency DAG - `i_RequirementMessengerGroup`)**:
+     - Hệ thống cốt truyện Neowiz ràng buộc chéo giữa các phòng:
+       * Phòng 2 (Cửa hàng tiện lợi) & Phòng 3 (Cô giáo) yêu cầu Nhóm 1 (Joy) hoàn thành.
+       * Phòng 4 (Tiền bối) yêu cầu Nhóm 7 (Joy) hoàn thành.
+       * Phòng 5 (Moa) yêu cầu Nhóm 12 (Joy) hoàn thành.
+       * Phòng 6 (Elle) yêu cầu Nhóm 13 (Moa) hoàn thành.
+       * Phòng 7 (Amber) yêu cầu Nhóm 16 (Joy) hoàn thành.
+       * Phòng 8 (Hiệu trưởng) yêu cầu Nhóm 47 (Joy) hoàn thành.
+       * Phòng 9 (Sua) & Phòng 11 (Jae) yêu cầu Nhóm 58 (Amber) hoàn thành.
+       * Phòng 12 (Tiệm bánh) yêu cầu Nhóm 79 (Joy & Moa Phòng 16) hoàn thành.
+       * Phòng 13 (Nova), 14 (Yeri), 15 (Mocha Latte) yêu cầu Nhóm 75 (Joy) hoàn thành.
+       * Ở Chương 2: Reading Fox (203) yêu cầu Nhóm 103 (Tiệm bánh Phòng 12); Ruby (204) yêu cầu Nhóm 118 (Phòng 16); Alex (205) yêu cầu Nhóm 132 (Phòng 16); Busking TV (206) yêu cầu Nhóm 173 (Phòng 17); Sora (207) và Jessica (208) yêu cầu Nhóm 171 (Phòng 16).
+       * Duy nhất Phòng 10 (Mèo quản gia) có `req_msgrp = 0` và `req_lvl = 1`.
+       * Do đó trước khi sửa, chỉ có Joy (1), Cô giáo (3) và Mèo (10) hiển thị!
+  3. **Nguyên nhân 3: Cơ chế phân tách Tiến trình (`s_UnlockGroupList`)**:
+     - Disassembly hàm khởi tạo hội thoại client (`0x1DA0990`): Khi client phân tích chuỗi `s_UnlockGroupList` ("1,4,7,..."):
+       * Tất cả các nhóm **đứng trước nhóm cuối cùng** được nạp vào danh sách hoàn thành `m_listCompleteProgressGroup`.
+       * **Nhóm cuối cùng** được nạp vào `m_dicProceeding` (nhóm đang mở tin nhắn chờ tương tác `[ Viết tin nhắn. ]`).
+       * Nếu nhóm phụ thuộc (ví dụ 75 ở Phòng 1 hoặc 103 ở Phòng 12) được đặt ở vị trí cuối cùng, nó trở thành nhóm đang tiến hành chứ không nằm trong `m_listCompleteProgressGroup`, khiến tất cả các phòng phụ thuộc phía sau bị kẹt điều kiện!
+  4. **Nguyên nhân 4: Client PlayerPrefs Caching & `Key_Renewal_UserMessenger`**:
+     - Trong `UserMessengerTable.OnLoginReturn` (`0x1CF0614`), nếu cờ `Key_Renewal_UserMessenger` trong `playerprefs.xml` khác 0, client **bỏ qua hoàn toàn** dữ liệu `user_messenger` gửi về từ server và sử dụng bộ nhớ cache cục bộ cũ (`Key_UserMessengerTable`). Khi client gửi gói `userSave`, nó ghi đè lại server bằng dữ liệu thiếu sót.
+- **Giải pháp xử lý triệt để**:
+  1. Cập nhật hàm `_sync_follower_messenger(user)` trong `server/handlers/follower.py`:
+     - Tự động phát hiện chương người chơi đang hoạt động (`has_ch2`).
+     - Với Chương 1: Bơm đầy đủ các nhóm tiên quyết cốt truyện vào danh sách hoàn thành của Phòng 1, Phòng 7 và Phòng 16, đảm bảo nhóm mở đầu của từng người theo dõi luôn là nhóm tiến hành (`proceeding`).
+     - Với Chương 2: Bơm chuỗi nhóm hoàn thành vào Phòng 12 (103, 109), Phòng 6 (106, 113), Phòng 2 (116), Phòng 16 (104..171), Phòng 17 (139..173), Phòng 5 (110), Phòng 1 (156), giúp toàn bộ 8 người theo dõi Chương 2 (201..208) đồng thời thỏa mãn điều kiện và hiển thị tin nhắn mở đầu.
+  2. Xóa sạch bộ nhớ đệm `Key_UserMessengerTable` và `Key_Renewal_UserMessenger` trên PlayerPrefs thiết bị Android qua ADB root để client tải lại danh sách đầy đủ từ server.
 
 ---
 

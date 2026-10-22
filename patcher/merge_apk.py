@@ -41,6 +41,7 @@ UTF8_FLAG = 1 << 8
 # Disables offline restrictions and PmangPlus account requirements for:
 # 1) Push notifications toggles in Settings (m_goNotifications_Online_KR)
 # 2) CP (Chocolate) free/paid breakdown in Settings (m_goGoods_Online)
+# 3) Star Pass Goods Shop (UI 19) & Detail Popup (UI 20) live slot interaction & refresh
 LIBIL2CPP_PATCHES = [
     # (offset, expected_original_bytes, patched_replacement_bytes, description)
     (0x1E13D04, b'\xe0\x08\x00\x37', b'\x1f\x20\x03\xd5', 'SetupNotifications: isOffline tbnz -> NOP'),
@@ -54,6 +55,51 @@ LIBIL2CPP_PATCHES = [
     (0x1ED4904, b'\x00\x01\x00\x36', b'\x08\x00\x00\x14', 'SetGoods: isOffline tbz -> b #0x1ed8924'),
     (0x1ED493C, b'\xe1\x17\x9f\x1a', b'\x21\x00\x80\x52', 'SetGoods: cset w1, eq -> mov w1, #1'),
     (0x1ED4950, b'\xa1\x00\x00\x54', b'\x1f\x20\x03\xd5', 'SetGoods: authType b.ne -> NOP'),
+
+    # 3a) Replace GgUIIngamePassGoodsShop.뀁뀈뀎뀌뀊뀊뀃뀏뀅뀌뀅 (208 bytes) with:
+    #     - Live Slot click handler (0x20D7FE0..0x20D804C): opens Popup 20 if unsubscribed, refreshes if subscribed
+    #     - Post-purchase auto-refresh hook (0x20D8050..0x20D8094): refreshes Live Slot when Detail closes
+    #     - 6 NOPs padding (0x20D8098..0x20D80AC)
+    (
+        0x20D3FE0,
+        bytes.fromhex(
+            'fe0f1ff8210100b4283c40f9e80000b40811423968000034fe0741f804000014'
+            'fe0741f8c0035fd6a6ade497fe0f1ef8f44f01a9730e01f0f4f60090688a5839'
+            '942e43f928010037e0f60090002c43f9fdace497c0f600b0006c46f9faace497'
+            '28008052688a1839800240f908e440b94800003548ade497c0e88452e1031faa'
+            '046ef097f30300aae0e88452e1031faa006ef097f40300aae0031faaf4170394'
+            '600100b4c8f600b0e10313aae20314aa086d46f9f44f41a9e3031faae5031faa'
+            '040140f9fe0742f83e9bef177dade497'
+        ),
+        bytes.fromhex(
+            # Live slot click handler (112 bytes)
+            'fe0f1ef8f44f01a9e10200b4f40301aa803e40f9e00000b4e1031faada46f497'
+            '80000034e00314aa752bfc970e000014933a40f9930100b4e0031faa0c180394'
+            '200100b48102805222008052e3031faa3699ef97800000b4e10313aae2031faa'
+            '8a1a0394f44f41a9fe0742f8c0035fd6'
+            # Post-purchase auto-refresh hook (72 bytes)
+            'e0031faafe170394e00000b4610280526998ef97800000b4002c40f9400000b4'
+            '5b2bfc97685e40f9c80000b4002140f9011540f9020d40f9fe4fc1a840001fd6'
+            'fe4fc1a8c0035fd6'
+            # 6 NOPs padding (24 bytes)
+            '1f2003d51f2003d51f2003d51f2003d51f2003d51f2003d5'
+        ),
+        'PassGoodsShop: Live Slot click handler + Detail closed auto-refresh hook',
+    ),
+    # 3b) Detail Popup OnClosed hook call: jump to 0x20D8050
+    (
+        0x2199E64,
+        b'\x68\x5e\x40\xf9',
+        b'\x7b\xe8\xfc\x17',
+        'PassGoodsDetail: OnClosed hook -> b #0x20d8050',
+    ),
+    # 3c) Detail Popup active item pricing getter fix: ldr x0, [x19, #0x28]
+    (
+        0x226230C,
+        b'\x60\x12\x40\xf9',
+        b'\x60\x16\x40\xf9',
+        'PassGoodsDetail: use m_cItem_Active (0x28) instead of m_cItem (0x20)',
+    ),
 ]
 
 
