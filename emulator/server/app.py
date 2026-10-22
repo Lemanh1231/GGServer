@@ -853,7 +853,7 @@ class Handler(BaseHTTPRequestHandler):
             if isinstance(req_named, dict):
                 d = req_named.get('data') or {}
                 if isinstance(d, dict):
-                    uuid = d.get('uuid') or d.get('device_uuid')
+                    uuid = d.get('device_uuid') or d.get('uuid')
 
             # Identify if this device/user is banned
             is_banned = False

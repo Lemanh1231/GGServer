@@ -248,7 +248,7 @@ https://your-domain.example/admin
 *(Or `http://127.0.0.1:8080/admin` locally).*
 
 - **Password Protection & Authentication**:
-  - Protected by default password: `Stingdau@1231@@` (configurable via `GG_ADMIN_PASSWORD` in `.env`).
+  - Protected by admin password configured via `GG_ADMIN_PASSWORD` in `.env` or server environment variables.
   - Cryptographically secure HMAC-SHA256 session token stored in an HttpOnly cookie (`gg_admin_token`, 30-day validity).
   - All `/admin/api/*` endpoints strictly require authentication, returning `401 Unauthorized` for unauthenticated requests.
   - Dedicated **🚪 Logout** button to securely clear the session.
@@ -535,7 +535,7 @@ https://your-domain.example/admin
 *(Hoặc `http://127.0.0.1:8080/admin` cục bộ).*
 
 - **Bảo mật & Xác thực Mật khẩu**:
-  - Mật khẩu đăng nhập mặc định: `Stingdau@1231@@` (tùy biến qua biến môi trường `GG_ADMIN_PASSWORD` trong file `.env`).
+  - Mật khẩu đăng nhập quản trị viên được cấu hình qua biến môi trường `GG_ADMIN_PASSWORD` trong file `.env` hoặc cấu hình máy chủ.
   - Sử dụng Token Session mã hóa HMAC-SHA256 lưu trong HttpOnly Cookie (`gg_admin_token`, hiệu lực 30 ngày).
   - Toàn bộ API `/admin/api/*` đều yêu cầu xác thực, trả về `401 Unauthorized` nếu chưa đăng nhập.
   - Tích hợp nút **🚪 Đăng xuất** trực tiếp trên thanh điều hướng để hủy phiên làm việc.

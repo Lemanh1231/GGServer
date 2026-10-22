@@ -788,8 +788,8 @@ def h_set_tutorial_new(req, player, ctx):
 @cmd('setSubscribe')
 def h_set_subscribe(req, player, ctx):
     p = _payload(req)
-    uuid = p.get('uuid') or ctx.get('uuid')
-    user = state.get_user(uuid)
+    u_ident = p.get('device_uuid') or p.get('uuid') or (ctx.get('uuid') if ctx else None) or str(p.get('u_seq', '')) or str(p.get('u_id', ''))
+    user = state.get_user(u_ident)
     subs = _normalise_subscribe_list(user) if user else []
     return {'u_seq': p.get('u_seq', 0), 'user_subscribe_list': subs}, OK
 

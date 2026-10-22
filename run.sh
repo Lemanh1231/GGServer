@@ -18,7 +18,7 @@ EMULATOR_DIR="$ROOT_DIR/emulator"
 PORT="${PORT:-8080}"
 LOG_FILE="${GG_LOG:-/tmp/gg_server.log}"
 GG_PUBLIC_BASE="${GG_PUBLIC_BASE:-https://kotori.click}"
-GG_ADMIN_PASSWORD="${GG_ADMIN_PASSWORD:-Stingdau@1231@@}"
+GG_ADMIN_PASSWORD="${GG_ADMIN_PASSWORD:-admin123}"
 
 # Mã màu ANSI
 BOLD='\033[1m'

@@ -718,7 +718,7 @@ Tài liệu này tổng hợp toàn bộ các lỗi gặp phải trong quá trì
   1. Trước đây Web Admin Dashboard (`/admin`) và các API quản trị (`/admin/api/*`) mở công khai, bất kỳ ai biết đường dẫn đều có thể vào xem danh sách người chơi, chỉnh sửa tài nguyên hoặc cấm tài khoản.
 - **Cách khắc phục triệt để**:
   1. **Hệ thống xác thực mã hóa ([admin.py](file:///root/project/GGServer/emulator/server/admin.py) & [app.py](file:///root/project/GGServer/emulator/server/app.py))**:
-     - Thiết lập mật khẩu quản trị mặc định: `Stingdau@1231@@` (cấu hình qua biến môi trường `GG_ADMIN_PASSWORD`).
+     - Thiết lập mật khẩu quản trị qua biến môi trường `GG_ADMIN_PASSWORD` (mặc định cấu hình trong `.env`).
      - Thiết kế giao diện đăng nhập phong cách Cyberpunk/Dark mode, hỗ trợ song ngữ (Việt/Anh) và nút ẩn/hiện mật khẩu.
      - Cơ chế Token Session mã hóa HMAC-SHA256 kèm dấu thời gian, lưu trữ trong Cookie an toàn (`gg_admin_token`, HttpOnly, SameSite=Lax, hạn 30 ngày).
      - Khóa toàn bộ các API `/admin/api/*` (trả về mã lỗi `401 Unauthorized` nếu chưa đăng nhập hoặc sai mật khẩu). Hỗ trợ cả Header `Authorization: Bearer <token|password>` phục vụ kiểm thử và gọi API tự động.
@@ -821,4 +821,4 @@ Hoặc sử dụng các lệnh CLI nhanh:
 ./run.sh clear    # Xóa sạch Database và Captures
 ./run.sh test     # Chạy toàn bộ 106 unit tests
 ```
-- **Web Admin Dashboard**: `https://kotori.click/admin` (Mật khẩu: `Stingdau@1231@@`)
+- **Web Admin Dashboard**: `https://kotori.click/admin` (Mật khẩu cấu hình qua `GG_ADMIN_PASSWORD` trong `.env`)

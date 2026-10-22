@@ -30,11 +30,16 @@ VARIETY_STORE_CATALOG = {
     19: {'cost': 200, 'reward_type': 4, 'reward_id': 17, 'reward_value': 1},
 }
 
+def _resolve_user_and_id(p, ctx):
+    u_ident = p.get('device_uuid') or p.get('uuid') or (ctx.get('uuid') if ctx else None) or str(p.get('u_seq', '')) or str(p.get('u_id', ''))
+    user = state.get_user(u_ident)
+    canonical_uuid = (user.get('uuid') if user else None) or ((user.get('userdata') or {}).get('uuid') if user else None) or u_ident
+    return user, canonical_uuid
+
 @cmd('buyVarietyStore')
 def h_buy_variety(req, player, ctx):
     p = _payload(req)
-    uuid = p.get('uuid') or ctx.get('uuid')
-    user = state.get_user(uuid)
+    user, uuid = _resolve_user_and_id(p, ctx)
     
     idx = int(p.get('idx', 1) or 1)
     item_info = VARIETY_STORE_CATALOG.get(idx)
@@ -133,12 +138,6 @@ def _check_purchase_eligibility(user, idx):
         pack_ids = {2000 + season_num, 3000 + season_num}
         if any(int(item.get('i_id', 0) or 0) in pack_ids and int(item.get('i_Count', item.get('i_TotalCount', 0)) or 0) > 0 for item in shop_list):
             return False, 'Bạn đã sở hữu gói vật phẩm này rồi!'
-        tickets = user.get('user_ticketcollection', [])
-        if any(int(t.get('i_id', 0) or 0) == (1000 + season_num) for t in tickets):
-            return False, 'Bạn đã sở hữu gói vật phẩm này rồi!'
-        sub_list = user.get('user_subscribe_list', [])
-        if any(int(s.get('i_SubscribeID', 0) or 0) == (1000 + season_num) and int(s.get('i_isActive', 1) or 0) == 1 for s in sub_list):
-            return False, 'Bạn đã sở hữu gói vật phẩm này rồi!'
 
     # Check Table 12 limits (col 35 limit_type, col 36 limit_count)
     try:
@@ -162,8 +161,7 @@ def _check_purchase_eligibility(user, idx):
 @cmd('buyCheck')
 def h_buy_check(req, player, ctx):
     p = _payload(req)
-    uuid = p.get('uuid') or ctx.get('uuid')
-    user = state.get_user(uuid)
+    user, uuid = _resolve_user_and_id(p, ctx)
     idx = p.get('idx')
     if idx is not None and user:
         eligible, err_msg = _check_purchase_eligibility(user, idx)
@@ -175,8 +173,7 @@ def h_buy_check(req, player, ctx):
 @cmd('checkBuyShop')
 def h_check_buy_shop(req, player, ctx):
     p = _payload(req)
-    uuid = p.get('uuid') or ctx.get('uuid')
-    user = state.get_user(uuid)
+    user, uuid = _resolve_user_and_id(p, ctx)
     shop_id = p.get('shop_id')
     try:
         idx = int(shop_id)
@@ -192,8 +189,7 @@ def h_check_buy_shop(req, player, ctx):
 @cmd('buyShop')
 def h_buy_shop(req, player, ctx):
     p = _payload(req)
-    uuid = p.get('uuid') or ctx.get('uuid')
-    user = state.get_user(uuid)
+    user, uuid = _resolve_user_and_id(p, ctx)
     if not user:
         return {}, {'code': 1, 'errmsg': 'User not found'}
 
@@ -389,7 +385,8 @@ def _deduct_currency(uuid, user, currency, price):
         # Package/real-money and malformed catalogue rows must not be charged
         # as Candy by an offline purchase endpoint.
         return False
-    if not state.spend_currency(uuid, currency='cp' if is_cp else 'candy', amount=price):
+    canonical_uuid = uuid or user.get('uuid') or (user.get('userdata') or {}).get('uuid')
+    if not state.spend_currency(canonical_uuid, currency='cp' if is_cp else 'candy', amount=price):
         return False
     ud = user.setdefault('userdata', {})
     if is_cp:
@@ -401,8 +398,7 @@ def _deduct_currency(uuid, user, currency, price):
 @cmd('buyMusic')
 def h_buy_music(req, player, ctx):
     p = _payload(req)
-    uuid = p.get('uuid') or ctx.get('uuid')
-    user = state.get_user(uuid)
+    user, uuid = _resolve_user_and_id(p, ctx)
     
     idx = int(p.get('idx', 1) or 1)
     currency, price = _get_price(2, idx, 45, 39)
@@ -428,8 +424,7 @@ def h_buy_music(req, player, ctx):
 @cmd('buyAvatar')
 def h_buy_avatar(req, player, ctx):
     p = _payload(req)
-    uuid = p.get('uuid') or ctx.get('uuid')
-    user = state.get_user(uuid)
+    user, uuid = _resolve_user_and_id(p, ctx)
     
     idx = p.get('idx', 1)
     currency, price = _get_price(3, idx, 29, 30)
@@ -455,8 +450,7 @@ def h_buy_avatar(req, player, ctx):
 @cmd('buyItem')
 def h_buy_item(req, player, ctx):
     p = _payload(req)
-    uuid = p.get('uuid') or ctx.get('uuid')
-    user = state.get_user(uuid)
+    user, uuid = _resolve_user_and_id(p, ctx)
     
     idx = p.get('idx', 1)
     currency, price = _get_variety_price(idx)
@@ -512,8 +506,7 @@ def _get_upgrade_cost(table_id, item_id, current_level):
 @cmd('buyContents')
 def h_buy_contents(req, player, ctx):
     p = _payload(req)
-    uuid = p.get('uuid') or ctx.get('uuid')
-    user = state.get_user(uuid)
+    user, uuid = _resolve_user_and_id(p, ctx)
     
     ctype = p.get('type', '')
     idx = int(p.get('idx', 1) or 1)

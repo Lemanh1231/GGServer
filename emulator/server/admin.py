@@ -7,7 +7,7 @@ import hashlib
 import secrets
 from server import event_manager
 
-ADMIN_PASSWORD = os.environ.get('GG_ADMIN_PASSWORD', 'Stingdau@1231@@')
+ADMIN_PASSWORD = os.environ.get('GG_ADMIN_PASSWORD', 'admin123')
 _SECRET_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'admin_secret.key')
 _SECRET_KEY = None
 

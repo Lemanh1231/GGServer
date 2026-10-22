@@ -203,6 +203,7 @@ def _reconstruct_user(row):
             except: pass
         lst.append(d)
     ud = data.setdefault('userdata', {})
+    data['uuid'] = row['uuid']
     ud['u_join_type'] = 1
     ud['uuid'] = row['uuid']
     ud['device_uuid'] = row['device_uuid']
@@ -364,7 +365,7 @@ def create_user(uuid, device_uuid, ip=''):
 
 def save_user(user):
     with _LOCK:
-        uuid = user.get('uuid')
+        uuid = user.get('uuid') or (user.get('userdata') or {}).get('uuid')
         if not uuid: return
         ud = user.get('userdata', {})
 
