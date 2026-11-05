@@ -605,7 +605,7 @@ def h_user_login(req, player, ctx):
     return {'user': u_resp}, OK
 
 def _safe_merge_items(existing_items, new_items):
-    """Merge client items into existing items without losing items granted server-side."""
+    """Merge client items into existing items without losing items or levels granted/saved on server."""
     if not isinstance(existing_items, list):
         return new_items if isinstance(new_items, list) else []
     if not isinstance(new_items, list):
@@ -620,7 +620,15 @@ def _safe_merge_items(existing_items, new_items):
         if isinstance(item, dict) and 'i_id' in item:
             iid = int(item['i_id'])
             if iid in merged_map:
+                prev_lvl = int(merged_map[iid].get('i_Level', 1) or 1)
+                prev_bonus = int(merged_map[iid].get('i_BonusLevel', 0) or 0)
+                has_lvl = 'i_Level' in merged_map[iid] or 'i_Level' in item
+                has_bonus = 'i_BonusLevel' in merged_map[iid] or 'i_BonusLevel' in item
                 merged_map[iid].update(item)
+                if has_lvl:
+                    merged_map[iid]['i_Level'] = max(prev_lvl, int(item.get('i_Level', 1) or 1))
+                if has_bonus:
+                    merged_map[iid]['i_BonusLevel'] = max(prev_bonus, int(item.get('i_BonusLevel', 0) or 0))
             else:
                 merged_map[iid] = dict(item)
 
@@ -647,7 +655,7 @@ def h_user_save(req, player, ctx):
             if 'user_music' in p:       user['user_music'] = _safe_merge_items(user.get('user_music', []), p['user_music'])
             if 'user_guitar' in p:      user['user_guitar'] = _safe_merge_items(user.get('user_guitar', []), p['user_guitar'])
             if 'user_follower' in p:
-                user['user_follower'] = p['user_follower']
+                user['user_follower'] = _safe_merge_items(user.get('user_follower', []), p['user_follower'])
                 _sync_follower_profiles_and_rewards(user)
             if 'user_messenger' in p:
                 from server.handlers.follower import _merge_user_messenger

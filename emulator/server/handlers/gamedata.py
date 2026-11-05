@@ -19,11 +19,16 @@ from server import event_manager, dispatch
 from server.handlers.registry import cmd, OK
 
 GAMEDATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'gamedata', 'getGameDataList.b64')
+VARIETY_STORE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'gamedata', 'getVarietyStore.b64')
 
 _BASE_RET = None
 _BASE_SAMSECK = None
+_BASE_VARIETY_STORE = None
 _LOCK = threading.Lock()
-_CACHE = {}  # cache_key -> base64_encoded_response
+_RET_CACHE = {}  # cache_key -> filtered ret dict
+_B64_CACHE = {}  # cache_key -> (timestamp, base64_encoded_response)
+_VARIETY_B64_CACHE = {}  # category -> (timestamp, base64_encoded_response)
+_B64_TTL_SECONDS = 5  # Keep server_time fresh within 5s to prevent client TimeCheat detection
 
 
 def _load_base():
@@ -38,9 +43,22 @@ def _load_base():
     return _BASE_RET, _BASE_SAMSECK
 
 
+def _load_variety_store():
+    global _BASE_VARIETY_STORE
+    if _BASE_VARIETY_STORE is not None:
+        return _BASE_VARIETY_STORE
+    with open(VARIETY_STORE_PATH, 'r', encoding='utf-8') as f:
+        b64 = f.read().strip()
+    decoded, _ = codec.decode_request(b64, 'store.getVarietyStoreReturn')
+    _BASE_VARIETY_STORE = decoded.get('data', [])
+    return _BASE_VARIETY_STORE
+
+
 def invalidate_cache():
     with _LOCK:
-        _CACHE.clear()
+        _RET_CACHE.clear()
+        _B64_CACHE.clear()
+        _VARIETY_B64_CACHE.clear()
 
 
 def build_filtered_ret():
@@ -116,18 +134,43 @@ def get_game_data_list_b64(category='main'):
     sp_enabled = event_manager.is_star_pass_enabled()
     active_season = event_manager.get_active_star_pass_season()
     att_states = tuple(event_manager.is_attendance_event_enabled(k) for k in ('1', '2', '3', '202110', '202111'))
-    cache_key = (mf_enabled, sp_enabled, active_season, att_states, category)
+    now_t = time.localtime()
+    cache_key = (mf_enabled, sp_enabled, active_season, att_states, now_t.tm_mon, category)
+    now_ts = int(time.time())
 
     with _LOCK:
-        if cache_key in _CACHE:
-            return _CACHE[cache_key]
+        cached = _B64_CACHE.get(cache_key)
+        if cached and (now_ts - cached[0]) <= _B64_TTL_SECONDS:
+            return cached[1]
+        ret = _RET_CACHE.get(cache_key)
 
-    ret = build_filtered_ret()
+    if ret is None:
+        ret = build_filtered_ret()
+        with _LOCK:
+            _RET_CACHE[cache_key] = ret
+
     rdto, env = dispatch.build_return('main.getGameDataList', {'ret': ret}, call='getGameDataList', category=category)
     out_b64 = codec.encode_response(rdto, env)
 
     with _LOCK:
-        _CACHE[cache_key] = out_b64
+        _B64_CACHE[cache_key] = (now_ts, out_b64)
+    return out_b64
+
+
+def get_variety_store_b64(category='store'):
+    cat = category or 'store'
+    now_ts = int(time.time())
+    with _LOCK:
+        cached = _VARIETY_B64_CACHE.get(cat)
+        if cached and (now_ts - cached[0]) <= _B64_TTL_SECONDS:
+            return cached[1]
+
+    data_list = _load_variety_store()
+    rdto, env = dispatch.build_return('store.getVarietyStore', data_list, call='getVarietyStore', category=cat)
+    out_b64 = codec.encode_response(rdto, env)
+
+    with _LOCK:
+        _VARIETY_B64_CACHE[cat] = (now_ts, out_b64)
     return out_b64
 
 
@@ -135,3 +178,8 @@ def get_game_data_list_b64(category='main'):
 def h_get_game_data_list(req, player, ctx):
     ret = build_filtered_ret()
     return {'ret': ret}, OK
+
+
+@cmd('getVarietyStore')
+def h_get_variety_store(req, player, ctx):
+    return _load_variety_store(), OK

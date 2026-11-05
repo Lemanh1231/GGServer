@@ -38,14 +38,12 @@ CONFIG = {
 
 # precompiled static responses (verbatim base64 bodies)
 STATIC_RESPONSES = {}
-# NOTE: getPostTime, getEventRewardList, and getGameDataList are intentionally NOT static --
+# NOTE: getPostTime, getEventRewardList, getGameDataList, and getVarietyStore are intentionally NOT static --
 # getPostTime is handled dynamically by handlers/post.py so the client checks
 # for new mailbox rewards and triggers red dot notifications on unread mail.
-# getGameDataList is handled dynamically by handlers/gamedata.py to sync live event toggles (Meowfest, etc.).
-for _name in ('getVarietyStore',):
-    _f = os.path.join(GAMEDATA_DIR, _name + '.b64')
-    if os.path.exists(_f):
-        STATIC_RESPONSES[_name] = open(_f).read().strip()
+# getGameDataList and getVarietyStore are handled dynamically by handlers/gamedata.py
+# so their response envelopes always carry a fresh server_time (preventing client TimeCheat detection)
+# and sync live event toggles (Meowfest, Star Pass, etc.).
 
 # CDN path -> file (the 4 fixed paths the client requests)
 CDN_MAP = {
@@ -832,6 +830,14 @@ class Handler(BaseHTTPRequestHandler):
                                  client_ip, call, event_manager.is_meowfest_enabled(), len(out_b64))
                 _capture(call, {'path': path, 'call': call, 'dynamic': True,
                                 'meowfest': event_manager.is_meowfest_enabled()})
+                self._send(out_b64)
+                return
+
+            if call == 'getVarietyStore':
+                from server.handlers import gamedata
+                out_b64 = gamedata.get_variety_store_b64(category=category or 'store')
+                self.log_message("[%s] %s -> dynamic (%d B)", client_ip, call, len(out_b64))
+                _capture(call, {'path': path, 'call': call, 'dynamic': True})
                 self._send(out_b64)
                 return
 

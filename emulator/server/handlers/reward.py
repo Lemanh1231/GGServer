@@ -165,19 +165,26 @@ def _give_reward(user, rew):
             lst.append({'i_id': rid, 'i_Level': 1, 'i_BonusLevel': 0, 'b_EncoreBonusAppear': 0, 'l_EncoreBonusActivateTime': 0, 'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0})
     elif rtype == 3: # Costume
         lst = user.setdefault('costumes', [])
-        if not any(x.get('i_id') == rid for x in lst): lst.append({'i_id': rid})
+        if not any(int(x.get('i_id', 0) or 0) == rid for x in lst):
+            lst.append({'i_id': rid, 'i_Level': 1, 'i_BonusLevel': 0})
     elif rtype == 4: # Prop
         lst = user.setdefault('user_prop', [{'i_id': 1, 'i_Level': 1}, {'i_id': 2, 'i_Level': 1}])
-        if not any(x.get('i_id') == rid for x in lst): lst.append({'i_id': rid, 'i_Level': 1})
+        if not any(int(x.get('i_id', 0) or 0) == rid for x in lst):
+            lst.append({'i_id': rid, 'i_Level': 1})
     elif rtype == 5: # Follower
         lst = user.setdefault('user_follower', [])
-        if not any(x.get('i_id') == rid for x in lst):
+        if not any(int(x.get('i_id', 0) or 0) == rid for x in lst):
             lst.append({'i_id': rid, 'i_Level': 1, 'i_BonusLevel': 0})
             from server.handlers.follower import _sync_follower_messenger
             _sync_follower_messenger(user)
     elif rtype == 7: # Unit
         lst = user.setdefault('user_unit', [])
-        if not any(x.get('i_id') == rid for x in lst): lst.append({'i_id': rid, 'i_Level': 1})
+        if not any(int(x.get('i_id', 0) or 0) == rid for x in lst):
+            lst.append({'i_id': rid, 'i_Level': 1})
+    elif rtype == 9: # Guitar
+        lst = user.setdefault('user_guitar', [])
+        if not any(int(x.get('i_id', 0) or 0) == rid for x in lst):
+            lst.append({'i_id': rid, 'i_Level': 1, 'i_BonusLevel': 0})
 
 @cmd('setAttendance')
 def h_set_attendance(req, player, ctx):
@@ -246,6 +253,12 @@ def h_get_event_reward_list(req, player, ctx):
         st = _att_state(user, eidx) if user else {'day': 0, 'ymd': 0}
         claimed_day = st.get('day', 0)
         claim_ymd = st.get('ymd', 0)
+        max_day = len(board.get('reward_list', [])) or 7
+        if claimed_day >= max_day and claim_ymd != today:
+            # Wrap board display to a fresh cycle on the day after completing day 7,
+            # matching _claim_day() and h_set_event_reward().
+            claimed_day = 0
+            claim_ymd = 0
         rl = []
         for r in board.get('reward_list', []):
             r2 = dict(r)

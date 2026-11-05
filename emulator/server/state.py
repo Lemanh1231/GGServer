@@ -214,6 +214,7 @@ def _reconstruct_user(row):
     ud['u_like'] = row['u_like']
     ud['u_fans'] = row['u_fans']
     ud['attendance_count'] = row['attendance_count']
+    ud['attendance_date'] = row['attendance_date'] if 'attendance_date' in row.keys() else 0
     user_ip = row['ip'] if ('ip' in row.keys() and row['ip']) else (ud.get('ip') or '')
     ud['ip'] = user_ip
     data['ip'] = user_ip

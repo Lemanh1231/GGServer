@@ -13,12 +13,19 @@ def h_init(req, player, ctx):
 def h_server_time(req, player, ctx):
     return _server_time(), OK
 
+# Fixed master-table revision timestamp (2023-11-14).
+# Must remain > 0 (so a fresh install with local_uptime=0 downloads getGameDataList once)
+# and constant/<= existing local_uptime so RunPatchProcess (0x1d0de34) does NOT enter
+# CoDownloadTableFromServer (State 7) before CoLoadUserTableFromPrefab (State 9).
+# Returning int(time.time()) here forced CoDownloadTableFromServer -> ReqGetVarietyStore ->
+# premature userLogin BEFORE PlayerPrefs were loaded into memory (m_dicData.Count == 0),
+# causing CheckIntegrity (0x204ab0c) to fail and overwrite local PlayerPrefs level-ups
+# with old server data, as well as racing with State 10 RunLogin and hanging at startup.
+GAME_DATA_UPD_TIME = 1700000000
+
 @cmd('getUpdateTime')
 def h_update_time(req, player, ctx):
-    # The client uses this timestamp to validate its clock.  Returning the
-    # old baked-in release timestamp makes it detect a time cheat and locks
-    # time-gated UI such as the day-7 attendance reward.
-    return {'upd_time': int(time.time())}, OK
+    return {'upd_time': GAME_DATA_UPD_TIME}, OK
 
 from server import event_manager
 
