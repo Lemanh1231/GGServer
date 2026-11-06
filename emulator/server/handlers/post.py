@@ -3,6 +3,7 @@ from server import state
 from server.handlers.registry import cmd, OK, _payload
 
 _BROADCAST_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'broadcast_posts.json')
+_SEQ_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'post_seq.json')
 
 def _load_broadcast_posts():
     if not os.path.exists(_BROADCAST_PATH):
@@ -21,6 +22,47 @@ def _save_broadcast_posts(posts):
     except Exception:
         pass
 
+def _next_global_post_idx(broadcasts):
+    """Allocate a strictly monotonic global mail idx across broadcasts, persisted counter, and all users."""
+    max_idx = 100
+    for p in broadcasts:
+        if isinstance(p, dict) and p.get('idx'):
+            max_idx = max(max_idx, int(p['idx']))
+    if os.path.exists(_SEQ_PATH):
+        try:
+            with open(_SEQ_PATH, 'r', encoding='utf-8') as f:
+                seq_data = json.load(f)
+                max_idx = max(max_idx, int(seq_data.get('last_idx', 100) or 100))
+        except Exception:
+            pass
+    try:
+        conn = state.get_db()
+        rows = conn.execute('SELECT user_contents_json FROM user_data').fetchall()
+        conn.close()
+        for r in rows:
+            raw = r['user_contents_json']
+            if not raw:
+                continue
+            try:
+                udata = json.loads(raw)
+            except Exception:
+                continue
+            for p in (udata.get('posts') or []):
+                if isinstance(p, dict) and p.get('idx'):
+                    max_idx = max(max_idx, int(p['idx']))
+            for didx in (udata.get('deleted_post_indices') or []):
+                if isinstance(didx, int) or (isinstance(didx, str) and didx.isdigit()):
+                    max_idx = max(max_idx, int(didx))
+    except Exception:
+        pass
+    next_idx = max_idx + 1
+    try:
+        with open(_SEQ_PATH, 'w', encoding='utf-8') as f:
+            json.dump({'last_idx': next_idx}, f)
+    except Exception:
+        pass
+    return next_idx
+
 def send_post(uuid=None, title='Thông báo', memo='', items=None, notice_type=1, applies_to_new_users=False):
     """Send an in-game post/notification to a specific user or broadcast to all users."""
     now = int(time.time())
@@ -36,66 +78,70 @@ def send_post(uuid=None, title='Thông báo', memo='', items=None, notice_type=1
                 it_dict['already_granted'] = True
             item_list.append(it_dict)
 
-    broadcasts = _load_broadcast_posts()
-    all_indices = [100] + [p.get('idx', 100) for p in broadcasts]
-    target_user = None
-    if uuid and uuid != 'all':
-        target_user = state.get_user(uuid)
-        if not target_user:
-            return None
-        all_indices.extend(p.get('idx', 0) for p in target_user.get('posts', []) if p.get('idx'))
-        all_indices.extend(target_user.get('deleted_post_indices', []))
-
-    next_idx = max(all_indices) + 1
-
     LANGS = ('ko', 'en', 'jp', 'zh_chs', 'zh_cht', 'vi', 'es', 'it', 'id', 'th', 'pt', 'hi')
     title_dict = title if isinstance(title, dict) else {}
     memo_dict = memo if isinstance(memo, dict) else {}
     def_title = title if isinstance(title, str) else title_dict.get('vi', title_dict.get('en', 'Thông báo'))
     def_memo = memo if isinstance(memo, str) else memo_dict.get('vi', memo_dict.get('en', ''))
 
-    post = {
-        'idx': next_idx,
-        'notice_type': notice_type,
-        'have_reward': 1 if item_list else 0,
-        'status': 0,
-        'unlimit_flg': 0,
-        'flg': 0,
-        'create_time': now,
-        'del_time': now + 86400 * 30,
-        'item_list': item_list,
-        'url': '',
-        'image_resource_name': '',
-        'applies_to_new_users': applies_to_new_users,
-    }
-    for lang in LANGS:
-        post[f'title_{lang}'] = title_dict.get(lang, def_title)
-        post[f'memo_{lang}'] = memo_dict.get(lang, def_memo)
+    with state._LOCK:
+        broadcasts = _load_broadcast_posts()
+        target_user = None
+        if uuid and uuid not in ('all', 'null'):
+            target_user = state.get_user(uuid)
+            if not target_user:
+                return None
 
-    if target_user:
-        posts = target_user.setdefault('posts', [])
-        posts.append(post)
-        state.save_user(target_user)
-        return post
-    else:
-        broadcasts.append(post)
-        # Prune expired broadcasts from broadcast_posts.json to keep it clean
-        valid_broadcasts = [
-            b for b in broadcasts
-            if b.get('unlimit_flg') or (b.get('del_time', 0) > now)
-        ]
-        _save_broadcast_posts(valid_broadcasts)
-        conn = state.get_db()
-        rows = conn.execute('SELECT uuid FROM user_data').fetchall()
-        conn.close()
-        for r in rows:
-            u = state.get_user(r['uuid'])
-            if u:
-                posts = u.setdefault('posts', [])
-                if not any(p.get('idx') == next_idx for p in posts):
-                    posts.append(dict(post))
-                    state.save_user(u)
-        return post
+        next_idx = _next_global_post_idx(broadcasts)
+
+        post = {
+            'idx': next_idx,
+            'notice_type': notice_type,
+            'have_reward': 1 if item_list else 0,
+            'status': 0,
+            'unlimit_flg': 0,
+            'flg': 0,
+            'create_time': now,
+            'del_time': now + 86400 * 30,
+            'item_list': item_list,
+            'url': '',
+            'image_resource_name': '',
+            'applies_to_new_users': applies_to_new_users,
+        }
+        for lang in LANGS:
+            post[f'title_{lang}'] = title_dict.get(lang, def_title)
+            post[f'memo_{lang}'] = memo_dict.get(lang, def_memo)
+
+        if target_user:
+            del_indices = target_user.get('deleted_post_indices')
+            if isinstance(del_indices, list) and next_idx in del_indices:
+                del_indices.remove(next_idx)
+            posts = target_user.setdefault('posts', [])
+            posts.append(post)
+            state.save_user(target_user)
+            return post
+        else:
+            broadcasts.append(post)
+            # Prune expired broadcasts from broadcast_posts.json to keep it clean
+            valid_broadcasts = [
+                b for b in broadcasts
+                if b.get('unlimit_flg') or (b.get('del_time', 0) > now)
+            ]
+            _save_broadcast_posts(valid_broadcasts)
+            conn = state.get_db()
+            rows = conn.execute('SELECT uuid FROM user_data').fetchall()
+            conn.close()
+            for r in rows:
+                u = state.get_user(r['uuid'])
+                if u:
+                    del_indices = u.get('deleted_post_indices')
+                    if isinstance(del_indices, list) and next_idx in del_indices:
+                        del_indices.remove(next_idx)
+                    posts = u.setdefault('posts', [])
+                    if not any(p.get('idx') == next_idx for p in posts):
+                        posts.append(dict(post))
+                        state.save_user(u)
+            return post
 
 def _default_welcome_post(now):
     return {
@@ -289,38 +335,46 @@ def h_provide_post(req, player, ctx):
     p = _payload(req)
     uuid = p.get('uuid') or ctx.get('uuid')
     idx = int(p.get('idx', 0) or 0)
-    user = state.get_user(uuid)
+    type_ = int(p.get('type', 0) or 0)
+    claim_all = (idx == 0 or type_ == 1)
     granted_items = []
-    if user:
-        user['welcome_post_sent'] = True
-        posts = _get_user_posts(user)
-        for post in posts:
-            if post.get('idx') == idx:
+    with state._LOCK:
+        user = state.get_user(uuid)
+        if user:
+            db_uuid = user.get('uuid') or uuid
+            posts = _get_user_posts(user)
+            user['welcome_post_sent'] = True
+            ud = user['userdata']
+            like_add = 0.0
+            fans_add = 0
+            any_claimed = False
+            for post in posts:
+                if not claim_all and post.get('idx') != idx:
+                    continue
                 if post.get('have_reward') == 1:
-                    ud = user['userdata']
-                    cp_add = 0
-                    candy_add = 0.0
+                    any_claimed = True
                     for item in post.get('item_list', []):
-                        granted_items.append(item)
+                        granted_items.append({
+                            'i_RewardType': int(item.get('i_RewardType', 1) or 1),
+                            'i_RewardId': int(item.get('i_RewardId', 1) or 1),
+                            'd_RewardQuantity': float(item.get('d_RewardQuantity', 0.0) or 0.0),
+                        })
                         if item.get('already_granted'):
                             continue
-                        rtype = item.get('i_RewardType', 0)
-                        rid = item.get('i_RewardId', 0)
-                        qty = float(item.get('d_RewardQuantity', 0))
+                        rtype = int(item.get('i_RewardType', 0) or 0)
+                        rid = int(item.get('i_RewardId', 0) or 0)
+                        qty = float(item.get('d_RewardQuantity', 0) or 0)
                         if rtype in (1, 11):
                             if rid == 1: # Chocolate (Socola)
-                                cp_add += int(qty)
                                 ud['u_cp'] = int(ud.get('u_cp', 0) or 0) + int(qty)
-
                             elif rid == 2: # Candy (Kẹo)
-                                candy_add += qty
-                                ud['u_candy'] = ud.get('u_candy', 0.0) + qty
+                                ud['u_candy'] = float(ud.get('u_candy', 0.0) or 0.0) + qty
                             elif rid in (3, 4): # Like (Lượt thích)
-                                ud['u_like'] = ud.get('u_like', 0.0) + qty
-                                state.increment_currency(uuid, like=qty)
+                                like_add += qty
+                                ud['u_like'] = float(ud.get('u_like', 0.0) or 0.0) + qty
                             elif rid == 8: # Fans
-                                ud['u_fans'] = ud.get('u_fans', 0) + int(qty)
-                                state.increment_currency(uuid, fans=int(qty))
+                                fans_add += int(qty)
+                                ud['u_fans'] = int(ud.get('u_fans', 0) or 0) + int(qty)
                             elif rid == 11: # Cookie (Bánh quy)
                                 state.add_ap(user, int(qty))
                         elif rtype == 2: # Music
@@ -333,19 +387,21 @@ def h_provide_post(req, player, ctx):
                                 costumes.append({'i_id': rid, 'i_Level': 1, 'i_BonusLevel': 0})
                         elif rtype == 4: # Prop
                             props = user.setdefault('user_prop', [])
-                            if not any(int(p.get('i_id', 0) or 0) == rid for p in props):
+                            if not any(int(pr.get('i_id', 0) or 0) == rid for pr in props):
                                 props.append({'i_id': rid, 'i_Level': 1})
                         elif rtype == 9: # Guitar
                             guitars = user.setdefault('user_guitar', [])
                             if not any(int(g.get('i_id', 0) or 0) == rid for g in guitars):
                                 guitars.append({'i_id': rid, 'i_Level': 1, 'i_BonusLevel': 0})
-                    if uuid and (cp_add or candy_add):
-                        state.increment_currency(uuid, cp=cp_add, candy=candy_add)
                     post['have_reward'] = 0
                     post['status'] = 1
                     post['flg'] = 1
-                    state.save_user(user)
-                break
+                if not claim_all:
+                    break
+            if any_claimed:
+                state.save_user(user)
+                if db_uuid and (like_add or fans_add):
+                    state.increment_currency(db_uuid, like=like_add, fans=fans_add)
     return granted_items, OK
 
 @cmd('readPost')

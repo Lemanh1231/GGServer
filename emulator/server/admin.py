@@ -1080,7 +1080,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
                 </div>
                 <div class="form-group" style="margin-bottom: 10px;">
                     <label class="form-label" data-i18n="mail_lbl_memo">Nội dung thư:</label>
-                    <input type="text" id="mail-memo" value="Chúc bạn chơi game vui vẻ! Hãy nhận quà tặng đặc biệt từ hệ thống nhé." style="width:100%; padding:8px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                    <textarea id="mail-memo" rows="4" style="width:100%; padding:10px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px; font-family:inherit; font-size:0.9rem; line-height:1.5; resize:vertical; outline:none;">Chúc bạn chơi game vui vẻ! Hãy nhận quà tặng đặc biệt từ hệ thống nhé.</textarea>
                 </div>
                 <div style="display:flex; gap:10px; margin-bottom: 14px;">
                     <div style="flex:1;">
@@ -1289,7 +1289,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
                     <label class="form-label" data-i18n="mail_lbl_memo">Nội dung thư:</label>
-                    <input type="text" id="modal-mail-memo" value="Chúc bạn chơi game Guitar Girl thật vui vẻ! Hãy nhận phần quà này nhé." style="width:100%; padding:9px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px;">
+                    <textarea id="modal-mail-memo" rows="4" style="width:100%; padding:10px 12px; background:#121524; border:1px solid var(--card-border); color:#fff; border-radius:8px; font-family:inherit; font-size:0.9rem; line-height:1.5; resize:vertical; outline:none;">Chúc bạn chơi game Guitar Girl thật vui vẻ! Hãy nhận phần quà này nhé.</textarea>
                 </div>
                 <div style="display:flex; gap:10px; margin-bottom: 14px;">
                     <div style="flex:1;">
@@ -2127,6 +2127,9 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
                 const ipBadge = u.ip
                     ? `<span style="display:inline-flex; align-items:center; background:rgba(116, 185, 255, 0.15); color:#74b9ff; border:1px solid rgba(116, 185, 255, 0.35); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:600; margin-left:6px; font-family:monospace;" title="${currentLang === 'en' ? 'Client IP Address' : 'Địa chỉ IP người chơi'}">🌐 ${escapeHtml(u.ip)}</span>`
                     : `<span style="display:inline-flex; align-items:center; background:rgba(255,255,255,0.05); color:#888; border:1px solid rgba(255,255,255,0.1); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:500; margin-left:6px;">🌐 N/A</span>`;
+                const domainBadge = u.last_domain
+                    ? `<span style="display:inline-flex; align-items:center; background:rgba(162, 155, 254, 0.16); color:#a29bfe; border:1px solid rgba(162, 155, 254, 0.38); font-size:0.68rem; padding:1px 6px; border-radius:4px; font-weight:600; margin-left:4px; font-family:monospace;" title="${currentLang === 'en' ? 'Last Connected Domain' : 'Tên miền kết nối gần nhất'}">🔗 ${escapeHtml(u.last_domain)}</span>`
+                    : '';
                 const shortUuid = u.uuid ? (u.uuid.length > 14 ? u.uuid.substring(0, 14) + '...' : u.uuid) : '-';
 
                 html += `
@@ -2136,6 +2139,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
                                 <span>${escapeHtml(u.u_nick)}</span>
                                 ${deviceBadge}
                                 ${ipBadge}
+                                ${domainBadge}
                                 ${banBadge}
                             </div>
                             <div style="font-size: 0.8rem; color: #55efc4; font-weight: 700; margin-top: 3px; display:flex; align-items:center; gap:6px;">
@@ -2457,7 +2461,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
             document.getElementById('modal-uuid').value = u.uuid || '';
             document.getElementById('modal-useq').value = u.u_seq;
             document.getElementById('modal-user-name').innerText = u.u_nick;
-            document.getElementById('modal-user-sub').innerText = `🆔 UID: #${u.u_seq} • ID: ${u.u_id || '-'} • UUID: ${u.uuid || '-'} • 🌐 IP: ${u.ip || 'N/A'}`;
+            document.getElementById('modal-user-sub').innerText = `🆔 UID: #${u.u_seq} • ID: ${u.u_id || '-'} • UUID: ${u.uuid || '-'} • 🌐 IP: ${u.ip || 'N/A'} • 🔗 Domain: ${u.last_domain || 'N/A'}`;
             document.getElementById('modal-user-lastlogin').innerText = (currentLang === 'en' ? '🕒 Last Login: ' : '🕒 Đăng nhập gần nhất: ') + u.u_last_login;
             document.getElementById('modal-is-banned').checked = !!u.is_banned;
 

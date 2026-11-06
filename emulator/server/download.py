@@ -180,6 +180,7 @@ DOWNLOAD_HTML = """<!DOCTYPE html>
 
         <div class="badge-list">
             <span class="badge highlight">🟢 Server Online</span>
+            <span class="badge highlight">🛡️ Tự Chuyển Mạch 4 Tên Miền</span>
             <span class="badge highlight">✨ Đồng Bộ UID Chuẩn (#u_seq)</span>
             <span class="badge">👥 Fix Follower CH1/CH2</span>
             <span class="badge">🚫 Đã tách Google Play</span>
@@ -206,9 +207,10 @@ DOWNLOAD_HTML = """<!DOCTYPE html>
                 <li><strong>Điện thoại Android</strong>: Bấm nút tải ở trên &rarr; Mở file vừa tải để cài đặt (Cho phép cài ứng dụng ngoài nếu máy hỏi) &rarr; Mở game chơi trực tiếp.</li>
                 <li><strong>Giả lập PC (BlueStacks / LDPlayer / Nox)</strong>: Tải file APK về &rarr; Kéo thả trực tiếp file APK vào cửa sổ giả lập để cài đặt.</li>
             </ol>
-            <p style="margin-top: 8px; font-size: 0.8rem; color: #94a3b8;">
-                <em>* Lưu ý: Hãy gỡ bản game cũ trước khi cài đặt bản mới để tránh xung đột chữ ký.</em><br>
-                <em>* Bản vá mới đã đồng bộ hiển thị <strong>UID</strong> (thay cho mã USN cũ) trùng khớp 100% với số thứ tự tài khoản trên Web Admin.</em>
+            <p style="margin-top: 10px; font-size: 0.81rem; color: #cbd5e1; line-height: 1.55;">
+                <span style="color: var(--accent-green); font-weight: 600;">✅ Đang chơi bản của Server này:</span> Cứ mở file APK mới để <strong>cài đè (Cập nhật) trực tiếp</strong> — giữ nguyên 100% tài khoản &amp; dữ liệu đang chơi (không cần gỡ bản cũ).<br>
+                <span style="color: #94a3b8;"><em>* Chỉ cần gỡ cài đặt trước nếu máy đang cài <strong>bản gốc từ Google Play / APKPure</strong> (do khác chữ ký gốc).</em></span><br>
+                <span style="color: #94a3b8;"><em>* Bản mới đã tích hợp tự chuyển mạch dự phòng 4 tên miền &amp; đồng bộ chuẩn <strong>UID</strong> trên Web Admin.</em></span>
             </p>
         </div>
 

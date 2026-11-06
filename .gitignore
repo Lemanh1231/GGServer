@@ -27,6 +27,7 @@ orig_apk/
 
 # Runtime player state and decoded traffic are local-only.
 emulator/captures/
+emulator/post_seq.json
 emulator/data/database.db
 emulator/data/database.db-wal
 emulator/data/database.db-shm
@@ -78,5 +79,6 @@ emulator/test_*.py
 *.png
 *.PNG
 
-# Reverse engineering tools and dumps
-tools/
+# Reverse engineering tools and dumps (keep TUI dashboard.py tracked)
+tools/*
+!tools/dashboard.py

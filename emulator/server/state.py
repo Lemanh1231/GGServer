@@ -10,8 +10,11 @@ _DB_PATH = os.path.join(_DIR, 'database.db')
 _LOCK = threading.RLock()
 
 def get_db():
-    conn = sqlite3.connect(_DB_PATH, check_same_thread=False)
+    conn = sqlite3.connect(_DB_PATH, timeout=10.0, check_same_thread=False)
     conn.row_factory = sqlite3.Row
+    conn.execute('PRAGMA journal_mode=WAL')
+    conn.execute('PRAGMA synchronous=NORMAL')
+    conn.execute('PRAGMA busy_timeout=5000')
     return conn
 
 def _resolve_uuid(conn, ident):
@@ -56,7 +59,8 @@ def init_db():
                 attendance_date INTEGER DEFAULT 0,
                 user_contents_json TEXT,
                 is_banned INTEGER DEFAULT 0,
-                ip TEXT DEFAULT ''
+                ip TEXT DEFAULT '',
+                last_domain TEXT DEFAULT ''
             )
         ''')
         # Automatic Migration
@@ -68,6 +72,12 @@ def init_db():
 
         try:
             conn.execute('ALTER TABLE user_data ADD COLUMN ip TEXT DEFAULT ""')
+            conn.commit()
+        except Exception:
+            pass
+
+        try:
+            conn.execute('ALTER TABLE user_data ADD COLUMN last_domain TEXT DEFAULT ""')
             conn.commit()
         except Exception:
             pass
@@ -462,25 +472,38 @@ def save_user(user):
         conn.commit()
         conn.close()
 
-def update_user_ip(ident, ip):
-    if not ident or not ip:
+def update_user_ip(ident, ip, domain=None):
+    if not ident:
         return
-    ip_str = str(ip).strip()
-    if not ip_str:
+    ip_str = str(ip or '').strip()
+    dom_str = str(domain or '').strip().lower()
+    is_local_dom = (not dom_str) or dom_str in ('127.0.0.1', 'localhost', '::1', 'local')
+    if not ip_str and is_local_dom:
         return
     with _LOCK:
         try:
             conn = get_db()
             ruuid = _resolve_uuid(conn, ident)
             if ruuid:
-                # If ip_str is localhost and user already has a real IP, do not overwrite
-                if ip_str in ('127.0.0.1', 'localhost', '::1'):
-                    row = conn.execute('SELECT ip FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
-                    if row and row['ip']:
-                        conn.close()
-                        return
-                conn.execute('UPDATE user_data SET ip = ? WHERE uuid = ?', (ip_str, ruuid))
-                conn.commit()
+                row = conn.execute('SELECT ip, last_domain FROM user_data WHERE uuid = ?', (ruuid,)).fetchone()
+                cur_ip = (row['ip'] or '') if row else ''
+                cur_dom = (row['last_domain'] or '') if (row and 'last_domain' in row.keys()) else ''
+
+                new_ip = cur_ip
+                if ip_str:
+                    if ip_str not in ('127.0.0.1', 'localhost', '::1') or not cur_ip:
+                        new_ip = ip_str
+
+                new_dom = cur_dom
+                if not is_local_dom:
+                    new_dom = dom_str
+
+                if new_ip != cur_ip or new_dom != cur_dom:
+                    conn.execute(
+                        'UPDATE user_data SET ip = ?, last_domain = ? WHERE uuid = ?',
+                        (new_ip, new_dom, ruuid)
+                    )
+                    conn.commit()
             conn.close()
         except Exception:
             pass

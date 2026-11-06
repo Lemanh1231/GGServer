@@ -93,13 +93,16 @@ class Handler(BaseHTTPRequestHandler):
         path = getattr(self, 'path', '')
         if path in ('/health', '/') or path.startswith('/admin') or str(code) in ('404', '400', '501'):
             return
-        super().log_request(code, size)
+        reqline = getattr(self, 'requestline', '') or f"{getattr(self, 'command', 'GET')} {path}"
+        client_ip = self._get_client_ip()
+        domain = self._get_request_domain()
+        self.log_message('[%s @ %s] "%s" %s %s', client_ip, domain, reqline, str(code), str(size))
 
     def log_message(self, fmt, *a):
         msg = fmt % a
         # Suppress health checks, root pings, admin polling, and scanner probes from log output
-        if any(k in msg for k in ('/health', '"GET / HTTP', '"GET /admin', '"GET /favicon',
-                                  'CONNECT ', '/SDK/', ' 404 -', ' 501 -', ' 400 -')):
+        if any(k in msg for k in ('/health', '"GET / HTTP', '"HEAD / HTTP', '"GET /admin', '"POST /admin',
+                                  '"GET /favicon', 'CONNECT ', '/SDK/', ' 404 -', ' 501 -', ' 400 -')):
             return
         if CONFIG['verbose']:
             now_str = time.strftime('%d/%m/%y %H:%M:%S')
@@ -113,6 +116,49 @@ class Handler(BaseHTTPRequestHandler):
         if self.client_address and len(self.client_address) > 0:
             return str(self.client_address[0]).strip()
         return '127.0.0.1'
+
+    def _get_request_domain(self):
+        hdrs = getattr(self, 'headers', None)
+        if not hdrs:
+            return 'local'
+        raw_host = (hdrs.get('Host') or '').strip()
+        host_only = raw_host.split(':', 1)[0].strip().lower()
+        if host_only.startswith('www.'):
+            host_only = host_only[4:]
+        is_local = (not host_only) or host_only in ('127.0.0.1', 'localhost', '::1')
+        if is_local:
+            active_dom = (hdrs.get('X-GG-Active-Domain') or '').strip().lower()
+            if '://' in active_dom:
+                active_dom = active_dom.split('://', 1)[1]
+            active_dom = active_dom.split('/', 1)[0].split(':', 1)[0].strip()
+            if active_dom.startswith('www.'):
+                active_dom = active_dom[4:]
+            if active_dom:
+                return active_dom
+        return host_only or 'local'
+
+    def _is_failover_apk(self):
+        hdrs = getattr(self, 'headers', None)
+        if not hdrs:
+            return False
+        return bool((hdrs.get('X-GG-Local-Proxy') or '').strip())
+
+    def _capture_req(self, tag, data, is_banned=False):
+        hdrs = getattr(self, 'headers', None)
+        meta = {
+            'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'domain': self._get_request_domain(),
+            'host_header': (hdrs.get('Host') or '').strip() if hdrs else '',
+            'active_domain_header': ((hdrs.get('X-GG-Active-Domain') or '').strip() or None) if hdrs else None,
+            'via_failover_apk': self._is_failover_apk(),
+            'client_ip': self._get_client_ip(),
+        }
+        if isinstance(data, dict):
+            merged = dict(meta)
+            merged.update(data)
+        else:
+            merged = {'meta': meta, 'payload': data}
+        _capture(tag, merged, is_banned=is_banned)
 
     def _send(self, body, code=200, ctype='text/plain; charset=utf-8', headers=None):
         if isinstance(body, str):
@@ -164,12 +210,30 @@ class Handler(BaseHTTPRequestHandler):
             pass
 
     def _base_url(self):
-        # 1) explicit public base (recommended for external/HTTPS-proxy setups)
+        # 0) In-APK Local Failover Gateway support:
+        #    When the new Multi-Domain APK forwards requests via its local loopback router,
+        #    keep game_url/cdn_url pointed at 127.0.0.1:<port> so mid-session failover works seamlessly.
+        local_proxy = (self.headers.get('X-GG-Local-Proxy') or '').strip().rstrip('/')
+        if local_proxy.startswith('http://127.0.0.1:'):
+            port_part = local_proxy.split('http://127.0.0.1:', 1)[1]
+            if port_part.isdigit() and 1024 <= int(port_part) <= 65535:
+                return local_proxy
+        # 1) Multi-domain support (kotori.click, kotorin.click, kotorin.dev, kotorin.me):
+        #    If request arrives with a public domain Host header, return its matching URL.
+        raw_host = (self.headers.get('Host') or '').strip()
+        host_only = raw_host.split(':', 1)[0].strip().lower()
+        is_ip = bool(host_only) and all(p.isdigit() for p in host_only.split('.'))
+        if host_only and not is_ip and host_only not in ('localhost', '::1'):
+            scheme = (self.headers.get('X-Forwarded-Proto') or '').split(',')[0].strip().lower()
+            if not scheme:
+                scheme = 'https' if (isinstance(self.server, _HTTPSMarker) or '.' in host_only) else 'http'
+            return f"{scheme}://{raw_host}"
+        # 2) Explicit public base fallback (for local/IP requests)
         pb = CONFIG['public_base']
         if pb:
             return pb if '://' in pb else ('http://' + pb)
-        # 2) derive from request: honor proxy's X-Forwarded-Proto, else local socket scheme
-        host = self.headers.get('Host', 'localhost')
+        # 3) Derive from request: honor proxy's X-Forwarded-Proto, else local socket scheme
+        host = raw_host or 'localhost'
         scheme = self.headers.get('X-Forwarded-Proto') or \
                  ('https' if isinstance(self.server, _HTTPSMarker) else 'http')
         return f"{scheme}://{host}"
@@ -191,14 +255,16 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(data, 200, ct)
                 return
         if path in ('/download/apk', '/download/' + APK_FILENAME, '/' + APK_FILENAME, '/apk'):
-            self.log_message("DOWNLOAD APK requested: %s", APK_PATH)
+            if self.command != 'HEAD':
+                self.log_message("[%s @ %s] DOWNLOAD APK: %s", self._get_client_ip(), self._get_request_domain(), APK_FILENAME)
             self._send_file(APK_PATH, filename=APK_FILENAME)
             return
         if path.startswith('/download/') or path.endswith('.apk'):
             req_file = os.path.basename(path)
             candidate = os.path.join(OUT_DIR, req_file)
             if os.path.isfile(candidate) and req_file.endswith('.apk'):
-                self.log_message("DOWNLOAD specific APK requested: %s", candidate)
+                if self.command != 'HEAD':
+                    self.log_message("[%s @ %s] DOWNLOAD APK: %s", self._get_client_ip(), self._get_request_domain(), req_file)
                 self._send_file(candidate, filename=req_file)
                 return
         if path in ('/admin', '/admin/'):
@@ -226,7 +292,7 @@ class Handler(BaseHTTPRequestHandler):
             active_season = event_manager.get_active_star_pass_season()
             users_list = []
             conn = state.get_db()
-            rows = conn.execute('SELECT uuid, device_uuid, u_id, u_seq, u_cp, u_candy, u_like, attendance_count, is_banned, ip, user_contents_json FROM user_data ORDER BY u_seq ASC').fetchall()
+            rows = conn.execute('SELECT uuid, device_uuid, u_id, u_seq, u_cp, u_candy, u_like, attendance_count, is_banned, ip, last_domain, user_contents_json FROM user_data ORDER BY u_seq ASC').fetchall()
             f12_rows = conn.execute("SELECT uuid, level FROM user_inventory WHERE item_type = 'follower' AND item_id = 12").fetchall()
             f12_map = {fr['uuid']: int(fr['level'] or 0) for fr in f12_rows}
             conn.close()
@@ -270,6 +336,7 @@ class Handler(BaseHTTPRequestHandler):
                     'u_seq': r['u_seq'],
                     'u_id': r['u_id'],
                     'ip': r['ip'] if ('ip' in r.keys() and r['ip']) else (ud.get('ip') or ''),
+                    'last_domain': r['last_domain'] if ('last_domain' in r.keys() and r['last_domain']) else '',
                     'u_nick': ud.get('u_nick') or r['u_id'] or f"Player {r['u_seq']}",
                     'u_last_login': ud.get('u_last_login') or ud.get('u_last_communication') or 'Chưa có',
                     'u_cp': r['u_cp'],
@@ -298,7 +365,8 @@ class Handler(BaseHTTPRequestHandler):
         if fname:
             fpath = os.path.join(CDN_DIR, fname)
             if os.path.exists(fpath):
-                self.log_message("CDN %s", path)
+                if self.command != 'HEAD':
+                    self.log_message("[%s @ %s] CDN %s", self._get_client_ip(), self._get_request_domain(), path)
                 self._send(open(fpath, 'rb').read(), 200, 'application/octet-stream')
                 return
         self._send(b'', 404, 'application/octet-stream')
@@ -376,7 +444,8 @@ class Handler(BaseHTTPRequestHandler):
                     data = json.loads(body.decode('utf-8'))
                     title = data.get('title') or 'Thông báo Quản trị'
                     memo = data.get('memo') or 'Quản trị viên đã gửi thông báo đến bạn.'
-                    target_uuid = data.get('uuid') or None
+                    raw_target = str(data.get('uuid') or '').strip()
+                    target_uuid = None if raw_target in ('', 'null', 'None', 'all') else raw_target
                     items = []
                     cp = int(data.get('cp', 0) or 0)
                     if cp > 0:
@@ -390,6 +459,11 @@ class Handler(BaseHTTPRequestHandler):
 
                     from server.handlers import post
                     p = post.send_post(uuid=target_uuid, title=title, memo=memo, items=items)
+                    if p is None:
+                        raise ValueError('Không tìm thấy tài khoản người chơi nhận thư!')
+                    self.log_message("[%s @ %s] ADMIN SEND_POST idx=%s target=%s items=%d",
+                                     self._get_client_ip(), self._get_request_domain(),
+                                     p.get('idx'), target_uuid or 'ALL', len(items))
                     resp = {'success': True, 'message': 'Đã gửi thư và quà thành công vào game!', 'post': p}
                     self._send(json.dumps(resp, ensure_ascii=False), 200, 'application/json; charset=utf-8')
                 except Exception as e:
@@ -789,6 +863,7 @@ class Handler(BaseHTTPRequestHandler):
 
             form = multipart.parse(ctype, body)
             client_ip = self._get_client_ip()
+            req_domain = self._get_request_domain()
 
             # --- NeonAPI / PmangPlus auth (JSON) ---
             if path.startswith('/api/') or path.startswith('/accounts/') or path.startswith('/referrer/') or path.startswith('/gcm/') or path.startswith('/app/'):
@@ -797,12 +872,14 @@ class Handler(BaseHTTPRequestHandler):
                     data, ct = res
                     device_cd = form.get('device_cd', '')
                     if device_cd:
-                        state.update_user_ip(device_cd, client_ip)
+                        state.update_user_ip(device_cd, client_ip, domain=req_domain)
                     is_banned = state.is_user_banned(device_cd) if device_cd else False
-                    _capture('auth' + path.replace('/', '_'),
-                             {'path': path, 'form': {k: str(v)[:120] for k, v in form.items()}},
-                             is_banned=is_banned)
-                    self.log_message("[%s] AUTH %s (banned=%s)", client_ip, path, is_banned)
+                    self._capture_req(
+                        'auth' + path.replace('/', '_'),
+                        {'path': path, 'form': {k: str(v)[:120] for k, v in form.items()}},
+                        is_banned=is_banned,
+                    )
+                    self.log_message("[%s @ %s] AUTH %s (banned=%s)", client_ip, req_domain, path, is_banned)
                     self._send(data, 200, ct)
                     return
 
@@ -817,8 +894,8 @@ class Handler(BaseHTTPRequestHandler):
 
             # static precompiled responses (verbatim)
             if call in STATIC_RESPONSES:
-                self.log_message("[%s] %s -> static (%d B)", client_ip, call, len(STATIC_RESPONSES[call]))
-                _capture(call, {'path': path, 'call': call, 'static': True})
+                self.log_message("[%s @ %s] %s -> static (%d B)", client_ip, req_domain, call, len(STATIC_RESPONSES[call]))
+                self._capture_req(call, {'path': path, 'call': call, 'static': True})
                 self._send(STATIC_RESPONSES[call])
                 return
 
@@ -826,18 +903,18 @@ class Handler(BaseHTTPRequestHandler):
             if call == 'getGameDataList':
                 from server.handlers import gamedata
                 out_b64 = gamedata.get_game_data_list_b64(category=category)
-                self.log_message("[%s] %s -> dynamic (meowfest=%s, %d B)",
-                                 client_ip, call, event_manager.is_meowfest_enabled(), len(out_b64))
-                _capture(call, {'path': path, 'call': call, 'dynamic': True,
-                                'meowfest': event_manager.is_meowfest_enabled()})
+                self.log_message("[%s @ %s] %s -> dynamic (meowfest=%s, %d B)",
+                                 client_ip, req_domain, call, event_manager.is_meowfest_enabled(), len(out_b64))
+                self._capture_req(call, {'path': path, 'call': call, 'dynamic': True,
+                                         'meowfest': event_manager.is_meowfest_enabled()})
                 self._send(out_b64)
                 return
 
             if call == 'getVarietyStore':
                 from server.handlers import gamedata
                 out_b64 = gamedata.get_variety_store_b64(category=category or 'store')
-                self.log_message("[%s] %s -> dynamic (%d B)", client_ip, call, len(out_b64))
-                _capture(call, {'path': path, 'call': call, 'dynamic': True})
+                self.log_message("[%s @ %s] %s -> dynamic (%d B)", client_ip, req_domain, call, len(out_b64))
+                self._capture_req(call, {'path': path, 'call': call, 'dynamic': True})
                 self._send(out_b64)
                 return
 
@@ -873,9 +950,9 @@ class Handler(BaseHTTPRequestHandler):
                             u_ident = str(val)
                             break
             if u_ident:
-                state.update_user_ip(u_ident, client_ip)
+                state.update_user_ip(u_ident, client_ip, domain=req_domain)
             elif uuid:
-                state.update_user_ip(uuid, client_ip)
+                state.update_user_ip(uuid, client_ip, domain=req_domain)
 
             if u_ident and state.is_user_banned(u_ident):
                 is_banned = True
@@ -884,12 +961,12 @@ class Handler(BaseHTTPRequestHandler):
                 if not call and not form:
                     self._send('GG emulator OK')
                     return
-                _capture('UNRESOLVED', cap, is_banned=is_banned)
-                self.log_message("[%s] UNRESOLVED call=%s fields=%s", client_ip, call, list(form.keys()))
+                self._capture_req('UNRESOLVED', cap, is_banned=is_banned)
+                self.log_message("[%s @ %s] UNRESOLVED call=%s fields=%s", client_ip, req_domain, call, list(form.keys()))
                 self._send('')
                 return
 
-            ctx = {'game_url': base_url, 'cdn_url': cdn_url, 'uuid': uuid, 'client_ip': client_ip}
+            ctx = {'game_url': base_url, 'cdn_url': cdn_url, 'uuid': uuid, 'client_ip': client_ip, 'domain': req_domain}
 
             # Banned player check
             # DO NOT block bootstrap/system handshake commands (Request, getServerTime, getUpdateTime,
@@ -898,7 +975,7 @@ class Handler(BaseHTTPRequestHandler):
             if cmd_full not in ('main.Request', 'main.getServerTime', 'main.getUpdateTime',
                                 'main.defaultSettingList', 'main.getGameDataList', 'store.getVarietyStore'):
                 if is_banned:
-                    self.log_message("[%s] BANNED USER BLOCKED: %s (cmd=%s)", client_ip, u_ident, cmd_full)
+                    self.log_message("[%s @ %s] BANNED USER BLOCKED: %s (cmd=%s)", client_ip, req_domain, u_ident, cmd_full)
                     error = {
                         'code': 900,
                         'errmsg': 'Tài khoản của bạn đã bị KHÓA (BAN) bởi Quản trị viên!\nVui lòng liên hệ Admin để được hỗ trợ.'
@@ -909,7 +986,7 @@ class Handler(BaseHTTPRequestHandler):
                     cap['response'] = env
                     cap['error'] = error
                     cap['blocked'] = True
-                    _capture('BLOCKED_' + simple, cap, is_banned=True)
+                    self._capture_req('BLOCKED_' + simple, cap, is_banned=True)
                     if rdto:
                         out_b64 = codec.encode_response(rdto, env)
                         self._send(out_b64)
@@ -923,21 +1000,21 @@ class Handler(BaseHTTPRequestHandler):
                                               category=category, error=error)
             if not rdto:
                 cap['error'] = 'no Return DTO'
-                _capture('NORETURN', cap, is_banned=is_banned)
+                self._capture_req('NORETURN', cap, is_banned=is_banned)
                 self._send('')
                 return
 
             out_b64 = codec.encode_response(rdto, env)
             cap['response_dto'] = rdto
             cap['response'] = env
-            _capture(simple, cap, is_banned=is_banned)
-            self.log_message("[%s] %s -> %s (%d B)", client_ip, simple, rdto, len(out_b64))
+            self._capture_req(simple, cap, is_banned=is_banned)
+            self.log_message("[%s @ %s] %s -> %s (%d B)", client_ip, req_domain, simple, rdto, len(out_b64))
             self._send(out_b64)
 
         except Exception as e:
             traceback.print_exc()
-            _capture('ERROR', {'path': self.path, 'error': str(e), 'tb': traceback.format_exc()},
-                     is_banned=is_banned if 'is_banned' in locals() else False)
+            self._capture_req('ERROR', {'path': self.path, 'error': str(e), 'tb': traceback.format_exc()},
+                              is_banned=is_banned if 'is_banned' in locals() else False)
             self._send('', 500)
 
 

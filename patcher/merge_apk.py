@@ -152,11 +152,15 @@ def _read_resource_map(data, off):
 
 
 def patch_manifest_axml(data):
-    """Empty android:requiredSplitTypes and disable PlayGamesInitProvider (android:enabled="false")
+    """Empty android:requiredSplitTypes, repurpose PlayGamesInitProvider into MultiDomainFailoverProviderV1,
+    and enable android:usesCleartextTraffic="true" for the in-APK loopback failover gateway
     in a binary AndroidManifest.xml. Returns (new_bytes, changed_count). Same length as input (in-place edits)."""
     buf = bytearray(data)
     # file header: type(2) headerSize(2) size(4); chunks follow at offset 8
     resmap = []
+    resmap_off = None
+    string_pool_off = None
+    string_pool_size = 0
     strings = []
     empty_raw = empty_data = None   # string-pool index of "" (reused from splitTypes="")
     # First pass over top-level chunks to grab string pool + resource map.
@@ -169,8 +173,11 @@ def patch_manifest_axml(data):
             break
         chunks.append((ctype, p, csize))
         if ctype == RES_STRING_POOL:
+            string_pool_off = p
+            string_pool_size = csize
             strings = _read_string_pool(buf, p)
         elif ctype == RES_XML_RESOURCE_MAP:
+            resmap_off = p
             resmap = _read_resource_map(buf, p)
         p += csize
 
@@ -207,51 +214,54 @@ def patch_manifest_axml(data):
                 continue
             if empty_data is None:
                 raise SystemExit("requiredSplitTypes present but no empty string to point it at")
-            struct.pack_into('<I', buf, ab + 8, empty_raw)             # rawValue -> ""
-            struct.pack_into('<BBI', buf, ab + 15, 0x03, 0, empty_data)  # dataType=STRING, data -> ""
+            if struct.unpack_from('<I', buf, ab + 16)[0] != empty_data:
+                struct.pack_into('<I', buf, ab + 8, empty_raw)             # rawValue -> ""
+                struct.pack_into('<BBI', buf, ab + 15, 0x03, 0, empty_data)  # dataType=STRING, data -> ""
+                changed += 1
+
+    # Pass 3: Repurpose PlayGamesInitProvider (59 chars, initOrder=99) into MultiDomainFailoverProviderV1 (59 chars)
+    # Disables Google Play Games v2 auto-popup AND auto-starts the 4-domain failover gateway before Application.onCreate()!
+    old_prov = 'com.google.android.gms.games.provider.PlayGamesInitProvider'.encode('utf-16-le')
+    new_prov = 'com.kotori.guitargirl.network.MultiDomainFailoverProviderV1'.encode('utf-16-le')
+    assert len(old_prov) == len(new_prov), "provider name length mismatch"
+    if string_pool_off is not None:
+        pool_slice = buf[string_pool_off:string_pool_off + string_pool_size]
+        pos = pool_slice.find(old_prov)
+        if pos >= 0:
+            abs_pos = string_pool_off + pos
+            buf[abs_pos:abs_pos + len(new_prov)] = new_prov
+            strings = _read_string_pool(buf, string_pool_off)
             changed += 1
 
-    # Pass 3: disable Google Play Games v2 PlayGamesInitProvider (android:enabled="false")
-    # This completely disables auto sign-in popup on startup without needing to dismiss Google Play.
-    ID_ENABLED = 0x0101000e
-    ID_INIT_ORDER = 0x0101001a
-    enabled_name_idx = resmap.index(ID_ENABLED) if ID_ENABLED in resmap else None
+    # Pass 3b: Enable android:usesCleartextTraffic="true" (0x010104ec) on <application>
+    # Repurposes redundant fullBackupContent="false" (0x010104eb) while preserving strict ascending resourceId order!
+    ID_FULL_BACKUP_CONTENT    = 0x010104eb
+    ID_USES_CLEARTEXT_TRAFFIC = 0x010104ec
+    if resmap_off is not None and ID_FULL_BACKUP_CONTENT in resmap:
+        fb_idx = resmap.index(ID_FULL_BACKUP_CONTENT)
+        struct.pack_into('<I', buf, resmap_off + 8 + fb_idx * 4, ID_USES_CLEARTEXT_TRAFFIC)
+        resmap[fb_idx] = ID_USES_CLEARTEXT_TRAFFIC
+        changed += 1
 
-    if enabled_name_idx is not None and strings:
+    if ID_USES_CLEARTEXT_TRAFFIC in resmap:
         for ctype, coff, csize in chunks:
             if ctype != RES_XML_START_ELEMENT:
                 continue
             tag_idx = struct.unpack_from('<I', buf, coff + 20)[0]
             tag_name = strings[tag_idx] if tag_idx < len(strings) else ''
-            if tag_name != 'provider':
+            if tag_name != 'application':
                 continue
             attr_start = coff + 16 + struct.unpack_from('<H', buf, coff + 24)[0]
             attr_size  = struct.unpack_from('<H', buf, coff + 26)[0]
             attr_count = struct.unpack_from('<H', buf, coff + 28)[0]
-            is_playgames = False
-            init_order_offset = None
             for i in range(attr_count):
                 ab = attr_start + i * attr_size
                 name_idx = struct.unpack_from('<I', buf, ab + 4)[0]
-                raw_idx = struct.unpack_from('<I', buf, ab + 8)[0]
-                raw_str = strings[raw_idx] if (raw_idx < len(strings) and raw_idx != 0xffffffff) else ''
-                dtype = buf[ab + 15]
-                data_val = struct.unpack_from('<I', buf, ab + 16)[0]
-                data_str = strings[data_val] if (dtype == 0x03 and data_val < len(strings)) else ''
-                res_id = attr_id(name_idx)
-                if 'PlayGamesInitProvider' in raw_str or 'PlayGamesInitProvider' in data_str:
-                    is_playgames = True
-                if res_id == ID_INIT_ORDER:
-                    init_order_offset = ab
-            if is_playgames and init_order_offset is not None:
-                # Replace initOrder attribute with android:enabled="false"
-                # name_idx -> enabled_name_idx
-                struct.pack_into('<I', buf, init_order_offset + 4, enabled_name_idx)
-                # raw_idx -> 0xffffffff
-                struct.pack_into('<I', buf, init_order_offset + 8, 0xffffffff)
-                # typed value: size(2)=8, res0(1)=0, dataType(1)=0x12 (boolean), data(4)=0 (false)
-                struct.pack_into('<HBB I', buf, init_order_offset + 12, 8, 0, 0x12, 0)
-                changed += 1
+                if attr_id(name_idx) == ID_USES_CLEARTEXT_TRAFFIC:
+                    if struct.unpack_from('<I', buf, ab + 16)[0] != 0xffffffff:
+                        struct.pack_into('<I', buf, ab + 8, 0xffffffff)
+                        struct.pack_into('<HBB I', buf, ab + 12, 8, 0, 0x12, 0xffffffff)
+                        changed += 1
 
     # Pass 4: Empty com.google.android.gms.games.APP_ID
     app_id_idx = strings.index('com.google.android.gms.games.APP_ID') if 'com.google.android.gms.games.APP_ID' in strings else None

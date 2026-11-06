@@ -35,12 +35,16 @@ if [ ! -d "$APK_DIR" ] || [ -z "$(ls -A "$APK_DIR" 2>/dev/null)" ]; then
 fi
 
 ARG="$1"
-if [ -n "$ARG" ]; then
+if [ "$ARG" = "--multidomain" ] || [ "$ARG" = "multidomain" ]; then
+  TARGET="http://127.0.0.1:28765"
+elif [ -n "$ARG" ]; then
   if [[ "$ARG" == http://* || "$ARG" == https://* ]]; then
     TARGET="$ARG"
   else
     TARGET="http://$ARG"
   fi
+elif [ "${GG_MULTIDOMAIN:-1}" = "1" ]; then
+  TARGET="http://127.0.0.1:28765"
 elif [ -n "$GG_PUBLIC_BASE" ]; then
   TARGET="$GG_PUBLIC_BASE"
 else

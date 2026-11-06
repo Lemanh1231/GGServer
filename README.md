@@ -1,16 +1,18 @@
 # 🎸 Guitar Girl Private Server Emulator (GGServer)
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
-[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20BlueStacks-3DDC84.svg?logo=android&logoColor=white)](https://developer.android.com/)
+[![Platform](https://img.shields.io/badge/Platform-Android%207.0%2B%20%7C%20BlueStacks-3DDC84.svg?logo=android&logoColor=white)](https://developer.android.com/)
 [![Protocol](https://img.shields.io/badge/Protocol-Apache%20Thrift%20Binary-00599C.svg?logo=apache&logoColor=white)](https://thrift.apache.org/)
-[![License](https://img.shields.io/badge/License-Educational%20%2F%20Preservation-6f42c1.svg)](#-disclaimer--miễn-trừ-trách-nhiệm)
-[![Web Admin](https://img.shields.io/badge/Web%20Admin-English%20%7C%20Tiếng%20Việt-E03E2D.svg)](#-web-admin-dashboard)
+[![Failover](https://img.shields.io/badge/Network-4--Domain%20Active--Passive%20Failover-00b894.svg)](#en-failover)
+[![Web Admin](https://img.shields.io/badge/Web%20Admin-English%20%7C%20Tiếng%20Việt-E03E2D.svg)](#en-admin)
+[![License](https://img.shields.io/badge/License-Educational%20%2F%20Preservation-6f42c1.svg)](#full-legal-disclaimer)
 
 > **Bilingual Documentation / Tài liệu Song ngữ**:  
-> 🇬🇧 **[English Documentation](#-english)** &nbsp;|&nbsp; 🇻🇳 **[Tài liệu Tiếng Việt](#-tiếng-việt)** &nbsp;|&nbsp; ⚖️ **[Disclaimer / Miễn trừ trách nhiệm](#️-disclaimer--miễn-trừ-trách-nhiệm)**
+> 🇬🇧 **[English Documentation](#en)** &nbsp;|&nbsp; 🇻🇳 **[Tài liệu Tiếng Việt](#vi)** &nbsp;|&nbsp; ⚖️ **[Disclaimer / Miễn trừ trách nhiệm](#full-legal-disclaimer)**
 
 ---
 
+<a id="disclaimer"></a>
 ## ⚖️ Disclaimer / Miễn trừ trách nhiệm
 
 > [!IMPORTANT]
@@ -21,7 +23,7 @@
 > - **No Copyrighted Binary Redistribution**: This repository does not distribute copyrighted original APK files or extracted proprietary assets. Users must provide their own legitimately acquired client binaries.
 > - **No Warranty**: Provided on an "AS IS" basis without warranty of any kind.
 >
-> *(See the [full legal disclaimer section](#️-disclaimer--miễn-trừ-trách-nhiệm) at the bottom for comprehensive clauses).*
+> *(See the [full legal disclaimer section](#full-legal-disclaimer) at the bottom for comprehensive clauses).*
 
 > [!IMPORTANT]
 > **Tiếng Việt**: Dự án này được phát triển hoàn toàn vì mục đích **học tập, nghiên cứu kỹ thuật đảo ngược, bảo tồn di sản số và lưu trữ phi thương mại** sau khi trò chơi di động *Guitar Girl* (phiên bản v8.0.0) chính thức đóng cửa (End-of-Service).  
@@ -31,585 +33,460 @@
 > - **Không phân phối tệp bản quyền**: Kho lưu trữ này không phân phối file APK gốc có bản quyền hoặc tài nguyên trích xuất độc quyền. Người dùng cần tự chuẩn bị tệp cài đặt hợp pháp của mình.
 > - **Miễn trừ bảo hành**: Phần mềm được cung cấp "NGUYÊN TRẠNG" (AS IS) mà không có bất kỳ bảo đảm nào.
 >
-> *(Xem [điều khoản miễn trừ trách nhiệm pháp lý chi tiết](#️-disclaimer--miễn-trừ-trách-nhiệm) ở cuối tài liệu).*
+> *(Xem [điều khoản miễn trừ trách nhiệm pháp lý chi tiết](#full-legal-disclaimer) ở cuối tài liệu).*
 
 ---
 
+<a id="en"></a>
 # 🇬🇧 English
 
-A comprehensive private server revival emulator and client patcher suite for the End-of-Service (EOS) mobile game **Guitar Girl** (*v8.0.0* by Neowiz / StickyHands).
+A complete private server revival emulator, multi-domain high-availability client patcher, and live telemetry control suite for the End-of-Service (EOS) mobile game **Guitar Girl** (*v8.0.0* by Neowiz / StickyHands).
 
-The project faithfully reconstructs the game's Apache Thrift Binary RPC protocol, PmangPlus guest authentication, NeonAPI endpoints, static CDN AssetBundle distribution, live event systems, in-game economy engine, and provides a modern bilingual Web Admin Dashboard and CLI management tools.
+GGServer faithfully reconstructs the game's Apache Thrift Binary RPC protocol, PmangPlus Guest authentication, NeonAPI endpoints, CDN AssetBundle delivery, live seasonal events, and BigNumber economy engine—paired with an interactive Dual-Column Terminal UI (`run.sh`), domain-aware packet captures, and a bilingual Web Admin Dashboard (`/admin`).
 
 ---
 
 ### 📑 English Table of Contents
-1. [Key Features](#-key-features)
-2. [Project Architecture](#-project-architecture)
-3. [Prerequisites](#-prerequisites)
-4. [Quick Start Guide](#-quick-start-guide)
-   - [Step 1: Prepare Original APKs](#step-1-prepare-original-apks)
-   - [Step 2: Patch and Build Client APK](#step-2-patch-and-build-client-apk)
-   - [Step 3: Install APK via ADB](#step-3-install-apk-via-adb)
-   - [Step 4: Launch the Emulator Server](#step-4-launch-the-emulator-server)
-5. [Web Admin Dashboard](#-web-admin-dashboard)
-6. [CLI Management Utilities](#-cli-management-utilities)
-7. [Automated Testing Suite](#-automated-testing-suite)
-8. [Technical Documentation](#-technical-documentation)
+1. [Key Features](#en-features)
+2. [Multi-Domain Active-Passive Failover](#en-failover)
+3. [Project Architecture](#en-architecture)
+4. [Prerequisites](#en-prerequisites)
+5. [Quick Start Guide](#en-quickstart)
+6. [Live TUI Control Center & Domain Telemetry](#en-tui)
+7. [Web Admin Dashboard & Download Portal](#en-admin)
+8. [CLI Management Utilities](#en-cli)
+9. [Technical Documentation](#en-docs)
 
 ---
 
+<a id="en-features"></a>
 ### ✨ Key Features
 
-#### 🎮 Full Gameplay Restoration & Bug Fixes
+#### 🎮 Full Gameplay Restoration & Save Protection
 - **All 3 Story Chapters Fully Playable**:
-  - **Chapter 1 (Guitar Girl's Room)**: Unlock and chat with **all 15/15 followers** (Joy, Convenience Store Friend, Homeroom Teacher, Quiet Senior, Moa, Elle, Amber, Yeri, Mocha Latte, Nova, Sua, Jae, etc.), including group chat rooms for Joy & Moa with authentic story triggers.
-  - **Chapter 2 (Sweet Bakery)**: Smooth storyline and chat room progression connecting original followers and 8 new Chapter 2 followers (Reading Fox, Ruby, Alex, Busking TV, Sora, Jessica) across chat rooms 12, 16, and 17.
-  - **Chapter 3 (Sunshine High School)**: Complete Tour mode stages 1001–2010 with authentic Encore gift drop probabilities; fully preserved Moa tutorial intro sequence when first unlocked.
-- **Music Discs System**:
-  - All 50 music discs restored (26 songs in Area 1, 24 songs in Area 2).
-  - Mozart's Piano Sonata (Song 12) event disc correctly labeled and formatted.
-- **BigNumber Currency Engine (`currency.py`)**:
-  - Resolves 64-bit integer overflow (`uint64` / `int64` limit $1.84 \times 10^{19}$) when accounts reach high Heart tiers ($10^{21} = \text{G}, 10^{24} = \text{H} \dots 10^{2109} = \text{ZZ}$).
-  - Fully supports 702 Alphabet units (`A` through `ZZ`) adhering to Unity IL2CPP notation.
-  - Safe mathematical clamping with real-time live preview in Web Admin.
+  - **Chapter 1 (Guitar Girl's Room)**: Unlock and chat with **all 15/15 followers** (Joy, Convenience Store Friend, Homeroom Teacher, Quiet Senior, Moa, Elle, Amber, Yeri, Mocha Latte, Nova, Sua, Jae, etc.), including group chat rooms and authentic story DAG triggers.
+  - **Chapter 2 (Sweet Bakery)**: Seamless storyline and chat progression connecting original followers and 8 Chapter 2 followers (Reading Fox, Ruby, Alex, Busking TV, Sora, Jessica) across chat rooms 12, 16, and 17.
+  - **Chapter 3 (Sunshine High School)**: Complete Tour mode stages `1001–2010` with authentic weighted Encore gift drops and preserved Moa tutorial intro sequence.
+- **Anti-Rollback Level & Save Synchronization**:
+  - Stabilized `getUpdateTime` and refreshed `server_time` handshakes prevent startup hangs or level rollbacks.
+  - Safe two-way `userSave` merging guarantees server-granted items, costumes, guitars, followers, and levels are never overwritten by stale client snapshots.
+- **Music Discs & BigNumber Economy (`currency.py`)**:
+  - All 50 music discs restored (26 in Area 1, 24 in Area 2), including Mozart's Piano Sonata event disc.
+  - Solves 64-bit integer overflow (`> 1.84e19`) across all 702 Unity IL2CPP Alphabet tiers (`A` through `ZZ`, up to $10^{2109}$) with live formatting previews in Web Admin.
 
-#### 🎁 Live Events & Economy
-- **Star Pass (Thẻ Sao)**:
-  - Supports all 13 official seasons (Seasons 1–13) with localized season names and authentic Free/Gold reward tracks.
-  - Full support for purchasing Live Slots in the Star Pass item shop (`item_buy.py` category 20).
-- **Attendance Events**:
-  - 7-Day Novice Attendance and 1st Anniversary Attendance events with hot-reload toggle from Web Admin.
-- **Honkai: Star Rail-Style Mailbox**:
-  - Newly created accounts receive only a clean Welcome Letter without being flooded with expired past broadcast/maintenance letters.
-  - Official multi-language system mail support for all **12 client languages**: `ko`, `en`, `jp`, `zh_chs`, `zh_cht`, `vi`, `es`, `it`, `id`, `th`, `pt`, `hi`.
-- **Joy Follower Quests**:
-  - Immediate reward claims for `#CheerGuitarGirl` quest lines (Chocolates CP, Candies, Likes, AP Cookies).
+#### 🎁 Live Events & Hardened Mailbox
+- **Star Pass (Seasons 1–13)**: Switch between all 13 official localized Star Pass seasons and purchase Live Slots directly in the Star Pass Goods Shop (`item_buy` category 20).
+- **Attendance & Weather Festivals**: 7-Day Novice Attendance, Chapter 2 Attendance, Meowfest, and Snow / Cherry Blossom room weather toggles with hot-reload from Web Admin.
+- **Honkai: Star Rail-Style Mailbox (`post.py`)**:
+  - New accounts receive only a clean Welcome Mail—never flooded with historical broadcasts sent prior to registration.
+  - Strictly monotonic global `idx` allocator (`post_seq.json` + SQLite scan) prevents ID collisions between private admin gifts and server-wide broadcasts.
+  - Full support for **"Claim All" (`type=1` / `idx=0`)** batch claiming and 12 client languages (`ko`, `en`, `jp`, `zh_chs`, `zh_cht`, `vi`, `es`, `it`, `id`, `th`, `pt`, `hi`).
 
-#### 🛠️ Client Patcher & Universal APK (No Google Play)
-- **Rootless Device Support**: Runs seamlessly on BlueStacks (macOS / Windows) and real physical Android devices without requiring root privileges.
-- **Dalvik Bytecode & ARM64 IL2CPP Binary Patching**:
-  - Automatic PmangPlus Guest login bypass (no Google Play Games required).
-  - Automatic Terms of Service / EULA agreement.
-  - Bypasses application signature verification (`AppSecurityValidator`).
-  - Unhides Push Notifications and CP Breakdown toggles in the game Settings menu.
-  - Displays user ID as `UID: #<u_seq>` instead of Google Play USN, matching the server sequence ID.
-- **Split APKs Merger**: Merges `base.apk`, `base_assets.apk`, and `config.arm64_v8a.apk` into a single standalone Universal APK signed with v1/v2/v3 schemes.
-
-#### 🌐 Bilingual Web Admin Dashboard
-- **Instant Language Toggle**: Switch seamlessly between 🇻🇳 **Tiếng Việt** and 🇬🇧 **English** with `localStorage` persistence.
-- **Player Management**: Search players by username or `u_seq`, inspect profiles, and edit Levels, Likes (with BigNumber notation preview), Chocolates CP, Candies, AP Cookies, and Collection Tickets.
-- **Data Integrity Guards**: Automatically disables and warns administrators when modifying Star Pass fields while the global Star Pass feature is turned off.
-- **Live Event Manager**: Toggle attendance events, switch Star Pass seasons (1–13), and broadcast reward-bearing system mail directly to all players.
+#### 🛠️ Standalone Universal APK & In-Place Upgrades
+- **Rootless & Google Play-Free**: Works on physical Android 7.0+ phones and emulators (BlueStacks, LDPlayer, Nox) without root or Google Play Games.
+- **Dalvik & ARM64 IL2CPP Patching**:
+  - Automatic PmangPlus Guest login, automatic EULA acceptance, and `AppSecurityValidator` signature bypass.
+  - Unlocks Push Notification toggles, CP free/paid breakdown in Settings, and Star Pass Live Slot interactive popups.
+  - Synchronizes in-game `UID: #<u_seq>` display (replacing legacy USN) to match Web Admin 100%.
+- **Seamless In-Place Updates**: Consistent `gg.keystore` signing (v1/v2/v3) allows players to install new server APK updates directly on top of existing ones without uninstalling or losing their `device_uuid` / progress.
 
 ---
 
+<a id="en-failover"></a>
+### 🛡️ Multi-Domain Active-Passive Failover
+
+To protect players against regional ISP blocks, DNS failures, or domain outages, the patched APK embeds an in-process loopback HTTP-to-HTTPS gateway (`DomainFailoverGateway` + `MultiDomainFailoverProviderV1` compiled into `classes5.dex`):
+
+1. **Zero Idle Overhead (Sticky Primary / Active-Passive)**:
+   - On launch, the gateway binds locally to `http://127.0.0.1:28765` and routes Unity traffic to **1 active HTTPS domain** (remembering the last healthy domain in `SharedPreferences`).
+   - As long as the active domain responds normally, **zero connections and zero DNS queries** are made to the remaining 3 backup domains.
+2. **Instant Transparent Mid-Session Failover**:
+   - Only when the active domain encounters a network/DNS/TLS failure, timeout, or HTTP `5xx` / `408` / `429` error does the gateway automatically switch to the next configured domain, replay the exact Thrift RPC or CDN AssetBundle request in-flight, and persist the newly promoted healthy domain.
+3. **Dynamic Multi-Domain Server Routing (`app.py`)**:
+   - A single GGServer instance serves any number of SSL domains behind Nginx/Cloudflare simultaneously, dynamically adapting `Host`, `X-Forwarded-Proto`, and `X-GG-Local-Proxy` headers.
+
+---
+
+<a id="en-architecture"></a>
 ### 📂 Project Architecture
 
 ```text
 GGServer/
-├── run.sh                           # Unified Server Control Center (TUI, background daemon, metrics)
+├── run.sh                           # Unified Server Control Center (Detached daemon + Live TUI)
+├── tools/
+│   └── dashboard.py                 # Dual-Column Live TUI Monitor & Domain Telemetry Table
 ├── emulator/                        # Python 3 Private Server Emulator
-│   ├── run.py                       # Main server entrypoint (HTTP + Thrift API)
-│   ├── serverctl.sh                 # Process management script (start/stop/restart/log)
+│   ├── run.py                       # Main server entrypoint (HTTP + Thrift Binary RPC)
+│   ├── serverctl.sh                 # CLI process controller (start/stop/restart/status/log)
 │   ├── eventctl.sh / eventctl.py    # Event manager CLI & broadcast mailer
-│   ├── broadcast_posts.json         # System broadcast mailbox database (12 languages)
-│   ├── event_config.json            # Runtime event configuration & Star Pass state
-│   ├── gamedata/                    # Static game data tables (game_data.json, .b64, .ab)
-│   ├── codec/                       # Apache Thrift Binary RPC encoder/decoder
-│   ├── data/                        # SQLite storage (database.db)
-│   ├── server/                      # Server backend core logic
-│   │   ├── app.py                   # HTTP routing & API dispatching
-│   │   ├── admin.py                 # Bilingual Web Admin Dashboard
-│   │   ├── state.py                 # SQLite persistence & user session management
-│   │   ├── currency.py              # BigNumber currency engine (A..ZZ)
-│   │   ├── event_manager.py         # Star Pass & Attendance event manager
-│   │   └── handlers/                # Thrift RPC handlers (auth, follower, music, post...)
-│   └── test_*.py                    # Automated test suites
-├── patcher/                         # Client APK Patcher Toolchain
-│   ├── build.sh                     # Automated patch and packaging pipeline
-│   ├── merge_apk.py                 # Merges Split APKs into 1 Universal APK
-│   ├── patch_apk.py                 # Applies Dalvik bytecode & ARM64 native patches
-│   ├── patch_metadata.py            # Rewrites server endpoints in global-metadata.dat
-│   └── uber-apk-signer.jar          # Universal APK signing tool (v1, v2, v3)
-├── orig_apk/                        # Original v8.0.0 APK files (user-supplied)
-├── out/                             # Output directory for patched & signed APKs
-├── BUG.md                           # Comprehensive documentation of 39+ technical bug fixes
-├── ANDROID_SETUP.md                 # Setup guide for BlueStacks and Android devices
-├── PROTOCOL.md                      # Apache Thrift RPC reverse engineering specification
+│   ├── broadcast_posts.json         # Multi-language broadcast mailbox store
+│   ├── event_config.json            # Runtime Star Pass, Attendance & Weather configuration
+│   ├── gamedata/                    # Static game data tables & CDN AssetBundles
+│   ├── schema/                      # Extracted Thrift DTO schemas
+│   ├── data/                        # SQLite player database (local-only, gitignored)
+│   ├── captures/                    # Domain-tagged JSON RPC captures (local-only, gitignored)
+│   └── server/                      # Core backend modules
+│       ├── app.py                   # Multi-domain HTTP router, domain logger & packet capturer
+│       ├── admin.py                 # Bilingual Web Admin Dashboard (/admin)
+│       ├── download.py              # Standalone APK Download Landing Page (/download)
+│       ├── state.py                 # Atomic SQLite persistence, IP & domain tracking
+│       ├── currency.py              # BigNumber currency engine (A..ZZ)
+│       ├── event_manager.py         # Live Star Pass & Attendance controller
+│       └── handlers/                # Thrift RPC handlers (auth, follower, music, post, shop...)
+├── patcher/                         # Client APK Patcher & Failover Compiler
+│   ├── build.sh                     # Automated compile, patch, merge & sign pipeline
+│   ├── patch_apk.py                 # Dalvik bytecode, classes5.dex & metadata patcher
+│   ├── merge_apk.py                 # AXML manifest patcher, ARM64 patcher & Split APK merger
+│   ├── patch_metadata.py            # Rewrites API URLs inside global-metadata.dat
+│   ├── classes5.dex                 # Compiled Multi-Domain Failover Gateway DEX
+│   ├── java/                        # Java source for DomainFailoverGateway & ContentProvider
+│   └── uber-apk-signer.jar          # APK v1/v2/v3 signing utility
+├── orig_apk/                        # User-supplied original v8.0.0 split APKs (gitignored)
+├── out/                             # Patched & signed output APKs (gitignored)
+├── BUG.md                           # Detailed analysis of 39+ reverse-engineered bug fixes
+├── ANDROID_SETUP.md                 # Setup guide for BlueStacks & Android devices
+├── PROTOCOL.md                      # Apache Thrift Binary RPC specification
 └── README.md                        # Project documentation (this file)
 ```
 
 ---
 
+<a id="en-prerequisites"></a>
 ### 💻 Prerequisites
 
-- **Operating System**: Linux, macOS, or Windows (WSL2 recommended).
-- **Python**: Version 3.10 or higher.
-- **Java**: OpenJDK 11+ or JRE (required for `uber-apk-signer.jar`).
-- **Android Platform Tools**: `adb` command-line utility for device installation and debugging.
-- **Emulator / Device**: BlueStacks 5 (Nougat 64-bit / Pie 64-bit) or any physical device running Android 7.0+.
+- **OS**: Linux, macOS, or Windows (WSL2 recommended)
+- **Python**: `3.10+`
+- **Java**: OpenJDK `17+` or `21+` (for APK signing and optional `classes5.dex` recompilation)
+- **ADB** *(optional)*: `android-tools-adb` if installing via USB / emulator command line
 
-Install dependencies on Ubuntu / Debian:
 ```bash
 sudo apt update
-sudo apt install -y python3 python3-pip openjdk-17-jre-headless android-tools-adb zip unzip
+sudo apt install -y python3 python3-pip openjdk-21-jdk-headless android-tools-adb zip unzip
 ```
 
 ---
 
+<a id="en-quickstart"></a>
 ### 🚀 Quick Start Guide
 
-#### Step 1: Prepare Original APKs
-Obtain the official v8.0.0 Guitar Girl installation package (as XAPK/APKs from reputable sources). Place the 3 original split APK files into the `orig_apk/` directory:
-- `orig_apk/base_assets.apk`
+#### Step 1: Prepare Original v8.0.0 Split APKs
+Place the 3 original *Guitar Girl v8.0.0* split APKs into `orig_apk/`:
 - `orig_apk/com.neowiz.game.guitargirl.apk`
 - `orig_apk/config.arm64_v8a.apk`
+- `orig_apk/base_assets.apk`
 
-#### Step 2: Patch and Build Client APK
-Choose your server deployment mode:
+#### Step 2: Patch & Build Standalone APK
+Choose the network mode matching your deployment:
 
-##### Option A: Local Network (LAN HTTP)
 ```bash
-# Provide the local server IP (or let the script auto-detect your local IP)
+# Option A (Default): 4-Domain Active-Passive Failover APK (via local 127.0.0.1:28765 gateway)
+bash patcher/build.sh --multidomain
+
+# Option B: Single Public HTTPS Domain
+bash patcher/build.sh https://your-domain.example
+
+# Option C: Local LAN HTTP Server
 bash patcher/build.sh http://192.168.1.50:8080
 ```
 
-##### Option B: Public Internet (HTTPS Reverse Proxy / Cloudflare Tunnel - Recommended)
-When using a domain with a valid SSL certificate, Android connects securely without requiring custom root CA certificates:
-```bash
-bash patcher/build.sh https://your-domain.example
-```
+Output APKs are generated in `out/`:
+- `out/Guitar_Girl_v8.0.0_NoGooglePlay.apk` *(Recommended standalone build)*
+- `out/Guitar_Girl_v8.0.0_Universal.apk`
 
-The script will automatically:
-1. Rewrite API endpoints inside `global-metadata.dat`.
-2. Apply Dalvik bytecode (`classes3.dex`) and ARM64 binary patches (`libil2cpp.so`).
-3. Merge split APKs into a single Universal APK and sign it.
-4. Output ready-to-install APK at: `out/Guitar_Girl_v8.0.0_NoGooglePlay.apk`.
-
-#### Step 3: Install APK via ADB
-Enable **Android Debug Bridge (ADB)** on your emulator (BlueStacks Settings → Advanced) or Android phone (Developer Options → USB Debugging):
+#### Step 3: Launch the Server
+Configure `.env` (optional: `PORT=8080`, `GG_PUBLIC_BASE=https://your-domain.example`, `GG_ADMIN_PASSWORD=your_strong_password`), then launch the unified control center:
 
 ```bash
-# 1. Connect to emulator or device (e.g., BlueStacks port 5555)
-adb connect 127.0.0.1:5555
-
-# 2. Install the Universal APK (always use --no-incremental)
-adb install --no-incremental -r out/Guitar_Girl_v8.0.0_NoGooglePlay.apk
-```
-
-#### Step 4: Launch the Emulator Server
-
-##### Option A: Using the Unified Control Center `run.sh` (Highly Recommended):
-```bash
-# Launch interactive TUI Dashboard & persistent background daemon:
 ./run.sh
-
-# Or manage via CLI commands:
-./run.sh start      # Starts server as detached daemon (survives SSH disconnect)
-./run.sh stop       # Stops running server process
-./run.sh restart    # Restarts server process
-./run.sh status     # Displays status, uptime, PID, resource usage & health
-./run.sh logs       # Live streams filtered server logs
-./run.sh clear      # Cleans database and captures
-./run.sh test       # Runs the complete 106-test automated test suite
 ```
 
-##### Option B: Using the Process Manager (`serverctl.sh`):
+Or manage via non-interactive CLI commands:
 ```bash
-# Start server in the background (default port 8080)
-./emulator/serverctl.sh start
-
-# If running behind a public domain:
-GG_PUBLIC_BASE="https://your-domain.example" ./emulator/serverctl.sh start
-
-# Check status:
-./emulator/serverctl.sh status
-
-# Follow logs in real time:
-./emulator/serverctl.sh log
+./run.sh start      # Start detached background daemon (survives SSH disconnect)
+./run.sh stop       # Gracefully stop server
+./run.sh restart    # Restart server daemon
+./run.sh status     # Display PID, uptime, CPU/RAM & health check
+./run.sh logs       # Tail live filtered server logs ([IP @ domain])
 ```
 
-##### Option C: Or run directly via Python:
-```bash
-python3 emulator/run.py --port 8080
-```
-
-Launch Guitar Girl on your device and enjoy!
+#### Step 4: Install on Android / Emulator
+- **Direct Web Download**: Open `https://your-domain.example/download` on your Android device to download and install/update directly.
+- **Via ADB**:
+  ```bash
+  adb install --no-incremental -r out/Guitar_Girl_v8.0.0_NoGooglePlay.apk
+  ```
 
 ---
 
-### 🖥️ Web Admin Dashboard
+<a id="en-tui"></a>
+### 📊 Live TUI Control Center & Domain Telemetry
 
-Access the administration dashboard in your web browser at:
-```text
-https://your-domain.example/admin
-```
-*(Or `http://127.0.0.1:8080/admin` locally).*
-
-- **Password Protection & Authentication**:
-  - Protected by admin password configured via `GG_ADMIN_PASSWORD` in `.env` or server environment variables.
-  - Cryptographically secure HMAC-SHA256 session token stored in an HttpOnly cookie (`gg_admin_token`, 30-day validity).
-  - All `/admin/api/*` endpoints strictly require authentication, returning `401 Unauthorized` for unauthenticated requests.
-  - Dedicated **🚪 Logout** button to securely clear the session.
-- **Client IP Tracking**:
-  - Automatically captures the player's real public IP address via reverse proxy headers (`X-Real-IP`, `X-Forwarded-For`, `CF-Connecting-IP`).
-  - Stored in the SQLite database and prominently displayed as a **`🌐 <IP>`** badge alongside the player's nickname and device badge.
-- **Bilingual Interface**: Toggle between 🇻🇳 **Tiếng Việt** and 🇬🇧 **English** at any time. Preference is remembered across browser sessions.
-- **Player Inspection & Editing**: Edit Player Level, Chocolates CP, Candies, AP Cookies, Collection Tickets, and Likes (Hearts). The Likes input field features real-time BigNumber preview (e.g., typing `42.877G` instantly previews `42,877,000,000,000,000,000,000`).
-- **Star Pass Safety Lock**: Automatically prevents editing Star Pass levels when Star Pass is disabled server-wide, preventing database inconsistencies.
-- **Live Event Controls**: Hot-reload attendance events, toggle Star Pass seasons 1–13, and dispatch system letters with rewards.
+Running `./run.sh` opens a symmetrical Dual-Column Terminal UI (`tools/dashboard.py`):
+- **Left Panel**: Live Server PID/Uptime/Health, CPU/RAM/Disk progress bars, Active SQLite Players (`UID`, `Lv.GG`, `CP`, `Last Save`), Active Event Status, and Single-Key Shortcuts (`[1-6, f, p, c, q]`).
+- **Right Panel (`LIVE TELEMETRY`)**: Real-time request table displaying:
+  `TIME | GROUP | PLAYER (IP) | DOMAIN | API COMMAND / RESOURCE | RESULT`
+  - Automatically maps client IPs to `guest_XXXXXX` accounts and highlights each connected domain in a distinct color.
+- **Domain-Tagged Captures**: Every decoded packet saved in `emulator/captures/*.json` includes `timestamp`, `domain`, `host_header`, `active_domain_header`, `via_failover_apk`, and `client_ip` at the top of the JSON file.
 
 ---
 
+<a id="en-admin"></a>
+### 🖥️ Web Admin Dashboard & Download Portal
+
+- **Web Admin (`/admin`)**:
+  - Secured with `GG_ADMIN_PASSWORD` and HMAC-SHA256 `HttpOnly` session cookies (`gg_admin_token`).
+  - Instant **🇻🇳 Tiếng Việt / 🇬🇧 English** switch.
+  - Displays player **`🌐 <IP>`** and **`🔗 <Last Connected Domain>`** badges, real device vs. automated test account badges (with 1-click test cleanup), Ban/Unban controls, currency/level editors with BigNumber live preview, Star Pass/Attendance/Weather toggles, and Private or Server-Wide Gift Mailer.
+- **Download Portal (`/download`)**:
+  - Sleek dark-themed landing page serving `Guitar_Girl_v8.0.0_NoGooglePlay.apk` with clear in-place update instructions.
+
+---
+
+<a id="en-cli"></a>
 ### ⌨️ CLI Management Utilities
 
-#### 1. Server Controller (`serverctl.sh`)
 ```bash
-./emulator/serverctl.sh start      # Start emulator in background
-./emulator/serverctl.sh stop       # Gracefully stop emulator
-./emulator/serverctl.sh restart    # Restart emulator
-./emulator/serverctl.sh status     # Check process status, PID, and healthcheck
-./emulator/serverctl.sh log        # Stream server logs (Ctrl+C to exit)
-```
-
-#### 2. Event Controller (`eventctl.sh`)
-```bash
-# List all active events and their statuses
+# Event & Broadcast Mail CLI
 ./emulator/eventctl.sh list
-
-# Switch active Star Pass season (1 to 13)
 ./emulator/eventctl.sh season 13
-
-# Toggle attendance events
-./emulator/eventctl.sh enable 1      # Enable 7-Day Novice Attendance
-./emulator/eventctl.sh disable 2     # Disable 1st Anniversary Attendance
-
-# Broadcast mailbox letter to all players:
-# Syntax: sendmail <title> <body> [cp] [candy] [cookie]
-./emulator/eventctl.sh sendmail "Weekend Gift" "Enjoy your relaxing guitar melodies!" 100 500 10
+./emulator/eventctl.sh sendmail "Weekend Gift" "Enjoy your relaxing guitar melodies!" 500 100 50
 ```
 
 ---
 
-### 🧪 Automated Testing Suite
-
-The repository includes a comprehensive regression testing suite verifying RPC serialization, game economy, follower chat triggers, and Star Pass purchases:
-
-```bash
-# Follower messenger, notification, and recent bug fixes
-PYTHONPATH=emulator python3 -m unittest emulator/test_follower_messenger.py \
-                                       emulator/test_live_slot_purchase.py \
-                                       emulator/test_notification.py \
-                                       emulator/test_starpass_and_anniversary.py \
-                                       emulator/test_user_fixes_four_issues.py
-
-# Attendance, daily missions, and ban behavior
-PYTHONPATH=emulator python3 -m unittest emulator/test_attendance.py \
-                                       emulator/test_ban_behavior.py \
-                                       emulator/test_daily_mission.py \
-                                       emulator/test_event_manager.py
-```
-
----
-
+<a id="en-docs"></a>
 ### 📖 Technical Documentation
-
-For in-depth technical analysis and reverse-engineering findings:
-- 🐞 **[BUG.md](BUG.md)**: Exhaustive documentation of 39+ technical bugs, ARM64 disassembly analysis in `libil2cpp.so`, and solutions.
-- 📱 **[ANDROID_SETUP.md](ANDROID_SETUP.md)**: Step-by-step setup guide for BlueStacks and physical Android devices without root.
-- 📡 **[PROTOCOL.md](PROTOCOL.md)**: Binary protocol specification for Apache Thrift RPC framing and opcode mappings.
+- 🐞 **[BUG.md](BUG.md)**: Deep-dive analysis of 39+ reverse-engineered client/server bugs & `libil2cpp.so` ARM64 patches.
+- 📱 **[ANDROID_SETUP.md](ANDROID_SETUP.md)**: Setup guide for BlueStacks and physical Android devices.
+- 📡 **[PROTOCOL.md](PROTOCOL.md)**: Apache Thrift Binary RPC framing and DTO specification.
 
 ---
 
+<a id="vi"></a>
 # 🇻🇳 Tiếng Việt
 
-Bộ giả lập máy chủ riêng và công cụ vá client hoàn chỉnh dành cho trò chơi di động đã ngừng hoạt động (End-of-Service - EOS) **Guitar Girl** (*Cô gái Guitar*, phiên bản *v8.0.0* của Neowiz / StickyHands).
+Bộ giả lập máy chủ riêng (Private Server), công cụ vá APK tự động chuyển mạch 4 tên miền và trung tâm giám sát Telemetry thời gian thực dành cho tựa game di động đã ngừng phát hành (End-of-Service - EOS) **Guitar Girl** (*Cô gái Guitar*, phiên bản *v8.0.0* của Neowiz / StickyHands).
 
-Dự án tái lập chuẩn xác giao thức RPC nhị phân Apache Thrift, cơ chế xác thực PmangPlus Guest, các endpoint NeonAPI, phân phối AssetBundle qua CDN tĩnh, hệ thống sự kiện thời gian thực, bộ xử lý kinh tế số lớn và cung cấp Bảng điều khiển Quản trị Web song ngữ cùng các công cụ dòng lệnh (CLI).
+Dự án tái tạo trọn vẹn giao thức nhị phân Apache Thrift RPC, xác thực PmangPlus Guest, hệ thống CDN AssetBundle, các sự kiện trực tiếp và bộ xử lý tiền tệ số lớn BigNumber—kết hợp cùng giao diện điều khiển Terminal 2 cột (`run.sh`), hệ thống log/capture gắn nhãn tên miền và trang quản trị Web Admin song ngữ (`/admin`).
 
 ---
 
 ### 📑 Mục lục Tiếng Việt
-1. [Tính năng nổi bật](#-tính-năng-nổi-bật)
-2. [Cấu trúc dự án](#-cấu-trúc-dự-án)
-3. [Yêu cầu hệ thống](#-yêu-cầu-hệ-thống)
-4. [Hướng dẫn cài đặt nhanh](#-hướng-dẫn-cài-đặt-nhanh)
-   - [Bước 1: Chuẩn bị file APK gốc](#bước-1-chuẩn-bị-file-apk-gốc)
-   - [Bước 2: Vá và đóng gói APK](#bước-2-vá-và-đóng-gói-apk)
-   - [Bước 3: Cài đặt lên thiết bị Android qua ADB](#bước-3-cài-đặt-lên-thiết-bị-android-qua-adb-1)
-   - [Bước 4: Khởi chạy máy chủ giả lập](#bước-4-khởi-chạy-máy-chủ-giả-lập)
-5. [Bảng điều khiển Web Admin](#-bảng-điều-khiển-web-admin)
-6. [Công cụ dòng lệnh CLI](#-công-cụ-dòng-lệnh-cli)
-7. [Kiểm thử tự động](#-kiểm-thử-tự-động)
-8. [Tài liệu kỹ thuật liên quan](#-tài-liệu-kỹ-thuật-liên-quan)
+1. [Tính năng nổi bật](#vi-features)
+2. [Cơ chế Tự chuyển mạch 4 Tên miền (Active-Passive Failover)](#vi-failover)
+3. [Cấu trúc dự án](#vi-architecture)
+4. [Yêu cầu hệ thống](#vi-prerequisites)
+5. [Hướng dẫn cài đặt nhanh](#vi-quickstart)
+6. [Bảng điều khiển TUI & Giám sát Tên miền thời gian thực](#vi-tui)
+7. [Web Admin Dashboard & Cổng tải APK](#vi-admin)
+8. [Công cụ dòng lệnh CLI](#vi-cli)
+9. [Tài liệu kỹ thuật liên quan](#vi-docs)
 
 ---
 
+<a id="vi-features"></a>
 ### ✨ Tính năng nổi bật
 
-#### 🎮 Khôi phục gameplay trọn vẹn & Đã sửa lỗi triệt để
-- **Toàn bộ 3 Chương cốt truyện (Full Chapters 1, 2, 3)**:
-  - **Chương 1 (Phòng của Guitar Girl)**: Mở khóa và trò chuyện đầy đủ với **toàn bộ 15/15 người theo dõi** (Joy, Bạn tiệm tiện lợi, Thầy chủ nhiệm, Tiền bối trầm lặng, Moa, Elle, Amber, Yeri, Mocha Latte, Nova, Sua, Jae, v.v.), bao gồm các phòng chat nhóm Joy & Moa với kịch bản chuẩn gốc.
-  - **Chương 2 (Tiệm bánh hạnh phúc)**: Kết nối mượt mà cốt truyện phòng chat giữa người theo dõi cũ và 8 người theo dõi mới (Reading Fox, Ruby, Alex, Busking TV, Sora, Jessica) qua các chuỗi câu chuyện phòng 12, 16, 17.
-  - **Chương 3 (Trường cấp 3 Sunshine)**: Chế độ Tour màn chơi 1001–2010 với tỉ lệ rơi quà biểu diễn (Encore gifts) ngẫu nhiên theo đúng bảng trọng số gốc; bảo toàn trọn vẹn kịch bản hướng dẫn tân thủ (Tutorial) của Moa khi lần đầu mở khóa.
-- **Hệ thống Âm nhạc (Music Discs)**:
-  - Đầy đủ 50 đĩa nhạc (26 bài Khu vực 1, 24 bài Khu vực 2).
-  - Chuẩn hóa hiển thị vật phẩm sự kiện Bản Sonata của Mozart (Song 12) chuẩn dạng "Không thể mua".
-- **Bộ chuyển đổi Số lớn BigNumber (`currency.py`)**:
-  - Khắc phục triệt để lỗi tràn số nguyên 64-bit (`uint64` / `int64` overflow > $1.84 \times 10^{19}$) khi tài khoản đạt số Tim bậc cao ($10^{21} = \text{G}, 10^{24} = \text{H} \dots 10^{2109} = \text{ZZ}$).
-  - Hỗ trợ đầy đủ 702 đơn vị chuẩn Alphabet notation theo IL2CPP Unity (`A` đến `ZZ`).
-  - Kẹp biên an toàn và hiển thị xem trước trực quan (Live Preview) trong Web Admin.
+#### 🎮 Khôi phục trọn vẹn Gameplay & Bảo vệ đồng bộ Save
+- **Đầy đủ 3 Chương cốt truyện (Chapters 1, 2, 3)**:
+  - **Chương 1 (Phòng của Guitar Girl)**: Mở khóa và nhận đủ tin nhắn của **15/15 người theo dõi** (Joy, Bạn tiệm tiện lợi, Thầy chủ nhiệm, Tiền bối trầm lặng, Moa, Elle, Amber, Yeri, Mocha Latte, Nova, Sua, Jae...), bao gồm phòng chat nhóm Joy & Moa đúng chuẩn kịch bản DAG gốc.
+  - **Chương 2 (Tiệm bánh hạnh phúc)**: Đồng bộ mượt mà chuỗi hội thoại giữa người theo dõi cũ và 8 người theo dõi mới (Reading Fox, Ruby, Alex, Busking TV, Sora, Jessica) qua các phòng 12, 16, 17.
+  - **Chương 3 (Trường cấp 3 Sunshine)**: Đầy đủ 20 màn Tour (`1001–2010`) với tỉ lệ rơi quà Encore chuẩn xác và giữ nguyên hướng dẫn tân thủ của Moa.
+- **Bảo vệ chống tụt Level & Treo màn hình khởi động**:
+  - Ổn định mốc `getUpdateTime`, làm mới `server_time` và hợp nhất an toàn hai chiều trong `userSave` giúp không bao giờ mất vật phẩm hoặc bị rollback cấp độ nhân vật/người theo dõi.
+- **50 Đĩa nhạc & Bộ xử lý Số lớn BigNumber (`currency.py`)**:
+  - Khôi phục toàn bộ 50 bản nhạc (26 bài Khu vực 1, 24 bài Khu vực 2).
+  - Xử lý triệt để tràn số nguyên 64-bit (`> 1.84e19`), hỗ trợ đủ 702 bậc đơn vị `A..ZZ` (lên tới $10^{2109}$) kèm khung xem trước trực tiếp trên Web Admin.
 
-#### 🎁 Sự kiện & Kinh tế game cân bằng
-- **Thẻ Sao (Star Pass)**:
-  - Hỗ trợ trọn vẹn 13 Mùa giải (Seasons 1–13) với tên mùa bản địa hóa chính thức, nhận mốc thưởng Free Pass chuẩn xác theo Bảng dữ liệu Neowiz.
-  - Hỗ trợ mua Mở khóa Slot Live trong cửa hàng Thẻ Sao (`item_buy.py` category 20).
-- **Sự kiện Điểm danh (Attendance)**:
-  - Điểm danh tân thủ 7 ngày và Kỷ niệm 1 năm (1st Anniversary) với cơ chế bật/tắt hot-reload tức thì từ Web Admin.
-- **Hòm thư hệ thống chuẩn Honkai: Star Rail**:
-  - Tài khoản mới tạo (tân thủ) chỉ nhận duy nhất Thư chào mừng khởi đầu, hoàn toàn không bị dội lại hàng chục thư sự kiện/bảo trì cũ trong quá khứ.
-  - Hỗ trợ phát hành thư hệ thống đa ngôn ngữ chuẩn xác cho toàn bộ **12 ngôn ngữ client**: `ko`, `en`, `jp`, `zh_chs`, `zh_cht`, `vi`, `es`, `it`, `id`, `th`, `pt`, `hi`.
-- **Nhiệm vụ người theo dõi Joy (Follower Quest)**:
-  - Hỗ trợ chuỗi nhiệm vụ `#ỦnghộGuitarGirl` nhận quà tức thì (Socola CP, Kẹo, Lượt thích, Bánh quy AP).
+#### 🎁 Sự kiện Trực tiếp & Hòm thư chống trùng lặp
+- **Thẻ Sao (Star Pass Mùa 1–13)**: Chuyển đổi linh hoạt cả 13 mùa giải chính thức và hỗ trợ mua Mở khóa Slot Live trực tiếp trong cửa hàng Thẻ Sao (`item_buy` category 20).
+- **Điểm danh & Thời tiết Lễ hội**: Điểm danh 7 ngày (Chương 1 & Chương 2), sự kiện Meowfest, hiệu ứng Tuyết rơi / Hoa anh đào bật tắt tức thì từ Web Admin.
+- **Hòm thư chuẩn Honkai: Star Rail (`post.py`)**:
+  - Tài khoản mới chỉ nhận duy nhất Thư chào mừng, không bị dội lại thư phát sóng cũ trước thời điểm tạo nick.
+  - Bộ cấp phát mã thư `idx` đơn điệu toàn cục (`post_seq.json` + quét toàn bộ SQLite) triệt tiêu hoàn toàn lỗi trùng mã giữa thư riêng và thư toàn server.
+  - Hỗ trợ đầy đủ nút **"Nhận tất cả" (`type=1` / `idx=0`)** và hiển thị trên cả **12 ngôn ngữ** của game.
 
-#### 🛠️ Bộ vá Client & Universal APK (Không cần Google Play)
-- **Hoạt động không cần Root thiết bị**: Thích hợp cho BlueStacks (macOS/Windows) và mọi điện thoại Android thật.
-- **Vá nhị phân Dalvik bytecode & ARM64 IL2CPP**:
-  - Tự động đăng nhập Guest / PmangPlus bypass Google Play Games.
-  - Tự động chấp nhận Điều khoản dịch vụ (EULA).
-  - Vô hiệu hóa kiểm tra chữ ký ứng dụng (`AppSecurityValidator`).
-  - Mở khóa tính năng Thông báo đẩy (Push Notifications) và Thống kê Socola (CP breakdown) trong menu Cài đặt.
-  - Tự động đồng bộ mã định danh `UID: #<u_seq>` chuẩn xác giữa game client và máy chủ, chuyển đổi định dạng `USN` sang `UID`.
-- **Hợp nhất Split APKs**: Tự động gộp `base.apk`, `base_assets.apk`, `config.arm64_v8a.apk` thành một file **Universal APK duy nhất**, ký số chuẩn v1/v2/v3 schemes.
-
-#### 🌐 Web Admin Dashboard Song ngữ
-- **Chuyển đổi ngôn ngữ tức thì**: Hỗ trợ 🇻🇳 **Tiếng Việt** và 🇬🇧 **English**, tự động lưu tùy chọn qua `localStorage`.
-- **Quản lý người chơi trực quan**: Tìm kiếm, xem chi tiết, điều chỉnh Cấp độ, Socola CP, Kẹo, Lượt thích (với thanh Live Preview đơn vị game A..ZZ), Bánh quy AP, Vé sưu tập, Thẻ sao Gold & Điểm thẻ sao.
-- **Ràng buộc an toàn dữ liệu**: Tự động khóa điều khiển Thẻ sao trong modal người chơi khi tính năng Thẻ sao đang tắt trên toàn server, tránh lỗi bất đồng bộ cơ sở dữ liệu.
-- **Bảng điều khiển Sự kiện**: Bật/tắt điểm danh, đổi mùa Thẻ sao (1–13), cấu hình Chapter 3 Tour, gửi thư phát sóng hòm thư trực tiếp kèm quà tặng.
+#### 🛠️ Universal APK Độc lập & Hỗ trợ Cài đè (Update trực tiếp)
+- **Không cần Root, không phụ thuộc Google Play**: Chạy mượt trên mọi điện thoại Android 7.0+ và giả lập PC (BlueStacks, LDPlayer, Nox).
+- **Vá nhị phân Dalvik & ARM64 IL2CPP**:
+  - Tự động đăng nhập Guest, tự chấp nhận điều khoản EULA, bỏ kiểm tra chữ ký `AppSecurityValidator`.
+  - Mở khóa bật/tắt Thông báo đẩy, chi tiết Socola CP trong Cài đặt, và đồng bộ hiển thị **`UID: #<u_seq>`** khớp 100% với Web Admin.
+- **Cài đè giữ nguyên dữ liệu**: Ký số nhất quán bằng khóa riêng (`v1/v2/v3`), cho phép người chơi đang dùng bản của server tải APK mới về **cài đè (Cập nhật) trực tiếp** mà không mất tài khoản `guest_XXXXXX` hay tiến trình chơi.
 
 ---
 
+<a id="vi-failover"></a>
+### 🛡️ Cơ chế Tự chuyển mạch 4 Tên miền (Active-Passive Failover)
+
+Để đảm bảo kết nối xuyên suốt ngay cả khi một tên miền bị chặn DNS, nghẽn mạng hoặc gặp sự cố, bộ vá tích hợp sẵn cổng chuyển mạch nội bộ ngay bên trong tiến trình APK (`DomainFailoverGateway` + `MultiDomainFailoverProviderV1` trong `classes5.dex`):
+
+1. **Chế độ Active-Passive thuần túy (Không gây tải thừa)**:
+   - Khi mở game, gateway lắng nghe cục bộ tại `http://127.0.0.1:28765` và chỉ kết nối tới **1 tên miền HTTPS duy nhất đang hoạt động tốt** (tự động ghi nhớ tên miền khỏe nhất trong `SharedPreferences`).
+   - Khi tên miền hiện tại phản hồi bình thường, **3 tên miền dự phòng hoàn toàn không phát sinh bất kỳ kết nối hay truy vấn DNS nào**.
+2. **Tự động chuyển mạch không gián đoạn phiên chơi**:
+   - Chỉ khi tên miền hiện tại gặp lỗi (chặn DNS, timeout TCP/TLS, hoặc lỗi HTTP `5xx` / `408` / `429`), gateway mới tự động chuyển sang tên miền kế tiếp, phát lại nguyên vẹn gói RPC / AssetBundle đang gửi dở và lưu tên miền mới làm mặc định.
+3. **Định tuyến Đa tên miền trên 1 Server (`app.py`)**:
+   - Một tiến trình GGServer duy nhất phục vụ đồng thời cả 4 tên miền SSL sau Nginx/Cloudflare thông qua nhận diện động `Host`, `X-Forwarded-Proto` và `X-GG-Local-Proxy`.
+
+---
+
+<a id="vi-architecture"></a>
 ### 📂 Cấu trúc dự án
 
 ```text
 GGServer/
-├── run.sh                           # Trung tâm điều khiển máy chủ độc lập (TUI, daemon nền, đo tài nguyên)
-├── emulator/                        # Máy chủ giả lập (Python 3 Server)
-│   ├── run.py                       # Điểm khởi chạy server chính (HTTP + Thrift API)
-│   ├── serverctl.sh                 # Script quản lý tiến trình (start/stop/restart/log)
-│   ├── eventctl.sh / eventctl.py    # CLI điều khiển sự kiện & gửi thư phát sóng
-│   ├── broadcast_posts.json         # Danh sách thư phát sóng hòm thư (12 ngôn ngữ)
-│   ├── event_config.json            # Cấu hình trạng thái sự kiện & Star Pass
-│   ├── gamedata/                    # Bảng dữ liệu tĩnh của game (game_data.json, .b64, .ab)
-│   ├── codec/                       # Bộ mã hóa/giải mã Thrift Binary RPC
-│   ├── data/                        # Cơ sở dữ liệu SQLite (database.db)
-│   ├── server/                      # Core backend logic
-│   │   ├── app.py                   # HTTP routing & API dispatching
-│   │   ├── admin.py                 # Bảng điều khiển Web Admin song ngữ
-│   │   ├── state.py                 # Quản lý trạng thái SQLite & User Session
-│   │   ├── currency.py              # Xử lý số lớn BigNumber (A..ZZ)
-│   │   ├── event_manager.py         # Quản lý sự kiện & Star Pass Seasons
-│   │   └── handlers/                # Các bộ xử lý Thrift RPC (auth, follower, music, post...)
-│   └── test_*.py                    # Bộ kiểm thử tự động (Unit Tests)
-├── patcher/                         # Bộ công cụ vá Client APK
-│   ├── build.sh                     # Script tự động vá và ký số APK
-│   ├── merge_apk.py                 # Hợp nhất Split APKs thành 1 Universal APK
-│   ├── patch_apk.py                 # Áp dụng các bản vá Dalvik bytecode & ARM64 IL2CPP
-│   ├── patch_metadata.py            # Chuyển hướng domain trong global-metadata.dat
-│   └── uber-apk-signer.jar          # Trình ký số APK (v1, v2, v3 schemes)
-├── orig_apk/                        # Thư mục chứa 3 file APK gốc v8.0.0 (người dùng tự chuẩn bị)
-├── out/                             # Thư mục xuất APK thành phẩm đã vá và ký
-├── BUG.md                           # Báo cáo chi tiết 39+ lỗi kỹ thuật & phương án khắc phục
-├── ANDROID_SETUP.md                 # Hướng dẫn chi tiết thiết lập BlueStacks & Android
-├── PROTOCOL.md                      # Phân tích giao thức Apache Thrift của Guitar Girl
-└── README.md                        # Tài liệu hướng dẫn sử dụng này
+├── run.sh                           # Trung tâm điều khiển Server (Chạy ngầm bền bỉ + Bảng TUI 2 cột)
+├── tools/
+│   └── dashboard.py                 # Giao diện TUI 2 cột & Bảng Telemetry giám sát tên miền trực tiếp
+├── emulator/                        # Máy chủ giả lập Python 3
+│   ├── run.py                       # Điểm khởi chạy server chính (HTTP + Thrift Binary RPC)
+│   ├── serverctl.sh                 # Script điều khiển tiến trình (start/stop/restart/status/log)
+│   ├── eventctl.sh / eventctl.py    # Công cụ CLI quản lý sự kiện & gửi thư toàn server
+│   ├── broadcast_posts.json         # Dữ liệu thư phát sóng đa ngôn ngữ
+│   ├── event_config.json            # Cấu hình Star Pass, Điểm danh & Thời tiết
+│   ├── gamedata/                    # Bảng dữ liệu tĩnh & các gói AssetBundle CDN
+│   ├── schema/                      # Đặc tả cấu trúc gói tin Thrift DTO
+│   ├── data/                        # CSDL SQLite lưu tiến trình người chơi (chỉ lưu cục bộ)
+│   ├── captures/                    # Các gói capture JSON kèm tên miền kết nối (chỉ lưu cục bộ)
+│   └── server/                      # Nhân xử lý phía máy chủ
+│       ├── app.py                   # Định tuyến đa tên miền, ghi log [IP @ domain] & capture
+│       ├── admin.py                 # Bảng quản trị Web Admin song ngữ (/admin)
+│       ├── download.py              # Trang tải APK chính thức (/download)
+│       ├── state.py                 # Lưu trữ SQLite nguyên tử, theo dõi IP & tên miền gần nhất
+│       ├── currency.py              # Bộ xử lý tiền tệ số lớn BigNumber (A..ZZ)
+│       ├── event_manager.py         # Quản lý mùa giải Star Pass & Điểm danh
+│       └── handlers/                # Bộ xử lý lệnh RPC (auth, follower, music, post, shop...)
+├── patcher/                         # Bộ công cụ biên dịch & vá Client APK
+│   ├── build.sh                     # Quy trình tự động biên dịch, vá, gộp & ký số APK
+│   ├── patch_apk.py                 # Vá Dalvik bytecode, nhúng classes5.dex & vá metadata
+│   ├── merge_apk.py                 # Vá nhị phân AndroidManifest.xml, libil2cpp.so & gộp Split APK
+│   ├── patch_metadata.py            # Chuyển hướng endpoint trong global-metadata.dat
+│   ├── classes5.dex                 # Bytecode DEX của bộ chuyển mạch 4 tên miền
+│   ├── java/                        # Mã nguồn Java của DomainFailoverGateway & ContentProvider
+│   └── uber-apk-signer.jar          # Công cụ ký số APK chuẩn v1/v2/v3
+├── orig_apk/                        # Thư mục đặt 3 file APK gốc v8.0.0 (người dùng tự chuẩn bị)
+├── out/                             # Thư mục xuất APK thành phẩm (gitignored)
+├── BUG.md                           # Tài liệu phân tích hơn 39 lỗi kỹ thuật & bản vá ARM64
+├── ANDROID_SETUP.md                 # Hướng dẫn cài đặt trên BlueStacks & điện thoại Android
+├── PROTOCOL.md                      # Tài liệu đặc tả giao thức nhị phân Apache Thrift
+└── README.md                        # Tài liệu hướng dẫn dự án (file này)
 ```
 
 ---
 
+<a id="vi-prerequisites"></a>
 ### 💻 Yêu cầu hệ thống
 
-- **Hệ điều hành**: Linux, macOS, hoặc Windows (khuyến nghị dùng WSL2).
-- **Python**: Phiên bản 3.10 trở lên.
-- **Java**: OpenJDK 11+ hoặc JRE (cần thiết để chạy `uber-apk-signer.jar`).
-- **Android Platform Tools**: Công cụ dòng lệnh `adb` để cài đặt và debug trên máy thật hoặc giả lập.
-- **Giả lập / Thiết bị**: BlueStacks 5 (Nougat 64-bit / Pie 64-bit) hoặc bất kỳ thiết bị Android 7.0+ nào (không cần root).
+- **Hệ điều hành**: Linux, macOS, hoặc Windows (khuyến nghị WSL2)
+- **Python**: Phiên bản `3.10` trở lên
+- **Java**: OpenJDK `17+` hoặc `21+` (dùng để ký APK và biên dịch lại `classes5.dex` khi cần)
+- **ADB** *(tùy chọn)*: `android-tools-adb` nếu muốn cài APK qua cáp USB hoặc giả lập
 
-Cài đặt các gói phụ thuộc trên Ubuntu / Debian:
 ```bash
 sudo apt update
-sudo apt install -y python3 python3-pip openjdk-17-jre-headless android-tools-adb zip unzip
+sudo apt install -y python3 python3-pip openjdk-21-jdk-headless android-tools-adb zip unzip
 ```
 
 ---
 
+<a id="vi-quickstart"></a>
 ### 🚀 Hướng dẫn cài đặt nhanh
 
-#### Bước 1: Chuẩn bị file APK gốc
-Tải bản cài đặt Guitar Girl phiên bản **v8.0.0** (dưới dạng XAPK/APKs từ các nguồn uy tín). Đặt 3 file APK thành phần vào thư mục `orig_apk/`:
-- `orig_apk/base_assets.apk`
+#### Bước 1: Chuẩn bị 3 file APK gốc v8.0.0
+Đặt 3 tệp Split APK gốc của *Guitar Girl v8.0.0* vào thư mục `orig_apk/`:
 - `orig_apk/com.neowiz.game.guitargirl.apk`
 - `orig_apk/config.arm64_v8a.apk`
+- `orig_apk/base_assets.apk`
 
-#### Bước 2: Vá và đóng gói APK
-Chọn chế độ kết nối mạng phù hợp:
+#### Bước 2: Đóng gói & Ký số APK
+Chọn chế độ kết nối phù hợp với hạ tầng máy chủ của bạn:
 
-##### Trường hợp A: Mạng nội bộ (LAN HTTP)
 ```bash
-# Nhập IP máy chủ nội bộ (hoặc để script tự động nhận diện IP)
+# Cách A (Mặc định - Khuyên dùng): Đóng gói APK Tự chuyển mạch 4 Tên miền (qua cổng nội bộ 127.0.0.1:28765)
+bash patcher/build.sh --multidomain
+
+# Cách B: Kết nối cố định 1 tên miền HTTPS duy nhất
+bash patcher/build.sh https://your-domain.example
+
+# Cách C: Chạy mạng nội bộ LAN HTTP
 bash patcher/build.sh http://192.168.1.50:8080
 ```
 
-##### Trường hợp B: Chơi qua Internet (Cloudflare Tunnel / HTTPS Reverse Proxy - Khuyến nghị)
-Khi sử dụng tên miền có chứng chỉ SSL hợp lệ, Android kết nối an toàn mà không cần cài thêm chứng chỉ root CA:
-```bash
-bash patcher/build.sh https://your-domain.example
-```
+File APK hoàn chỉnh sẽ được xuất ra tại `out/`:
+- `out/Guitar_Girl_v8.0.0_NoGooglePlay.apk` *(Bản khuyên dùng)*
+- `out/Guitar_Girl_v8.0.0_Universal.apk`
 
-Script sẽ tự động:
-1. Chuyển hướng endpoint sang máy chủ của bạn trong `global-metadata.dat`.
-2. Áp dụng các bản vá bytecode trong `classes3.dex` và native ARM64 trong `libil2cpp.so`.
-3. Hợp nhất các split APKs thành file Universal APK duy nhất và ký số.
-4. File APK hoàn thiện được lưu tại: `out/Guitar_Girl_v8.0.0_NoGooglePlay.apk`.
-
-#### Bước 3: Cài đặt lên thiết bị Android qua ADB
-Bật tính năng **Android Debug Bridge (ADB)** trên BlueStacks (Settings → Advanced) hoặc trên điện thoại thật (Developer Options → USB Debugging):
+#### Bước 3: Khởi chạy Máy chủ Giả lập
+Thiết lập biến môi trường trong `.env` (tùy chọn: `PORT=8080`, `GG_PUBLIC_BASE=https://your-domain.example`, `GG_ADMIN_PASSWORD=mat_khau_quan_tri`), sau đó chạy trung tâm điều khiển:
 
 ```bash
-# 1. Kết nối với thiết bị / giả lập (ví dụ cổng 5555 của BlueStacks)
-adb connect 127.0.0.1:5555
-
-# 2. Cài đặt file Universal APK (luôn sử dụng cờ --no-incremental)
-adb install --no-incremental -r out/Guitar_Girl_v8.0.0_NoGooglePlay.apk
-```
-
-#### Bước 4: Khởi chạy máy chủ giả lập
-
-##### Cách 1: Sử dụng Trung tâm điều khiển `run.sh` (Khuyến nghị hàng đầu):
-```bash
-# Mở bảng điều khiển TUI giám sát tài nguyên thời gian thực & chạy nền bền bỉ:
 ./run.sh
+```
 
-# Hoặc quản lý qua các lệnh CLI nhanh:
-./run.sh start      # Khởi chạy server chạy ngầm độc lập (an toàn ngắt kết nối SSH)
+Hoặc điều khiển nhanh bằng các lệnh CLI:
+```bash
+./run.sh start      # Chạy ngầm độc lập (ngắt kết nối SSH server vẫn hoạt động an toàn)
 ./run.sh stop       # Dừng tiến trình server
 ./run.sh restart    # Khởi động lại server
-./run.sh status     # Hiển thị trạng thái, PID, Uptime, tài nguyên và Healthcheck
-./run.sh logs       # Xem luồng logs trực tiếp (đã lọc sạch rác)
-./run.sh clear      # Xóa sạch Database và Captures về trạng thái ban đầu
-./run.sh test       # Chạy kiểm thử toàn bộ 106 test suites tự động
+./run.sh status     # Xem PID, Uptime, CPU/RAM và trạng thái Health Check
+./run.sh logs       # Theo dõi luồng log trực tiếp kèm nhãn [IP @ tên_miền]
 ```
 
-##### Cách 2: Sử dụng Script Quản lý (`serverctl.sh`):
-```bash
-# Khởi chạy server nền (port mặc định 8080)
-./emulator/serverctl.sh start
-
-# Nếu chạy với Domain công khai:
-GG_PUBLIC_BASE="https://your-domain.example" ./emulator/serverctl.sh start
-
-# Kiểm tra trạng thái:
-./emulator/serverctl.sh status
-
-# Xem log thời gian thực:
-./emulator/serverctl.sh log
-```
-
-##### Cách 3: Hoặc chạy trực tiếp qua Python:
-```bash
-python3 emulator/run.py --port 8080
-```
-
-Khởi động game Guitar Girl trên thiết bị và thưởng thức trọn vẹn những giai điệu êm dịu!
+#### Bước 4: Cài đặt lên Điện thoại / Giả lập
+- **Tải trực tiếp qua Web**: Mở `https://your-domain.example/download` trên điện thoại để tải và cài đặt (hoặc cài đè cập nhật giữ nguyên tài khoản).
+- **Cài qua ADB**:
+  ```bash
+  adb install --no-incremental -r out/Guitar_Girl_v8.0.0_NoGooglePlay.apk
+  ```
 
 ---
 
-### 🖥️ Bảng điều khiển Web Admin
+<a id="vi-tui"></a>
+### 📊 Bảng điều khiển TUI & Giám sát Tên miền thời gian thực
 
-Truy cập bảng điều khiển quản trị trên trình duyệt web tại:
-```text
-https://your-domain.example/admin
-```
-*(Hoặc `http://127.0.0.1:8080/admin` cục bộ).*
-
-- **Bảo mật & Xác thực Mật khẩu**:
-  - Mật khẩu đăng nhập quản trị viên được cấu hình qua biến môi trường `GG_ADMIN_PASSWORD` trong file `.env` hoặc cấu hình máy chủ.
-  - Sử dụng Token Session mã hóa HMAC-SHA256 lưu trong HttpOnly Cookie (`gg_admin_token`, hiệu lực 30 ngày).
-  - Toàn bộ API `/admin/api/*` đều yêu cầu xác thực, trả về `401 Unauthorized` nếu chưa đăng nhập.
-  - Tích hợp nút **🚪 Đăng xuất** trực tiếp trên thanh điều hướng để hủy phiên làm việc.
-- **Theo dõi Địa chỉ IP Người chơi**:
-  - Tự động nhận diện và ghi nhận IP thực của người chơi qua các header proxy (`X-Real-IP`, `X-Forwarded-For`, `CF-Connecting-IP`).
-  - Lưu vào CSDL SQLite và hiển thị huy hiệu **`🌐 <IP>`** màu xanh nổi bật ngay cạnh tên người chơi và trong modal chi tiết.
-- **Chuyển đổi ngôn ngữ tức thì**: Nhấp vào nút `🇻🇳 Tiếng Việt` hoặc `🇬🇧 English` trên thanh tiêu đề. Lựa chọn ngôn ngữ được ghi nhớ tự động qua các phiên duyệt web.
-- **Xem & Chỉnh sửa Người chơi**: Chỉnh sửa Cấp độ, Socola CP, Kẹo, Bánh quy AP, Vé sưu tập và Lượt thích (Tim). Ô nhập Lượt thích hỗ trợ xem trước số lớn BigNumber trực tiếp (ví dụ nhập `42.877G` hiển thị ngay `42,877,000,000,000,000,000,000`).
-- **Khóa an toàn Thẻ Sao**: Tự động khóa trường chỉnh sửa Thẻ Sao khi tính năng Thẻ Sao đang tắt trên server, tránh việc tạo dữ liệu không hợp lệ.
-- **Quản trị Sự kiện thời gian thực**: Bật/tắt điểm danh, chuyển mùa Thẻ Sao từ 1 đến 13 và phát thư hòm thư kèm phần quà cho toàn bộ người chơi.
+Gõ `./run.sh` để mở giao diện giám sát 2 cột đối xứng (`tools/dashboard.py`):
+- **Cột trái**: Trạng thái Server (PID, Uptime, Health Check), thanh tiến trình CPU / RAM / Disk, danh sách Người chơi trực tiếp từ SQLite (`UID`, `Lv.GG`, `CP`, thời gian lưu cuối), trạng thái Sự kiện và bảng Phím tắt nhanh (`[1-6, f, p, c, q]`).
+- **Cột phải (`LIVE TELEMETRY`)**: Bảng nhật ký thời gian thực hiển thị đầy đủ 6 cột:
+  `THỜI GIAN | NHÓM | NGƯỜI CHƠI (IP) | TÊN MIỀN | LỆNH API / TÀI NGUYÊN | KẾT QUẢ`
+  - Tự động ánh xạ IP sang tài khoản `guest_XXXXXX` và tô màu riêng biệt cho từng tên miền kết nối để quản trị viên nhận diện ngay lập tức thiết bị đang đi qua cổng tên miền nào.
+- **Capture gắn nhãn Tên miền**: Mọi gói tin lưu trong `emulator/captures/*.json` đều ghi sẵn `timestamp`, `domain`, `host_header`, `active_domain_header`, `via_failover_apk` và `client_ip` ngay đầu tệp JSON.
 
 ---
 
+<a id="vi-admin"></a>
+### 🖥️ Web Admin Dashboard & Cổng tải APK
+
+- **Trang quản trị Web (`/admin`)**:
+  - Bảo vệ bằng mật khẩu `GG_ADMIN_PASSWORD` và phiên đăng nhập HMAC-SHA256 `HttpOnly` Cookie (`gg_admin_token`).
+  - Hỗ trợ chuyển đổi tức thì **🇻🇳 Tiếng Việt / 🇬🇧 English**.
+  - Hiển thị nhãn **`🌐 <IP>`** và **`🔗 <Tên miền kết nối gần nhất>`** cho từng tài khoản, phân biệt `📱 Máy Thật` / `🧪 Test Auto` (kèm nút dọn tài khoản test 1 chạm), khóa/mở khóa (Ban/Unban) hiển thị thông báo gốc trong game, chỉnh sửa tiền tệ BigNumber có khung xem trước, bật/tắt sự kiện và gửi Thư & Quà riêng hoặc toàn server.
+- **Cổng tải game (`/download`)**:
+  - Trang đích giao diện tối hiện đại phục vụ tải trực tiếp APK kèm hướng dẫn cài đè an toàn không mất dữ liệu.
+
+---
+
+<a id="vi-cli"></a>
 ### ⌨️ Công cụ dòng lệnh CLI
 
-#### 1. Quản lý Server (`serverctl.sh`)
 ```bash
-./emulator/serverctl.sh start      # Khởi chạy server ở chế độ nền
-./emulator/serverctl.sh stop       # Dừng server an toàn
-./emulator/serverctl.sh restart    # Khởi động lại server
-./emulator/serverctl.sh status     # Xem tiến trình PID, cổng lắng nghe & trạng thái Healthcheck
-./emulator/serverctl.sh log        # Xem log hoạt động trực tiếp (Ctrl+C để thoát)
-```
-
-#### 2. Quản lý Sự kiện & Hòm thư (`eventctl.sh`)
-```bash
-# Xem trạng thái hoạt động của toàn bộ sự kiện trong game
+# Quản lý sự kiện & gửi quà hòm thư qua dòng lệnh
 ./emulator/eventctl.sh list
-
-# Chuyển đổi mùa giải Star Pass (từ mùa 1 đến 13)
 ./emulator/eventctl.sh season 13
-
-# Bật hoặc tắt sự kiện điểm danh
-./emulator/eventctl.sh enable 1      # Bật điểm danh tân thủ 7 ngày
-./emulator/eventctl.sh disable 2     # Tắt sự kiện kỷ niệm 1 năm
-
-# Gửi thư thông báo và quà tặng vào hòm thư toàn server:
-# Cú pháp: sendmail <tiêu_đề> <nội_dung> [cp] [kẹo] [bánh_quy]
-./emulator/eventctl.sh sendmail "Quà tặng cuối tuần" "Chúc bạn có những phút giây thư giãn cùng âm nhạc!" 100 500 10
+./emulator/eventctl.sh sendmail "Quà tặng cuối tuần" "Chúc bạn chơi game thư giãn vui vẻ!" 500 100 50
 ```
 
 ---
 
-### 🧪 Kiểm thử tự động
-
-Hệ thống tích hợp bộ unit test toàn diện nhằm bảo đảm độ ổn định cao, ngăn ngừa hồi quy lỗi kinh tế, tiến trình người theo dõi và mua sắm Thẻ Sao:
-
-```bash
-# Chạy kiểm thử tin nhắn người theo dõi, live slot và các lỗi vừa sửa:
-PYTHONPATH=emulator python3 -m unittest emulator/test_follower_messenger.py \
-                                       emulator/test_live_slot_purchase.py \
-                                       emulator/test_notification.py \
-                                       emulator/test_starpass_and_anniversary.py \
-                                       emulator/test_user_fixes_four_issues.py
-
-# Chạy kiểm thử điểm danh, nhiệm vụ hàng ngày và xử lý khóa tài khoản:
-PYTHONPATH=emulator python3 -m unittest emulator/test_attendance.py \
-                                       emulator/test_ban_behavior.py \
-                                       emulator/test_daily_mission.py \
-                                       emulator/test_event_manager.py
-```
-
----
-
+<a id="vi-docs"></a>
 ### 📖 Tài liệu kỹ thuật liên quan
-
-Để tìm hiểu sâu hơn về kiến trúc kỹ thuật và kết quả phân tích đảo ngược:
-- 🐞 **[BUG.md](BUG.md)**: Tổng hợp chi tiết 39+ lỗi kỹ thuật, mã giả lập, phân tích disassembly ARM64 trong `libil2cpp.so` và hướng dẫn khắc phục triệt để.
-- 📱 **[ANDROID_SETUP.md](ANDROID_SETUP.md)**: Hướng dẫn chi tiết thiết lập môi trường chơi game trên BlueStacks và điện thoại Android không cần quyền Root.
-- 📡 **[PROTOCOL.md](PROTOCOL.md)**: Tài liệu đặc tả cấu trúc gói tin nhị phân Apache Thrift RPC, phân giải opcode và tuần tự hóa dữ liệu.
+- 🐞 **[BUG.md](BUG.md)**: Tổng hợp phân tích chuyên sâu hơn 39 lỗi kỹ thuật & bản vá assembly ARM64 trong `libil2cpp.so`.
+- 📱 **[ANDROID_SETUP.md](ANDROID_SETUP.md)**: Hướng dẫn thiết lập môi trường trên BlueStacks và điện thoại Android không cần Root.
+- 📡 **[PROTOCOL.md](PROTOCOL.md)**: Đặc tả giao thức nhị phân Apache Thrift RPC của trò chơi.
 
 ---
 
-## ⚖️ Disclaimer / Miễn trừ trách nhiệm
+<a id="full-legal-disclaimer"></a>
+## 📜 Full Legal Disclaimer / Điều khoản Pháp lý Chi tiết
 
 ### 🇬🇧 English: Comprehensive Legal Disclaimer & Terms of Use
 

@@ -141,53 +141,97 @@ def patch_classes3_dex(dex_bytes, target_url=None):
     return bytes(dex)
 
 
+FAILOVER_LOOPBACK_URL = "http://127.0.0.1:28765"
+FAILOVER_DEX_PATH = os.path.join(HERE, "classes5.dex")
+FAILOVER_JAVA_DIR = os.path.join(HERE, "java", "com", "kotori", "guitargirl", "network")
+
+
+def get_failover_dex():
+    """Compile or load classes5.dex containing the 4-domain Active-Passive failover gateway."""
+    android_jar = "/usr/lib/android-sdk/platforms/android-23/android.jar"
+    if os.path.isdir(FAILOVER_JAVA_DIR) and shutil.which("javac") and shutil.which("dalvik-exchange") and os.path.isfile(android_jar):
+        java_files = [
+            os.path.join(FAILOVER_JAVA_DIR, fn)
+            for fn in sorted(os.listdir(FAILOVER_JAVA_DIR))
+            if fn.endswith(".java")
+        ]
+        if java_files:
+            td = tempfile.mkdtemp()
+            try:
+                subprocess.run(
+                    ["javac", "-Xlint:-options", "-source", "8", "-target", "8",
+                     "-bootclasspath", android_jar, "-d", td, *java_files],
+                    check=True,
+                )
+                subprocess.run(
+                    ["dalvik-exchange", "--dex", f"--output={FAILOVER_DEX_PATH}", td],
+                    check=True,
+                )
+            finally:
+                shutil.rmtree(td, ignore_errors=True)
+    if not os.path.isfile(FAILOVER_DEX_PATH):
+        raise SystemExit(f"Missing {FAILOVER_DEX_PATH} (and javac/dalvik-exchange unavailable to build it)")
+    with open(FAILOVER_DEX_PATH, "rb") as f:
+        return f.read()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--apk-dir', required=True, help="dir with the 3 split apks")
-    ap.add_argument('--target', required=True, help="local base url e.g. http://192.168.1.50:8080")
+    ap.add_argument('--target', default=FAILOVER_LOOPBACK_URL,
+                    help="base url (default: http://127.0.0.1:28765 for 4-domain failover)")
+    ap.add_argument('--multidomain', action='store_true',
+                    help="route traffic via in-APK 4-domain Active-Passive failover gateway")
     ap.add_argument('--out', required=True)
     ap.add_argument('--ks', default=os.path.join(HERE, 'gg.keystore'))
     ap.add_argument('--no-sign', action='store_true')
     a = ap.parse_args()
 
+    if a.multidomain or a.target in ('multidomain', 'auto', ''):
+        a.target = FAILOVER_LOOPBACK_URL
+
     os.makedirs(a.out, exist_ok=True)
     # 1) extract + patch metadata
     base_in = os.path.join(a.apk_dir, 'base_assets.apk')
     base_out = os.path.join(a.out, 'base_assets.apk')
-    print(f"[1/3] copying base_assets.apk -> {base_out}")
+    print(f"[1/4] copying base_assets.apk -> {base_out}")
     shutil.copy2(base_in, base_out)
     with zipfile.ZipFile(base_in) as z:
         meta = z.read(META_ENTRY)
-    print(f"[1/3] patching metadata URLs -> {a.target}")
+    print(f"[1/4] patching metadata URLs -> {a.target}")
     patched, rep = patch_metadata.patch(meta, a.target)
     if not rep:
         raise SystemExit("no URLs patched; aborting")
     for url, new, mode, ol, nl in rep:
         print(f"        [{mode:7}] {url} -> {new}")
     if len(patched) == len(meta):
-        print(f"[1/3] size unchanged -> overwriting STORED entry in place (CRC fixed)")
+        print(f"[1/4] size unchanged -> overwriting STORED entry in place (CRC fixed)")
         overwrite_stored_entry(base_out, META_ENTRY, bytes(patched))
     else:
-        print(f"[1/3] size changed ({len(meta)} -> {len(patched)}) -> rebuilding zip entry")
+        print(f"[1/4] size changed ({len(meta)} -> {len(patched)}) -> rebuilding zip entry")
         replace_entry_grow(base_out, META_ENTRY, bytes(patched))
 
-    # 2) patch AndroidManifest.xml & classes3.dex in com.neowiz.game.guitargirl.apk (disabling Google Play Games)
+    # 2) patch AndroidManifest.xml, classes3.dex & inject classes5.dex in com.neowiz.game.guitargirl.apk
+    failover_dex = get_failover_dex()
     main_in = os.path.join(a.apk_dir, 'com.neowiz.game.guitargirl.apk')
     main_out = os.path.join(a.out, 'com.neowiz.game.guitargirl.apk')
-    print(f"[2/4] patching AndroidManifest.xml & classes3.dex in com.neowiz.game.guitargirl.apk (disabling Google Play Games)")
+    print(f"[2/4] patching AndroidManifest.xml, classes3.dex & injecting classes5.dex ({len(failover_dex)} B, 4-domain failover)")
     with zipfile.ZipFile(main_in) as zb:
         manifest = zb.read('AndroidManifest.xml')
         patched_manifest, n = merge_apk.patch_manifest_axml(manifest)
         temp_main = main_out + '.tmp'
         with zipfile.ZipFile(temp_main, 'w') as zo:
             for zi in zb.infolist():
-                if zi.filename == 'AndroidManifest.xml' or zi.filename.startswith('META-INF/'):
+                if zi.filename in ('AndroidManifest.xml', 'classes5.dex') or zi.filename.startswith('META-INF/'):
                     continue
                 if zi.filename == 'classes3.dex':
                     dex_data = patch_classes3_dex(zb.read(zi.filename), a.target)
                     zo.writestr(zi, dex_data, compress_type=zi.compress_type)
                     continue
                 zo.writestr(zi, zb.read(zi.filename), compress_type=zi.compress_type)
+            dex5_info = zipfile.ZipInfo('classes5.dex')
+            dex5_info.compress_type = zipfile.ZIP_DEFLATED
+            zo.writestr(dex5_info, failover_dex)
             mi = zipfile.ZipInfo('AndroidManifest.xml')
             mi.compress_type = zipfile.ZIP_DEFLATED
             zo.writestr(mi, patched_manifest)
