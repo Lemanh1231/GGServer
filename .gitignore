@@ -33,6 +33,9 @@ emulator/data/database.db-wal
 emulator/data/database.db-shm
 emulator/data/database.db.bak*
 emulator/data/database.db.backup*
+# Final Python archive: never publish local player state or private runtime files.
+emulator/data/
+emulator/database.db*
 
 # Backup & temporary files
 *.bak

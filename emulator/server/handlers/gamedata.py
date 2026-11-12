@@ -125,6 +125,26 @@ def build_filtered_ret():
         filtered_subscribes.append(sub_copy)
     ret['SubscribeList'] = filtered_subscribes
 
+    # 4. FollowerQuest (Surprise Events):
+    # Since Buff ID 4 (Guitar Girl Premium) disables all ads globally, any sub-mission whose
+    # condition type is 'ADViewCount' (Watch Ads) has its target threshold set to 0.0 so the
+    # client's ResetFollowerQuest (0x1E2D83C) after next_flg == 1 still allows immediate claiming,
+    # while all non-ad sub-missions (TapCount, SkillUseCount, GetADChocoCount, GetADLikeCount, etc.)
+    # keep their original targets.
+    orig_fq = base_ret.get('followerquest', [])
+    if orig_fq:
+        filtered_fq = []
+        for fq in orig_fq:
+            fq_copy = dict(fq)
+            if fq_copy.get('s_ConditionType1') == 'ADViewCount':
+                fq_copy['d_Condition1_1'] = 0.0
+            if fq_copy.get('s_ConditionType2') == 'ADViewCount':
+                fq_copy['d_Condition2_1'] = 0.0
+            if fq_copy.get('s_ConditionType3') == 'ADViewCount':
+                fq_copy['d_Condition3_1'] = 0.0
+            filtered_fq.append(fq_copy)
+        ret['followerquest'] = filtered_fq
+
     return ret
 
 

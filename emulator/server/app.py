@@ -996,6 +996,15 @@ class Handler(BaseHTTPRequestHandler):
 
             simple = codec.SCHEMA[cmd_full]['name']
             ret_data, error = handlers.handle(simple, req_named, ctx)
+            if error and error.get('code', 0) != 0 and error.get('errmsg') and u_ident:
+                try:
+                    u_err_obj = state.get_user(u_ident)
+                    u_seq_val = (u_err_obj.get('userdata') or {}).get('u_seq') if u_err_obj else None
+                    if u_seq_val and str(u_seq_val) not in str(error['errmsg']):
+                        error = dict(error)
+                        error['errmsg'] = f"{error['errmsg']}\n[UID Database: {u_seq_val}]"
+                except Exception:
+                    pass
             rdto, env = dispatch.build_return(cmd_full, ret_data, call=simple,
                                               category=category, error=error)
             if not rdto:

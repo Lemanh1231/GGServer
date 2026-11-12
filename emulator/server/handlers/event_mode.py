@@ -29,40 +29,53 @@ def h_get_samseck_list(req, player, ctx):
 
 @cmd('getSamSeckReward')
 def h_get_samseck_reward(req, player, ctx):
-    # Claim milestone i_id. Claimed milestones are tracked in the single I16 user field
-    # u_samseck_step as a BITMASK (bit i_id-1) -- the slots are claimed independently.
+    # Claim milestone i_id (1..3).
+    # In the Unity client (GgUISamSaekEventSlot.UpdateState at 0x22C5140),
+    # u_samseck_step is a SEQUENTIAL progress counter (0 -> 1 -> 2 -> 3):
+    #   u_samseck_step + 1 > i_id  => Completed
+    #   u_samseck_step + 1 == i_id => Active / Claimable
+    #   u_samseck_step + 1 < i_id  => Locked
     if not event_manager.is_meowfest_enabled():
         return {'step': 0}, {'code': 1, 'errmsg': 'Meowfest event is closed'}
     p = _payload(req)
     uuid = p.get('uuid') or ctx.get('uuid')
     i_id = int(p.get('i_id', 0) or 0)
-    bit = (1 << (i_id - 1)) if 1 <= i_id <= 15 else 0
     user = state.get_user(uuid) if uuid else None
     if not user:
-        return {'step': bit}, OK
+        return {'step': max(0, min(3, i_id))}, OK
     ud = user['userdata']
-    step = (int(ud.get('u_samseck_step', 0) or 0) | bit) & 0x7FFF
+    cur_step = int(ud.get('u_samseck_step', 0) or 0)
+    if cur_step > 3:
+        cur_step = 3
+    step = max(cur_step, i_id) if 1 <= i_id <= 3 else cur_step
     ud['u_samseck_step'] = step
 
-    # Grant milestone rewards directly to player inventory
-    if i_id == 1:
+    claimed = user.setdefault('claimed_samseck', [])
+
+    # Grant milestone rewards directly to player inventory (once per milestone)
+    if i_id == 1 and 1 not in claimed:
+        claimed.append(1)
         # Step 1: Guitar 10 (Calico Cat Scratcher / 삼색이 스크래쳐)
         guitars = user.setdefault('user_guitar', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}])
         if not any(int(g.get('i_id', 0) or 0) == 10 for g in guitars):
             guitars.append({'i_id': 10, 'i_Level': 1, 'i_BonusLevel': 0})
-    elif i_id == 2:
+    elif i_id == 2 and 2 not in claimed:
+        claimed.append(2)
         # Step 2: Costume 13 (Calico Cat Overalls / 삼색이 멜빵 바지)
         costumes = user.setdefault('costumes', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}])
         if not any(int(c.get('i_id', 0) or 0) == 13 for c in costumes):
             costumes.append({'i_id': 13, 'i_Level': 1, 'i_BonusLevel': 0})
-    elif i_id == 3:
+    elif i_id == 3 and 3 not in claimed:
+        claimed.append(3)
         # Step 3: Unit 1 (Calico Cat Navi / 삼색이)
+        # Since unlocking Calico Cat Navi is required to complete Step 3, if the player
+        # already owns Unit 1, add +1 level to its current level (up to max level 20).
         units = user.setdefault('user_unit', [])
         unit1 = next((u for u in units if int(u.get('i_id', 0) or 0) == 1), None)
         if not unit1:
             units.append({'i_id': 1, 'i_Level': 1})
         else:
-            unit1['i_Level'] = int(unit1.get('i_Level', 1) or 1) + 1
+            unit1['i_Level'] = min(20, int(unit1.get('i_Level', 1) or 1) + 1)
 
     state.save_user(user)
     return {'step': step}, OK

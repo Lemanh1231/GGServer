@@ -389,6 +389,20 @@ def h_provide_post(req, player, ctx):
                             props = user.setdefault('user_prop', [])
                             if not any(int(pr.get('i_id', 0) or 0) == rid for pr in props):
                                 props.append({'i_id': rid, 'i_Level': 1})
+                        elif rtype == 5: # Follower
+                            followers = user.setdefault('user_follower', [])
+                            if not any(int(f.get('i_id', 0) or 0) == rid for f in followers):
+                                followers.append({'i_id': rid, 'i_Level': 1, 'i_BonusLevel': 0})
+                                from server.handlers.follower import _sync_follower_messenger
+                                _sync_follower_messenger(user)
+                        elif rtype == 7: # Unit / Mate (e.g. Calico Cat Navi)
+                            units = user.setdefault('user_unit', [])
+                            u_item = next((u for u in units if int(u.get('i_id', 0) or 0) == rid), None)
+                            add_lvl = max(1, int(qty or 1))
+                            if u_item:
+                                u_item['i_Level'] = min(20, int(u_item.get('i_Level', 1) or 1) + add_lvl)
+                            else:
+                                units.append({'i_id': rid, 'i_Level': min(20, add_lvl)})
                         elif rtype == 9: # Guitar
                             guitars = user.setdefault('user_guitar', [])
                             if not any(int(g.get('i_id', 0) or 0) == rid for g in guitars):

@@ -197,6 +197,9 @@ def _reconstruct_user(row):
         'shop': 'user_shop'
     }
     
+    for jkey in key_map.values():
+        data[jkey] = []
+
     for item in items:
         jkey = key_map.get(item['item_type'])
         if not jkey: continue
@@ -263,8 +266,14 @@ def get_user(uuid):
         conn = get_db()
         row = conn.execute('SELECT * FROM user_data WHERE uuid = ?', (uuid,)).fetchone()
         if not row:
+            seq_cand = -1
+            u_str = str(uuid).strip()
+            if u_str.isdigit():
+                seq_cand = int(u_str)
+            elif u_str.startswith('guest_') and u_str[6:].isdigit():
+                seq_cand = int(u_str[6:])
             row = conn.execute('SELECT * FROM user_data WHERE device_uuid = ? OR u_id = ? OR u_seq = ?', 
-                               (uuid, uuid, uuid if str(uuid).isdigit() else -1)).fetchone()
+                               (uuid, uuid, seq_cand)).fetchone()
 
         if row:
             user = _reconstruct_user(row)

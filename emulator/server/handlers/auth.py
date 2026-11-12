@@ -162,13 +162,14 @@ def _active_buffs(user):
     buffs = []
     for buff in user.get('user_buff', []):
         try:
-            if int(buff.get('i_EndTime', 0) or 0) <= now:
+            end_t = int(buff.get('i_EndTime', buff.get('i_ExpiredTime', 0)) or 0)
+            if end_t <= now:
                 continue
             buffs.append({
                 'i_id': int(buff.get('i_id', 0) or 0),
                 'i_Level': max(1, int(buff.get('i_Level', 1) or 1)),
                 'i_ActiveTime': int(buff.get('i_ActiveTime', now) or now),
-                'i_EndTime': int(buff['i_EndTime']),
+                'i_EndTime': end_t,
             })
         except (TypeError, ValueError):
             continue
@@ -352,9 +353,10 @@ def _normalise_ticketcollection(user):
 
 def _sync_follower_profiles_and_rewards(user):
     """Ensure all owned followers have corresponding profiles with valid cumulative EXP, unlocked information milestones, and chat rooms."""
-    from server.handlers.follower import _sync_follower_profiles, _sync_follower_messenger
+    from server.handlers.follower import _sync_follower_profiles, _sync_follower_messenger, _normalise_user_follower_quest
     _sync_follower_profiles(user)
     _sync_follower_messenger(user)
+    _normalise_user_follower_quest(user)
 
 def _user_contents(user):
     # Do not expose skills before their character-level gates.  The game-data
@@ -395,19 +397,34 @@ def _user_contents(user):
     _sync_follower_profiles_and_rewards(user)
     profiles = user.get('user_follower_profile', [])
 
-    # Ensure Meowfest / SamSeck event rewards are granted if claimed in u_samseck_step
+    # Ensure Meowfest / SamSeck event rewards are granted if claimed in u_samseck_step (sequential 1..3)
     samseck_step = int(user.get('userdata', {}).get('u_samseck_step', 0) or 0)
-    if samseck_step & 1:
+    if samseck_step > 3:
+        samseck_step = 3
+        user.setdefault('userdata', {})['u_samseck_step'] = 3
+    claimed_samseck = user.setdefault('claimed_samseck', [])
+    if samseck_step >= 1:
+        if 1 not in claimed_samseck:
+            claimed_samseck.append(1)
         guitars = user.setdefault('user_guitar', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}])
         if not any(int(g.get('i_id', 0) or 0) == 10 for g in guitars):
             guitars.append({'i_id': 10, 'i_Level': 1, 'i_BonusLevel': 0})
-    if samseck_step & 2:
+    if samseck_step >= 2:
+        if 2 not in claimed_samseck:
+            claimed_samseck.append(2)
         costumes = user.setdefault('costumes', [{'i_id': 1, 'i_Level': 1, 'i_BonusLevel': 0}])
         if not any(int(c.get('i_id', 0) or 0) == 13 for c in costumes):
             costumes.append({'i_id': 13, 'i_Level': 1, 'i_BonusLevel': 0})
-    if samseck_step & 4:
+    if samseck_step >= 3:
         units = user.setdefault('user_unit', [])
-        if not any(int(u.get('i_id', 0) or 0) == 1 for u in units):
+        unit1 = next((u for u in units if int(u.get('i_id', 0) or 0) == 1), None)
+        if 3 not in claimed_samseck:
+            claimed_samseck.append(3)
+            if unit1:
+                unit1['i_Level'] = min(20, int(unit1.get('i_Level', 1) or 1) + 1)
+            else:
+                units.append({'i_id': 1, 'i_Level': 1})
+        elif not unit1:
             units.append({'i_id': 1, 'i_Level': 1})
 
     ch3_stages = user.get('user_ch_third_stage') or user.get('user_chthird_stage') or []
@@ -438,6 +455,10 @@ def _user_contents(user):
             'i_EncoreBonusFollowerId': 0, 'i_ChThirdActiveTime': 0
         })
 
+    from server.handlers.shop import _normalise_user_shop, _normalise_user_ad_level
+    norm_shop = _normalise_user_shop(user)
+    norm_ad_level = _normalise_user_ad_level(user)
+
     return {
         'user_achievement': _normalise_achievements(user),
         'user_buff': _active_buffs(user),
@@ -452,7 +473,7 @@ def _user_contents(user):
         'user_prop': props,
         'user_unit': user.setdefault('user_unit', []),
         'user_skill': skills,
-        'user_shop': user.setdefault('user_shop', []),
+        'user_shop': norm_shop,
         # Chat room 1 (Joy) is unlocked at start with unread notification
         'user_messenger': _starter_messenger(user),
         'user_guitar': guitars,
@@ -468,8 +489,9 @@ def _user_contents(user):
         'user_follower_quest': user.setdefault('user_follower_quest', []),
         'user_chthird_stage': ch3_stages,
         'user_tutorial': user.setdefault('user_tutorial', [{'i_id': i} for i in range(1, 8)]),
-        'user_ad_level': [{'i_id': 210010, 'i_Level': 1, 'i_EXP': 1}],
+        'user_ad_level': norm_ad_level,
         'user_ad_list': _normalise_ad_list(user),
+        'user_select_reward': user.setdefault('user_select_reward', []),
     }
 
 def _normalise_ad_list(user):
@@ -574,6 +596,7 @@ def h_user_login(req, player, ctx):
         ud['u_last_login'] = now_str
         ud['u_last_communication'] = now_str
         ud_resp = dict(ud)
+        ud_resp['u_id'] = str(ud.get('u_seq') or ud.get('u_id'))
         ud_resp['u_last_login'] = now_str
         ud_resp['u_last_communication'] = now_str
         if p.get('uuid'):
@@ -599,7 +622,7 @@ def h_user_login(req, player, ctx):
             'user_contents': contents,
         }, OK
     ud = user['userdata']
-    u_resp = {'u_seq': ud['u_seq'], 'u_id': ud['u_id']}
+    u_resp = {'u_seq': ud['u_seq'], 'u_id': str(ud.get('u_seq') or ud.get('u_id'))}
     if p.get('uuid'):
         u_resp['uuid'] = p.get('uuid')
     return {'user': u_resp}, OK
@@ -669,7 +692,9 @@ def h_user_save(req, player, ctx):
             if 'user_daily_mission' in p: _normalise_daily_missions(user, p['user_daily_mission'])
             if 'user_prop' in p:        user['user_prop'] = _safe_merge_items(user.get('user_prop', []), p['user_prop'])
             if 'user_candy_shop' in p:  user['user_candy_shop'] = p['user_candy_shop']
-            if 'user_follower_quest' in p: user['user_follower_quest'] = p['user_follower_quest']
+            if 'user_follower_quest' in p:
+                from server.handlers.follower import _merge_user_follower_quest
+                _merge_user_follower_quest(user, p['user_follower_quest'])
             if 'user_chthird_stage' in p:
                 user['user_chthird_stage'] = p['user_chthird_stage']
                 user['user_ch_third_stage'] = p['user_chthird_stage']
@@ -745,7 +770,10 @@ def h_user_load(req, player, ctx):
         return {}, OK
     load_type = p.get('type')
     if load_type == 'shop':
-        return {'user_contents': {'user_shop': user.get('user_shop', [])}}, OK
+        from server.handlers.shop import _normalise_user_shop
+        norm_shop = _normalise_user_shop(user)
+        state.save_user(user)
+        return {'user_contents': {'user_shop': norm_shop}}, OK
     elif load_type == 'buff':
         return {'user_contents': {'user_buff': _active_buffs(user)}}, OK
     elif load_type in ('ALL', None, ''):
@@ -765,6 +793,7 @@ def h_user_load(req, player, ctx):
         area_map = {int(k): v for k, v in areas.items()}
         now_str = time.strftime('%Y-%m-%d %H:%M:%S')
         ud_resp = dict(ud)
+        ud_resp['u_id'] = str(ud.get('u_seq') or ud.get('u_id'))
         ud_resp['u_last_communication'] = now_str
         return {
             'user': ud_resp,

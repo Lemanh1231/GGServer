@@ -116,8 +116,8 @@ def _claim_day(st, max_day, today):
         nxt = 1
     return nxt
 
-def _event_resp(ud, rew, status):
-    rd = [rew] if rew else []
+def _event_resp(ud, rew, status, reward_data=None):
+    rd = reward_data if reward_data is not None else ([rew] if rew else [])
     return {
         'u_cp': ud.get('u_cp', 0), 'u_candy': ud.get('u_candy', 0.0),
         'u_like': ud.get('u_like', 0.0), 'u_fans': ud.get('u_fans', 0),
@@ -126,6 +126,41 @@ def _event_resp(ud, rew, status):
         'reward_value': (rew or {}).get('reward_value', 0),
         'status': status, 'reward_data': rd,
     }
+
+
+_SELECT_REWARD_DATA = None
+
+
+def _select_reward_tables():
+    """Return (select_rows_by_id, reward_groups) from Table 39 and Table 13."""
+    global _SELECT_REWARD_DATA
+    if _SELECT_REWARD_DATA is not None:
+        return _SELECT_REWARD_DATA
+    select_rows = {}
+    groups = {}
+    try:
+        path = os.path.join(os.path.dirname(__file__), '..', '..', 'gamedata', 'game_data.json')
+        with open(path, encoding='utf-8') as f:
+            data = json.load(f)
+        for row in data.get('39', []):
+            sid = int(row.get('1', 0) or 0)
+            if sid > 0:
+                select_rows[sid] = {
+                    'i_id': sid,
+                    'i_GroupId': int(row.get('2', 10) or 10),
+                    'i_RewardGroupId': int(row.get('3', 10010) or 10010),
+                    'i_AltRewardGroupId': int(row.get('4', 10130) or 10130),
+                }
+        for row in data.get('13', []):
+            groups.setdefault(int(row.get('2', 0)), []).append({
+                'reward_type': int(row.get('3', 0)),
+                'reward_id': int(row.get('4', 0)),
+                'reward_value': int(row.get('5', 0)),
+            })
+    except Exception:
+        pass
+    _SELECT_REWARD_DATA = (select_rows, groups)
+    return _SELECT_REWARD_DATA
 
 def _give_reward(user, rew):
     rtype = rew.get('reward_type', 0)
@@ -177,10 +212,14 @@ def _give_reward(user, rew):
             lst.append({'i_id': rid, 'i_Level': 1, 'i_BonusLevel': 0})
             from server.handlers.follower import _sync_follower_messenger
             _sync_follower_messenger(user)
-    elif rtype == 7: # Unit
+    elif rtype == 7: # Unit / Mate
         lst = user.setdefault('user_unit', [])
-        if not any(int(x.get('i_id', 0) or 0) == rid for x in lst):
-            lst.append({'i_id': rid, 'i_Level': 1})
+        u_item = next((x for x in lst if int(x.get('i_id', 0) or 0) == rid), None)
+        add_lvl = max(1, int(rval or 1))
+        if u_item:
+            u_item['i_Level'] = min(20, int(u_item.get('i_Level', 1) or 1) + add_lvl)
+        else:
+            lst.append({'i_id': rid, 'i_Level': min(20, add_lvl)})
     elif rtype == 9: # Guitar
         lst = user.setdefault('user_guitar', [])
         if not any(int(x.get('i_id', 0) or 0) == rid for x in lst):
@@ -225,12 +264,32 @@ def h_set_attendance(req, player, ctx):
     else:
         claimed_today = False
         cur = 1
-    return {
+    resp = {
         'status': 'Y' if added else ('N' if claimed_today else 'Y'),
         'attendance_count': cur,
         'attendance_date': today if (claimed_today or added) else 0,
         'max_coutinuous_attendance_count': cur,
-    }, OK
+    }
+    if user and added:
+        from server.handlers.follower import _normalise_user_follower_quest, _pick_next_follower_quest_id
+        quests = _normalise_user_follower_quest(user)
+        if quests:
+            q_entry = quests[0]
+            cur_qid = int(q_entry.get('i_CurrentID', 1) or 1)
+            if int(q_entry.get('i_isInfinity', 0) or 0) == 1 or cur_qid >= 900:
+                next_qid, _ = _pick_next_follower_quest_id(user, cur_qid)
+                q_entry['i_id'] = 1
+                q_entry['i_CurrentID'] = int(next_qid)
+                q_entry['d_ConditionValue1'] = 0.0
+                q_entry['d_ConditionValue2'] = 0.0
+                q_entry['d_ConditionValue3'] = 0.0
+                q_entry['i_RewardReceived1'] = 0
+                q_entry['i_RewardReceived2'] = 0
+                q_entry['i_RewardReceived3'] = 0
+                q_entry['i_isInfinity'] = 1
+                state.save_user(user)
+                resp['user_follower_quest'] = dict(q_entry)
+    return resp, OK
 
 @cmd('getEventRewardList')
 def h_get_event_reward_list(req, player, ctx):
@@ -303,7 +362,30 @@ def h_set_event_reward(req, player, ctx):
         day = 1
     rew = rewards.get(str(day)) or {'reward_type': 1, 'reward_id': 1, 'reward_value': 100}
 
-    _give_reward(user, rew)
+    expanded_rewards = None
+    if int(rew.get('reward_type', 0) or 0) == 13:
+        group_id = int(rew.get('reward_id', 10) or 10)
+        _, groups = _select_reward_tables()
+        sel_list = user.setdefault('user_select_reward', [])
+        sel_entry = next((x for x in sel_list if int(x.get('i_GroupId', 0) or 0) == group_id), None)
+        rg_id = int(sel_entry.get('i_RewardGroupId', 10010) if sel_entry else 10010)
+        alt_rg_id = int(sel_entry.get('i_AltRewardGroupId', 10130) if sel_entry else 10130)
+        rg_items = list(groups.get(rg_id, []))
+        alt_items = list(groups.get(alt_rg_id, [{'reward_type': 1, 'reward_id': 1, 'reward_value': 500}]))
+
+        owned_costumes = {int(c.get('i_id', 0) or 0) for c in user.get('costumes', [])}
+        owned_guitars = {int(g.get('i_id', 0) or 0) for g in user.get('user_guitar', [])}
+        all_owned = bool(rg_items) and all(
+            (int(it.get('reward_type', 0)) == 3 and int(it.get('reward_id', 0)) in owned_costumes) or
+            (int(it.get('reward_type', 0)) == 9 and int(it.get('reward_id', 0)) in owned_guitars)
+            for it in rg_items
+        )
+        expanded_rewards = alt_items if all_owned else rg_items
+        for r_item in expanded_rewards:
+            _give_reward(user, r_item)
+    else:
+        _give_reward(user, rew)
+
     st['day'] = day
     st['ymd'] = today
     if event_idx == '1':
@@ -311,7 +393,36 @@ def h_set_event_reward(req, player, ctx):
         ud['attendance_date'] = today
         state.update_attendance(uuid, day, today)
     state.save_user(user)
-    return _event_resp(ud, rew, 'Y'), OK
+    return _event_resp(ud, rew, 'Y', reward_data=expanded_rewards), OK
+
+
+@cmd('setSelectReward')
+def h_set_select_reward(req, player, ctx):
+    """Persist player's chosen Star Pass set for Event 202111 (DailyReward_Select_NewUser)."""
+    p = _payload(req)
+    uuid = p.get('uuid') or p.get('device_uuid') or ctx.get('uuid')
+    user = state.get_user(uuid)
+    sel_id = int(p.get('i_id', 1) or 1)
+    select_rows, _ = _select_reward_tables()
+    row_cfg = select_rows.get(sel_id) or select_rows.get(1) or {
+        'i_GroupId': 10,
+        'i_RewardGroupId': 10010,
+        'i_AltRewardGroupId': 10130,
+    }
+    entry = {
+        'i_GroupId': int(row_cfg['i_GroupId']),
+        'i_RewardGroupId': int(row_cfg['i_RewardGroupId']),
+        'i_AltRewardGroupId': int(row_cfg['i_AltRewardGroupId']),
+    }
+    u_seq = int(p.get('u_seq', 0) or 0)
+    if user:
+        u_seq = int(user.get('userdata', {}).get('u_seq', u_seq) or u_seq)
+        sel_list = user.setdefault('user_select_reward', [])
+        sel_list[:] = [x for x in sel_list if int(x.get('i_GroupId', 0) or 0) != entry['i_GroupId']]
+        sel_list.append(entry)
+        state.save_user(user)
+        return {'u_seq': u_seq, 'user_select_reward_list': list(sel_list)}, OK
+    return {'u_seq': u_seq, 'user_select_reward_list': [entry]}, OK
 
 @cmd('setGameReward')
 def h_set_game_reward(req, player, ctx):

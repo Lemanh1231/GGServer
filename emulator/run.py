@@ -9,7 +9,6 @@ Env: GG_PUBLIC_HOST, GG_CDN_URL, GG_VERBOSE.
 """
 import argparse, os, sys, threading, subprocess
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from server import app
 
 CERT = os.path.join(os.path.dirname(__file__), 'data', 'server.pem')
 
@@ -28,7 +27,7 @@ def ensure_cert():
     print("generated self-signed cert:", CERT)
     return CERT
 
-def serve(host, port, cert):
+def serve(host, port, cert, app):
     httpd = app.make_server(host, port, cert)
     proto = 'https' if cert else 'http'
     print(f"listening {proto}://{host}:{port}")
@@ -41,19 +40,26 @@ def main():
     ap.add_argument('--https', action='store_true')
     ap.add_argument('--http', action='store_true', help='also start plain HTTP:8080')
     ap.add_argument('--cert', default=None)
+    ap.add_argument('--retired', action='store_true', help='reject all gameplay with update notice; never open player DB')
     args = ap.parse_args()
+
+    if args.retired:
+        from server import retired as app
+    else:
+        from server import app
 
     threads = []
     if args.https:
         cert = args.cert or ensure_cert()
-        threads.append(threading.Thread(target=serve, args=(args.host, args.port, cert), daemon=True))
+        threads.append(threading.Thread(target=serve, args=(args.host, args.port, cert, app), daemon=True))
         if args.http:
-            threads.append(threading.Thread(target=serve, args=(args.host, 8080, None), daemon=True))
+            threads.append(threading.Thread(target=serve, args=(args.host, 8080, None, app), daemon=True))
     else:
-        threads.append(threading.Thread(target=serve, args=(args.host, args.port, None), daemon=True))
+        threads.append(threading.Thread(target=serve, args=(args.host, args.port, None, app), daemon=True))
 
     for t in threads: t.start()
-    print("Ctrl-C to stop. Captures -> emulator/captures/, player data -> emulator/data/")
+    print("RETIRED: no gameplay/auth/database; update notice only." if args.retired else
+          "Ctrl-C to stop. Captures -> emulator/captures/, player data -> emulator/data/")
     try:
         while True: threading.Event().wait(3600)
     except KeyboardInterrupt:

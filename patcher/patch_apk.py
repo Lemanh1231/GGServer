@@ -147,7 +147,7 @@ FAILOVER_JAVA_DIR = os.path.join(HERE, "java", "com", "kotori", "guitargirl", "n
 
 
 def get_failover_dex():
-    """Compile or load classes5.dex containing the 4-domain Active-Passive failover gateway."""
+    """Compile or load classes5.dex containing the primary-first 4-domain gateway."""
     android_jar = "/usr/lib/android-sdk/platforms/android-23/android.jar"
     if os.path.isdir(FAILOVER_JAVA_DIR) and shutil.which("javac") and shutil.which("dalvik-exchange") and os.path.isfile(android_jar):
         java_files = [
@@ -181,10 +181,11 @@ def main():
     ap.add_argument('--target', default=FAILOVER_LOOPBACK_URL,
                     help="base url (default: http://127.0.0.1:28765 for 4-domain failover)")
     ap.add_argument('--multidomain', action='store_true',
-                    help="route traffic via in-APK 4-domain Active-Passive failover gateway")
+                    help="route traffic via in-APK primary-first 4-domain failover gateway")
     ap.add_argument('--out', required=True)
     ap.add_argument('--ks', default=os.path.join(HERE, 'gg.keystore'))
     ap.add_argument('--no-sign', action='store_true')
+    ap.add_argument('--no-export', action='store_true', help='keep artifacts staged; do not overwrite published APKs')
     a = ap.parse_args()
 
     if a.multidomain or a.target in ('multidomain', 'auto', ''):
@@ -274,7 +275,7 @@ def main():
 
     # Also copy universal APK to out/ directory for convenience
     out_parent = os.path.abspath(os.path.join(a.out, '..'))
-    if os.path.isdir(out_parent):
+    if not a.no_export and os.path.isdir(out_parent):
         for name in ('Guitar_Girl_v8.0.0_NoGooglePlay.apk', 'Guitar_Girl_v8.0.0_Universal.apk'):
             dst = os.path.join(out_parent, name)
             shutil.copy2(universal_out, dst)
@@ -284,9 +285,9 @@ def main():
 
     print("\nDONE! Installation options on Android / BlueStacks:")
     print("1) Single APK install (Recommended):")
-    print(f"   adb install out/Guitar_Girl_v8.0.0_NoGooglePlay.apk")
+    print(f"   adb install -r {universal_out}")
     print("2) Split APK install:")
-    print("   adb uninstall com.neowiz.game.guitargirl")
+    print("   # Keep installed data; do not uninstall an existing same-signature release.")
     print("   adb install-multiple \\\n     " + " \\\n     ".join([os.path.join(a.out, s) for s in SPLITS]))
 
 

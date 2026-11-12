@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from server import state
 from server.handlers.registry import cmd, OK, _payload
 
@@ -167,16 +168,31 @@ FOLLOWER_MESSENGER_MAP = {
 }
 
 def _merge_groups_seq(existing_str, required_groups, target_proceeding=None):
-    current = [int(x.strip()) for x in str(existing_str or '').split(',') if x.strip().isdigit()]
+    orig = [int(x.strip()) for x in str(existing_str or '').split(',') if x.strip().isdigit()]
+    if target_proceeding is not None:
+        target_proceeding = int(target_proceeding)
+        # If target_proceeding was already completed (present in orig[:-1]),
+        # preserve the player's newer active proceeding group (orig[-1]).
+        if orig and target_proceeding in orig[:-1]:
+            final_proc = orig[-1]
+        else:
+            final_proc = target_proceeding
+    else:
+        final_proc = orig[-1] if orig else None
+
+    current = []
+    for g in orig:
+        if g not in current:
+            current.append(g)
     for g in required_groups:
+        g = int(g)
         if g not in current:
             current.append(g)
 
-    if target_proceeding is not None:
-        target_proceeding = int(target_proceeding)
-        if target_proceeding in current:
-            current.remove(target_proceeding)
-        current.append(target_proceeding)
+    if final_proc is not None:
+        if final_proc in current:
+            current.remove(final_proc)
+        current.append(final_proc)
 
     return ",".join(str(x) for x in current) if current else str(target_proceeding or 1)
 
@@ -231,6 +247,26 @@ def _sync_follower_messenger(user):
                 r['i_LastConfirmIndex'] = 0
                 r['l_UpdateTimeTicks'] = 0
 
+    # Auto-heal rooms where a completed starter/CH2 group was yanked to the end after later unlocked groups
+    YANKED_PROC_HEAL = {
+        1: (111, {130, 136}),
+        2: (2, {8, 22, 61, 125, 131, 141, 143, 145, 148}),
+        5: (157, {164, 167}),
+        6: (18, {63, 129, 133, 163, 168}),
+        12: (109, {137}),
+        16: (172, {119, 120}),
+        17: (174, {176, 177}),
+    }
+    for rid, (yanked_grp, later_grps) in YANKED_PROC_HEAL.items():
+        if rid in existing_rooms:
+            r = existing_rooms[rid]
+            groups = [int(x.strip()) for x in str(r.get('s_UnlockGroupList', '')).split(',') if x.strip().isdigit()]
+            if len(groups) > 1 and groups[-1] == yanked_grp and any(g in later_grps for g in groups[:-1]):
+                groups.pop()
+                first_later_idx = next(i for i, g in enumerate(groups) if g in later_grps)
+                groups.insert(first_later_idx, yanked_grp)
+                r['s_UnlockGroupList'] = ",".join(str(x) for x in groups)
+
     # Sync individual follower rooms (CH1: 2..15, CH2: 203..208)
     for fid in f_levels:
         if fid in (1, 201, 202):
@@ -253,68 +289,67 @@ def _sync_follower_messenger(user):
                 if not r.get('s_UnlockGroupList'):
                     r['s_UnlockGroupList'] = str(init_group)
 
-    if not has_ch2:
-        # Chapter 1 cross-room prerequisite satisfaction:
-        # In GgTableManagerSGT / libil2cpp.so, CheckRequirement checks CompleteProgressGroupList
-        # of prerequisite rooms (e.g. Group 9 requires Group 7 in Room 1).
-        # We ensure these prerequisite groups are present in Room 1, 7, and 16 BEFORE their own proceeding group,
-        # so each follower's initial greeting is active as the proceeding group.
-        r1_prereqs = []
-        if 4 in f_levels:
-            r1_prereqs.extend([4, 7])
-        if 5 in f_levels:
-            r1_prereqs.extend([10, 12])
-        if 6 in f_levels:
-            r1_prereqs.extend([15, 16])
-        if 8 in f_levels:
-            r1_prereqs.extend([24, 30, 32, 33, 35, 36, 41, 45, 47])
-        if 9 in f_levels or 11 in f_levels:
-            r1_prereqs.extend([56, 57])
-        if any(fid in f_levels for fid in (12, 13, 14, 15)):
-            r1_prereqs.extend([75])
+    # Chapter 1 cross-room prerequisite satisfaction:
+    # In GgTableManagerSGT / libil2cpp.so, CheckRequirement checks CompleteProgressGroupList
+    # of prerequisite rooms (e.g. Group 9 requires Group 7 in Room 1).
+    # We ensure these prerequisite groups are present in Room 1, 7, and 16 BEFORE their own proceeding group,
+    # so each follower's initial greeting is active as the proceeding group.
+    r1_prereqs = []
+    if 4 in f_levels:
+        r1_prereqs.extend([4, 7])
+    if 5 in f_levels:
+        r1_prereqs.extend([10, 12])
+    if 6 in f_levels or 7 in f_levels:
+        r1_prereqs.extend([15, 16])
+    if 8 in f_levels or f_levels.get(7, 0) >= 75:
+        r1_prereqs.extend([24, 30, 32, 33, 35, 36, 41, 45, 47])
+    if 9 in f_levels or 10 in f_levels or 11 in f_levels or f_levels.get(7, 0) >= 375:
+        r1_prereqs.extend([56, 57])
+    if any(fid in f_levels for fid in (11, 12, 13, 14, 15)):
+        r1_prereqs.extend([75])
 
-        r1 = existing_rooms[1]
-        r1_groups = [int(x.strip()) for x in str(r1.get('s_UnlockGroupList', '1')).split(',') if x.strip().isdigit()]
-        joy_proceeding = r1_groups[-1] if r1_groups else 1
-        if joy_proceeding == 75 and f_levels.get(1, 0) < 1250:
-            joy_proceeding = 1
-        r1['s_UnlockGroupList'] = _merge_groups_seq(r1.get('s_UnlockGroupList', '1'), r1_prereqs, target_proceeding=joy_proceeding)
+    r1 = existing_rooms[1]
+    r1_groups = [int(x.strip()) for x in str(r1.get('s_UnlockGroupList', '1')).split(',') if x.strip().isdigit()]
+    joy_proceeding = r1_groups[-1] if r1_groups else 1
+    if joy_proceeding == 75 and f_levels.get(1, 0) < 1250:
+        joy_proceeding = 1
+    r1['s_UnlockGroupList'] = _merge_groups_seq(r1.get('s_UnlockGroupList', '1'), r1_prereqs, target_proceeding=joy_proceeding)
 
-        # Room 7: Amber's proceeding group is 20, but groups 53, 58 must be completed for Sua (9) and Jae (11)
-        if 7 in existing_rooms and (9 in f_levels or 11 in f_levels):
-            r7 = existing_rooms[7]
-            r7_groups = [int(x.strip()) for x in str(r7.get('s_UnlockGroupList', '20')).split(',') if x.strip().isdigit()]
-            amber_proc = r7_groups[-1] if r7_groups else 20
-            if amber_proc == 58 and f_levels.get(7, 0) < 375:
-                amber_proc = 20
-            r7['s_UnlockGroupList'] = _merge_groups_seq(r7.get('s_UnlockGroupList', '20'), [53, 58], target_proceeding=amber_proc)
+    # Room 7: Amber's proceeding group is 20, but groups 53, 58 must be completed for Sua (9), Butler Cat (10), Jae (11), etc.
+    if 7 in existing_rooms and (9 in f_levels or 10 in f_levels or 11 in f_levels or f_levels.get(7, 0) >= 375 or f_levels.get(3, 0) >= 850):
+        r7 = existing_rooms[7]
+        r7_groups = [int(x.strip()) for x in str(r7.get('s_UnlockGroupList', '20')).split(',') if x.strip().isdigit()]
+        amber_proc = r7_groups[-1] if r7_groups else 20
+        if amber_proc == 58 and f_levels.get(7, 0) < 375:
+            amber_proc = 20
+        r7['s_UnlockGroupList'] = _merge_groups_seq(r7.get('s_UnlockGroupList', '20'), [53, 58], target_proceeding=amber_proc)
 
-        # Room 16 in Chapter 1: Happy Bakery (12) requires Group 79 in Room 16 completed
-        if 12 in f_levels:
-            if 16 not in existing_rooms:
-                r16 = {
-                    'i_MessengerChatRoomId': 16,
-                    'i_LastConfirmIndex': 0,
-                    's_UnlockGroupList': '76,78,79,81',
-                    'l_UpdateTimeTicks': 0,
-                }
-                ms.append(r16)
-                existing_rooms[16] = r16
-            else:
-                r16 = existing_rooms[16]
-                r16['s_UnlockGroupList'] = _merge_groups_seq(r16.get('s_UnlockGroupList', '76'), [76, 78, 79], target_proceeding=81)
-        elif f_levels.get(1, 0) >= 1250 and 16 not in existing_rooms:
+    # Room 16 in Chapter 1: Happy Bakery (12) requires Group 79 in Room 16 completed
+    if 12 in f_levels:
+        if 16 not in existing_rooms:
             r16 = {
                 'i_MessengerChatRoomId': 16,
                 'i_LastConfirmIndex': 0,
-                's_UnlockGroupList': '76',
+                's_UnlockGroupList': '76,78,79,81',
                 'l_UpdateTimeTicks': 0,
             }
             ms.append(r16)
             existing_rooms[16] = r16
+        else:
+            r16 = existing_rooms[16]
+            r16['s_UnlockGroupList'] = _merge_groups_seq(r16.get('s_UnlockGroupList', '76'), [76, 78, 79], target_proceeding=81)
+    elif f_levels.get(1, 0) >= 1250 and 16 not in existing_rooms:
+        r16 = {
+            'i_MessengerChatRoomId': 16,
+            'i_LastConfirmIndex': 0,
+            's_UnlockGroupList': '76',
+            'l_UpdateTimeTicks': 0,
+        }
+        ms.append(r16)
+        existing_rooms[16] = r16
 
     # Special handling for Chapter 2
-    else:
+    if has_ch2:
         # Chapter 2 cross-room prerequisite satisfaction:
         # 1. Room 12 (Happy Bakery): Bridge between CH1 and CH2
         # Group 103 (Room 12) is the prerequisite dialogue welcoming player to CH2.
@@ -339,12 +374,12 @@ def _sync_follower_messenger(user):
         # 2. Room 6: Elle's room has groups 106 and 113 needed for CH2
         r6_reqs = [18, 26, 43, 106, 113]
         if 6 in existing_rooms:
-            existing_rooms[6]['s_UnlockGroupList'] = _merge_groups_seq(existing_rooms[6].get('s_UnlockGroupList', '18'), r6_reqs, target_proceeding=18)
+            existing_rooms[6]['s_UnlockGroupList'] = _merge_groups_seq(existing_rooms[6].get('s_UnlockGroupList', '18'), r6_reqs, target_proceeding=None)
 
         # 3. Room 2: Convenience store friend has group 116 needed by group 118
         r2_reqs = [2, 5, 11, 77, 116]
         if 2 in existing_rooms:
-            existing_rooms[2]['s_UnlockGroupList'] = _merge_groups_seq(existing_rooms[2].get('s_UnlockGroupList', '2'), r2_reqs, target_proceeding=2)
+            existing_rooms[2]['s_UnlockGroupList'] = _merge_groups_seq(existing_rooms[2].get('s_UnlockGroupList', '2'), r2_reqs, target_proceeding=None)
 
         # 4. Room 16 (Joy, Moa Group Chat): Story backbone for Chapter 2
         r16_reqs = [76, 78, 79, 81, 82, 104, 105, 108, 115, 118, 128, 132, 135, 171]
@@ -643,41 +678,6 @@ def h_set_user_follower_profile_reward(req, player, ctx):
 
         return ret_items, OK
 
-@cmd('setFollowerQuestInfinite')
-def h_set_follower_quest_infinite(req, player, ctx):
-    p = _payload(req)
-    uuid = p.get('uuid') or ctx.get('uuid')
-    user = state.get_user(uuid)
-    u_seq = user.get('userdata', {}).get('u_seq', 100001) if user else 100001
-    q_id = int(p.get('i_id', 1) or 1)
-    
-    # Locate or create quest in user_follower_quest
-    quests = user.setdefault('user_follower_quest', []) if user else []
-    quest = next((q for q in quests if int(q.get('i_id', 0) or 0) == q_id), None)
-    if not quest:
-        quest = {
-            'i_id': q_id,
-            'i_CurrentID': q_id,
-            'i_CompleteID': 0,
-            'd_ConditionValue1': 0.0,
-            'd_ConditionValue2': 0.0,
-            'd_ConditionValue3': 0.0,
-            'i_RewardReceived1': 0,
-            'i_RewardReceived2': 0,
-            'i_RewardReceived3': 0,
-            'i_isInfinity': 1
-        }
-        quests.append(quest)
-    else:
-        quest['i_isInfinity'] = 1
-    if user:
-        state.save_user(user)
-
-    return {
-        'u_seq': u_seq,
-        'user_follower_quest': quest
-    }, OK
-
 def _load_follower_quest_tables():
     """Load Table 26 (followerquest) and Table 13 (reward_group)."""
     try:
@@ -691,12 +691,219 @@ def _load_follower_quest_tables():
     except Exception:
         return {}, {}
 
+
+def _pick_next_follower_quest_id(user, cur_id, quests_def=None):
+    """Return (next_cur_id, is_infinity) after completing all 3 sub-missions of cur_id."""
+    if quests_def is None:
+        quests_def, _ = _load_follower_quest_tables()
+    normal_ids = sorted(qid for qid, r in quests_def.items() if int(r.get('29', 1) or 1) == 1)
+    inf_ids = sorted(qid for qid, r in quests_def.items() if int(r.get('29', 1) or 1) == 2)
+
+    if normal_ids and cur_id < max(normal_ids):
+        for qid in normal_ids:
+            if qid > cur_id:
+                return qid, 0
+
+    # All normal quests (1..42) completed -> pick an eligible infinite quest (902..942)
+    follower_lvls = {}
+    if user:
+        for f in user.get('user_follower', []):
+            if isinstance(f, dict):
+                fid = int(f.get('i_id', 0) or 0)
+                flvl = int(f.get('i_Level', 1) or 1)
+                follower_lvls[fid] = max(follower_lvls.get(fid, 0), flvl)
+
+    eligible = []
+    for qid in inf_ids:
+        row = quests_def.get(qid, {})
+        req_fid = int(row.get('2', 1) or 1)
+        req_lvl = int(row.get('3', 1) or 1)
+        if follower_lvls.get(req_fid, 0) >= req_lvl:
+            eligible.append(qid)
+
+    if not eligible:
+        eligible = inf_ids or [902]
+
+    # Rotate to the next eligible infinite quest after cur_id
+    for qid in eligible:
+        if qid > cur_id:
+            return qid, 1
+    return eligible[0], 1
+
+
+def _apply_ad_quest_autocomplete(entry, quests_def=None):
+    """Auto-complete ONLY sub-missions whose condition type is 'ADViewCount' (Watch Ads).
+
+    Since Buff ID 4 (Guitar Girl Premium) disables all ads globally, 'ADViewCount' sub-missions
+    cannot be incremented by watching ads and are made immediately claimable.
+    All other sub-missions (TapCount, SkillUseCount, GetADChocoCount, GetADLikeCount, etc.)
+    remain normal so players complete them through gameplay.
+    """
+    if not isinstance(entry, dict):
+        return entry
+    if quests_def is None:
+        quests_def, _ = _load_follower_quest_tables()
+    cur_id = int(entry.get('i_CurrentID', 1) or 1)
+    qrow = quests_def.get(cur_id, {})
+    if not qrow:
+        return entry
+    for k, (type_col, val_col) in ((1, ('4', '5')), (2, ('7', '8')), (3, ('10', '11'))):
+        ctype = str(qrow.get(type_col, '') or '')
+        if ctype == 'ADViewCount':
+            target = float(qrow.get(val_col, 1.0) or 1.0)
+            vkey = f'd_ConditionValue{k}'
+            entry[vkey] = max(float(entry.get(vkey, 0.0) or 0.0), target)
+    return entry
+
+
+def _normalise_user_follower_quest(user):
+    """Ensure user['user_follower_quest'] is a single-element list with i_id=1.
+
+    In libil2cpp.so (UserFollowerQuestTable.GetFollowerQuest at 0x1D422D4,
+    UpdateFollowerQuest at 0x1E2B858, OnRecv(setUserFollowerQuest) at 0x1F0A924),
+    the client always looks up dictionary key i_id == 1.
+    """
+    if not user:
+        return []
+    quests_def, _ = _load_follower_quest_tables()
+    raw_list = user.get('user_follower_quest')
+    if not isinstance(raw_list, list):
+        raw_list = []
+
+    valid_dicts = [q for q in raw_list if isinstance(q, dict)]
+    if not valid_dicts:
+        entry = {
+            'i_id': 1,
+            'i_CurrentID': 1,
+            'i_CompleteID': 0,
+            'd_ConditionValue1': 0.0,
+            'd_ConditionValue2': 0.0,
+            'd_ConditionValue3': 0.0,
+            'i_RewardReceived1': 0,
+            'i_RewardReceived2': 0,
+            'i_RewardReceived3': 0,
+            'i_isInfinity': 0,
+        }
+        _apply_ad_quest_autocomplete(entry, quests_def)
+        user['user_follower_quest'] = [entry]
+        return user['user_follower_quest']
+
+    cur_id = max((int(q.get('i_CurrentID', 1) or 1) for q in valid_dicts), default=1)
+    comp_id = max((int(q.get('i_CompleteID', 0) or 0) for q in valid_dicts), default=0)
+    matching = [q for q in valid_dicts if int(q.get('i_CurrentID', 1) or 1) == cur_id] or valid_dicts
+
+    c1 = max((float(q.get('d_ConditionValue1', 0.0) or 0.0) for q in matching), default=0.0)
+    c2 = max((float(q.get('d_ConditionValue2', 0.0) or 0.0) for q in matching), default=0.0)
+    c3 = max((float(q.get('d_ConditionValue3', 0.0) or 0.0) for q in matching), default=0.0)
+    r1 = 1 if any(int(q.get('i_RewardReceived1', 0) or 0) == 1 for q in matching) else 0
+    r2 = 1 if any(int(q.get('i_RewardReceived2', 0) or 0) == 1 for q in matching) else 0
+    r3 = 1 if any(int(q.get('i_RewardReceived3', 0) or 0) == 1 for q in matching) else 0
+
+    if r1 == 1 and r2 == 1 and r3 == 1:
+        comp_id = max(comp_id, cur_id)
+        cur_id, is_inf = _pick_next_follower_quest_id(user, cur_id, quests_def)
+        c1 = c2 = c3 = 0.0
+        r1 = r2 = r3 = 0
+    else:
+        is_inf = 1 if cur_id >= 900 else 0
+
+    entry = {
+        'i_id': 1,
+        'i_CurrentID': int(cur_id),
+        'i_CompleteID': int(comp_id),
+        'd_ConditionValue1': float(c1),
+        'd_ConditionValue2': float(c2),
+        'd_ConditionValue3': float(c3),
+        'i_RewardReceived1': int(r1),
+        'i_RewardReceived2': int(r2),
+        'i_RewardReceived3': int(r3),
+        'i_isInfinity': int(is_inf),
+    }
+    _apply_ad_quest_autocomplete(entry, quests_def)
+    user['user_follower_quest'] = [entry]
+    return user['user_follower_quest']
+
+
+def _merge_user_follower_quest(user, client_quests):
+    """Safely merge saveUserFollowerQuest from userSave without losing i_id=1 or i_RewardReceived1..3.
+
+    saveUserFollowerQuest only contains (i_CurrentID, d_ConditionValue1, d_ConditionValue2, d_ConditionValue3).
+    Overwriting user['user_follower_quest'] directly would strip i_id=1 and i_RewardReceived1..3.
+    """
+    quests = _normalise_user_follower_quest(user)
+    if not quests or not isinstance(client_quests, list):
+        return quests
+    entry = quests[0]
+    cur_id = int(entry.get('i_CurrentID', 1) or 1)
+    for cq in client_quests:
+        if isinstance(cq, dict) and int(cq.get('i_CurrentID', 0) or 0) == cur_id:
+            entry['d_ConditionValue1'] = max(
+                float(entry.get('d_ConditionValue1', 0.0) or 0.0),
+                float(cq.get('d_ConditionValue1', 0.0) or 0.0),
+            )
+            entry['d_ConditionValue2'] = max(
+                float(entry.get('d_ConditionValue2', 0.0) or 0.0),
+                float(cq.get('d_ConditionValue2', 0.0) or 0.0),
+            )
+            entry['d_ConditionValue3'] = max(
+                float(entry.get('d_ConditionValue3', 0.0) or 0.0),
+                float(cq.get('d_ConditionValue3', 0.0) or 0.0),
+            )
+    _apply_ad_quest_autocomplete(entry)
+    return quests
+
+
+@cmd('setFollowerQuestInfinite')
+def h_set_follower_quest_infinite(req, player, ctx):
+    p = _payload(req)
+    uuid = p.get('uuid') or ctx.get('uuid')
+    user = state.get_user(uuid)
+    u_seq = user.get('userdata', {}).get('u_seq', 100001) if user else 100001
+
+    if user:
+        quests = _normalise_user_follower_quest(user)
+        quest = quests[0]
+        cur_id = int(quest.get('i_CurrentID', 1) or 1)
+        if cur_id >= 42:
+            next_id, _ = _pick_next_follower_quest_id(user, max(cur_id, 42))
+            quest['i_id'] = 1
+            quest['i_CurrentID'] = next_id
+            quest['d_ConditionValue1'] = 0.0
+            quest['d_ConditionValue2'] = 0.0
+            quest['d_ConditionValue3'] = 0.0
+            quest['i_RewardReceived1'] = 0
+            quest['i_RewardReceived2'] = 0
+            quest['i_RewardReceived3'] = 0
+            quest['i_isInfinity'] = 1
+            _apply_ad_quest_autocomplete(quest)
+            state.save_user(user)
+    else:
+        quest = {
+            'i_id': 1,
+            'i_CurrentID': 902,
+            'i_CompleteID': 42,
+            'd_ConditionValue1': 0.0,
+            'd_ConditionValue2': 0.0,
+            'd_ConditionValue3': 0.0,
+            'i_RewardReceived1': 0,
+            'i_RewardReceived2': 0,
+            'i_RewardReceived3': 0,
+            'i_isInfinity': 1,
+        }
+        _apply_ad_quest_autocomplete(quest)
+
+    return {
+        'u_seq': u_seq,
+        'user_follower_quest': quest,
+    }, OK
+
+
 def _grant_follower_quest_reward(user, rtype, rid, rval):
     if not user:
         return
     ud = user.setdefault('userdata', {})
     uuid = user.get('uuid')
-    if rtype == 1:  # Consume / Currencies
+    if rtype == 1:  # Consume / Currencies (Table 1)
         cp = 0
         candy = 0.0
         like = 0.0
@@ -717,17 +924,37 @@ def _grant_follower_quest_reward(user, rtype, rid, rval):
             state.add_ap(user, int(rval))
         if uuid and (cp or candy or like or fans):
             state.increment_currency(uuid, cp=cp, candy=candy, like=like, fans=fans)
+    elif rtype == 6:  # Buff (Table 6, e.g. rid=2 Fever/AutoTap buff for rval seconds)
+        now_ts = int(time.time())
+        buffs = user.setdefault('user_buff', [])
+        b_entry = next((b for b in buffs if int(b.get('i_id', 0) or 0) == int(rid)), None)
+        dur = int(rval)
+        if b_entry:
+            cur_end = int(b_entry.get('i_EndTime', b_entry.get('i_ExpiredTime', 0)) or 0)
+            b_entry['i_Level'] = max(1, int(b_entry.get('i_Level', 1) or 1))
+            b_entry['i_ActiveTime'] = now_ts
+            b_entry['i_EndTime'] = max(now_ts, cur_end) + dur
+            b_entry.pop('i_BuffTime', None)
+            b_entry.pop('i_ExpiredTime', None)
+        else:
+            buffs.append({
+                'i_id': int(rid),
+                'i_Level': 1,
+                'i_ActiveTime': now_ts,
+                'i_EndTime': now_ts + dur,
+            })
     elif rtype == 10:  # Ticket
         tickets = user.setdefault('user_ticketcollection', [])
         if not any(int(t.get('i_id', 0) or 0) == int(rid) for t in tickets):
             tickets.append({'i_id': int(rid)})
+
 
 @cmd('setUserFollowerQuest')
 def h_set_user_follower_quest(req, player, ctx):
     p = _payload(req)
     uuid = p.get('uuid') or ctx.get('uuid')
     user = state.get_user(uuid)
-    cur_id = int(p.get('i_CurrentID') or p.get('CurrentID') or p.get('current_id', 0) or 0)
+    cur_id = int(p.get('i_CurrentID') or p.get('CurrentID') or p.get('current_id', 0) or 1)
     sub_id = int(p.get('i_SubID') or p.get('SubID') or p.get('sub_id', 1) or 1)
     cond_val = float(p.get('d_ConditionValue') or p.get('ConditionValue') or p.get('condition_value', 0.0) or 0.0)
 
@@ -739,7 +966,19 @@ def h_set_user_follower_quest(req, player, ctx):
     rg_id = int(quest_row.get(rg_key, 0) or 0)
 
     reward_data = []
-    if rg_id and rg_id in rewards_def:
+    already_claimed = False
+    if user:
+        quests = _normalise_user_follower_quest(user)
+        found_quest = quests[0]
+        # Sync cur_id if client is on cur_id
+        if int(found_quest.get('i_CurrentID', 1) or 1) != cur_id and cur_id in quests_def:
+            found_quest['i_CurrentID'] = cur_id
+            found_quest['i_isInfinity'] = 1 if cur_id >= 900 else 0
+        rec_key = f'i_RewardReceived{sub_id}'
+        if int(found_quest.get(rec_key, 0) or 0) == 1:
+            already_claimed = True
+
+    if rg_id and rg_id in rewards_def and not already_claimed:
         for r in rewards_def[rg_id]:
             rtype = int(r.get('3', 0) or 0)
             rid = int(r.get('4', 0) or 0)
@@ -752,55 +991,72 @@ def h_set_user_follower_quest(req, player, ctx):
                 'reward_value': rval,
             })
 
-    quest = {
-        'i_CurrentID': cur_id,
-        'i_CompleteID': 0,
-        'd_ConditionValue1': 0.0,
-        'd_ConditionValue2': 0.0,
-        'd_ConditionValue3': 0.0,
-        'i_RewardReceived1': 0,
-        'i_RewardReceived2': 0,
-        'i_RewardReceived3': 0,
-        'next_flg': 0,
-        'reward_data': reward_data,
-    }
     if user:
-        quests = user.setdefault('user_follower_quest', [])
-        found_quest = next((q for q in quests if int(q.get('i_CurrentID', 0) or 0) == cur_id), None)
-        if not found_quest:
-            found_quest = dict(quest)
-            quests.append(found_quest)
+        quests = _normalise_user_follower_quest(user)
+        found_quest = quests[0]
+        found_quest['i_id'] = 1
 
         if sub_id == 1:
-            found_quest['d_ConditionValue1'] = cond_val
+            found_quest['d_ConditionValue1'] = max(float(found_quest.get('d_ConditionValue1', 0.0) or 0.0), cond_val)
             found_quest['i_RewardReceived1'] = 1
         elif sub_id == 2:
-            found_quest['d_ConditionValue2'] = cond_val
+            found_quest['d_ConditionValue2'] = max(float(found_quest.get('d_ConditionValue2', 0.0) or 0.0), cond_val)
             found_quest['i_RewardReceived2'] = 1
         elif sub_id == 3:
-            found_quest['d_ConditionValue3'] = cond_val
+            found_quest['d_ConditionValue3'] = max(float(found_quest.get('d_ConditionValue3', 0.0) or 0.0), cond_val)
             found_quest['i_RewardReceived3'] = 1
 
         r1 = int(found_quest.get('i_RewardReceived1', 0) or 0)
         r2 = int(found_quest.get('i_RewardReceived2', 0) or 0)
         r3 = int(found_quest.get('i_RewardReceived3', 0) or 0)
+
         if r1 == 1 and r2 == 1 and r3 == 1:
-            found_quest['next_flg'] = 1
-            found_quest['i_CompleteID'] = cur_id
+            # All 3 sub-missions completed!
+            # In libil2cpp.so (OnRecv at 0x1F0A830 & callback at 0x1E2E598):
+            # When next_flg == 1, the client reads the new i_CurrentID and i_CompleteID
+            # from the response, resets condition values & reward flags to 0, and loads the next quest.
+            comp_id = max(int(found_quest.get('i_CompleteID', 0) or 0), cur_id)
+            next_cur_id, is_inf = _pick_next_follower_quest_id(user, cur_id, quests_def)
+            found_quest['i_id'] = 1
+            found_quest['i_CurrentID'] = int(next_cur_id)
+            found_quest['i_CompleteID'] = int(comp_id)
+            found_quest['d_ConditionValue1'] = 0.0
+            found_quest['d_ConditionValue2'] = 0.0
+            found_quest['d_ConditionValue3'] = 0.0
+            found_quest['i_RewardReceived1'] = 0
+            found_quest['i_RewardReceived2'] = 0
+            found_quest['i_RewardReceived3'] = 0
+            found_quest['i_isInfinity'] = int(is_inf)
+            _apply_ad_quest_autocomplete(found_quest, quests_def)
+            r1 = r2 = r3 = 0
+            next_flg = 1
         else:
-            found_quest['next_flg'] = 0
+            _apply_ad_quest_autocomplete(found_quest, quests_def)
+            next_flg = 0
 
         state.save_user(user)
-        quest = {
-            'i_CurrentID': cur_id,
+        return {
+            'i_CurrentID': int(found_quest.get('i_CurrentID', cur_id) or cur_id),
             'i_CompleteID': int(found_quest.get('i_CompleteID', 0) or 0),
             'd_ConditionValue1': float(found_quest.get('d_ConditionValue1', 0.0) or 0.0),
             'd_ConditionValue2': float(found_quest.get('d_ConditionValue2', 0.0) or 0.0),
             'd_ConditionValue3': float(found_quest.get('d_ConditionValue3', 0.0) or 0.0),
-            'i_RewardReceived1': int(found_quest.get('i_RewardReceived1', 0) or 0),
-            'i_RewardReceived2': int(found_quest.get('i_RewardReceived2', 0) or 0),
-            'i_RewardReceived3': int(found_quest.get('i_RewardReceived3', 0) or 0),
-            'next_flg': int(found_quest.get('next_flg', 0) or 0),
+            'i_RewardReceived1': r1,
+            'i_RewardReceived2': r2,
+            'i_RewardReceived3': r3,
+            'next_flg': next_flg,
             'reward_data': reward_data,
-        }
-    return quest, OK
+        }, OK
+
+    return {
+        'i_CurrentID': cur_id,
+        'i_CompleteID': 0,
+        'd_ConditionValue1': cond_val if sub_id == 1 else 0.0,
+        'd_ConditionValue2': cond_val if sub_id == 2 else 0.0,
+        'd_ConditionValue3': cond_val if sub_id == 3 else 0.0,
+        'i_RewardReceived1': 1 if sub_id == 1 else 0,
+        'i_RewardReceived2': 1 if sub_id == 2 else 0,
+        'i_RewardReceived3': 1 if sub_id == 3 else 0,
+        'next_flg': 0,
+        'reward_data': reward_data,
+    }, OK

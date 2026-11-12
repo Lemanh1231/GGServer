@@ -8,6 +8,206 @@ from server.handlers.registry import cmd, OK, _payload
 # on the process CWD (the old relative 'emulator/gamedata/...' silently failed -> flat fallback).
 _GAME_DATA_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'gamedata', 'game_data.json')
 
+_SHOP_TABLE_CACHE = None
+_REWARD_TABLE_CACHE = None
+_AD_LEVEL_TABLE_CACHE = None
+
+# Shop idx -> AdLevel group_id (Table 37)
+AD_SHOP_GROUP_MAP = {
+    3: 200010,   # Free Chocolate (Lv 1..20)
+    2: 210010,   # Free Likes Ch1 (Lv 1..30)
+    18: 220010,  # Free Hearts Ch2 (Lv 1..30)
+}
+AD_GROUP_SHOP_MAP = {v: k for k, v in AD_SHOP_GROUP_MAP.items()}
+AD_EXP_PER_CLAIM = 5
+
+
+def _load_shop_tables():
+    global _SHOP_TABLE_CACHE, _REWARD_TABLE_CACHE, _AD_LEVEL_TABLE_CACHE
+    if _SHOP_TABLE_CACHE is not None and _REWARD_TABLE_CACHE is not None and _AD_LEVEL_TABLE_CACHE is not None:
+        return _SHOP_TABLE_CACHE, _REWARD_TABLE_CACHE, _AD_LEVEL_TABLE_CACHE
+    shop_map = {}
+    reward_map = {}
+    ad_level_map = {}
+    try:
+        with open(_GAME_DATA_PATH, 'r', encoding='utf-8') as f:
+            gd = json.load(f)
+        for row in gd.get('12', []):
+            sid = int(row.get('1', 0) or 0)
+            if sid:
+                shop_map[sid] = row
+        for row in gd.get('13', []):
+            rg = int(row.get('2', 0) or 0)
+            if rg:
+                reward_map.setdefault(rg, []).append(row)
+        for row in gd.get('37', []):
+            gid = int(row.get('1', 0) or 0)
+            if gid:
+                ad_level_map.setdefault(gid, []).append({
+                    'i_id': gid,
+                    'i_Level': int(row.get('2', 1) or 1),
+                    'i_RequireEXP': int(row.get('3', 0) or 0),
+                    'i_RewardGroup': int(row.get('4', gid) or gid),
+                })
+        for gid in ad_level_map:
+            ad_level_map[gid].sort(key=lambda x: x['i_Level'])
+    except Exception:
+        pass
+    _SHOP_TABLE_CACHE = shop_map
+    _REWARD_TABLE_CACHE = reward_map
+    _AD_LEVEL_TABLE_CACHE = ad_level_map
+    return shop_map, reward_map, ad_level_map
+
+
+def _calc_ad_level_and_reward_group(group_id, exp_val):
+    _, _, ad_level_map = _load_shop_tables()
+    rows = ad_level_map.get(int(group_id), [])
+    if not rows:
+        return 1, int(group_id)
+    best_lvl = 1
+    best_rg = int(group_id)
+    for r in rows:
+        if int(exp_val) >= r['i_RequireEXP']:
+            best_lvl = r['i_Level']
+            best_rg = r['i_RewardGroup']
+        else:
+            break
+    return best_lvl, best_rg
+
+
+def _normalise_user_shop(user):
+    """Deduplicate user_shop and normalize cooldown/daily items so free items never hit a 4-claim wall."""
+    if not user:
+        return []
+    raw_shop = user.get('user_shop', [])
+    if not isinstance(raw_shop, list):
+        raw_shop = []
+
+    shop_map, _, _ = _load_shop_tables()
+    now_ts = int(time.time())
+    today_ymd = time.strftime('%Y%m%d', time.localtime(now_ts))
+
+    by_id = {}
+    for item in raw_shop:
+        if not isinstance(item, dict):
+            continue
+        iid = int(item.get('i_id', 0) or 0)
+        if iid <= 0:
+            continue
+        cnt = int(item.get('i_Count', 0) or 0)
+        tot = max(cnt, int(item.get('i_TotalCount', 0) or 0))
+        ptime = int(item.get('i_PurchaseTime', 0) or 0)
+        if ptime > now_ts:
+            ptime = now_ts
+        upd = int(item.get('upd_day', ptime) or ptime)
+        lvl = max(1, int(item.get('i_Level', 1) or 1))
+
+        if iid in by_id:
+            prev = by_id[iid]
+            prev['i_Count'] = max(prev['i_Count'], cnt)
+            prev['i_TotalCount'] = max(prev['i_TotalCount'], tot)
+            prev['i_PurchaseTime'] = max(prev['i_PurchaseTime'], ptime)
+            prev['upd_day'] = max(prev['upd_day'], upd)
+            prev['i_Level'] = max(prev['i_Level'], lvl)
+        else:
+            by_id[iid] = {
+                'i_id': iid,
+                'i_Level': lvl,
+                'i_Count': cnt,
+                'i_TotalCount': tot,
+                'i_PurchaseTime': ptime,
+                'upd_day': upd,
+            }
+
+    for iid, entry in by_id.items():
+        srow = shop_map.get(iid, {})
+        cond_type = int(srow.get('36', 0) or 0)
+        if cond_type == 4 or iid in AD_SHOP_GROUP_MAP:
+            # Cooldown-only free items (idx = 2, 3, 18): never cap by i_Count
+            entry['i_Count'] = 0
+        elif cond_type == 5 or iid == 10012:
+            # Daily-limited items (idx = 10012 Fever Time): reset when calendar day changes
+            ptime = int(entry.get('i_PurchaseTime', 0) or 0)
+            p_ymd = time.strftime('%Y%m%d', time.localtime(ptime)) if ptime > 0 else ''
+            if p_ymd != today_ymd:
+                entry['i_Count'] = 0
+                entry['i_PurchaseTime'] = 0
+
+    result = list(by_id.values())
+    user['user_shop'] = result
+    return result
+
+
+def _normalise_user_ad_level(user):
+    """Ensure user['user_ad_level'] has all 3 groups (200010, 210010, 220010) synced with Table 37."""
+    if not user:
+        return [
+            {'i_id': 200010, 'i_Level': 1, 'i_EXP': 0},
+            {'i_id': 210010, 'i_Level': 1, 'i_EXP': 0},
+            {'i_id': 220010, 'i_Level': 1, 'i_EXP': 0},
+        ]
+
+    shop_list = _normalise_user_shop(user)
+    shop_totals = {
+        int(it.get('i_id', 0) or 0): int(it.get('i_TotalCount', 0) or 0)
+        for it in shop_list if isinstance(it, dict)
+    }
+
+    raw_ad = user.get('user_ad_level')
+    existing = {}
+    if isinstance(raw_ad, list):
+        for x in raw_ad:
+            if isinstance(x, dict) and x.get('i_id'):
+                gid = int(x['i_id'])
+                existing[gid] = x
+    elif isinstance(raw_ad, dict) and raw_ad.get('i_id'):
+        existing[int(raw_ad['i_id'])] = raw_ad
+
+    result = []
+    for gid in (200010, 210010, 220010):
+        shop_idx = AD_GROUP_SHOP_MAP[gid]
+        hist_exp = shop_totals.get(shop_idx, 0) * AD_EXP_PER_CLAIM
+        cur_entry = existing.get(gid)
+        cur_exp = int(cur_entry.get('i_EXP', 0) or 0) if cur_entry else 0
+        # Replace legacy placeholder i_EXP=1 with 0 if no claims were made
+        if cur_exp == 1 and hist_exp == 0:
+            cur_exp = 0
+        final_exp = max(cur_exp, hist_exp)
+        lvl, _ = _calc_ad_level_and_reward_group(gid, final_exp)
+        result.append({
+            'i_id': gid,
+            'i_Level': lvl,
+            'i_EXP': final_exp,
+        })
+        # Also keep i_Level in user_shop entry synced for convenience
+        for it in shop_list:
+            if int(it.get('i_id', 0) or 0) == shop_idx:
+                it['i_Level'] = lvl
+
+    user['user_ad_level'] = result
+    return result
+
+
+def _advance_user_ad_level(user, shop_idx):
+    """Grant +5 EXP to the UserAdLevel group for shop_idx (2, 3, or 18) and return (entry_dict, reward_group)."""
+    gid = AD_SHOP_GROUP_MAP.get(int(shop_idx))
+    if not gid:
+        return None, None
+    ad_levels = _normalise_user_ad_level(user)
+    target = next((x for x in ad_levels if int(x.get('i_id', 0) or 0) == gid), None)
+    if not target:
+        target = {'i_id': gid, 'i_Level': 1, 'i_EXP': 0}
+        ad_levels.append(target)
+
+    # First get the reward_group for the CURRENT level being claimed (or after level-up)
+    # In Guitar Girl, claiming at Level L grants Level L's reward and adds +5 EXP toward Level L+1
+    _, claim_rg = _calc_ad_level_and_reward_group(gid, target['i_EXP'])
+    new_exp = int(target.get('i_EXP', 0) or 0) + AD_EXP_PER_CLAIM
+    new_lvl, _ = _calc_ad_level_and_reward_group(gid, new_exp)
+    target['i_EXP'] = new_exp
+    target['i_Level'] = new_lvl
+    return dict(target), claim_rg
+
 VARIETY_STORE_CATALOG = {
     1: {'cost': 10, 'reward_type': 4, 'reward_id': 1, 'reward_value': 1},
     2: {'cost': 30, 'reward_type': 4, 'reward_id': 2, 'reward_value': 1},
@@ -121,6 +321,8 @@ def _check_purchase_eligibility(user, idx):
     except (ValueError, TypeError):
         return False, 'Invalid item ID'
 
+    shop_list = _normalise_user_shop(user)
+
     # Check Star Pass tickets (1000..1999)
     if 1000 <= idx < 2000:
         season_num = idx % 1000
@@ -134,27 +336,36 @@ def _check_purchase_eligibility(user, idx):
     # Check Star Pass merchandise packs (2000..3020)
     if 2000 <= idx <= 3020:
         season_num = idx % 1000
-        shop_list = user.get('user_shop', [])
         pack_ids = {2000 + season_num, 3000 + season_num}
         if any(int(item.get('i_id', 0) or 0) in pack_ids and int(item.get('i_Count', item.get('i_TotalCount', 0)) or 0) > 0 for item in shop_list):
             return False, 'Bạn đã sở hữu gói vật phẩm này rồi!'
 
-    # Check Table 12 limits (col 35 limit_type, col 36 limit_count)
-    try:
-        with open(_GAME_DATA_PATH, 'r', encoding='utf-8') as f:
-            gd = json.load(f)
-            for row in gd.get('12', []):
-                if int(row.get('1', 0)) == idx:
-                    lim_type = int(row.get('35', 0) or 0)
-                    lim_cnt = int(row.get('36', 0) or 0)
-                    if lim_type == 1 and lim_cnt > 0:
-                        shop_list = user.get('user_shop', [])
-                        cur_cnt = sum(int(it.get('i_Count', it.get('i_TotalCount', 0)) or 0) for it in shop_list if int(it.get('i_id', 0) or 0) == idx)
-                        if cur_cnt >= lim_cnt:
-                            return False, 'Vật phẩm đã đạt giới hạn mua tối đa!'
-                    break
-    except Exception:
-        pass
+    # Check Table 12 condition rules:
+    # - col 35 = b_IsActive (1)
+    # - col 36 = i_Condition:
+    #     1, 2 -> One-time purchase limit (col 37 = max count, usually 1)
+    #     4    -> Cooldown-only free items (idx = 2, 3, 18; col 37 = 900s cooldown, NO count cap!)
+    #     5    -> Daily limit (idx = 10012 Fever Time; col 37 = 1 per day, resets each calendar day)
+    shop_map, _, _ = _load_shop_tables()
+    row = shop_map.get(idx)
+    if row:
+        cond_type = int(row.get('36', 0) or 0)
+        cond_val = int(row.get('37', 0) or 0)
+        if cond_type in (1, 2) and cond_val > 0:
+            cur_cnt = sum(int(it.get('i_Count', it.get('i_TotalCount', 0)) or 0) for it in shop_list if int(it.get('i_id', 0) or 0) == idx)
+            if cur_cnt >= cond_val:
+                return False, 'Vật phẩm đã đạt giới hạn mua tối đa!'
+        elif cond_type == 5 and cond_val > 0:
+            today_ymd = time.strftime('%Y%m%d', time.localtime())
+            cur_cnt = 0
+            for it in shop_list:
+                if int(it.get('i_id', 0) or 0) == idx:
+                    ptime = int(it.get('i_PurchaseTime', 0) or 0)
+                    p_ymd = time.strftime('%Y%m%d', time.localtime(ptime)) if ptime > 0 else ''
+                    if p_ymd == today_ymd:
+                        cur_cnt += int(it.get('i_Count', 0) or 0)
+            if cur_cnt >= cond_val:
+                return False, 'Vật phẩm đã đạt giới hạn mua trong ngày!'
 
     return True, ''
 
@@ -202,17 +413,14 @@ def h_buy_shop(req, player, ctx):
     sell_type = 1
     price = 0
     reward_group = 0
-    try:
-        with open(_GAME_DATA_PATH, 'r', encoding='utf-8') as f:
-            gd = json.load(f)
-            for row in gd.get('12', []):
-                if int(row.get('1', 0)) == idx:
-                    sell_type = int(row.get('33', 1))
-                    price = int(row.get('34', 0))
-                    reward_group = int(row.get('31', 0))
-                    break
-    except Exception:
-        pass
+    cond_type = 0
+    shop_map, reward_map, _ = _load_shop_tables()
+    srow = shop_map.get(idx)
+    if srow:
+        sell_type = int(srow.get('33', 1) or 0)
+        price = int(srow.get('34', 0) or 0)
+        reward_group = int(srow.get('31', 0) or 0)
+        cond_type = int(srow.get('36', 0) or 0)
 
     if idx in (2003, 3003):
         # Season 3 discounted live pack is 50 CP
@@ -231,19 +439,23 @@ def h_buy_shop(req, player, ctx):
     elif sell_type in (0, 2):
         paid = True
 
+    # If this is an AdLevel free shop item (idx in 2, 3, 18), advance UserAdLevel (+5 EXP)
+    # and use the player's current AdLevel reward_group (e.g. 200010 -> 200020 -> ... -> 200200)
+    updated_ad_level = None
+    if idx in AD_SHOP_GROUP_MAP:
+        updated_ad_level, ad_rg = _advance_user_ad_level(user, idx)
+        if ad_rg:
+            reward_group = ad_rg
+    else:
+        _normalise_user_ad_level(user)
+
     rewards = []
-    try:
-        with open(_GAME_DATA_PATH, 'r', encoding='utf-8') as f:
-            gd = json.load(f)
-            for r in gd.get('13', []):
-                if int(r.get('2', 0)) == reward_group:
-                    rewards.append({
-                        'reward_type': int(r.get('3', 1)),
-                        'reward_id': int(r.get('4', 0)),
-                        'reward_value': int(r.get('5', 0))
-                    })
-    except Exception:
-        pass
+    for r in reward_map.get(reward_group, []):
+        rewards.append({
+            'reward_type': int(r.get('3', 1)),
+            'reward_id': int(r.get('4', 0)),
+            'reward_value': int(r.get('5', 0))
+        })
 
     # Apply granted rewards to server state so returned balances are up-to-date
     ud = user.setdefault('userdata', {})
@@ -281,6 +493,25 @@ def h_buy_shop(req, player, ctx):
                 prop['i_Level'] = prop.get('i_Level', 1) + 1
             else:
                 props.append({'i_id': rid, 'i_Level': 1})
+        elif rtype == 6: # Timed Buff (Table 6, e.g. rid=2 Fever Time x2 for rval seconds)
+            now_ts = int(time.time())
+            dur = int(rval)
+            buffs = user.setdefault('user_buff', [])
+            b_entry = next((b for b in buffs if int(b.get('i_id', 0) or 0) == int(rid)), None)
+            if b_entry:
+                cur_end = int(b_entry.get('i_EndTime', b_entry.get('i_ExpiredTime', 0)) or 0)
+                b_entry['i_Level'] = max(1, int(b_entry.get('i_Level', 1) or 1))
+                b_entry['i_ActiveTime'] = now_ts
+                b_entry['i_EndTime'] = max(now_ts, cur_end) + dur
+                b_entry.pop('i_BuffTime', None)
+                b_entry.pop('i_ExpiredTime', None)
+            else:
+                buffs.append({
+                    'i_id': int(rid),
+                    'i_Level': 1,
+                    'i_ActiveTime': now_ts,
+                    'i_EndTime': now_ts + dur,
+                })
         elif rtype == 9: # Guitar
             guitars = user.setdefault('user_guitar', [])
             if not any(int(g.get('i_id', 0) or 0) == rid for g in guitars):
@@ -313,32 +544,45 @@ def h_buy_shop(req, player, ctx):
         if not any(rew.get('reward_type') == 10 for rew in rewards):
             rewards.append({'reward_type': 10, 'reward_id': 1000 + season_num, 'reward_value': 1})
 
-    lst = user.setdefault('user_shop', [])
+    lst = _normalise_user_shop(user)
     now = int(time.time())
     ids_to_record = [idx]
     if 2000 <= idx <= 3020:
         season_num = idx % 1000
         ids_to_record = list({idx, 2000 + season_num, 3000 + season_num})
 
+    new_lvl_for_shop = int(updated_ad_level['i_Level']) if updated_ad_level else 1
     for it_id in ids_to_record:
         item = next((x for x in lst if int(x.get('i_id', 0) or 0) == it_id), None)
+        is_cooldown_free = (cond_type == 4 or it_id in AD_SHOP_GROUP_MAP)
         if item:
-            item['i_Count'] = item.get('i_Count', 0) + 1
+            item['i_Count'] = 0 if is_cooldown_free else (item.get('i_Count', 0) + 1)
             item['i_TotalCount'] = item.get('i_TotalCount', 0) + 1
             item['i_PurchaseTime'] = now
             item['upd_day'] = now
+            if updated_ad_level and it_id == idx:
+                item['i_Level'] = new_lvl_for_shop
         else:
-            lst.append({'i_id': it_id, 'i_Level': 1, 'i_Count': 1, 'i_TotalCount': 1, 'i_PurchaseTime': now, 'upd_day': now})
+            lst.append({
+                'i_id': it_id,
+                'i_Level': new_lvl_for_shop if (updated_ad_level and it_id == idx) else 1,
+                'i_Count': 0 if is_cooldown_free else 1,
+                'i_TotalCount': 1,
+                'i_PurchaseTime': now,
+                'upd_day': now,
+            })
     from server.handlers.auth import _normalise_ticketcollection
     _normalise_ticketcollection(user)
     state.save_user(user)
 
-    return {
+    ret_payload = {
         'u_cp': ud.get('u_cp', 0),
         'u_candy': float(ud.get('u_candy', 0.0)),
         'reward_data': rewards,
-        'user_ad_level': user.get('user_ad_level', {})
-    }, OK
+    }
+    if updated_ad_level is not None:
+        ret_payload['user_ad_level'] = updated_ad_level
+    return ret_payload, OK
 
 def _get_price(table_id, item_id, currency_col, price_col):
     try:
@@ -523,7 +767,7 @@ def h_buy_contents(req, player, ctx):
             
             if _deduct_currency(uuid, user, cur, price):
                 if item:
-                    item['i_Level'] = cur_lvl + 1
+                    item['i_Level'] = min(20, cur_lvl + 1)
                 else:
                     item = {'i_id': idx, 'i_Level': 1}
                     lst.append(item)

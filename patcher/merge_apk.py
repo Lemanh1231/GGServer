@@ -100,6 +100,12 @@ LIBIL2CPP_PATCHES = [
         b'\x60\x16\x40\xf9',
         'PassGoodsDetail: use m_cItem_Active (0x28) instead of m_cItem (0x20)',
     ),
+    # 4) Display server UID (m_strUserId at +0x90) instead of mock PlayGame ID (m_strPmangPlusID at +0xA0 = "452465183")
+    #    in GgUtil.GetUSNString (VA 0x1CF8CA0, 0x1CF8CDC) and GgUtil.GetCopyUSNString (VA 0x1CF8D80, 0x1CF8DAC)
+    (0x1CF4CA0, b'\x00\x50\x40\xf9', b'\x00\x48\x40\xf9', 'GetUSNString: ldr x0, [x0, #0xa0] -> ldr x0, [x0, #0x90]'),
+    (0x1CF4CDC, b'\x01\x50\x40\xf9', b'\x01\x48\x40\xf9', 'GetUSNString: ldr x1, [x0, #0xa0] -> ldr x1, [x0, #0x90]'),
+    (0x1CF4D80, b'\x00\x50\x40\xf9', b'\x00\x48\x40\xf9', 'GetCopyUSNString: ldr x0, [x0, #0xa0] -> ldr x0, [x0, #0x90]'),
+    (0x1CF4DAC, b'\x08\x80\x02\x91', b'\x08\x40\x02\x91', 'GetCopyUSNString: add x8, x0, #0xa0 -> add x8, x0, #0x90'),
 ]
 
 

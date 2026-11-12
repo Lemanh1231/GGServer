@@ -30,14 +30,16 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * Behavior:
  * - Binds strictly to 127.0.0.1:28765 inside the APK process.
- * - Sticky Primary (Active-Passive): Uses ONLY 1 active domain as long as it responds cleanly.
- *   The other 3 domains receive ZERO connections and ZERO DNS queries during normal operation.
- * - Automatic Failover: If the current domain fails (DNS block, TCP timeout, TLS error, HTTP 5xx/408/429),
- *   transparently switches to the next domain, replays the exact request, and persists the new active domain.
+ * - Primary first on EVERY request: kotori.click, then backups in configured order.
+ *   Backups receive no connections/DNS queries while primary requests succeed.
+ * - Automatic Failover: DNS/TCP/TLS failures or HTTP 5xx/408/429 try the next domain.
+ *   A successful backup is diagnostic state only; it never changes the next request's order.
  */
 public final class DomainFailoverGateway {
 
     public static final int DEFAULT_PORT = 28765;
+    // Deployment selector, not authentication. Nginx maps this release to Java :8181.
+    public static final String CLIENT_RELEASE = "java-8181-v1";
 
     public static final String[] DEFAULT_DOMAINS = new String[] {
         "https://kotori.click",
@@ -76,6 +78,7 @@ public final class DomainFailoverGateway {
     private final StateStore store;
     private final AtomicInteger activeIndex;
     private final AtomicInteger totalFailovers = new AtomicInteger(0);
+    private final SessionTokenBridge tokenBridge = new SessionTokenBridge();
     private ServerSocket serverSocket;
     private ExecutorService workerPool;
     private volatile boolean running;
@@ -84,17 +87,8 @@ public final class DomainFailoverGateway {
         this.port = port;
         this.domains = (domains != null && domains.length > 0) ? domains.clone() : DEFAULT_DOMAINS.clone();
         this.store = store;
-        int initial = 0;
-        if (store != null) {
-            try {
-                initial = store.loadActiveIndex();
-            } catch (Throwable ignored) {
-            }
-        }
-        if (initial < 0 || initial >= this.domains.length) {
-            initial = 0;
-        }
-        this.activeIndex = new AtomicInteger(initial);
+        // Ignore legacy persisted backup selection; every request starts at primary.
+        this.activeIndex = new AtomicInteger(0);
     }
 
     public static DomainFailoverGateway ensureStarted(StateStore store) {
@@ -149,7 +143,7 @@ public final class DomainFailoverGateway {
 
         if (store != null) {
             store.logInfo("Started on http://127.0.0.1:" + port
-                + " | Active domain [" + activeIndex.get() + "]: " + domains[activeIndex.get()]);
+                + " | Primary first on every request: " + domains[0]);
         }
     }
 
@@ -289,7 +283,6 @@ public final class DomainFailoverGateway {
             byte[] reqBody,
             OutputStream clientOut) throws IOException {
 
-        final int startIdx = activeIndex.get();
         final int n = domains.length;
         final boolean isCdnAsset = pathAndQuery.startsWith("/AssetBundles/") || pathAndQuery.endsWith(".apk");
         final int readTimeout = isCdnAsset ? READ_TIMEOUT_CDN_MS : READ_TIMEOUT_RPC_MS;
@@ -299,12 +292,14 @@ public final class DomainFailoverGateway {
         int lastFailStatus = 502;
 
         for (int attempt = 0; attempt < n; attempt++) {
-            final int idx = (startIdx + attempt) % n;
+            final int idx = attempt;
             final String baseDomain = domains[idx];
             final String fullUrl = baseDomain + pathAndQuery;
 
             HttpURLConnection conn = null;
             try {
+                byte[] upstreamBody = tokenBridge.prepare(pathAndQuery, reqHeaders, reqBody,
+                    baseDomain, CLIENT_RELEASE, localProxyUrl);
                 conn = (HttpURLConnection) new URL(fullUrl).openConnection();
                 conn.setInstanceFollowRedirects(false);
                 conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
@@ -318,16 +313,17 @@ public final class DomainFailoverGateway {
                         conn.addRequestProperty(k, v);
                     }
                 }
+                conn.setRequestProperty("X-GG-Client-Release", CLIENT_RELEASE);
                 conn.setRequestProperty("X-GG-Local-Proxy", localProxyUrl);
                 conn.setRequestProperty("X-GG-Active-Domain", baseDomain);
                 conn.setRequestProperty("Accept-Encoding", "identity");
 
-                if (reqBody.length > 0 || "POST".equals(method) || "PUT".equals(method)) {
+                if (upstreamBody.length > 0 || "POST".equals(method) || "PUT".equals(method)) {
                     conn.setDoOutput(true);
-                    conn.setFixedLengthStreamingMode(reqBody.length);
+                    conn.setFixedLengthStreamingMode(upstreamBody.length);
                     OutputStream upOut = conn.getOutputStream();
-                    if (reqBody.length > 0) {
-                        upOut.write(reqBody);
+                    if (upstreamBody.length > 0) {
+                        upOut.write(upstreamBody);
                     }
                     upOut.flush();
                     upOut.close();
@@ -367,16 +363,13 @@ public final class DomainFailoverGateway {
                     bufferedResp = readBoundedStream(upIn, 16 * 1024 * 1024);
                 }
 
-                // Upstream domain succeeded! Lock onto this domain if we failed over.
+                // Record last successful domain for diagnostics, never for routing order.
+                activeIndex.set(idx);
                 if (attempt > 0) {
-                    activeIndex.set(idx);
                     totalFailovers.incrementAndGet();
                     if (store != null) {
-                        try {
-                            store.saveActiveIndex(idx);
-                        } catch (Throwable ignored) {
-                        }
-                        store.logInfo("Failover succeeded -> locked onto domain [" + idx + "]: " + baseDomain);
+                        store.logInfo("Fallback succeeded on domain [" + idx + "]: " + baseDomain
+                            + " | Next request retries primary");
                     }
                 }
 
