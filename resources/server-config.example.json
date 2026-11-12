@@ -1,0 +1,30 @@
+{
+  "host": "127.0.0.1",
+  "port": 8181,
+  "root": ".",
+  "publicBase": "http://127.0.0.1:8181",
+  "logging": {
+    "level": "INFO",
+    "file": true
+  },
+  "database": {
+    "backend": "sqlite",
+    "name": "ggserver"
+  },
+  "sessions": {
+    "timeoutSeconds": 86400,
+    "cleanupSeconds": 60,
+    "maxSessions": 10000,
+    "required": true
+  },
+  "folders": {
+    "data": "data",
+    "cdn": "cdn_files",
+    "gamedata": "gamedata",
+    "schema": "schema",
+    "static": "static",
+    "captures": "captures",
+    "apk": "out",
+    "logs": "logs"
+  }
+}

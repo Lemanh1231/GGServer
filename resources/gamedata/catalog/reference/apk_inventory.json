@@ -1,0 +1,213 @@
+{
+  "formatVersion": 1,
+  "sources": [
+    {
+      "file": "com.neowiz.game.guitargirl.apk",
+      "kind": "original-apk",
+      "sha256": "258be18918822c7fead564b02235bddd15df2e40df76ec795b41f5a45f9e492d"
+    },
+    {
+      "file": "config.arm64_v8a.apk",
+      "kind": "original-apk",
+      "sha256": "e08cf9eee8f4b22f315eb03232356f12265dd07a6831318e55292b81defb8748"
+    },
+    {
+      "file": "base_assets.apk",
+      "kind": "original-apk",
+      "sha256": "5854156b052c6d7a8aaa8b920393741535ea7bcb993d3fa0be9b7d133d8e8886"
+    }
+  ],
+  "unityPyVersion": "1.25.4",
+  "objectTypes": {
+    "Animation": 215,
+    "AnimationClip": 138,
+    "Animator": 119,
+    "AnimatorController": 29,
+    "AudioClip": 51,
+    "AudioManager": 1,
+    "AudioSource": 7,
+    "BoxCollider": 1357,
+    "BoxCollider2D": 1,
+    "BuildSettings": 1,
+    "Camera": 62,
+    "ComputeShader": 8,
+    "DelayedCallManager": 1,
+    "Font": 4,
+    "GameObject": 12346,
+    "GraphicsSettings": 1,
+    "InputManager": 1,
+    "Light": 3,
+    "LightingSettings": 7,
+    "LightmapSettings": 13,
+    "Material": 175,
+    "Mesh": 42,
+    "MeshFilter": 42,
+    "MeshRenderer": 42,
+    "MonoBehaviour": 15146,
+    "MonoManager": 1,
+    "MonoScript": 3525,
+    "NavMeshProjectSettings": 1,
+    "NavMeshSettings": 13,
+    "ParticleSystem": 481,
+    "ParticleSystemRenderer": 483,
+    "Physics2DSettings": 1,
+    "PhysicsManager": 1,
+    "PlayerSettings": 1,
+    "PreloadData": 14,
+    "QualitySettings": 1,
+    "RectTransform": 2,
+    "RenderSettings": 13,
+    "ResourceManager": 1,
+    "Rigidbody": 147,
+    "RuntimeInitializeOnLoadManager": 1,
+    "ScriptMapper": 1,
+    "Shader": 113,
+    "StreamingManager": 1,
+    "TagManager": 1,
+    "TextAsset": 12,
+    "Texture2D": 301,
+    "TimeManager": 1,
+    "Transform": 12344,
+    "UnityConnectSettings": 1,
+    "Unknown (655991488)": 1,
+    "VFXManager": 1
+  },
+  "textAssets": [
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/451bee0ee1c0cea4e9c7ae8a7f13e478",
+      "pathId": 1,
+      "name": "resolutions(Backup)",
+      "bytes": 1841,
+      "sha256": "44cefd7e6635cb438a4f314d5699955d5e1098259b63bc706b53d7a70cf8e1b8",
+      "classification": "json-unclassified",
+      "artifactFile": "text_assets/2/a817e33aa78f/1_resolutions_Backup_.bytes",
+      "decodedArtifactFile": "text_assets/2/a817e33aa78f/1_resolutions_Backup_.bytes.json"
+    },
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/9020aa96765ed9946a0a7c4153eaae11",
+      "pathId": 1,
+      "name": "PerformanceTestRunSettings",
+      "bytes": 23,
+      "sha256": "600c5c3dab7e18e51c28aad096457da91fcf60a3eedd908b6bf30194dae2b55b",
+      "classification": "json-unclassified",
+      "artifactFile": "text_assets/2/585efe7bc70e/1_PerformanceTestRunSettings.bytes",
+      "decodedArtifactFile": "text_assets/2/585efe7bc70e/1_PerformanceTestRunSettings.bytes.json"
+    },
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/9bdf4c2c28dd11147bb4f05eb5138aca",
+      "pathId": 1,
+      "name": "Intro_kr",
+      "bytes": 4946,
+      "sha256": "c1a46f195b7ab95cdf1e6db7cfe65dafb031858e073bb48d406a973cffa07885",
+      "classification": "csv-candidate",
+      "artifactFile": "text_assets/2/3d55a619cdf6/1_Intro_kr.bytes",
+      "decodedArtifactFile": "text_assets/2/3d55a619cdf6/1_Intro_kr.bytes.json"
+    },
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/a81d146fc1c79a649a5ce2327a40d8d3",
+      "pathId": 1,
+      "name": "Localization",
+      "bytes": 1253,
+      "sha256": "ef444499d0509c8fdfb63781b5254b9ba985793804b744ff43ba31203efd29ec",
+      "classification": "csv-candidate",
+      "artifactFile": "text_assets/2/9cefebeefec3/1_Localization.bytes",
+      "decodedArtifactFile": "text_assets/2/9cefebeefec3/1_Localization.bytes.json"
+    },
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/d53c8e2caad65ed48899c394fe5749aa",
+      "pathId": 1,
+      "name": "PerformanceTestRunInfo",
+      "bytes": 2950,
+      "sha256": "a6911016f01a0fce7ee2e378385aed6e6cc0c09a4aae56ef94a4f6ac6639e490",
+      "classification": "json-unclassified",
+      "artifactFile": "text_assets/2/4956f2c62e61/1_PerformanceTestRunInfo.bytes",
+      "decodedArtifactFile": "text_assets/2/4956f2c62e61/1_PerformanceTestRunInfo.bytes.json"
+    },
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/d706ce248a77740149b2f83e32d67597",
+      "pathId": 1,
+      "name": "resolutions",
+      "bytes": 1851,
+      "sha256": "d928e9927af2db80fd83d72f6e1a990e8b6c18f0a068f7a61b8dfcceb1291aaa",
+      "classification": "json-unclassified",
+      "artifactFile": "text_assets/2/0eab78bc428b/1_resolutions.bytes",
+      "decodedArtifactFile": "text_assets/2/0eab78bc428b/1_resolutions.bytes.json"
+    },
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/d82c1b31c7e74239bff1220585707d2b",
+      "pathId": 1,
+      "name": "LineBreaking Leading Characters",
+      "bytes": 95,
+      "sha256": "62d3f4d5f64aaf885692d2d13a8313f6918e6e4c5aeb3990a43f614652bfd89c",
+      "classification": "text-unclassified",
+      "artifactFile": "text_assets/2/aacef0a482de/1_LineBreaking_Leading_Characters.bytes"
+    },
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/fade42e8bc714b018fac513c043d323b",
+      "pathId": 1,
+      "name": "LineBreaking Following Characters",
+      "bytes": 269,
+      "sha256": "3a73e5ffe2510756dd3c2e982fdc1218b4be82c6e21abde88070d6860e1bc8e6",
+      "classification": "text-unclassified",
+      "artifactFile": "text_assets/2/881322937fbe/1_LineBreaking_Following_Characters.bytes"
+    },
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/sharedassets8.assets.split0",
+      "pathId": 133,
+      "name": "cat.atlas",
+      "bytes": 1403,
+      "sha256": "399e9438ed275b15c960de7559cf2fe17852f8db6403038888b80e97ee05b54b",
+      "classification": "text-unclassified",
+      "artifactFile": "text_assets/2/e1522643ec2b/133_cat.atlas.bytes"
+    },
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/sharedassets8.assets.split0",
+      "pathId": 134,
+      "name": "pico.atlas",
+      "bytes": 1182,
+      "sha256": "dd723b353b6f6cb06cb838f0afb54c4ca2bcfae2d0dbefbcf5edc18314d809ef",
+      "classification": "text-unclassified",
+      "artifactFile": "text_assets/2/e1522643ec2b/134_pico.atlas.bytes"
+    },
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/sharedassets8.assets.split0",
+      "pathId": 135,
+      "name": "pico",
+      "bytes": 7074,
+      "sha256": "a82a9ec11fd6a6bc682126ccb72f6a3f3ba2b103cbc3e54a558317e4c099d8a2",
+      "classification": "spine-animation-json",
+      "artifactFile": "text_assets/2/e1522643ec2b/135_pico.bytes",
+      "decodedArtifactFile": "text_assets/2/e1522643ec2b/135_pico.bytes.json"
+    },
+    {
+      "apk": 2,
+      "container": "assets/bin/Data/sharedassets8.assets.split0",
+      "pathId": 136,
+      "name": "cat",
+      "bytes": 23044,
+      "sha256": "ec16d61e458c1fd0d3cf6ffc6f111f7cf8cfa14b9c4339e382419d8d286d8caa",
+      "classification": "spine-animation-json",
+      "artifactFile": "text_assets/2/e1522643ec2b/136_cat.bytes",
+      "decodedArtifactFile": "text_assets/2/e1522643ec2b/136_cat.bytes.json"
+    }
+  ],
+  "failures": [],
+  "limits": [
+    "Gameplay table values downloaded from the server may not be packaged in the APK.",
+    "Stripped MonoBehaviour fields are NOT reconstructed without a matching type tree.",
+    "TextAsset names, JSON and ID-like strings do not prove gameplay semantics."
+  ],
+  "assetEntryCount": 1691,
+  "artifactRoot": "/tmp/opencode/gg-apk-catalog-extraction"
+}

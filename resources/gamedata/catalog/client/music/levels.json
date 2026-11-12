@@ -1,0 +1,502 @@
+[
+  {
+    "i_Level": 1,
+    "f_EncoreBonusAppearRate": 0.1,
+    "i_EncoreBonusAppearPercent": 10,
+    "f_EncoreBonusAppearCooltime_Sec": 75600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 21.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 2,
+    "f_EncoreBonusAppearRate": 0.15,
+    "i_EncoreBonusAppearPercent": 15,
+    "f_EncoreBonusAppearCooltime_Sec": 72000.0,
+    "f_EncoreBonusAppearCooltime_Hour": 20.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 3,
+    "f_EncoreBonusAppearRate": 0.2,
+    "i_EncoreBonusAppearPercent": 20,
+    "f_EncoreBonusAppearCooltime_Sec": 68400.0,
+    "f_EncoreBonusAppearCooltime_Hour": 19.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 4,
+    "f_EncoreBonusAppearRate": 0.25,
+    "i_EncoreBonusAppearPercent": 25,
+    "f_EncoreBonusAppearCooltime_Sec": 64800.0,
+    "f_EncoreBonusAppearCooltime_Hour": 18.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 5,
+    "f_EncoreBonusAppearRate": 0.3,
+    "i_EncoreBonusAppearPercent": 30,
+    "f_EncoreBonusAppearCooltime_Sec": 61200.0,
+    "f_EncoreBonusAppearCooltime_Hour": 17.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 6,
+    "f_EncoreBonusAppearRate": 0.35,
+    "i_EncoreBonusAppearPercent": 35,
+    "f_EncoreBonusAppearCooltime_Sec": 57600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 16.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 7,
+    "f_EncoreBonusAppearRate": 0.4,
+    "i_EncoreBonusAppearPercent": 40,
+    "f_EncoreBonusAppearCooltime_Sec": 54000.0,
+    "f_EncoreBonusAppearCooltime_Hour": 15.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 8,
+    "f_EncoreBonusAppearRate": 0.45,
+    "i_EncoreBonusAppearPercent": 45,
+    "f_EncoreBonusAppearCooltime_Sec": 50400.0,
+    "f_EncoreBonusAppearCooltime_Hour": 14.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 9,
+    "f_EncoreBonusAppearRate": 0.5,
+    "i_EncoreBonusAppearPercent": 50,
+    "f_EncoreBonusAppearCooltime_Sec": 46800.0,
+    "f_EncoreBonusAppearCooltime_Hour": 13.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 10,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 43200.0,
+    "f_EncoreBonusAppearCooltime_Hour": 12.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 11,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 41400.0,
+    "f_EncoreBonusAppearCooltime_Hour": 11.5,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 12,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 39600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 11.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 13,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 37800.0,
+    "f_EncoreBonusAppearCooltime_Hour": 10.5,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 14,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 36000.0,
+    "f_EncoreBonusAppearCooltime_Hour": 10.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 15,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 34200.0,
+    "f_EncoreBonusAppearCooltime_Hour": 9.5,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 16,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 32400.0,
+    "f_EncoreBonusAppearCooltime_Hour": 9.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 17,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 30600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 8.5,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 18,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 28800.0,
+    "f_EncoreBonusAppearCooltime_Hour": 8.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 19,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 27000.0,
+    "f_EncoreBonusAppearCooltime_Hour": 7.5,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 20,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 21,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 22,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 23,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 24,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 25,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 26,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 27,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 28,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 29,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 30,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 31,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 32,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 33,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 34,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 35,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 36,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 37,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 38,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 39,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 40,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 41,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 42,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 43,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 44,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 45,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 46,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 47,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 48,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 49,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  },
+  {
+    "i_Level": 50,
+    "f_EncoreBonusAppearRate": 1.0,
+    "i_EncoreBonusAppearPercent": 100,
+    "f_EncoreBonusAppearCooltime_Sec": 21600.0,
+    "f_EncoreBonusAppearCooltime_Hour": 6.0,
+    "i_EncoreBonusGiftAmount": 10,
+    "i_EncoreFollowerProfileExp": 50,
+    "i_ChThirdCoolTime": 18000
+  }
+]

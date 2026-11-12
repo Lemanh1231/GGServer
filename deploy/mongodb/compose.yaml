@@ -1,0 +1,30 @@
+name: ggserver-java
+services:
+  mongodb:
+    image: mongo@sha256:b9924c330a8bbc5800fe9c69f04a84e221eca7b28fd049a0354147d9908fa142
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: gg_local_admin
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/root_password
+    command: ["mongod", "--auth", "--bind_ip_all"]
+    volumes:
+      - mongo_data:/data/db
+      - ./init.js:/docker-entrypoint-initdb.d/10-ggserver.js:ro
+    secrets:
+      - root_password
+      - app_password
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "const a=db.getSiblingDB('admin'); a.auth('gg_local_admin', require('fs').readFileSync('/run/secrets/root_password','utf8').trim()); if(a.runCommand({ping:1}).ok!==1) quit(1);"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+volumes:
+  mongo_data:
+secrets:
+  root_password:
+    file: ./secrets/root_password
+  app_password:
+    file: ./secrets/app_password

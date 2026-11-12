@@ -1,0 +1,934 @@
+[
+  {
+    "clientType": "GgUIInGame1ManagerSGT.뀎뀍뀉뀈뀋뀁뀈뀎뀍뀇뀈",
+    "typeDefIndex": 114,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "Menu",
+        "value": 1
+      },
+      {
+        "name": "Popup",
+        "value": 2
+      },
+      {
+        "name": "Base",
+        "value": 3
+      },
+      {
+        "name": "Main",
+        "value": 4
+      },
+      {
+        "name": "Settings",
+        "value": 5
+      },
+      {
+        "name": "Max",
+        "value": 6
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "RewardAtalsPackage.eCustomType",
+    "typeDefIndex": 340,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "Custom",
+        "value": 1
+      },
+      {
+        "name": "Shop",
+        "value": 2
+      },
+      {
+        "name": "DailyReward",
+        "value": 3
+      },
+      {
+        "name": "Achievement",
+        "value": 4
+      },
+      {
+        "name": "DailyMission",
+        "value": 5
+      },
+      {
+        "name": "CandyShop",
+        "value": 6
+      },
+      {
+        "name": "YearEvent",
+        "value": 7
+      },
+      {
+        "name": "DailyAttendanceReward",
+        "value": 8
+      },
+      {
+        "name": "LoginEvent_2021_10",
+        "value": 9
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "UIInGamePopupManager_Base.eUIStat",
+    "typeDefIndex": 464,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "Opening",
+        "value": 1
+      },
+      {
+        "name": "Loaded",
+        "value": 2
+      },
+      {
+        "name": "Closing",
+        "value": 3
+      },
+      {
+        "name": "Closed",
+        "value": 4
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "InvBaseItem.뀃뀐뀆뀋뀋뀃뀇뀅뀎뀄뀏",
+    "typeDefIndex": 593,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "Weapon",
+        "value": 1
+      },
+      {
+        "name": "Shield",
+        "value": 2
+      },
+      {
+        "name": "Body",
+        "value": 3
+      },
+      {
+        "name": "Shoulders",
+        "value": 4
+      },
+      {
+        "name": "Bracers",
+        "value": 5
+      },
+      {
+        "name": "Boots",
+        "value": 6
+      },
+      {
+        "name": "Trinket",
+        "value": 7
+      },
+      {
+        "name": "_LastDoNotUse",
+        "value": 8
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "GgUIInGameMenuManager_Base.뀅뀂뀊뀂뀉뀍뀌뀏뀇뀅뀏",
+    "typeDefIndex": 1220,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "Tab",
+        "value": 1
+      },
+      {
+        "name": "Goods",
+        "value": 2
+      },
+      {
+        "name": "Character",
+        "value": 3
+      },
+      {
+        "name": "Collection",
+        "value": 4
+      },
+      {
+        "name": "Follower",
+        "value": 5
+      },
+      {
+        "name": "Costume",
+        "value": 6
+      },
+      {
+        "name": "Shop",
+        "value": 7
+      },
+      {
+        "name": "Max",
+        "value": 8
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "GgUIInGameSkillController.뀋뀌뀌뀉뀄뀉뀉뀁뀅뀂뀐",
+    "typeDefIndex": 1577,
+    "values": [
+      {
+        "name": "Locked",
+        "value": 0
+      },
+      {
+        "name": "Enable",
+        "value": 1
+      },
+      {
+        "name": "Activate",
+        "value": 2
+      },
+      {
+        "name": "Cooltime",
+        "value": 3
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "InGameEntryProcess.뀋뀁뀆뀄뀆뀉뀅뀃뀎뀄뀃",
+    "typeDefIndex": 2227,
+    "values": [
+      {
+        "name": "STM_None",
+        "value": 0
+      },
+      {
+        "name": "STM_Init",
+        "value": 1
+      },
+      {
+        "name": "STM_CheckRedDot",
+        "value": 2
+      },
+      {
+        "name": "STM_DailyMission",
+        "value": 3
+      },
+      {
+        "name": "STM_LocalPush",
+        "value": 4
+      },
+      {
+        "name": "STM_Tutorial",
+        "value": 5
+      },
+      {
+        "name": "STM_HibernationGain",
+        "value": 6
+      },
+      {
+        "name": "STM_CheckAbusing",
+        "value": 7
+      },
+      {
+        "name": "STM_SamSaekEvent",
+        "value": 8
+      },
+      {
+        "name": "STM_RetryUnfinishPurchase",
+        "value": 9
+      },
+      {
+        "name": "STM_DailyReward",
+        "value": 10
+      },
+      {
+        "name": "STM_YearEventReward",
+        "value": 11
+      },
+      {
+        "name": "STM_DailyAttendanceReward",
+        "value": 12
+      },
+      {
+        "name": "STM_ConsecutiveAttendance",
+        "value": 13
+      },
+      {
+        "name": "STM_LoginEvent_2021_10",
+        "value": 14
+      },
+      {
+        "name": "STM_LoginEvent_2021_11",
+        "value": 15
+      },
+      {
+        "name": "STM_GuestCheck",
+        "value": 16
+      },
+      {
+        "name": "STM_PopupUnlockUI",
+        "value": 17
+      },
+      {
+        "name": "STM_CheckStoreRedDot",
+        "value": 18
+      },
+      {
+        "name": "STM_SubscribePass",
+        "value": 19
+      },
+      {
+        "name": "STM_PassGoodsSaleSchedule",
+        "value": 20
+      },
+      {
+        "name": "STM_DoRequireSubscirbePass",
+        "value": 21
+      },
+      {
+        "name": "STM_FollowerQuest",
+        "value": 22
+      },
+      {
+        "name": "STM_FollowerProfile",
+        "value": 23
+      },
+      {
+        "name": "STM_EncoreBonus",
+        "value": 24
+      },
+      {
+        "name": "STM_CheckFanCostume",
+        "value": 25
+      },
+      {
+        "name": "STM_InitComplete",
+        "value": 26
+      },
+      {
+        "name": "STM_Idle",
+        "value": 27
+      },
+      {
+        "name": "STM_ChThirdLobby",
+        "value": 28
+      },
+      {
+        "name": "STM_ChThirdLobbyRetry",
+        "value": 29
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "InvGameItem.뀂뀐뀂뀄뀅뀂뀂뀁뀋뀐뀃",
+    "typeDefIndex": 2875,
+    "values": [
+      {
+        "name": "Broken",
+        "value": 0
+      },
+      {
+        "name": "Cursed",
+        "value": 1
+      },
+      {
+        "name": "Damaged",
+        "value": 2
+      },
+      {
+        "name": "Worn",
+        "value": 3
+      },
+      {
+        "name": "Sturdy",
+        "value": 4
+      },
+      {
+        "name": "Polished",
+        "value": 5
+      },
+      {
+        "name": "Improved",
+        "value": 6
+      },
+      {
+        "name": "Crafted",
+        "value": 7
+      },
+      {
+        "name": "Superior",
+        "value": 8
+      },
+      {
+        "name": "Enchanted",
+        "value": 9
+      },
+      {
+        "name": "Epic",
+        "value": 10
+      },
+      {
+        "name": "Legendary",
+        "value": 11
+      },
+      {
+        "name": "_LastDoNotUse",
+        "value": 12
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "GgUIInGame2SkillController.뀋뀉뀏뀂뀆뀆뀂뀍뀅뀅뀏",
+    "typeDefIndex": 3089,
+    "values": [
+      {
+        "name": "Locked",
+        "value": 0
+      },
+      {
+        "name": "Enable",
+        "value": 1
+      },
+      {
+        "name": "Activate",
+        "value": 2
+      },
+      {
+        "name": "Cooltime",
+        "value": 3
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "GgUIInGame2ManagerSGT.뀊뀍뀈뀐뀇뀄뀈뀆뀍뀋뀇",
+    "typeDefIndex": 3514,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "Menu",
+        "value": 1
+      },
+      {
+        "name": "Popup",
+        "value": 2
+      },
+      {
+        "name": "Base",
+        "value": 3
+      },
+      {
+        "name": "Main",
+        "value": 4
+      },
+      {
+        "name": "Settings",
+        "value": 5
+      },
+      {
+        "name": "Max",
+        "value": 6
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "GgInGame2ManagerSGT.뀊뀋뀈뀎뀌뀆뀂뀊뀏뀄뀏",
+    "typeDefIndex": 3903,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "Background",
+        "value": 1
+      },
+      {
+        "name": "Character",
+        "value": 2
+      },
+      {
+        "name": "Max",
+        "value": 3
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "UIDragDropItem.뀁뀉뀅뀏뀈뀍뀋뀌뀉뀈뀇",
+    "typeDefIndex": 3985,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "Horizontal",
+        "value": 1
+      },
+      {
+        "name": "Vertical",
+        "value": 2
+      },
+      {
+        "name": "PressAndHold",
+        "value": 3
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "GgPurchaseManagerSGT.eShopType",
+    "typeDefIndex": 4076,
+    "values": [
+      {
+        "name": "All",
+        "value": 0
+      },
+      {
+        "name": "Normal",
+        "value": 1
+      },
+      {
+        "name": "EventShop",
+        "value": 2
+      },
+      {
+        "name": "Hidden",
+        "value": 3
+      },
+      {
+        "name": "StarPassGoods",
+        "value": 4
+      },
+      {
+        "name": "Cash",
+        "value": 5
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "GgUISystemNotificationItemController.뀊뀅뀍뀊뀌뀌뀐뀅뀏뀍뀂",
+    "typeDefIndex": 4307,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "Idle",
+        "value": 1
+      },
+      {
+        "name": "Close",
+        "value": 2
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "GgInGameManagerSGT.뀅뀄뀄뀊뀃뀉뀄뀎뀁뀏뀐",
+    "typeDefIndex": 4476,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "Background",
+        "value": 1
+      },
+      {
+        "name": "Character",
+        "value": 2
+      },
+      {
+        "name": "Max",
+        "value": 3
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "GgUIInGameMessengerManager.뀆뀂뀆뀁뀐뀁뀇뀐뀈뀉뀈",
+    "typeDefIndex": 4647,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "Album",
+        "value": 1
+      },
+      {
+        "name": "Chatting",
+        "value": 2
+      },
+      {
+        "name": "Profile",
+        "value": 3
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "HttpRequestHeader",
+    "typeDefIndex": 9179,
+    "values": [
+      {
+        "name": "CacheControl",
+        "value": 0
+      },
+      {
+        "name": "Connection",
+        "value": 1
+      },
+      {
+        "name": "Date",
+        "value": 2
+      },
+      {
+        "name": "KeepAlive",
+        "value": 3
+      },
+      {
+        "name": "Pragma",
+        "value": 4
+      },
+      {
+        "name": "Trailer",
+        "value": 5
+      },
+      {
+        "name": "TransferEncoding",
+        "value": 6
+      },
+      {
+        "name": "Upgrade",
+        "value": 7
+      },
+      {
+        "name": "Via",
+        "value": 8
+      },
+      {
+        "name": "Warning",
+        "value": 9
+      },
+      {
+        "name": "Allow",
+        "value": 10
+      },
+      {
+        "name": "ContentLength",
+        "value": 11
+      },
+      {
+        "name": "ContentType",
+        "value": 12
+      },
+      {
+        "name": "ContentEncoding",
+        "value": 13
+      },
+      {
+        "name": "ContentLanguage",
+        "value": 14
+      },
+      {
+        "name": "ContentLocation",
+        "value": 15
+      },
+      {
+        "name": "ContentMd5",
+        "value": 16
+      },
+      {
+        "name": "ContentRange",
+        "value": 17
+      },
+      {
+        "name": "Expires",
+        "value": 18
+      },
+      {
+        "name": "LastModified",
+        "value": 19
+      },
+      {
+        "name": "Accept",
+        "value": 20
+      },
+      {
+        "name": "AcceptCharset",
+        "value": 21
+      },
+      {
+        "name": "AcceptEncoding",
+        "value": 22
+      },
+      {
+        "name": "AcceptLanguage",
+        "value": 23
+      },
+      {
+        "name": "Authorization",
+        "value": 24
+      },
+      {
+        "name": "Cookie",
+        "value": 25
+      },
+      {
+        "name": "Expect",
+        "value": 26
+      },
+      {
+        "name": "From",
+        "value": 27
+      },
+      {
+        "name": "Host",
+        "value": 28
+      },
+      {
+        "name": "IfMatch",
+        "value": 29
+      },
+      {
+        "name": "IfModifiedSince",
+        "value": 30
+      },
+      {
+        "name": "IfNoneMatch",
+        "value": 31
+      },
+      {
+        "name": "IfRange",
+        "value": 32
+      },
+      {
+        "name": "IfUnmodifiedSince",
+        "value": 33
+      },
+      {
+        "name": "MaxForwards",
+        "value": 34
+      },
+      {
+        "name": "ProxyAuthorization",
+        "value": 35
+      },
+      {
+        "name": "Referer",
+        "value": 36
+      },
+      {
+        "name": "Range",
+        "value": 37
+      },
+      {
+        "name": "Te",
+        "value": 38
+      },
+      {
+        "name": "Translate",
+        "value": 39
+      },
+      {
+        "name": "UserAgent",
+        "value": 40
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "RequestCacheLevel",
+    "typeDefIndex": 9349,
+    "values": [
+      {
+        "name": "Default",
+        "value": 0
+      },
+      {
+        "name": "BypassCache",
+        "value": 1
+      },
+      {
+        "name": "CacheOnly",
+        "value": 2
+      },
+      {
+        "name": "CacheIfAvailable",
+        "value": 3
+      },
+      {
+        "name": "Revalidate",
+        "value": 4
+      },
+      {
+        "name": "Reload",
+        "value": 5
+      },
+      {
+        "name": "NoCacheNoStore",
+        "value": 6
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "XmlWriteMode",
+    "typeDefIndex": 10084,
+    "values": [
+      {
+        "name": "WriteSchema",
+        "value": 0
+      },
+      {
+        "name": "IgnoreSchema",
+        "value": 1
+      },
+      {
+        "name": "DiffGram",
+        "value": 2
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "SpriteMaskInteraction",
+    "typeDefIndex": 10265,
+    "values": [
+      {
+        "name": "None",
+        "value": 0
+      },
+      {
+        "name": "VisibleInsideMask",
+        "value": 1
+      },
+      {
+        "name": "VisibleOutsideMask",
+        "value": 2
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "SpriteMeshType",
+    "typeDefIndex": 10267,
+    "values": [
+      {
+        "name": "FullRect",
+        "value": 0
+      },
+      {
+        "name": "Tight",
+        "value": 1
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "ColorWriteMask",
+    "typeDefIndex": 10810,
+    "values": [
+      {
+        "name": "Alpha",
+        "value": 1
+      },
+      {
+        "name": "Blue",
+        "value": 2
+      },
+      {
+        "name": "Green",
+        "value": 4
+      },
+      {
+        "name": "Red",
+        "value": 8
+      },
+      {
+        "name": "All",
+        "value": 15
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "TimeCheatingDetector.RequestMethod",
+    "typeDefIndex": 12418,
+    "values": [
+      {
+        "name": "Head",
+        "value": 0
+      },
+      {
+        "name": "Get",
+        "value": 1
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  },
+  {
+    "clientType": "UnityWebRequest.Result",
+    "typeDefIndex": 13641,
+    "values": [
+      {
+        "name": "InProgress",
+        "value": 0
+      },
+      {
+        "name": "Success",
+        "value": 1
+      },
+      {
+        "name": "ConnectionError",
+        "value": 2
+      },
+      {
+        "name": "ProtocolError",
+        "value": 3
+      },
+      {
+        "name": "DataProcessingError",
+        "value": 4
+      }
+    ],
+    "status": "client-literal-not-server-semantics"
+  }
+]

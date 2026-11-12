@@ -1,0 +1,3330 @@
+[
+  {
+    "i_id": 1,
+    "i_Group": 1,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7011000,
+    "i_PaidRewardGroup": 7012000
+  },
+  {
+    "i_id": 2,
+    "i_Group": 1,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7011010,
+    "i_PaidRewardGroup": 7012010
+  },
+  {
+    "i_id": 3,
+    "i_Group": 1,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7011020,
+    "i_PaidRewardGroup": 7012020
+  },
+  {
+    "i_id": 4,
+    "i_Group": 1,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7011030,
+    "i_PaidRewardGroup": 7012030
+  },
+  {
+    "i_id": 5,
+    "i_Group": 1,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7011040,
+    "i_PaidRewardGroup": 7012040
+  },
+  {
+    "i_id": 6,
+    "i_Group": 1,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7011050,
+    "i_PaidRewardGroup": 7012050
+  },
+  {
+    "i_id": 7,
+    "i_Group": 1,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7011060,
+    "i_PaidRewardGroup": 7012060
+  },
+  {
+    "i_id": 8,
+    "i_Group": 1,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7011070,
+    "i_PaidRewardGroup": 7012070
+  },
+  {
+    "i_id": 9,
+    "i_Group": 1,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7011080,
+    "i_PaidRewardGroup": 7012080
+  },
+  {
+    "i_id": 10,
+    "i_Group": 1,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7011090,
+    "i_PaidRewardGroup": 7012090
+  },
+  {
+    "i_id": 11,
+    "i_Group": 1,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7011100,
+    "i_PaidRewardGroup": 7012100
+  },
+  {
+    "i_id": 12,
+    "i_Group": 1,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7011110,
+    "i_PaidRewardGroup": 7012110
+  },
+  {
+    "i_id": 13,
+    "i_Group": 1,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7011120,
+    "i_PaidRewardGroup": 7012120
+  },
+  {
+    "i_id": 14,
+    "i_Group": 1,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7011130,
+    "i_PaidRewardGroup": 7012130
+  },
+  {
+    "i_id": 15,
+    "i_Group": 1,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7011140,
+    "i_PaidRewardGroup": 7012140
+  },
+  {
+    "i_id": 16,
+    "i_Group": 1,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7011150,
+    "i_PaidRewardGroup": 7012150
+  },
+  {
+    "i_id": 17,
+    "i_Group": 1,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7011160,
+    "i_PaidRewardGroup": 7012160
+  },
+  {
+    "i_id": 18,
+    "i_Group": 1,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7011170,
+    "i_PaidRewardGroup": 7012170
+  },
+  {
+    "i_id": 19,
+    "i_Group": 1,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7011180,
+    "i_PaidRewardGroup": 7012180
+  },
+  {
+    "i_id": 20,
+    "i_Group": 1,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7011190,
+    "i_PaidRewardGroup": 7012190
+  },
+  {
+    "i_id": 21,
+    "i_Group": 1,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7011200,
+    "i_PaidRewardGroup": 7012200
+  },
+  {
+    "i_id": 22,
+    "i_Group": 1,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7011210,
+    "i_PaidRewardGroup": 7012210
+  },
+  {
+    "i_id": 23,
+    "i_Group": 1,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7011220,
+    "i_PaidRewardGroup": 7012220
+  },
+  {
+    "i_id": 24,
+    "i_Group": 1,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7011230,
+    "i_PaidRewardGroup": 7012230
+  },
+  {
+    "i_id": 25,
+    "i_Group": 1,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7011240,
+    "i_PaidRewardGroup": 7012240
+  },
+  {
+    "i_id": 26,
+    "i_Group": 1,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7011250,
+    "i_PaidRewardGroup": 7012250
+  },
+  {
+    "i_id": 27,
+    "i_Group": 1,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7011260,
+    "i_PaidRewardGroup": 7012260
+  },
+  {
+    "i_id": 28,
+    "i_Group": 1,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7011270,
+    "i_PaidRewardGroup": 7012270
+  },
+  {
+    "i_id": 29,
+    "i_Group": 1,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7011280,
+    "i_PaidRewardGroup": 7012280
+  },
+  {
+    "i_id": 30,
+    "i_Group": 1,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7011290,
+    "i_PaidRewardGroup": 7012290
+  },
+  {
+    "i_id": 31,
+    "i_Group": 1,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7011300,
+    "i_PaidRewardGroup": 7012300
+  },
+  {
+    "i_id": 32,
+    "i_Group": 1,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7012310
+  },
+  {
+    "i_id": 33,
+    "i_Group": 2,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7021000,
+    "i_PaidRewardGroup": 7022000
+  },
+  {
+    "i_id": 34,
+    "i_Group": 2,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7021010,
+    "i_PaidRewardGroup": 7022010
+  },
+  {
+    "i_id": 35,
+    "i_Group": 2,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7021020,
+    "i_PaidRewardGroup": 7022020
+  },
+  {
+    "i_id": 36,
+    "i_Group": 2,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7021030,
+    "i_PaidRewardGroup": 7022030
+  },
+  {
+    "i_id": 37,
+    "i_Group": 2,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7021040,
+    "i_PaidRewardGroup": 7022040
+  },
+  {
+    "i_id": 38,
+    "i_Group": 2,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7021050,
+    "i_PaidRewardGroup": 7022050
+  },
+  {
+    "i_id": 39,
+    "i_Group": 2,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7021060,
+    "i_PaidRewardGroup": 7022060
+  },
+  {
+    "i_id": 40,
+    "i_Group": 2,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7021070,
+    "i_PaidRewardGroup": 7022070
+  },
+  {
+    "i_id": 41,
+    "i_Group": 2,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7021080,
+    "i_PaidRewardGroup": 7022080
+  },
+  {
+    "i_id": 42,
+    "i_Group": 2,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7021090,
+    "i_PaidRewardGroup": 7022090
+  },
+  {
+    "i_id": 43,
+    "i_Group": 2,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7021100,
+    "i_PaidRewardGroup": 7022100
+  },
+  {
+    "i_id": 44,
+    "i_Group": 2,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7021110,
+    "i_PaidRewardGroup": 7022110
+  },
+  {
+    "i_id": 45,
+    "i_Group": 2,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7021120,
+    "i_PaidRewardGroup": 7022120
+  },
+  {
+    "i_id": 46,
+    "i_Group": 2,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7021130,
+    "i_PaidRewardGroup": 7022130
+  },
+  {
+    "i_id": 47,
+    "i_Group": 2,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7021140,
+    "i_PaidRewardGroup": 7022140
+  },
+  {
+    "i_id": 48,
+    "i_Group": 2,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7021150,
+    "i_PaidRewardGroup": 7022150
+  },
+  {
+    "i_id": 49,
+    "i_Group": 2,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7021160,
+    "i_PaidRewardGroup": 7022160
+  },
+  {
+    "i_id": 50,
+    "i_Group": 2,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7021170,
+    "i_PaidRewardGroup": 7022170
+  },
+  {
+    "i_id": 51,
+    "i_Group": 2,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7021180,
+    "i_PaidRewardGroup": 7022180
+  },
+  {
+    "i_id": 52,
+    "i_Group": 2,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7021190,
+    "i_PaidRewardGroup": 7022190
+  },
+  {
+    "i_id": 53,
+    "i_Group": 2,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7021200,
+    "i_PaidRewardGroup": 7022200
+  },
+  {
+    "i_id": 54,
+    "i_Group": 2,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7021210,
+    "i_PaidRewardGroup": 7022210
+  },
+  {
+    "i_id": 55,
+    "i_Group": 2,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7021220,
+    "i_PaidRewardGroup": 7022220
+  },
+  {
+    "i_id": 56,
+    "i_Group": 2,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7021230,
+    "i_PaidRewardGroup": 7022230
+  },
+  {
+    "i_id": 57,
+    "i_Group": 2,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7021240,
+    "i_PaidRewardGroup": 7022240
+  },
+  {
+    "i_id": 58,
+    "i_Group": 2,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7021250,
+    "i_PaidRewardGroup": 7022250
+  },
+  {
+    "i_id": 59,
+    "i_Group": 2,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7021260,
+    "i_PaidRewardGroup": 7022260
+  },
+  {
+    "i_id": 60,
+    "i_Group": 2,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7021270,
+    "i_PaidRewardGroup": 7022270
+  },
+  {
+    "i_id": 61,
+    "i_Group": 2,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7021280,
+    "i_PaidRewardGroup": 7022280
+  },
+  {
+    "i_id": 62,
+    "i_Group": 2,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7021290,
+    "i_PaidRewardGroup": 7022290
+  },
+  {
+    "i_id": 63,
+    "i_Group": 2,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7021300,
+    "i_PaidRewardGroup": 7022300
+  },
+  {
+    "i_id": 64,
+    "i_Group": 2,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7022310
+  },
+  {
+    "i_id": 65,
+    "i_Group": 3,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7031000,
+    "i_PaidRewardGroup": 7032000
+  },
+  {
+    "i_id": 66,
+    "i_Group": 3,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7031010,
+    "i_PaidRewardGroup": 7032010
+  },
+  {
+    "i_id": 67,
+    "i_Group": 3,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7031020,
+    "i_PaidRewardGroup": 7032020
+  },
+  {
+    "i_id": 68,
+    "i_Group": 3,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7031030,
+    "i_PaidRewardGroup": 7032030
+  },
+  {
+    "i_id": 69,
+    "i_Group": 3,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7031040,
+    "i_PaidRewardGroup": 7032040
+  },
+  {
+    "i_id": 70,
+    "i_Group": 3,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7031050,
+    "i_PaidRewardGroup": 7032050
+  },
+  {
+    "i_id": 71,
+    "i_Group": 3,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7031060,
+    "i_PaidRewardGroup": 7032060
+  },
+  {
+    "i_id": 72,
+    "i_Group": 3,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7031070,
+    "i_PaidRewardGroup": 7032070
+  },
+  {
+    "i_id": 73,
+    "i_Group": 3,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7031080,
+    "i_PaidRewardGroup": 7032080
+  },
+  {
+    "i_id": 74,
+    "i_Group": 3,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7031090,
+    "i_PaidRewardGroup": 7032090
+  },
+  {
+    "i_id": 75,
+    "i_Group": 3,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7031100,
+    "i_PaidRewardGroup": 7032100
+  },
+  {
+    "i_id": 76,
+    "i_Group": 3,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7031110,
+    "i_PaidRewardGroup": 7032110
+  },
+  {
+    "i_id": 77,
+    "i_Group": 3,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7031120,
+    "i_PaidRewardGroup": 7032120
+  },
+  {
+    "i_id": 78,
+    "i_Group": 3,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7031130,
+    "i_PaidRewardGroup": 7032130
+  },
+  {
+    "i_id": 79,
+    "i_Group": 3,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7031140,
+    "i_PaidRewardGroup": 7032140
+  },
+  {
+    "i_id": 80,
+    "i_Group": 3,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7031150,
+    "i_PaidRewardGroup": 7032150
+  },
+  {
+    "i_id": 81,
+    "i_Group": 3,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7031160,
+    "i_PaidRewardGroup": 7032160
+  },
+  {
+    "i_id": 82,
+    "i_Group": 3,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7031170,
+    "i_PaidRewardGroup": 7032170
+  },
+  {
+    "i_id": 83,
+    "i_Group": 3,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7031180,
+    "i_PaidRewardGroup": 7032180
+  },
+  {
+    "i_id": 84,
+    "i_Group": 3,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7031190,
+    "i_PaidRewardGroup": 7032190
+  },
+  {
+    "i_id": 85,
+    "i_Group": 3,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7031200,
+    "i_PaidRewardGroup": 7032200
+  },
+  {
+    "i_id": 86,
+    "i_Group": 3,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7031210,
+    "i_PaidRewardGroup": 7032210
+  },
+  {
+    "i_id": 87,
+    "i_Group": 3,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7031220,
+    "i_PaidRewardGroup": 7032220
+  },
+  {
+    "i_id": 88,
+    "i_Group": 3,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7031230,
+    "i_PaidRewardGroup": 7032230
+  },
+  {
+    "i_id": 89,
+    "i_Group": 3,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7031240,
+    "i_PaidRewardGroup": 7032240
+  },
+  {
+    "i_id": 90,
+    "i_Group": 3,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7031250,
+    "i_PaidRewardGroup": 7032250
+  },
+  {
+    "i_id": 91,
+    "i_Group": 3,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7031260,
+    "i_PaidRewardGroup": 7032260
+  },
+  {
+    "i_id": 92,
+    "i_Group": 3,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7031270,
+    "i_PaidRewardGroup": 7032270
+  },
+  {
+    "i_id": 93,
+    "i_Group": 3,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7031280,
+    "i_PaidRewardGroup": 7032280
+  },
+  {
+    "i_id": 94,
+    "i_Group": 3,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7031290,
+    "i_PaidRewardGroup": 7032290
+  },
+  {
+    "i_id": 95,
+    "i_Group": 3,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7031300,
+    "i_PaidRewardGroup": 7032300
+  },
+  {
+    "i_id": 96,
+    "i_Group": 3,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7032310
+  },
+  {
+    "i_id": 97,
+    "i_Group": 4,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7041000,
+    "i_PaidRewardGroup": 7042000
+  },
+  {
+    "i_id": 98,
+    "i_Group": 4,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7041010,
+    "i_PaidRewardGroup": 7042010
+  },
+  {
+    "i_id": 99,
+    "i_Group": 4,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7041020,
+    "i_PaidRewardGroup": 7042020
+  },
+  {
+    "i_id": 100,
+    "i_Group": 4,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7041030,
+    "i_PaidRewardGroup": 7042030
+  },
+  {
+    "i_id": 101,
+    "i_Group": 4,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7041040,
+    "i_PaidRewardGroup": 7042040
+  },
+  {
+    "i_id": 102,
+    "i_Group": 4,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7041050,
+    "i_PaidRewardGroup": 7042050
+  },
+  {
+    "i_id": 103,
+    "i_Group": 4,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7041060,
+    "i_PaidRewardGroup": 7042060
+  },
+  {
+    "i_id": 104,
+    "i_Group": 4,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7041070,
+    "i_PaidRewardGroup": 7042070
+  },
+  {
+    "i_id": 105,
+    "i_Group": 4,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7041080,
+    "i_PaidRewardGroup": 7042080
+  },
+  {
+    "i_id": 106,
+    "i_Group": 4,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7041090,
+    "i_PaidRewardGroup": 7042090
+  },
+  {
+    "i_id": 107,
+    "i_Group": 4,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7041100,
+    "i_PaidRewardGroup": 7042100
+  },
+  {
+    "i_id": 108,
+    "i_Group": 4,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7041110,
+    "i_PaidRewardGroup": 7042110
+  },
+  {
+    "i_id": 109,
+    "i_Group": 4,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7041120,
+    "i_PaidRewardGroup": 7042120
+  },
+  {
+    "i_id": 110,
+    "i_Group": 4,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7041130,
+    "i_PaidRewardGroup": 7042130
+  },
+  {
+    "i_id": 111,
+    "i_Group": 4,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7041140,
+    "i_PaidRewardGroup": 7042140
+  },
+  {
+    "i_id": 112,
+    "i_Group": 4,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7041150,
+    "i_PaidRewardGroup": 7042150
+  },
+  {
+    "i_id": 113,
+    "i_Group": 4,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7041160,
+    "i_PaidRewardGroup": 7042160
+  },
+  {
+    "i_id": 114,
+    "i_Group": 4,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7041170,
+    "i_PaidRewardGroup": 7042170
+  },
+  {
+    "i_id": 115,
+    "i_Group": 4,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7041180,
+    "i_PaidRewardGroup": 7042180
+  },
+  {
+    "i_id": 116,
+    "i_Group": 4,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7041190,
+    "i_PaidRewardGroup": 7042190
+  },
+  {
+    "i_id": 117,
+    "i_Group": 4,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7041200,
+    "i_PaidRewardGroup": 7042200
+  },
+  {
+    "i_id": 118,
+    "i_Group": 4,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7041210,
+    "i_PaidRewardGroup": 7042210
+  },
+  {
+    "i_id": 119,
+    "i_Group": 4,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7041220,
+    "i_PaidRewardGroup": 7042220
+  },
+  {
+    "i_id": 120,
+    "i_Group": 4,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7041230,
+    "i_PaidRewardGroup": 7042230
+  },
+  {
+    "i_id": 121,
+    "i_Group": 4,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7041240,
+    "i_PaidRewardGroup": 7042240
+  },
+  {
+    "i_id": 122,
+    "i_Group": 4,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7041250,
+    "i_PaidRewardGroup": 7042250
+  },
+  {
+    "i_id": 123,
+    "i_Group": 4,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7041260,
+    "i_PaidRewardGroup": 7042260
+  },
+  {
+    "i_id": 124,
+    "i_Group": 4,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7041270,
+    "i_PaidRewardGroup": 7042270
+  },
+  {
+    "i_id": 125,
+    "i_Group": 4,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7041280,
+    "i_PaidRewardGroup": 7042280
+  },
+  {
+    "i_id": 126,
+    "i_Group": 4,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7041290,
+    "i_PaidRewardGroup": 7042290
+  },
+  {
+    "i_id": 127,
+    "i_Group": 4,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7041300,
+    "i_PaidRewardGroup": 7042300
+  },
+  {
+    "i_id": 128,
+    "i_Group": 4,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7042310
+  },
+  {
+    "i_id": 129,
+    "i_Group": 5,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7051000,
+    "i_PaidRewardGroup": 7052000
+  },
+  {
+    "i_id": 130,
+    "i_Group": 5,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7051010,
+    "i_PaidRewardGroup": 7052010
+  },
+  {
+    "i_id": 131,
+    "i_Group": 5,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7051020,
+    "i_PaidRewardGroup": 7052020
+  },
+  {
+    "i_id": 132,
+    "i_Group": 5,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7051030,
+    "i_PaidRewardGroup": 7052030
+  },
+  {
+    "i_id": 133,
+    "i_Group": 5,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7051040,
+    "i_PaidRewardGroup": 7052040
+  },
+  {
+    "i_id": 134,
+    "i_Group": 5,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7051050,
+    "i_PaidRewardGroup": 7052050
+  },
+  {
+    "i_id": 135,
+    "i_Group": 5,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7051060,
+    "i_PaidRewardGroup": 7052060
+  },
+  {
+    "i_id": 136,
+    "i_Group": 5,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7051070,
+    "i_PaidRewardGroup": 7052070
+  },
+  {
+    "i_id": 137,
+    "i_Group": 5,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7051080,
+    "i_PaidRewardGroup": 7052080
+  },
+  {
+    "i_id": 138,
+    "i_Group": 5,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7051090,
+    "i_PaidRewardGroup": 7052090
+  },
+  {
+    "i_id": 139,
+    "i_Group": 5,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7051100,
+    "i_PaidRewardGroup": 7052100
+  },
+  {
+    "i_id": 140,
+    "i_Group": 5,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7051110,
+    "i_PaidRewardGroup": 7052110
+  },
+  {
+    "i_id": 141,
+    "i_Group": 5,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7051120,
+    "i_PaidRewardGroup": 7052120
+  },
+  {
+    "i_id": 142,
+    "i_Group": 5,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7051130,
+    "i_PaidRewardGroup": 7052130
+  },
+  {
+    "i_id": 143,
+    "i_Group": 5,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7051140,
+    "i_PaidRewardGroup": 7052140
+  },
+  {
+    "i_id": 144,
+    "i_Group": 5,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7051150,
+    "i_PaidRewardGroup": 7052150
+  },
+  {
+    "i_id": 145,
+    "i_Group": 5,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7051160,
+    "i_PaidRewardGroup": 7052160
+  },
+  {
+    "i_id": 146,
+    "i_Group": 5,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7051170,
+    "i_PaidRewardGroup": 7052170
+  },
+  {
+    "i_id": 147,
+    "i_Group": 5,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7051180,
+    "i_PaidRewardGroup": 7052180
+  },
+  {
+    "i_id": 148,
+    "i_Group": 5,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7051190,
+    "i_PaidRewardGroup": 7052190
+  },
+  {
+    "i_id": 149,
+    "i_Group": 5,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7051200,
+    "i_PaidRewardGroup": 7052200
+  },
+  {
+    "i_id": 150,
+    "i_Group": 5,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7051210,
+    "i_PaidRewardGroup": 7052210
+  },
+  {
+    "i_id": 151,
+    "i_Group": 5,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7051220,
+    "i_PaidRewardGroup": 7052220
+  },
+  {
+    "i_id": 152,
+    "i_Group": 5,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7051230,
+    "i_PaidRewardGroup": 7052230
+  },
+  {
+    "i_id": 153,
+    "i_Group": 5,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7051240,
+    "i_PaidRewardGroup": 7052240
+  },
+  {
+    "i_id": 154,
+    "i_Group": 5,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7051250,
+    "i_PaidRewardGroup": 7052250
+  },
+  {
+    "i_id": 155,
+    "i_Group": 5,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7051260,
+    "i_PaidRewardGroup": 7052260
+  },
+  {
+    "i_id": 156,
+    "i_Group": 5,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7051270,
+    "i_PaidRewardGroup": 7052270
+  },
+  {
+    "i_id": 157,
+    "i_Group": 5,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7051280,
+    "i_PaidRewardGroup": 7052280
+  },
+  {
+    "i_id": 158,
+    "i_Group": 5,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7051290,
+    "i_PaidRewardGroup": 7052290
+  },
+  {
+    "i_id": 159,
+    "i_Group": 5,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7051300,
+    "i_PaidRewardGroup": 7052300
+  },
+  {
+    "i_id": 160,
+    "i_Group": 5,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7052310
+  },
+  {
+    "i_id": 161,
+    "i_Group": 6,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7061000,
+    "i_PaidRewardGroup": 7062000
+  },
+  {
+    "i_id": 162,
+    "i_Group": 6,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7061010,
+    "i_PaidRewardGroup": 7062010
+  },
+  {
+    "i_id": 163,
+    "i_Group": 6,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7061020,
+    "i_PaidRewardGroup": 7062020
+  },
+  {
+    "i_id": 164,
+    "i_Group": 6,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7061030,
+    "i_PaidRewardGroup": 7062030
+  },
+  {
+    "i_id": 165,
+    "i_Group": 6,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7061040,
+    "i_PaidRewardGroup": 7062040
+  },
+  {
+    "i_id": 166,
+    "i_Group": 6,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7061050,
+    "i_PaidRewardGroup": 7062050
+  },
+  {
+    "i_id": 167,
+    "i_Group": 6,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7061060,
+    "i_PaidRewardGroup": 7062060
+  },
+  {
+    "i_id": 168,
+    "i_Group": 6,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7061070,
+    "i_PaidRewardGroup": 7062070
+  },
+  {
+    "i_id": 169,
+    "i_Group": 6,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7061080,
+    "i_PaidRewardGroup": 7062080
+  },
+  {
+    "i_id": 170,
+    "i_Group": 6,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7061090,
+    "i_PaidRewardGroup": 7062090
+  },
+  {
+    "i_id": 171,
+    "i_Group": 6,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7061100,
+    "i_PaidRewardGroup": 7062100
+  },
+  {
+    "i_id": 172,
+    "i_Group": 6,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7061110,
+    "i_PaidRewardGroup": 7062110
+  },
+  {
+    "i_id": 173,
+    "i_Group": 6,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7061120,
+    "i_PaidRewardGroup": 7062120
+  },
+  {
+    "i_id": 174,
+    "i_Group": 6,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7061130,
+    "i_PaidRewardGroup": 7062130
+  },
+  {
+    "i_id": 175,
+    "i_Group": 6,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7061140,
+    "i_PaidRewardGroup": 7062140
+  },
+  {
+    "i_id": 176,
+    "i_Group": 6,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7061150,
+    "i_PaidRewardGroup": 7062150
+  },
+  {
+    "i_id": 177,
+    "i_Group": 6,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7061160,
+    "i_PaidRewardGroup": 7062160
+  },
+  {
+    "i_id": 178,
+    "i_Group": 6,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7061170,
+    "i_PaidRewardGroup": 7062170
+  },
+  {
+    "i_id": 179,
+    "i_Group": 6,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7061180,
+    "i_PaidRewardGroup": 7062180
+  },
+  {
+    "i_id": 180,
+    "i_Group": 6,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7061190,
+    "i_PaidRewardGroup": 7062190
+  },
+  {
+    "i_id": 181,
+    "i_Group": 6,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7061200,
+    "i_PaidRewardGroup": 7062200
+  },
+  {
+    "i_id": 182,
+    "i_Group": 6,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7061210,
+    "i_PaidRewardGroup": 7062210
+  },
+  {
+    "i_id": 183,
+    "i_Group": 6,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7061220,
+    "i_PaidRewardGroup": 7062220
+  },
+  {
+    "i_id": 184,
+    "i_Group": 6,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7061230,
+    "i_PaidRewardGroup": 7062230
+  },
+  {
+    "i_id": 185,
+    "i_Group": 6,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7061240,
+    "i_PaidRewardGroup": 7062240
+  },
+  {
+    "i_id": 186,
+    "i_Group": 6,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7061250,
+    "i_PaidRewardGroup": 7062250
+  },
+  {
+    "i_id": 187,
+    "i_Group": 6,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7061260,
+    "i_PaidRewardGroup": 7062260
+  },
+  {
+    "i_id": 188,
+    "i_Group": 6,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7061270,
+    "i_PaidRewardGroup": 7062270
+  },
+  {
+    "i_id": 189,
+    "i_Group": 6,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7061280,
+    "i_PaidRewardGroup": 7062280
+  },
+  {
+    "i_id": 190,
+    "i_Group": 6,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7061290,
+    "i_PaidRewardGroup": 7062290
+  },
+  {
+    "i_id": 191,
+    "i_Group": 6,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7061300,
+    "i_PaidRewardGroup": 7062300
+  },
+  {
+    "i_id": 192,
+    "i_Group": 6,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7062310
+  },
+  {
+    "i_id": 193,
+    "i_Group": 7,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7071000,
+    "i_PaidRewardGroup": 7072000
+  },
+  {
+    "i_id": 194,
+    "i_Group": 7,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7071010,
+    "i_PaidRewardGroup": 7072010
+  },
+  {
+    "i_id": 195,
+    "i_Group": 7,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7071020,
+    "i_PaidRewardGroup": 7072020
+  },
+  {
+    "i_id": 196,
+    "i_Group": 7,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7071030,
+    "i_PaidRewardGroup": 7072030
+  },
+  {
+    "i_id": 197,
+    "i_Group": 7,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7071040,
+    "i_PaidRewardGroup": 7072040
+  },
+  {
+    "i_id": 198,
+    "i_Group": 7,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7071050,
+    "i_PaidRewardGroup": 7072050
+  },
+  {
+    "i_id": 199,
+    "i_Group": 7,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7071060,
+    "i_PaidRewardGroup": 7072060
+  },
+  {
+    "i_id": 200,
+    "i_Group": 7,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7071070,
+    "i_PaidRewardGroup": 7072070
+  },
+  {
+    "i_id": 201,
+    "i_Group": 7,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7071080,
+    "i_PaidRewardGroup": 7072080
+  },
+  {
+    "i_id": 202,
+    "i_Group": 7,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7071090,
+    "i_PaidRewardGroup": 7072090
+  },
+  {
+    "i_id": 203,
+    "i_Group": 7,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7071100,
+    "i_PaidRewardGroup": 7072100
+  },
+  {
+    "i_id": 204,
+    "i_Group": 7,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7071110,
+    "i_PaidRewardGroup": 7072110
+  },
+  {
+    "i_id": 205,
+    "i_Group": 7,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7071120,
+    "i_PaidRewardGroup": 7072120
+  },
+  {
+    "i_id": 206,
+    "i_Group": 7,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7071130,
+    "i_PaidRewardGroup": 7072130
+  },
+  {
+    "i_id": 207,
+    "i_Group": 7,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7071140,
+    "i_PaidRewardGroup": 7072140
+  },
+  {
+    "i_id": 208,
+    "i_Group": 7,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7071150,
+    "i_PaidRewardGroup": 7072150
+  },
+  {
+    "i_id": 209,
+    "i_Group": 7,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7071160,
+    "i_PaidRewardGroup": 7072160
+  },
+  {
+    "i_id": 210,
+    "i_Group": 7,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7071170,
+    "i_PaidRewardGroup": 7072170
+  },
+  {
+    "i_id": 211,
+    "i_Group": 7,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7071180,
+    "i_PaidRewardGroup": 7072180
+  },
+  {
+    "i_id": 212,
+    "i_Group": 7,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7071190,
+    "i_PaidRewardGroup": 7072190
+  },
+  {
+    "i_id": 213,
+    "i_Group": 7,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7071200,
+    "i_PaidRewardGroup": 7072200
+  },
+  {
+    "i_id": 214,
+    "i_Group": 7,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7071210,
+    "i_PaidRewardGroup": 7072210
+  },
+  {
+    "i_id": 215,
+    "i_Group": 7,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7071220,
+    "i_PaidRewardGroup": 7072220
+  },
+  {
+    "i_id": 216,
+    "i_Group": 7,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7071230,
+    "i_PaidRewardGroup": 7072230
+  },
+  {
+    "i_id": 217,
+    "i_Group": 7,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7071240,
+    "i_PaidRewardGroup": 7072240
+  },
+  {
+    "i_id": 218,
+    "i_Group": 7,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7071250,
+    "i_PaidRewardGroup": 7072250
+  },
+  {
+    "i_id": 219,
+    "i_Group": 7,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7071260,
+    "i_PaidRewardGroup": 7072260
+  },
+  {
+    "i_id": 220,
+    "i_Group": 7,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7071270,
+    "i_PaidRewardGroup": 7072270
+  },
+  {
+    "i_id": 221,
+    "i_Group": 7,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7071280,
+    "i_PaidRewardGroup": 7072280
+  },
+  {
+    "i_id": 222,
+    "i_Group": 7,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7071290,
+    "i_PaidRewardGroup": 7072290
+  },
+  {
+    "i_id": 223,
+    "i_Group": 7,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7071300,
+    "i_PaidRewardGroup": 7072300
+  },
+  {
+    "i_id": 224,
+    "i_Group": 7,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7072310
+  },
+  {
+    "i_id": 225,
+    "i_Group": 8,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7081000,
+    "i_PaidRewardGroup": 7082000
+  },
+  {
+    "i_id": 226,
+    "i_Group": 8,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7081010,
+    "i_PaidRewardGroup": 7082010
+  },
+  {
+    "i_id": 227,
+    "i_Group": 8,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7081020,
+    "i_PaidRewardGroup": 7082020
+  },
+  {
+    "i_id": 228,
+    "i_Group": 8,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7081030,
+    "i_PaidRewardGroup": 7082030
+  },
+  {
+    "i_id": 229,
+    "i_Group": 8,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7081040,
+    "i_PaidRewardGroup": 7082040
+  },
+  {
+    "i_id": 230,
+    "i_Group": 8,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7081050,
+    "i_PaidRewardGroup": 7082050
+  },
+  {
+    "i_id": 231,
+    "i_Group": 8,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7081060,
+    "i_PaidRewardGroup": 7082060
+  },
+  {
+    "i_id": 232,
+    "i_Group": 8,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7081070,
+    "i_PaidRewardGroup": 7082070
+  },
+  {
+    "i_id": 233,
+    "i_Group": 8,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7081080,
+    "i_PaidRewardGroup": 7082080
+  },
+  {
+    "i_id": 234,
+    "i_Group": 8,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7081090,
+    "i_PaidRewardGroup": 7082090
+  },
+  {
+    "i_id": 235,
+    "i_Group": 8,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7081100,
+    "i_PaidRewardGroup": 7082100
+  },
+  {
+    "i_id": 236,
+    "i_Group": 8,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7081110,
+    "i_PaidRewardGroup": 7082110
+  },
+  {
+    "i_id": 237,
+    "i_Group": 8,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7081120,
+    "i_PaidRewardGroup": 7082120
+  },
+  {
+    "i_id": 238,
+    "i_Group": 8,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7081130,
+    "i_PaidRewardGroup": 7082130
+  },
+  {
+    "i_id": 239,
+    "i_Group": 8,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7081140,
+    "i_PaidRewardGroup": 7082140
+  },
+  {
+    "i_id": 240,
+    "i_Group": 8,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7081150,
+    "i_PaidRewardGroup": 7082150
+  },
+  {
+    "i_id": 241,
+    "i_Group": 8,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7081160,
+    "i_PaidRewardGroup": 7082160
+  },
+  {
+    "i_id": 242,
+    "i_Group": 8,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7081170,
+    "i_PaidRewardGroup": 7082170
+  },
+  {
+    "i_id": 243,
+    "i_Group": 8,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7081180,
+    "i_PaidRewardGroup": 7082180
+  },
+  {
+    "i_id": 244,
+    "i_Group": 8,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7081190,
+    "i_PaidRewardGroup": 7082190
+  },
+  {
+    "i_id": 245,
+    "i_Group": 8,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7081200,
+    "i_PaidRewardGroup": 7082200
+  },
+  {
+    "i_id": 246,
+    "i_Group": 8,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7081210,
+    "i_PaidRewardGroup": 7082210
+  },
+  {
+    "i_id": 247,
+    "i_Group": 8,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7081220,
+    "i_PaidRewardGroup": 7082220
+  },
+  {
+    "i_id": 248,
+    "i_Group": 8,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7081230,
+    "i_PaidRewardGroup": 7082230
+  },
+  {
+    "i_id": 249,
+    "i_Group": 8,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7081240,
+    "i_PaidRewardGroup": 7082240
+  },
+  {
+    "i_id": 250,
+    "i_Group": 8,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7081250,
+    "i_PaidRewardGroup": 7082250
+  },
+  {
+    "i_id": 251,
+    "i_Group": 8,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7081260,
+    "i_PaidRewardGroup": 7082260
+  },
+  {
+    "i_id": 252,
+    "i_Group": 8,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7081270,
+    "i_PaidRewardGroup": 7082270
+  },
+  {
+    "i_id": 253,
+    "i_Group": 8,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7081280,
+    "i_PaidRewardGroup": 7082280
+  },
+  {
+    "i_id": 254,
+    "i_Group": 8,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7081290,
+    "i_PaidRewardGroup": 7082290
+  },
+  {
+    "i_id": 255,
+    "i_Group": 8,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7081300,
+    "i_PaidRewardGroup": 7082300
+  },
+  {
+    "i_id": 256,
+    "i_Group": 8,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7082310
+  },
+  {
+    "i_id": 257,
+    "i_Group": 9,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7091000,
+    "i_PaidRewardGroup": 7092000
+  },
+  {
+    "i_id": 258,
+    "i_Group": 9,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7091010,
+    "i_PaidRewardGroup": 7092010
+  },
+  {
+    "i_id": 259,
+    "i_Group": 9,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7091020,
+    "i_PaidRewardGroup": 7092020
+  },
+  {
+    "i_id": 260,
+    "i_Group": 9,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7091030,
+    "i_PaidRewardGroup": 7092030
+  },
+  {
+    "i_id": 261,
+    "i_Group": 9,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7091040,
+    "i_PaidRewardGroup": 7092040
+  },
+  {
+    "i_id": 262,
+    "i_Group": 9,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7091050,
+    "i_PaidRewardGroup": 7092050
+  },
+  {
+    "i_id": 263,
+    "i_Group": 9,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7091060,
+    "i_PaidRewardGroup": 7092060
+  },
+  {
+    "i_id": 264,
+    "i_Group": 9,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7091070,
+    "i_PaidRewardGroup": 7092070
+  },
+  {
+    "i_id": 265,
+    "i_Group": 9,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7091080,
+    "i_PaidRewardGroup": 7092080
+  },
+  {
+    "i_id": 266,
+    "i_Group": 9,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7091090,
+    "i_PaidRewardGroup": 7092090
+  },
+  {
+    "i_id": 267,
+    "i_Group": 9,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7091100,
+    "i_PaidRewardGroup": 7092100
+  },
+  {
+    "i_id": 268,
+    "i_Group": 9,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7091110,
+    "i_PaidRewardGroup": 7092110
+  },
+  {
+    "i_id": 269,
+    "i_Group": 9,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7091120,
+    "i_PaidRewardGroup": 7092120
+  },
+  {
+    "i_id": 270,
+    "i_Group": 9,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7091130,
+    "i_PaidRewardGroup": 7092130
+  },
+  {
+    "i_id": 271,
+    "i_Group": 9,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7091140,
+    "i_PaidRewardGroup": 7092140
+  },
+  {
+    "i_id": 272,
+    "i_Group": 9,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7091150,
+    "i_PaidRewardGroup": 7092150
+  },
+  {
+    "i_id": 273,
+    "i_Group": 9,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7091160,
+    "i_PaidRewardGroup": 7092160
+  },
+  {
+    "i_id": 274,
+    "i_Group": 9,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7091170,
+    "i_PaidRewardGroup": 7092170
+  },
+  {
+    "i_id": 275,
+    "i_Group": 9,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7091180,
+    "i_PaidRewardGroup": 7092180
+  },
+  {
+    "i_id": 276,
+    "i_Group": 9,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7091190,
+    "i_PaidRewardGroup": 7092190
+  },
+  {
+    "i_id": 277,
+    "i_Group": 9,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7091200,
+    "i_PaidRewardGroup": 7092200
+  },
+  {
+    "i_id": 278,
+    "i_Group": 9,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7091210,
+    "i_PaidRewardGroup": 7092210
+  },
+  {
+    "i_id": 279,
+    "i_Group": 9,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7091220,
+    "i_PaidRewardGroup": 7092220
+  },
+  {
+    "i_id": 280,
+    "i_Group": 9,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7091230,
+    "i_PaidRewardGroup": 7092230
+  },
+  {
+    "i_id": 281,
+    "i_Group": 9,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7091240,
+    "i_PaidRewardGroup": 7092240
+  },
+  {
+    "i_id": 282,
+    "i_Group": 9,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7091250,
+    "i_PaidRewardGroup": 7092250
+  },
+  {
+    "i_id": 283,
+    "i_Group": 9,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7091260,
+    "i_PaidRewardGroup": 7092260
+  },
+  {
+    "i_id": 284,
+    "i_Group": 9,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7091270,
+    "i_PaidRewardGroup": 7092270
+  },
+  {
+    "i_id": 285,
+    "i_Group": 9,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7091280,
+    "i_PaidRewardGroup": 7092280
+  },
+  {
+    "i_id": 286,
+    "i_Group": 9,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7091290,
+    "i_PaidRewardGroup": 7092290
+  },
+  {
+    "i_id": 287,
+    "i_Group": 9,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7091300,
+    "i_PaidRewardGroup": 7092300
+  },
+  {
+    "i_id": 288,
+    "i_Group": 9,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7092310
+  },
+  {
+    "i_id": 289,
+    "i_Group": 10,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7101000,
+    "i_PaidRewardGroup": 7102000
+  },
+  {
+    "i_id": 290,
+    "i_Group": 10,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7101010,
+    "i_PaidRewardGroup": 7102010
+  },
+  {
+    "i_id": 291,
+    "i_Group": 10,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7101020,
+    "i_PaidRewardGroup": 7102020
+  },
+  {
+    "i_id": 292,
+    "i_Group": 10,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7101030,
+    "i_PaidRewardGroup": 7102030
+  },
+  {
+    "i_id": 293,
+    "i_Group": 10,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7101040,
+    "i_PaidRewardGroup": 7102040
+  },
+  {
+    "i_id": 294,
+    "i_Group": 10,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7101050,
+    "i_PaidRewardGroup": 7102050
+  },
+  {
+    "i_id": 295,
+    "i_Group": 10,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7101060,
+    "i_PaidRewardGroup": 7102060
+  },
+  {
+    "i_id": 296,
+    "i_Group": 10,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7101070,
+    "i_PaidRewardGroup": 7102070
+  },
+  {
+    "i_id": 297,
+    "i_Group": 10,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7101080,
+    "i_PaidRewardGroup": 7102080
+  },
+  {
+    "i_id": 298,
+    "i_Group": 10,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7101090,
+    "i_PaidRewardGroup": 7102090
+  },
+  {
+    "i_id": 299,
+    "i_Group": 10,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7101100,
+    "i_PaidRewardGroup": 7102100
+  },
+  {
+    "i_id": 300,
+    "i_Group": 10,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7101110,
+    "i_PaidRewardGroup": 7102110
+  },
+  {
+    "i_id": 301,
+    "i_Group": 10,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7101120,
+    "i_PaidRewardGroup": 7102120
+  },
+  {
+    "i_id": 302,
+    "i_Group": 10,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7101130,
+    "i_PaidRewardGroup": 7102130
+  },
+  {
+    "i_id": 303,
+    "i_Group": 10,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7101140,
+    "i_PaidRewardGroup": 7102140
+  },
+  {
+    "i_id": 304,
+    "i_Group": 10,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7101150,
+    "i_PaidRewardGroup": 7102150
+  },
+  {
+    "i_id": 305,
+    "i_Group": 10,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7101160,
+    "i_PaidRewardGroup": 7102160
+  },
+  {
+    "i_id": 306,
+    "i_Group": 10,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7101170,
+    "i_PaidRewardGroup": 7102170
+  },
+  {
+    "i_id": 307,
+    "i_Group": 10,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7101180,
+    "i_PaidRewardGroup": 7102180
+  },
+  {
+    "i_id": 308,
+    "i_Group": 10,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7101190,
+    "i_PaidRewardGroup": 7102190
+  },
+  {
+    "i_id": 309,
+    "i_Group": 10,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7101200,
+    "i_PaidRewardGroup": 7102200
+  },
+  {
+    "i_id": 310,
+    "i_Group": 10,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7101210,
+    "i_PaidRewardGroup": 7102210
+  },
+  {
+    "i_id": 311,
+    "i_Group": 10,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7101220,
+    "i_PaidRewardGroup": 7102220
+  },
+  {
+    "i_id": 312,
+    "i_Group": 10,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7101230,
+    "i_PaidRewardGroup": 7102230
+  },
+  {
+    "i_id": 313,
+    "i_Group": 10,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7101240,
+    "i_PaidRewardGroup": 7102240
+  },
+  {
+    "i_id": 314,
+    "i_Group": 10,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7101250,
+    "i_PaidRewardGroup": 7102250
+  },
+  {
+    "i_id": 315,
+    "i_Group": 10,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7101260,
+    "i_PaidRewardGroup": 7102260
+  },
+  {
+    "i_id": 316,
+    "i_Group": 10,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7101270,
+    "i_PaidRewardGroup": 7102270
+  },
+  {
+    "i_id": 317,
+    "i_Group": 10,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7101280,
+    "i_PaidRewardGroup": 7102280
+  },
+  {
+    "i_id": 318,
+    "i_Group": 10,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7101290,
+    "i_PaidRewardGroup": 7102290
+  },
+  {
+    "i_id": 319,
+    "i_Group": 10,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7101300,
+    "i_PaidRewardGroup": 7102300
+  },
+  {
+    "i_id": 320,
+    "i_Group": 10,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7102310
+  },
+  {
+    "i_id": 321,
+    "i_Group": 11,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7111000,
+    "i_PaidRewardGroup": 7112000
+  },
+  {
+    "i_id": 322,
+    "i_Group": 11,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7111010,
+    "i_PaidRewardGroup": 7112010
+  },
+  {
+    "i_id": 323,
+    "i_Group": 11,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7111020,
+    "i_PaidRewardGroup": 7112020
+  },
+  {
+    "i_id": 324,
+    "i_Group": 11,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7111030,
+    "i_PaidRewardGroup": 7112030
+  },
+  {
+    "i_id": 325,
+    "i_Group": 11,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7111040,
+    "i_PaidRewardGroup": 7112040
+  },
+  {
+    "i_id": 326,
+    "i_Group": 11,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7111050,
+    "i_PaidRewardGroup": 7112050
+  },
+  {
+    "i_id": 327,
+    "i_Group": 11,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7111060,
+    "i_PaidRewardGroup": 7112060
+  },
+  {
+    "i_id": 328,
+    "i_Group": 11,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7111070,
+    "i_PaidRewardGroup": 7112070
+  },
+  {
+    "i_id": 329,
+    "i_Group": 11,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7111080,
+    "i_PaidRewardGroup": 7112080
+  },
+  {
+    "i_id": 330,
+    "i_Group": 11,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7111090,
+    "i_PaidRewardGroup": 7112090
+  },
+  {
+    "i_id": 331,
+    "i_Group": 11,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7111100,
+    "i_PaidRewardGroup": 7112100
+  },
+  {
+    "i_id": 332,
+    "i_Group": 11,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7111110,
+    "i_PaidRewardGroup": 7112110
+  },
+  {
+    "i_id": 333,
+    "i_Group": 11,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7111120,
+    "i_PaidRewardGroup": 7112120
+  },
+  {
+    "i_id": 334,
+    "i_Group": 11,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7111130,
+    "i_PaidRewardGroup": 7112130
+  },
+  {
+    "i_id": 335,
+    "i_Group": 11,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7111140,
+    "i_PaidRewardGroup": 7112140
+  },
+  {
+    "i_id": 336,
+    "i_Group": 11,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7111150,
+    "i_PaidRewardGroup": 7112150
+  },
+  {
+    "i_id": 337,
+    "i_Group": 11,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7111160,
+    "i_PaidRewardGroup": 7112160
+  },
+  {
+    "i_id": 338,
+    "i_Group": 11,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7111170,
+    "i_PaidRewardGroup": 7112170
+  },
+  {
+    "i_id": 339,
+    "i_Group": 11,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7111180,
+    "i_PaidRewardGroup": 7112180
+  },
+  {
+    "i_id": 340,
+    "i_Group": 11,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7111190,
+    "i_PaidRewardGroup": 7112190
+  },
+  {
+    "i_id": 341,
+    "i_Group": 11,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7111200,
+    "i_PaidRewardGroup": 7112200
+  },
+  {
+    "i_id": 342,
+    "i_Group": 11,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7111210,
+    "i_PaidRewardGroup": 7112210
+  },
+  {
+    "i_id": 343,
+    "i_Group": 11,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7111220,
+    "i_PaidRewardGroup": 7112220
+  },
+  {
+    "i_id": 344,
+    "i_Group": 11,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7111230,
+    "i_PaidRewardGroup": 7112230
+  },
+  {
+    "i_id": 345,
+    "i_Group": 11,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7111240,
+    "i_PaidRewardGroup": 7112240
+  },
+  {
+    "i_id": 346,
+    "i_Group": 11,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7111250,
+    "i_PaidRewardGroup": 7112250
+  },
+  {
+    "i_id": 347,
+    "i_Group": 11,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7111260,
+    "i_PaidRewardGroup": 7112260
+  },
+  {
+    "i_id": 348,
+    "i_Group": 11,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7111270,
+    "i_PaidRewardGroup": 7112270
+  },
+  {
+    "i_id": 349,
+    "i_Group": 11,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7111280,
+    "i_PaidRewardGroup": 7112280
+  },
+  {
+    "i_id": 350,
+    "i_Group": 11,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7111290,
+    "i_PaidRewardGroup": 7112290
+  },
+  {
+    "i_id": 351,
+    "i_Group": 11,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7111300,
+    "i_PaidRewardGroup": 7112300
+  },
+  {
+    "i_id": 352,
+    "i_Group": 11,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7112310
+  },
+  {
+    "i_id": 353,
+    "i_Group": 12,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7121000,
+    "i_PaidRewardGroup": 7122000
+  },
+  {
+    "i_id": 354,
+    "i_Group": 12,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7121010,
+    "i_PaidRewardGroup": 7122010
+  },
+  {
+    "i_id": 355,
+    "i_Group": 12,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7121020,
+    "i_PaidRewardGroup": 7122020
+  },
+  {
+    "i_id": 356,
+    "i_Group": 12,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7121030,
+    "i_PaidRewardGroup": 7122030
+  },
+  {
+    "i_id": 357,
+    "i_Group": 12,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7121040,
+    "i_PaidRewardGroup": 7122040
+  },
+  {
+    "i_id": 358,
+    "i_Group": 12,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7121050,
+    "i_PaidRewardGroup": 7122050
+  },
+  {
+    "i_id": 359,
+    "i_Group": 12,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7121060,
+    "i_PaidRewardGroup": 7122060
+  },
+  {
+    "i_id": 360,
+    "i_Group": 12,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7121070,
+    "i_PaidRewardGroup": 7122070
+  },
+  {
+    "i_id": 361,
+    "i_Group": 12,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7121080,
+    "i_PaidRewardGroup": 7122080
+  },
+  {
+    "i_id": 362,
+    "i_Group": 12,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7121090,
+    "i_PaidRewardGroup": 7122090
+  },
+  {
+    "i_id": 363,
+    "i_Group": 12,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7121100,
+    "i_PaidRewardGroup": 7122100
+  },
+  {
+    "i_id": 364,
+    "i_Group": 12,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7121110,
+    "i_PaidRewardGroup": 7122110
+  },
+  {
+    "i_id": 365,
+    "i_Group": 12,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7121120,
+    "i_PaidRewardGroup": 7122120
+  },
+  {
+    "i_id": 366,
+    "i_Group": 12,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7121130,
+    "i_PaidRewardGroup": 7122130
+  },
+  {
+    "i_id": 367,
+    "i_Group": 12,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7121140,
+    "i_PaidRewardGroup": 7122140
+  },
+  {
+    "i_id": 368,
+    "i_Group": 12,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7121150,
+    "i_PaidRewardGroup": 7122150
+  },
+  {
+    "i_id": 369,
+    "i_Group": 12,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7121160,
+    "i_PaidRewardGroup": 7122160
+  },
+  {
+    "i_id": 370,
+    "i_Group": 12,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7121170,
+    "i_PaidRewardGroup": 7122170
+  },
+  {
+    "i_id": 371,
+    "i_Group": 12,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7121180,
+    "i_PaidRewardGroup": 7122180
+  },
+  {
+    "i_id": 372,
+    "i_Group": 12,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7121190,
+    "i_PaidRewardGroup": 7122190
+  },
+  {
+    "i_id": 373,
+    "i_Group": 12,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7121200,
+    "i_PaidRewardGroup": 7122200
+  },
+  {
+    "i_id": 374,
+    "i_Group": 12,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7121210,
+    "i_PaidRewardGroup": 7122210
+  },
+  {
+    "i_id": 375,
+    "i_Group": 12,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7121220,
+    "i_PaidRewardGroup": 7122220
+  },
+  {
+    "i_id": 376,
+    "i_Group": 12,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7121230,
+    "i_PaidRewardGroup": 7122230
+  },
+  {
+    "i_id": 377,
+    "i_Group": 12,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7121240,
+    "i_PaidRewardGroup": 7122240
+  },
+  {
+    "i_id": 378,
+    "i_Group": 12,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7121250,
+    "i_PaidRewardGroup": 7122250
+  },
+  {
+    "i_id": 379,
+    "i_Group": 12,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7121260,
+    "i_PaidRewardGroup": 7122260
+  },
+  {
+    "i_id": 380,
+    "i_Group": 12,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7121270,
+    "i_PaidRewardGroup": 7122270
+  },
+  {
+    "i_id": 381,
+    "i_Group": 12,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7121280,
+    "i_PaidRewardGroup": 7122280
+  },
+  {
+    "i_id": 382,
+    "i_Group": 12,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7121290,
+    "i_PaidRewardGroup": 7122290
+  },
+  {
+    "i_id": 383,
+    "i_Group": 12,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7121300,
+    "i_PaidRewardGroup": 7122300
+  },
+  {
+    "i_id": 384,
+    "i_Group": 12,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7122310
+  },
+  {
+    "i_id": 385,
+    "i_Group": 13,
+    "i_Step": 0,
+    "i_Goal": 0,
+    "i_FreeRewardGroup": 7131000,
+    "i_PaidRewardGroup": 7132000
+  },
+  {
+    "i_id": 386,
+    "i_Group": 13,
+    "i_Step": 1,
+    "i_Goal": 2000,
+    "i_FreeRewardGroup": 7131010,
+    "i_PaidRewardGroup": 7132010
+  },
+  {
+    "i_id": 387,
+    "i_Group": 13,
+    "i_Step": 2,
+    "i_Goal": 4000,
+    "i_FreeRewardGroup": 7131020,
+    "i_PaidRewardGroup": 7132020
+  },
+  {
+    "i_id": 388,
+    "i_Group": 13,
+    "i_Step": 3,
+    "i_Goal": 7000,
+    "i_FreeRewardGroup": 7131030,
+    "i_PaidRewardGroup": 7132030
+  },
+  {
+    "i_id": 389,
+    "i_Group": 13,
+    "i_Step": 4,
+    "i_Goal": 11000,
+    "i_FreeRewardGroup": 7131040,
+    "i_PaidRewardGroup": 7132040
+  },
+  {
+    "i_id": 390,
+    "i_Group": 13,
+    "i_Step": 5,
+    "i_Goal": 16000,
+    "i_FreeRewardGroup": 7131050,
+    "i_PaidRewardGroup": 7132050
+  },
+  {
+    "i_id": 391,
+    "i_Group": 13,
+    "i_Step": 6,
+    "i_Goal": 22000,
+    "i_FreeRewardGroup": 7131060,
+    "i_PaidRewardGroup": 7132060
+  },
+  {
+    "i_id": 392,
+    "i_Group": 13,
+    "i_Step": 7,
+    "i_Goal": 29000,
+    "i_FreeRewardGroup": 7131070,
+    "i_PaidRewardGroup": 7132070
+  },
+  {
+    "i_id": 393,
+    "i_Group": 13,
+    "i_Step": 8,
+    "i_Goal": 37000,
+    "i_FreeRewardGroup": 7131080,
+    "i_PaidRewardGroup": 7132080
+  },
+  {
+    "i_id": 394,
+    "i_Group": 13,
+    "i_Step": 9,
+    "i_Goal": 46000,
+    "i_FreeRewardGroup": 7131090,
+    "i_PaidRewardGroup": 7132090
+  },
+  {
+    "i_id": 395,
+    "i_Group": 13,
+    "i_Step": 10,
+    "i_Goal": 56000,
+    "i_FreeRewardGroup": 7131100,
+    "i_PaidRewardGroup": 7132100
+  },
+  {
+    "i_id": 396,
+    "i_Group": 13,
+    "i_Step": 11,
+    "i_Goal": 67000,
+    "i_FreeRewardGroup": 7131110,
+    "i_PaidRewardGroup": 7132110
+  },
+  {
+    "i_id": 397,
+    "i_Group": 13,
+    "i_Step": 12,
+    "i_Goal": 79000,
+    "i_FreeRewardGroup": 7131120,
+    "i_PaidRewardGroup": 7132120
+  },
+  {
+    "i_id": 398,
+    "i_Group": 13,
+    "i_Step": 13,
+    "i_Goal": 92000,
+    "i_FreeRewardGroup": 7131130,
+    "i_PaidRewardGroup": 7132130
+  },
+  {
+    "i_id": 399,
+    "i_Group": 13,
+    "i_Step": 14,
+    "i_Goal": 106000,
+    "i_FreeRewardGroup": 7131140,
+    "i_PaidRewardGroup": 7132140
+  },
+  {
+    "i_id": 400,
+    "i_Group": 13,
+    "i_Step": 15,
+    "i_Goal": 121000,
+    "i_FreeRewardGroup": 7131150,
+    "i_PaidRewardGroup": 7132150
+  },
+  {
+    "i_id": 401,
+    "i_Group": 13,
+    "i_Step": 16,
+    "i_Goal": 137000,
+    "i_FreeRewardGroup": 7131160,
+    "i_PaidRewardGroup": 7132160
+  },
+  {
+    "i_id": 402,
+    "i_Group": 13,
+    "i_Step": 17,
+    "i_Goal": 154000,
+    "i_FreeRewardGroup": 7131170,
+    "i_PaidRewardGroup": 7132170
+  },
+  {
+    "i_id": 403,
+    "i_Group": 13,
+    "i_Step": 18,
+    "i_Goal": 172000,
+    "i_FreeRewardGroup": 7131180,
+    "i_PaidRewardGroup": 7132180
+  },
+  {
+    "i_id": 404,
+    "i_Group": 13,
+    "i_Step": 19,
+    "i_Goal": 191000,
+    "i_FreeRewardGroup": 7131190,
+    "i_PaidRewardGroup": 7132190
+  },
+  {
+    "i_id": 405,
+    "i_Group": 13,
+    "i_Step": 20,
+    "i_Goal": 211000,
+    "i_FreeRewardGroup": 7131200,
+    "i_PaidRewardGroup": 7132200
+  },
+  {
+    "i_id": 406,
+    "i_Group": 13,
+    "i_Step": 21,
+    "i_Goal": 232000,
+    "i_FreeRewardGroup": 7131210,
+    "i_PaidRewardGroup": 7132210
+  },
+  {
+    "i_id": 407,
+    "i_Group": 13,
+    "i_Step": 22,
+    "i_Goal": 254000,
+    "i_FreeRewardGroup": 7131220,
+    "i_PaidRewardGroup": 7132220
+  },
+  {
+    "i_id": 408,
+    "i_Group": 13,
+    "i_Step": 23,
+    "i_Goal": 277000,
+    "i_FreeRewardGroup": 7131230,
+    "i_PaidRewardGroup": 7132230
+  },
+  {
+    "i_id": 409,
+    "i_Group": 13,
+    "i_Step": 24,
+    "i_Goal": 301000,
+    "i_FreeRewardGroup": 7131240,
+    "i_PaidRewardGroup": 7132240
+  },
+  {
+    "i_id": 410,
+    "i_Group": 13,
+    "i_Step": 25,
+    "i_Goal": 326000,
+    "i_FreeRewardGroup": 7131250,
+    "i_PaidRewardGroup": 7132250
+  },
+  {
+    "i_id": 411,
+    "i_Group": 13,
+    "i_Step": 26,
+    "i_Goal": 352000,
+    "i_FreeRewardGroup": 7131260,
+    "i_PaidRewardGroup": 7132260
+  },
+  {
+    "i_id": 412,
+    "i_Group": 13,
+    "i_Step": 27,
+    "i_Goal": 379000,
+    "i_FreeRewardGroup": 7131270,
+    "i_PaidRewardGroup": 7132270
+  },
+  {
+    "i_id": 413,
+    "i_Group": 13,
+    "i_Step": 28,
+    "i_Goal": 407000,
+    "i_FreeRewardGroup": 7131280,
+    "i_PaidRewardGroup": 7132280
+  },
+  {
+    "i_id": 414,
+    "i_Group": 13,
+    "i_Step": 29,
+    "i_Goal": 436000,
+    "i_FreeRewardGroup": 7131290,
+    "i_PaidRewardGroup": 7132290
+  },
+  {
+    "i_id": 415,
+    "i_Group": 13,
+    "i_Step": 30,
+    "i_Goal": 466000,
+    "i_FreeRewardGroup": 7131300,
+    "i_PaidRewardGroup": 7132300
+  },
+  {
+    "i_id": 416,
+    "i_Group": 13,
+    "i_Step": 31,
+    "i_Goal": 566000,
+    "i_FreeRewardGroup": 0,
+    "i_PaidRewardGroup": 7132310
+  }
+]

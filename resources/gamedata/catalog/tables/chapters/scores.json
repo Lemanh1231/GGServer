@@ -1,0 +1,402 @@
+[
+  {
+    "i_id": 1,
+    "i_Level": 1,
+    "i_CharacterScore": 50,
+    "i_FollowerScore": 100,
+    "i_MusicScore": 550,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 2,
+    "i_Level": 2,
+    "i_CharacterScore": 62,
+    "i_FollowerScore": 125,
+    "i_MusicScore": 600,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 3,
+    "i_Level": 3,
+    "i_CharacterScore": 75,
+    "i_FollowerScore": 150,
+    "i_MusicScore": 650,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 4,
+    "i_Level": 4,
+    "i_CharacterScore": 87,
+    "i_FollowerScore": 175,
+    "i_MusicScore": 700,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 5,
+    "i_Level": 5,
+    "i_CharacterScore": 100,
+    "i_FollowerScore": 200,
+    "i_MusicScore": 750,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 6,
+    "i_Level": 6,
+    "i_CharacterScore": 120,
+    "i_FollowerScore": 240,
+    "i_MusicScore": 800,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 7,
+    "i_Level": 7,
+    "i_CharacterScore": 140,
+    "i_FollowerScore": 280,
+    "i_MusicScore": 850,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 8,
+    "i_Level": 8,
+    "i_CharacterScore": 160,
+    "i_FollowerScore": 320,
+    "i_MusicScore": 900,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 9,
+    "i_Level": 9,
+    "i_CharacterScore": 180,
+    "i_FollowerScore": 360,
+    "i_MusicScore": 950,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 10,
+    "i_Level": 10,
+    "i_CharacterScore": 200,
+    "i_FollowerScore": 400,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 11,
+    "i_Level": 11,
+    "i_CharacterScore": 240,
+    "i_FollowerScore": 480,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 12,
+    "i_Level": 12,
+    "i_CharacterScore": 280,
+    "i_FollowerScore": 560,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 13,
+    "i_Level": 13,
+    "i_CharacterScore": 320,
+    "i_FollowerScore": 640,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 14,
+    "i_Level": 14,
+    "i_CharacterScore": 360,
+    "i_FollowerScore": 720,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 15,
+    "i_Level": 15,
+    "i_CharacterScore": 400,
+    "i_FollowerScore": 800,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 16,
+    "i_Level": 16,
+    "i_CharacterScore": 480,
+    "i_FollowerScore": 960,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 17,
+    "i_Level": 17,
+    "i_CharacterScore": 560,
+    "i_FollowerScore": 1120,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 18,
+    "i_Level": 18,
+    "i_CharacterScore": 640,
+    "i_FollowerScore": 1280,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 19,
+    "i_Level": 19,
+    "i_CharacterScore": 720,
+    "i_FollowerScore": 1440,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 20,
+    "i_Level": 20,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 21,
+    "i_Level": 21,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 22,
+    "i_Level": 22,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 23,
+    "i_Level": 23,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 24,
+    "i_Level": 24,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 25,
+    "i_Level": 25,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 26,
+    "i_Level": 26,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 27,
+    "i_Level": 27,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 28,
+    "i_Level": 28,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 29,
+    "i_Level": 29,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 30,
+    "i_Level": 30,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 31,
+    "i_Level": 31,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 32,
+    "i_Level": 32,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 33,
+    "i_Level": 33,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 34,
+    "i_Level": 34,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 35,
+    "i_Level": 35,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 36,
+    "i_Level": 36,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 37,
+    "i_Level": 37,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 38,
+    "i_Level": 38,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 39,
+    "i_Level": 39,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 40,
+    "i_Level": 40,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 41,
+    "i_Level": 41,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 42,
+    "i_Level": 42,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 43,
+    "i_Level": 43,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 44,
+    "i_Level": 44,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 45,
+    "i_Level": 45,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 46,
+    "i_Level": 46,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 47,
+    "i_Level": 47,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 48,
+    "i_Level": 48,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 49,
+    "i_Level": 49,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 50,
+    "i_Level": 50,
+    "i_CharacterScore": 800,
+    "i_FollowerScore": 1600,
+    "i_MusicScore": 1000,
+    "b_IsActive": 1
+  }
+]

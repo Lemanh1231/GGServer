@@ -1,0 +1,86 @@
+[
+  {
+    "i_id": 1,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10010,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 2,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10020,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 3,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10030,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 4,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10040,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 5,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10050,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 6,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10060,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 7,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10070,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 8,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10080,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 9,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10090,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 10,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10100,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 11,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10110,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  },
+  {
+    "i_id": 12,
+    "i_GroupId": 10,
+    "i_RewardGroupId": 10120,
+    "i_AltRewardGroupId": 10130,
+    "b_IsActive": 1
+  }
+]

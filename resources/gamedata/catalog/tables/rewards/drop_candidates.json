@@ -1,0 +1,962 @@
+[
+  {
+    "i_GroupID": 301010,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301011
+  },
+  {
+    "i_GroupID": 301010,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 301012
+  },
+  {
+    "i_GroupID": 301010,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 301013
+  },
+  {
+    "i_GroupID": 301010,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 301014
+  },
+  {
+    "i_GroupID": 301015,
+    "i_RewardType": 11,
+    "i_RewardID": 2,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301016
+  },
+  {
+    "i_GroupID": 301015,
+    "i_RewardType": 11,
+    "i_RewardID": 2,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 301017
+  },
+  {
+    "i_GroupID": 301020,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301021
+  },
+  {
+    "i_GroupID": 301020,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 301022
+  },
+  {
+    "i_GroupID": 301020,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 301023
+  },
+  {
+    "i_GroupID": 301020,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 301024
+  },
+  {
+    "i_GroupID": 301025,
+    "i_RewardType": 11,
+    "i_RewardID": 3,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301026
+  },
+  {
+    "i_GroupID": 301025,
+    "i_RewardType": 11,
+    "i_RewardID": 3,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 301027
+  },
+  {
+    "i_GroupID": 301030,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301031
+  },
+  {
+    "i_GroupID": 301030,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 301032
+  },
+  {
+    "i_GroupID": 301030,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 301033
+  },
+  {
+    "i_GroupID": 301030,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 301034
+  },
+  {
+    "i_GroupID": 301035,
+    "i_RewardType": 11,
+    "i_RewardID": 4,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301036
+  },
+  {
+    "i_GroupID": 301035,
+    "i_RewardType": 11,
+    "i_RewardID": 4,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 301037
+  },
+  {
+    "i_GroupID": 301040,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301041
+  },
+  {
+    "i_GroupID": 301040,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 301042
+  },
+  {
+    "i_GroupID": 301040,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 301043
+  },
+  {
+    "i_GroupID": 301040,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 301044
+  },
+  {
+    "i_GroupID": 301045,
+    "i_RewardType": 11,
+    "i_RewardID": 5,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301046
+  },
+  {
+    "i_GroupID": 301045,
+    "i_RewardType": 11,
+    "i_RewardID": 5,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 301047
+  },
+  {
+    "i_GroupID": 301050,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301051
+  },
+  {
+    "i_GroupID": 301050,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 301052
+  },
+  {
+    "i_GroupID": 301050,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 301053
+  },
+  {
+    "i_GroupID": 301050,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 301054
+  },
+  {
+    "i_GroupID": 301055,
+    "i_RewardType": 11,
+    "i_RewardID": 6,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301056
+  },
+  {
+    "i_GroupID": 301055,
+    "i_RewardType": 11,
+    "i_RewardID": 6,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 301057
+  },
+  {
+    "i_GroupID": 301060,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301061
+  },
+  {
+    "i_GroupID": 301060,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 301062
+  },
+  {
+    "i_GroupID": 301060,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 301063
+  },
+  {
+    "i_GroupID": 301060,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 5,
+    "b_IsActive": 1,
+    "i_id": 301064
+  },
+  {
+    "i_GroupID": 301065,
+    "i_RewardType": 11,
+    "i_RewardID": 2,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 301066
+  },
+  {
+    "i_GroupID": 301065,
+    "i_RewardType": 11,
+    "i_RewardID": 2,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 301067
+  },
+  {
+    "i_GroupID": 301070,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301071
+  },
+  {
+    "i_GroupID": 301070,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 301072
+  },
+  {
+    "i_GroupID": 301070,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 301073
+  },
+  {
+    "i_GroupID": 301070,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 5,
+    "b_IsActive": 1,
+    "i_id": 301074
+  },
+  {
+    "i_GroupID": 301075,
+    "i_RewardType": 11,
+    "i_RewardID": 3,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 301076
+  },
+  {
+    "i_GroupID": 301075,
+    "i_RewardType": 11,
+    "i_RewardID": 3,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 301077
+  },
+  {
+    "i_GroupID": 301080,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301081
+  },
+  {
+    "i_GroupID": 301080,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 301082
+  },
+  {
+    "i_GroupID": 301080,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 301083
+  },
+  {
+    "i_GroupID": 301080,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 5,
+    "b_IsActive": 1,
+    "i_id": 301084
+  },
+  {
+    "i_GroupID": 301085,
+    "i_RewardType": 11,
+    "i_RewardID": 4,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 301086
+  },
+  {
+    "i_GroupID": 301085,
+    "i_RewardType": 11,
+    "i_RewardID": 4,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 301087
+  },
+  {
+    "i_GroupID": 301090,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301091
+  },
+  {
+    "i_GroupID": 301090,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 301092
+  },
+  {
+    "i_GroupID": 301090,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 301093
+  },
+  {
+    "i_GroupID": 301090,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 5,
+    "b_IsActive": 1,
+    "i_id": 301094
+  },
+  {
+    "i_GroupID": 301095,
+    "i_RewardType": 11,
+    "i_RewardID": 5,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 301096
+  },
+  {
+    "i_GroupID": 301095,
+    "i_RewardType": 11,
+    "i_RewardID": 5,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 301097
+  },
+  {
+    "i_GroupID": 301100,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 1,
+    "b_IsActive": 1,
+    "i_id": 301101
+  },
+  {
+    "i_GroupID": 301100,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 301102
+  },
+  {
+    "i_GroupID": 301100,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 301103
+  },
+  {
+    "i_GroupID": 301100,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 5,
+    "b_IsActive": 1,
+    "i_id": 301104
+  },
+  {
+    "i_GroupID": 301105,
+    "i_RewardType": 11,
+    "i_RewardID": 6,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 301106
+  },
+  {
+    "i_GroupID": 301105,
+    "i_RewardType": 11,
+    "i_RewardID": 6,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 301107
+  },
+  {
+    "i_GroupID": 302010,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 302011
+  },
+  {
+    "i_GroupID": 302010,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 302012
+  },
+  {
+    "i_GroupID": 302010,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 5,
+    "b_IsActive": 1,
+    "i_id": 302013
+  },
+  {
+    "i_GroupID": 302010,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 7,
+    "b_IsActive": 1,
+    "i_id": 302014
+  },
+  {
+    "i_GroupID": 302015,
+    "i_RewardType": 11,
+    "i_RewardID": 2,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 302016
+  },
+  {
+    "i_GroupID": 302015,
+    "i_RewardType": 11,
+    "i_RewardID": 2,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 302017
+  },
+  {
+    "i_GroupID": 302020,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 302021
+  },
+  {
+    "i_GroupID": 302020,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 302022
+  },
+  {
+    "i_GroupID": 302020,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 5,
+    "b_IsActive": 1,
+    "i_id": 302023
+  },
+  {
+    "i_GroupID": 302020,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 7,
+    "b_IsActive": 1,
+    "i_id": 302024
+  },
+  {
+    "i_GroupID": 302025,
+    "i_RewardType": 11,
+    "i_RewardID": 3,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 302026
+  },
+  {
+    "i_GroupID": 302025,
+    "i_RewardType": 11,
+    "i_RewardID": 3,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 302027
+  },
+  {
+    "i_GroupID": 302030,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 302031
+  },
+  {
+    "i_GroupID": 302030,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 302032
+  },
+  {
+    "i_GroupID": 302030,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 5,
+    "b_IsActive": 1,
+    "i_id": 302033
+  },
+  {
+    "i_GroupID": 302030,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 7,
+    "b_IsActive": 1,
+    "i_id": 302034
+  },
+  {
+    "i_GroupID": 302035,
+    "i_RewardType": 11,
+    "i_RewardID": 4,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 302036
+  },
+  {
+    "i_GroupID": 302035,
+    "i_RewardType": 11,
+    "i_RewardID": 4,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 302037
+  },
+  {
+    "i_GroupID": 302040,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 302041
+  },
+  {
+    "i_GroupID": 302040,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 302042
+  },
+  {
+    "i_GroupID": 302040,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 5,
+    "b_IsActive": 1,
+    "i_id": 302043
+  },
+  {
+    "i_GroupID": 302040,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 7,
+    "b_IsActive": 1,
+    "i_id": 302044
+  },
+  {
+    "i_GroupID": 302045,
+    "i_RewardType": 11,
+    "i_RewardID": 5,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 302046
+  },
+  {
+    "i_GroupID": 302045,
+    "i_RewardType": 11,
+    "i_RewardID": 5,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 302047
+  },
+  {
+    "i_GroupID": 302050,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 302051
+  },
+  {
+    "i_GroupID": 302050,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 302052
+  },
+  {
+    "i_GroupID": 302050,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 5,
+    "b_IsActive": 1,
+    "i_id": 302053
+  },
+  {
+    "i_GroupID": 302050,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 7,
+    "b_IsActive": 1,
+    "i_id": 302054
+  },
+  {
+    "i_GroupID": 302055,
+    "i_RewardType": 11,
+    "i_RewardID": 6,
+    "l_RewardQuantity": 3,
+    "b_IsActive": 1,
+    "i_id": 302056
+  },
+  {
+    "i_GroupID": 302055,
+    "i_RewardType": 11,
+    "i_RewardID": 6,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 302057
+  },
+  {
+    "i_GroupID": 302060,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 302061
+  },
+  {
+    "i_GroupID": 302060,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 302062
+  },
+  {
+    "i_GroupID": 302060,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 6,
+    "b_IsActive": 1,
+    "i_id": 302063
+  },
+  {
+    "i_GroupID": 302060,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 8,
+    "b_IsActive": 1,
+    "i_id": 302064
+  },
+  {
+    "i_GroupID": 302065,
+    "i_RewardType": 11,
+    "i_RewardID": 2,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 302066
+  },
+  {
+    "i_GroupID": 302065,
+    "i_RewardType": 11,
+    "i_RewardID": 2,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 302067
+  },
+  {
+    "i_GroupID": 302070,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 302071
+  },
+  {
+    "i_GroupID": 302070,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 302072
+  },
+  {
+    "i_GroupID": 302070,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 6,
+    "b_IsActive": 1,
+    "i_id": 302073
+  },
+  {
+    "i_GroupID": 302070,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 8,
+    "b_IsActive": 1,
+    "i_id": 302074
+  },
+  {
+    "i_GroupID": 302075,
+    "i_RewardType": 11,
+    "i_RewardID": 3,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 302076
+  },
+  {
+    "i_GroupID": 302075,
+    "i_RewardType": 11,
+    "i_RewardID": 3,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 302077
+  },
+  {
+    "i_GroupID": 302080,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 302081
+  },
+  {
+    "i_GroupID": 302080,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 302082
+  },
+  {
+    "i_GroupID": 302080,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 6,
+    "b_IsActive": 1,
+    "i_id": 302083
+  },
+  {
+    "i_GroupID": 302080,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 8,
+    "b_IsActive": 1,
+    "i_id": 302084
+  },
+  {
+    "i_GroupID": 302085,
+    "i_RewardType": 11,
+    "i_RewardID": 4,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 302086
+  },
+  {
+    "i_GroupID": 302085,
+    "i_RewardType": 11,
+    "i_RewardID": 4,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 302087
+  },
+  {
+    "i_GroupID": 302090,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 302091
+  },
+  {
+    "i_GroupID": 302090,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 302092
+  },
+  {
+    "i_GroupID": 302090,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 6,
+    "b_IsActive": 1,
+    "i_id": 302093
+  },
+  {
+    "i_GroupID": 302090,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 8,
+    "b_IsActive": 1,
+    "i_id": 302094
+  },
+  {
+    "i_GroupID": 302095,
+    "i_RewardType": 11,
+    "i_RewardID": 5,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 302096
+  },
+  {
+    "i_GroupID": 302095,
+    "i_RewardType": 11,
+    "i_RewardID": 5,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 302097
+  },
+  {
+    "i_GroupID": 302100,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 2,
+    "b_IsActive": 1,
+    "i_id": 302101
+  },
+  {
+    "i_GroupID": 302100,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 302102
+  },
+  {
+    "i_GroupID": 302100,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 6,
+    "b_IsActive": 1,
+    "i_id": 302103
+  },
+  {
+    "i_GroupID": 302100,
+    "i_RewardType": 11,
+    "i_RewardID": 1,
+    "l_RewardQuantity": 8,
+    "b_IsActive": 1,
+    "i_id": 302104
+  },
+  {
+    "i_GroupID": 302105,
+    "i_RewardType": 11,
+    "i_RewardID": 6,
+    "l_RewardQuantity": 4,
+    "b_IsActive": 1,
+    "i_id": 302106
+  },
+  {
+    "i_GroupID": 302105,
+    "i_RewardType": 11,
+    "i_RewardID": 6,
+    "l_RewardQuantity": 0,
+    "b_IsActive": 1,
+    "i_id": 302107
+  }
+]

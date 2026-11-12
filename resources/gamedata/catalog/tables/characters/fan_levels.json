@@ -1,0 +1,86 @@
+[
+  {
+    "i_Area": 1,
+    "i_Grade": 1,
+    "i_FanCount": 1000,
+    "i_BonusRate": 1,
+    "i_BonusRateUI": 1
+  },
+  {
+    "i_Area": 1,
+    "i_Grade": 2,
+    "i_FanCount": 10000,
+    "i_BonusRate": 2,
+    "i_BonusRateUI": 2
+  },
+  {
+    "i_Area": 1,
+    "i_Grade": 3,
+    "i_FanCount": 100000,
+    "i_BonusRate": 2,
+    "i_BonusRateUI": 2
+  },
+  {
+    "i_Area": 1,
+    "i_Grade": 4,
+    "i_FanCount": 1000000,
+    "i_BonusRate": 2,
+    "i_BonusRateUI": 2
+  },
+  {
+    "i_Area": 1,
+    "i_Grade": 5,
+    "i_FanCount": 10000000,
+    "i_BonusRate": 2,
+    "i_BonusRateUI": 2
+  },
+  {
+    "i_Area": 1,
+    "i_Grade": 6,
+    "i_FanCount": -1,
+    "i_BonusRate": 2,
+    "i_BonusRateUI": 2
+  },
+  {
+    "i_Area": 2,
+    "i_Grade": 1,
+    "i_FanCount": 1000,
+    "i_BonusRate": 1,
+    "i_BonusRateUI": 1
+  },
+  {
+    "i_Area": 2,
+    "i_Grade": 2,
+    "i_FanCount": 10000,
+    "i_BonusRate": 2,
+    "i_BonusRateUI": 2
+  },
+  {
+    "i_Area": 2,
+    "i_Grade": 3,
+    "i_FanCount": 100000,
+    "i_BonusRate": 2,
+    "i_BonusRateUI": 2
+  },
+  {
+    "i_Area": 2,
+    "i_Grade": 4,
+    "i_FanCount": 1000000,
+    "i_BonusRate": 2,
+    "i_BonusRateUI": 2
+  },
+  {
+    "i_Area": 2,
+    "i_Grade": 5,
+    "i_FanCount": 10000000,
+    "i_BonusRate": 2,
+    "i_BonusRateUI": 2
+  },
+  {
+    "i_Area": 2,
+    "i_Grade": 6,
+    "i_FanCount": -1,
+    "i_BonusRate": 2,
+    "i_BonusRateUI": 2
+  }
+]

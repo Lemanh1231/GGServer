@@ -1,0 +1,5247 @@
+{
+  "formatVersion": 1,
+  "description": "APK-derived field names; server/capture values retain distinct provenance",
+  "sources": [
+    {
+      "file": "game_data.json",
+      "kind": "existing-server-numeric-tables",
+      "sha256": "c9959e5c7288409b919e94d72ecaf8173a3f57f00f3b5448e7cac821d0ef93e6"
+    },
+    {
+      "file": "schema.json",
+      "kind": "apk-derived-thrift-schema",
+      "sha256": "3c70b63a8430c7195dd0a309735dbf6a5d33cd7fa992056a78fce240c48945ea"
+    },
+    {
+      "file": "getGameDataList.b64",
+      "kind": "captured-server-wire-response",
+      "sha256": "c28f882d2c13de5bc8ad770f6bdb714793b13ebac88ace2219a326ecdf94ea07"
+    },
+    {
+      "file": "dump.cs",
+      "kind": "apk-il2cpp-dump-dto-crosscheck",
+      "sha256": "e71cff32e74c16881c3456215e498d6ececdadd4b9f4a8b0731445e912b154f2"
+    }
+  ],
+  "tableCount": 39,
+  "rowCount": 4065,
+  "tables": [
+    {
+      "id": 1,
+      "name": "consume",
+      "struct": "main.getConsumeData",
+      "file": "tables/items/consume.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 11,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Title_KO"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Title_EN"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Title_JA"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHS"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHT"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Title_VI"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Title_ES"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Title_IT"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Title_ID"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Title_TH"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Title_PT"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Title_HI"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Limit"
+        },
+        {
+          "id": 16,
+          "type": "I16",
+          "name": "i_Type"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_ExtraValue"
+        },
+        {
+          "id": 18,
+          "type": "I16",
+          "name": "i_Area"
+        },
+        {
+          "id": 19,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "music",
+      "struct": "main.getMusicData",
+      "file": "tables/music/music.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 50,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_Title_KO"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Title_EN"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Title_JA"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHS"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHT"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Title_VI"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Title_ES"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Title_IT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Title_ID"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Title_TH"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Title_PT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Title_HI"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Description_1_KO"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Description_1_EN"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_1_JA"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_1_ZH_CHS"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_1_ZH_CHT"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_1_VI"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_1_ES"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_1_IT"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_1_ID"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_1_TH"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_1_PT"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_1_HI"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 27,
+          "type": "STRING",
+          "name": "s_MusicFileName"
+        },
+        {
+          "id": 28,
+          "type": "I64",
+          "name": "i_MaxLevel"
+        },
+        {
+          "id": 29,
+          "type": "DOUBLE",
+          "name": "d_LevelRate"
+        },
+        {
+          "id": 30,
+          "type": "I64",
+          "name": "d_LateCost"
+        },
+        {
+          "id": 31,
+          "type": "DOUBLE",
+          "name": "d_Cost"
+        },
+        {
+          "id": 32,
+          "type": "DOUBLE",
+          "name": "d_CostIncreaseValue"
+        },
+        {
+          "id": 33,
+          "type": "I64",
+          "name": "d_CostValueConstant"
+        },
+        {
+          "id": 34,
+          "type": "DOUBLE",
+          "name": "d_Amount"
+        },
+        {
+          "id": 35,
+          "type": "DOUBLE",
+          "name": "d_AmountIncreaseValue"
+        },
+        {
+          "id": 36,
+          "type": "I64",
+          "name": "d_AmountValueConstant"
+        },
+        {
+          "id": 37,
+          "type": "I64",
+          "name": "d_BonusAmountIncreaseRate"
+        },
+        {
+          "id": 38,
+          "type": "I64",
+          "name": "i_UnlockLevel"
+        },
+        {
+          "id": 39,
+          "type": "I64",
+          "name": "d_UnlockCost"
+        },
+        {
+          "id": 40,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_1"
+        },
+        {
+          "id": 41,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_2"
+        },
+        {
+          "id": 42,
+          "type": "I64",
+          "name": "i_RequirementMusicId_1"
+        },
+        {
+          "id": 43,
+          "type": "I64",
+          "name": "i_RequirementMusicId_2"
+        },
+        {
+          "id": 44,
+          "type": "I64",
+          "name": "i_RequirementMusicCount"
+        },
+        {
+          "id": 45,
+          "type": "STRING",
+          "name": "s_GoodsType"
+        },
+        {
+          "id": 46,
+          "type": "I64",
+          "name": "i_SortOrder"
+        },
+        {
+          "id": 47,
+          "type": "I64",
+          "name": "i_AcquisitionType"
+        },
+        {
+          "id": 48,
+          "type": "I64",
+          "name": "i_AcquisitionId"
+        },
+        {
+          "id": 49,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 50,
+          "type": "I16",
+          "name": "i_Area"
+        },
+        {
+          "id": 51,
+          "type": "I32",
+          "name": "i_DownloadType_img"
+        },
+        {
+          "id": 52,
+          "type": "I32",
+          "name": "i_DownloadType_file"
+        }
+      ],
+      "clientFile": "client/music/music.json"
+    },
+    {
+      "id": 3,
+      "name": "costume",
+      "struct": "main.getCostumeData",
+      "file": "tables/items/costumes.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 61,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_Name_KO"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Name_EN"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Name_JA"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHS"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHT"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Name_VI"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Name_ES"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Name_IT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Name_ID"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Name_TH"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Name_PT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Name_HI"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 27,
+          "type": "STRING",
+          "name": "s_CostumeName"
+        },
+        {
+          "id": 28,
+          "type": "I64",
+          "name": "i_MaxLevel"
+        },
+        {
+          "id": 29,
+          "type": "STRING",
+          "name": "s_GoodsType"
+        },
+        {
+          "id": 30,
+          "type": "STRING",
+          "name": "s_Cost"
+        },
+        {
+          "id": 31,
+          "type": "DOUBLE",
+          "name": "f_CostIncreaseRate"
+        },
+        {
+          "id": 32,
+          "type": "STRING",
+          "name": "s_Operation"
+        },
+        {
+          "id": 33,
+          "type": "I64",
+          "name": "d_Amount"
+        },
+        {
+          "id": 34,
+          "type": "DOUBLE",
+          "name": "f_AmountIncreaseRate"
+        },
+        {
+          "id": 35,
+          "type": "STRING",
+          "name": "s_BonusOperation"
+        },
+        {
+          "id": 36,
+          "type": "I64",
+          "name": "d_BonusAmount"
+        },
+        {
+          "id": 37,
+          "type": "DOUBLE",
+          "name": "f_BonusAmountIncreaseRate"
+        },
+        {
+          "id": 38,
+          "type": "I64",
+          "name": "i_UnlockLevel"
+        },
+        {
+          "id": 39,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_1"
+        },
+        {
+          "id": 40,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_2"
+        },
+        {
+          "id": 41,
+          "type": "I64",
+          "name": "i_RequirementPropId_1"
+        },
+        {
+          "id": 42,
+          "type": "I64",
+          "name": "i_RequirementPropId_2"
+        },
+        {
+          "id": 43,
+          "type": "I64",
+          "name": "i_RequirementPropCount"
+        },
+        {
+          "id": 44,
+          "type": "I64",
+          "name": "i_SortOrder"
+        },
+        {
+          "id": 45,
+          "type": "DOUBLE",
+          "name": "f_FanMultiply"
+        },
+        {
+          "id": 46,
+          "type": "I64",
+          "name": "i_AcquisitionType"
+        },
+        {
+          "id": 47,
+          "type": "I64",
+          "name": "i_AcquisitionId"
+        },
+        {
+          "id": 48,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 49,
+          "type": "I16",
+          "name": "i_Area"
+        },
+        {
+          "id": 50,
+          "type": "I16",
+          "name": "i_DownloadType"
+        },
+        {
+          "id": 51,
+          "type": "STRING",
+          "name": "s_AltCostumeName"
+        },
+        {
+          "id": 52,
+          "type": "STRING",
+          "name": "s_AltCostumeStartTime"
+        },
+        {
+          "id": 53,
+          "type": "STRING",
+          "name": "s_AltCostumeEndTime"
+        }
+      ],
+      "clientFile": "client/items/costumes.json"
+    },
+    {
+      "id": 4,
+      "name": "prop",
+      "struct": "main.getPropData",
+      "file": "tables/items/props.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 17,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_Name_KO"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Name_EN"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Name_JA"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHS"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHT"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Name_VI"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Name_ES"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Name_IT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Name_ID"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Name_TH"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Name_PT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Name_HI"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 27,
+          "type": "I64",
+          "name": "i_RequirementPropId"
+        },
+        {
+          "id": 28,
+          "type": "I64",
+          "name": "i_Area"
+        },
+        {
+          "id": 29,
+          "type": "I64",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 30,
+          "type": "I16",
+          "name": "i_MaxLevel"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "follower",
+      "struct": "main.getFollowerData",
+      "file": "tables/followers/followers.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 23,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_Name_KO"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Name_EN"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Name_JA"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHS"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHT"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Name_VI"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Name_ES"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Name_IT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Name_ID"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Name_TH"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Name_PT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Name_HI"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 27,
+          "type": "I64",
+          "name": "i_MaxLevel"
+        },
+        {
+          "id": 28,
+          "type": "DOUBLE",
+          "name": "d_LevelRate"
+        },
+        {
+          "id": 29,
+          "type": "I64",
+          "name": "d_LateCost"
+        },
+        {
+          "id": 30,
+          "type": "DOUBLE",
+          "name": "d_Cost"
+        },
+        {
+          "id": 31,
+          "type": "DOUBLE",
+          "name": "d_CostIncreaseValue"
+        },
+        {
+          "id": 32,
+          "type": "I64",
+          "name": "d_CostValueConstant"
+        },
+        {
+          "id": 33,
+          "type": "DOUBLE",
+          "name": "d_Amount"
+        },
+        {
+          "id": 34,
+          "type": "DOUBLE",
+          "name": "d_AmountIncreaseValue"
+        },
+        {
+          "id": 35,
+          "type": "I64",
+          "name": "d_AmountValueConstant"
+        },
+        {
+          "id": 36,
+          "type": "I64",
+          "name": "d_BonusAmountIncreaseRate"
+        },
+        {
+          "id": 37,
+          "type": "I64",
+          "name": "i_UnlockLevel"
+        },
+        {
+          "id": 38,
+          "type": "I64",
+          "name": "d_UnlockCost"
+        },
+        {
+          "id": 39,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_1"
+        },
+        {
+          "id": 40,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_2"
+        },
+        {
+          "id": 41,
+          "type": "I64",
+          "name": "i_RequirementPropId_1"
+        },
+        {
+          "id": 42,
+          "type": "I64",
+          "name": "i_RequirementPropId_2"
+        },
+        {
+          "id": 43,
+          "type": "I64",
+          "name": "i_RequirementPropCount"
+        },
+        {
+          "id": 44,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 45,
+          "type": "I16",
+          "name": "i_Area"
+        },
+        {
+          "id": 46,
+          "type": "I32",
+          "name": "i_DownloadType"
+        },
+        {
+          "id": 47,
+          "type": "I32",
+          "name": "i_ProfileID"
+        }
+      ],
+      "clientFile": "client/followers/followers.json"
+    },
+    {
+      "id": 6,
+      "name": "buff",
+      "struct": "main.getBuffData",
+      "file": "tables/skills/buffs.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 5,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Title_KO"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Title_EN"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Title_JA"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHS"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHT"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Title_VI"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Title_ES"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Title_IT"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Title_ID"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Title_TH"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Title_PT"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Title_HI"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Buff_Desc_KO"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Buff_Desc_EN"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Buff_Desc_JA"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Buff_Desc_ZH_CHS"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Buff_Desc_ZH_CHT"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Buff_Desc_VI"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Buff_Desc_ES"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Buff_Desc_IT"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Buff_Desc_ID"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Buff_Desc_TH"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Buff_Desc_PT"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_Buff_Desc_HI"
+        },
+        {
+          "id": 27,
+          "type": "I16",
+          "name": "i_Type"
+        },
+        {
+          "id": 28,
+          "type": "I64",
+          "name": "i_Retention_Time"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "unit",
+      "struct": "main.getUnitData",
+      "file": "tables/characters/units.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 6,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_Name_KO"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Name_EN"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Name_JA"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHS"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHT"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Name_VI"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Name_ES"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Name_IT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Name_ID"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Name_TH"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Name_PT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Name_HI"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 27,
+          "type": "I64",
+          "name": "i_MaxLevel"
+        },
+        {
+          "id": 28,
+          "type": "STRING",
+          "name": "s_GoodsType"
+        },
+        {
+          "id": 29,
+          "type": "DOUBLE",
+          "name": "i_Cost"
+        },
+        {
+          "id": 30,
+          "type": "DOUBLE",
+          "name": "f_CostIncreaseValue"
+        },
+        {
+          "id": 31,
+          "type": "DOUBLE",
+          "name": "f_Value"
+        },
+        {
+          "id": 32,
+          "type": "DOUBLE",
+          "name": "f_IncreaseValue"
+        },
+        {
+          "id": 33,
+          "type": "I64",
+          "name": "i_UnlockLevel"
+        },
+        {
+          "id": 34,
+          "type": "I64",
+          "name": "i_UnlockCost"
+        },
+        {
+          "id": 35,
+          "type": "I64",
+          "name": "i_RequirementUnitId_1"
+        },
+        {
+          "id": 36,
+          "type": "I64",
+          "name": "i_RequirementUnitId_2"
+        },
+        {
+          "id": 37,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_1"
+        },
+        {
+          "id": 38,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_2"
+        },
+        {
+          "id": 39,
+          "type": "I64",
+          "name": "i_RequirementPropId_1"
+        },
+        {
+          "id": 40,
+          "type": "I64",
+          "name": "i_RequirementPropId_2"
+        },
+        {
+          "id": 41,
+          "type": "I64",
+          "name": "i_RequirementPropCount"
+        },
+        {
+          "id": 42,
+          "type": "I16",
+          "name": "i_Area"
+        },
+        {
+          "id": 43,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ],
+      "clientFile": "client/characters/units.json"
+    },
+    {
+      "id": 8,
+      "name": "skill",
+      "struct": "main.getSkillData",
+      "file": "tables/skills/skills.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 8,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I16",
+          "name": "i_Area"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Name_KO"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Name_EN"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Name_JA"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHS"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHT"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Name_VI"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Name_ES"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Name_IT"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Name_ID"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Name_TH"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Name_PT"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Name_HI"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 27,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 28,
+          "type": "I64",
+          "name": "i_MaxLevel"
+        },
+        {
+          "id": 29,
+          "type": "STRING",
+          "name": "s_GoodsType"
+        },
+        {
+          "id": 30,
+          "type": "DOUBLE",
+          "name": "i_Cost"
+        },
+        {
+          "id": 31,
+          "type": "DOUBLE",
+          "name": "f_CostIncreaseValue"
+        },
+        {
+          "id": 32,
+          "type": "DOUBLE",
+          "name": "f_SkillValue"
+        },
+        {
+          "id": 33,
+          "type": "DOUBLE",
+          "name": "f_SkillIncreaseValue"
+        },
+        {
+          "id": 34,
+          "type": "DOUBLE",
+          "name": "f_SkillTime"
+        },
+        {
+          "id": 35,
+          "type": "DOUBLE",
+          "name": "f_SkillTimeIncreaseValue"
+        },
+        {
+          "id": 36,
+          "type": "DOUBLE",
+          "name": "f_Cooltime"
+        },
+        {
+          "id": 37,
+          "type": "I64",
+          "name": "i_UnlockLevel"
+        },
+        {
+          "id": 38,
+          "type": "I64",
+          "name": "i_UnlockCost"
+        },
+        {
+          "id": 39,
+          "type": "I64",
+          "name": "i_RequirementSkillId_1"
+        },
+        {
+          "id": 40,
+          "type": "I64",
+          "name": "i_RequirementSkillId_2"
+        },
+        {
+          "id": 41,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_1"
+        },
+        {
+          "id": 42,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_2"
+        },
+        {
+          "id": 43,
+          "type": "I64",
+          "name": "i_RequirementPropId_1"
+        },
+        {
+          "id": 44,
+          "type": "I64",
+          "name": "i_RequirementPropId_2"
+        },
+        {
+          "id": 45,
+          "type": "I64",
+          "name": "i_RequirementPropCount"
+        }
+      ],
+      "clientFile": "client/skills/skills.json"
+    },
+    {
+      "id": 9,
+      "name": "achievement",
+      "struct": "main.getAchievementData",
+      "file": "tables/quests/achievements.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 17,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_Title_KO"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Title_EN"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Title_JA"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHS"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHT"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Title_VI"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Title_ES"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Title_IT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Title_ID"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Title_TH"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Title_PT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Title_HI"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 27,
+          "type": "STRING",
+          "name": "s_AchievementConditionType"
+        },
+        {
+          "id": 28,
+          "type": "STRING",
+          "name": "s_RewardType"
+        },
+        {
+          "id": 29,
+          "type": "STRING",
+          "name": "s_RewardDescription_KO"
+        },
+        {
+          "id": 30,
+          "type": "STRING",
+          "name": "s_RewardDescription_EN"
+        },
+        {
+          "id": 31,
+          "type": "STRING",
+          "name": "s_RewardDescription_JA"
+        },
+        {
+          "id": 32,
+          "type": "STRING",
+          "name": "s_RewardDescription_ZH_CHS"
+        },
+        {
+          "id": 33,
+          "type": "STRING",
+          "name": "s_RewardDescription_ZH_CHT"
+        },
+        {
+          "id": 34,
+          "type": "STRING",
+          "name": "s_RewardDescription_VI"
+        },
+        {
+          "id": 35,
+          "type": "STRING",
+          "name": "s_RewardDescription_ES"
+        },
+        {
+          "id": 36,
+          "type": "STRING",
+          "name": "s_RewardDescription_IT"
+        },
+        {
+          "id": 37,
+          "type": "STRING",
+          "name": "s_RewardDescription_ID"
+        },
+        {
+          "id": 38,
+          "type": "STRING",
+          "name": "s_RewardDescription_TH"
+        },
+        {
+          "id": 39,
+          "type": "STRING",
+          "name": "s_RewardDescription_PT"
+        },
+        {
+          "id": 40,
+          "type": "STRING",
+          "name": "s_RewardDescription_HI"
+        },
+        {
+          "id": 41,
+          "type": "I64",
+          "name": "i_Reward_1"
+        },
+        {
+          "id": 42,
+          "type": "I64",
+          "name": "i_Reward_2"
+        },
+        {
+          "id": 43,
+          "type": "I64",
+          "name": "i_Reward_3"
+        },
+        {
+          "id": 44,
+          "type": "I64",
+          "name": "i_Reward_4"
+        },
+        {
+          "id": 45,
+          "type": "I64",
+          "name": "i_Reward_5"
+        },
+        {
+          "id": 46,
+          "type": "I64",
+          "name": "i_Reward_6"
+        },
+        {
+          "id": 47,
+          "type": "I64",
+          "name": "i_Reward_7"
+        },
+        {
+          "id": 48,
+          "type": "I64",
+          "name": "i_Reward_8"
+        },
+        {
+          "id": 49,
+          "type": "I64",
+          "name": "i_Reward_9"
+        },
+        {
+          "id": 50,
+          "type": "I64",
+          "name": "i_Reward_10"
+        },
+        {
+          "id": 51,
+          "type": "I16",
+          "name": "i_Area"
+        },
+        {
+          "id": 52,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 53,
+          "type": "I64",
+          "name": "i_Reward_11"
+        },
+        {
+          "id": 54,
+          "type": "I64",
+          "name": "i_Reward_12"
+        },
+        {
+          "id": 55,
+          "type": "I16",
+          "name": "i_MaxLevel"
+        },
+        {
+          "id": 56,
+          "type": "STRING",
+          "name": "s_Condition_1"
+        },
+        {
+          "id": 57,
+          "type": "STRING",
+          "name": "s_Condition_2"
+        },
+        {
+          "id": 58,
+          "type": "STRING",
+          "name": "s_Condition_3"
+        },
+        {
+          "id": 59,
+          "type": "STRING",
+          "name": "s_Condition_4"
+        },
+        {
+          "id": 60,
+          "type": "STRING",
+          "name": "s_Condition_5"
+        },
+        {
+          "id": 61,
+          "type": "STRING",
+          "name": "s_Condition_6"
+        },
+        {
+          "id": 62,
+          "type": "STRING",
+          "name": "s_Condition_7"
+        },
+        {
+          "id": 63,
+          "type": "STRING",
+          "name": "s_Condition_8"
+        },
+        {
+          "id": 64,
+          "type": "STRING",
+          "name": "s_Condition_9"
+        },
+        {
+          "id": 65,
+          "type": "STRING",
+          "name": "s_Condition_10"
+        },
+        {
+          "id": 66,
+          "type": "STRING",
+          "name": "s_Condition_11"
+        },
+        {
+          "id": 67,
+          "type": "STRING",
+          "name": "s_Condition_12"
+        },
+        {
+          "id": 68,
+          "type": "STRING",
+          "name": "s_Condition_13"
+        },
+        {
+          "id": 69,
+          "type": "STRING",
+          "name": "s_Condition_14"
+        },
+        {
+          "id": 70,
+          "type": "STRING",
+          "name": "s_Condition_15"
+        },
+        {
+          "id": 71,
+          "type": "STRING",
+          "name": "s_Condition_16"
+        },
+        {
+          "id": 72,
+          "type": "STRING",
+          "name": "s_Condition_17"
+        },
+        {
+          "id": 73,
+          "type": "STRING",
+          "name": "s_Condition_18"
+        },
+        {
+          "id": 74,
+          "type": "STRING",
+          "name": "s_Condition_19"
+        },
+        {
+          "id": 75,
+          "type": "STRING",
+          "name": "s_Condition_20"
+        },
+        {
+          "id": 76,
+          "type": "I64",
+          "name": "i_Reward_13"
+        },
+        {
+          "id": 77,
+          "type": "I64",
+          "name": "i_Reward_14"
+        },
+        {
+          "id": 78,
+          "type": "I64",
+          "name": "i_Reward_15"
+        },
+        {
+          "id": 79,
+          "type": "I64",
+          "name": "i_Reward_16"
+        },
+        {
+          "id": 80,
+          "type": "I64",
+          "name": "i_Reward_17"
+        },
+        {
+          "id": 81,
+          "type": "I64",
+          "name": "i_Reward_18"
+        },
+        {
+          "id": 82,
+          "type": "I64",
+          "name": "i_Reward_19"
+        },
+        {
+          "id": 83,
+          "type": "I64",
+          "name": "i_Reward_20"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "daily_mission",
+      "struct": "main.getDailyMissionData",
+      "file": "tables/quests/daily_missions.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 6,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_Title_KO"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Title_EN"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Title_JA"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHS"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHT"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Title_VI"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Title_ES"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Title_IT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Title_ID"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Title_TH"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Title_PT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Title_HI"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 27,
+          "type": "STRING",
+          "name": "s_DailyMissionConditionType"
+        },
+        {
+          "id": 28,
+          "type": "DOUBLE",
+          "name": "d_Condition_1"
+        },
+        {
+          "id": 29,
+          "type": "STRING",
+          "name": "s_RewardType"
+        },
+        {
+          "id": 30,
+          "type": "STRING",
+          "name": "s_RewardDescription_KO"
+        },
+        {
+          "id": 31,
+          "type": "STRING",
+          "name": "s_RewardDescription_EN"
+        },
+        {
+          "id": 32,
+          "type": "STRING",
+          "name": "s_RewardDescription_JA"
+        },
+        {
+          "id": 33,
+          "type": "STRING",
+          "name": "s_RewardDescription_ZH_CHS"
+        },
+        {
+          "id": 34,
+          "type": "STRING",
+          "name": "s_RewardDescription_ZH_CHT"
+        },
+        {
+          "id": 35,
+          "type": "STRING",
+          "name": "s_RewardDescription_VI"
+        },
+        {
+          "id": 36,
+          "type": "STRING",
+          "name": "s_RewardDescription_ES"
+        },
+        {
+          "id": 37,
+          "type": "STRING",
+          "name": "s_RewardDescription_IT"
+        },
+        {
+          "id": 38,
+          "type": "STRING",
+          "name": "s_RewardDescription_ID"
+        },
+        {
+          "id": 39,
+          "type": "STRING",
+          "name": "s_RewardDescription_TH"
+        },
+        {
+          "id": 40,
+          "type": "STRING",
+          "name": "s_RewardDescription_PT"
+        },
+        {
+          "id": 41,
+          "type": "STRING",
+          "name": "s_RewardDescription_HI"
+        },
+        {
+          "id": 42,
+          "type": "I32",
+          "name": "i_Reward_1"
+        },
+        {
+          "id": 43,
+          "type": "I16",
+          "name": "i_Area"
+        },
+        {
+          "id": 44,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ],
+      "clientFile": "client/quests/daily_missions.json"
+    },
+    {
+      "id": 11,
+      "name": "music_level",
+      "struct": "main.getMusicLevelData",
+      "file": "tables/music/levels.json",
+      "keyFields": [
+        "i_Level"
+      ],
+      "rowCount": 50,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I16",
+          "name": "i_Level"
+        },
+        {
+          "id": 2,
+          "type": "DOUBLE",
+          "name": "f_EncoreBonusAppearRate"
+        },
+        {
+          "id": 3,
+          "type": "I64",
+          "name": "i_EncoreBonusAppearPercent"
+        },
+        {
+          "id": 4,
+          "type": "DOUBLE",
+          "name": "f_EncoreBonusAppearCooltime_Sec"
+        },
+        {
+          "id": 5,
+          "type": "DOUBLE",
+          "name": "f_EncoreBonusAppearCooltime_Hour"
+        },
+        {
+          "id": 6,
+          "type": "I16",
+          "name": "i_EncoreBonusGiftAmount"
+        },
+        {
+          "id": 7,
+          "type": "I32",
+          "name": "i_EncoreFollowerProfileExp"
+        },
+        {
+          "id": 8,
+          "type": "I32",
+          "name": "i_ChThirdCoolTime"
+        }
+      ],
+      "clientFile": "client/music/levels.json"
+    },
+    {
+      "id": 12,
+      "name": "shop",
+      "struct": "main.getShopData",
+      "file": "tables/shops/products.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 45,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I64",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_ProductID_ios"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_ProductID_aos"
+        },
+        {
+          "id": 4,
+          "type": "I64",
+          "name": "i_ShopCategory"
+        },
+        {
+          "id": 5,
+          "type": "I64",
+          "name": "i_ProductType"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Title_KO"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Title_EN"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Title_JA"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHS"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHT"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Title_VI"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Title_ES"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Title_IT"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Title_ID"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Title_TH"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Title_PT"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Title_HI"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 27,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 28,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 29,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 30,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 31,
+          "type": "I64",
+          "name": "i_RewardGroup"
+        },
+        {
+          "id": 32,
+          "type": "I64",
+          "name": "i_Tag"
+        },
+        {
+          "id": 33,
+          "type": "I64",
+          "name": "i_SellType"
+        },
+        {
+          "id": 34,
+          "type": "I64",
+          "name": "i_SellValue"
+        },
+        {
+          "id": 35,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 36,
+          "type": "I64",
+          "name": "i_Condition"
+        },
+        {
+          "id": 37,
+          "type": "I64",
+          "name": "i_ConditionValue"
+        },
+        {
+          "id": 38,
+          "type": "STRING",
+          "name": "s_StorePrice_AOS"
+        },
+        {
+          "id": 39,
+          "type": "STRING",
+          "name": "s_StorePrice_IOS"
+        },
+        {
+          "id": 40,
+          "type": "I16",
+          "name": "i_SortIndex"
+        },
+        {
+          "id": 41,
+          "type": "STRING",
+          "name": "s_AreaList"
+        },
+        {
+          "id": 42,
+          "type": "STRING",
+          "name": "s_AltResourceName"
+        },
+        {
+          "id": 43,
+          "type": "STRING",
+          "name": "s_AltDescription_KO"
+        },
+        {
+          "id": 44,
+          "type": "STRING",
+          "name": "s_AltDescription_EN"
+        },
+        {
+          "id": 45,
+          "type": "STRING",
+          "name": "s_AltDescription_JA"
+        },
+        {
+          "id": 46,
+          "type": "STRING",
+          "name": "s_AltDescription_ZH_CHS"
+        },
+        {
+          "id": 47,
+          "type": "STRING",
+          "name": "s_AltDescription_ZH_CHT"
+        },
+        {
+          "id": 48,
+          "type": "STRING",
+          "name": "s_AltDescription_VI"
+        },
+        {
+          "id": 49,
+          "type": "STRING",
+          "name": "s_AltDescription_ES"
+        },
+        {
+          "id": 50,
+          "type": "STRING",
+          "name": "s_AltDescription_IT"
+        },
+        {
+          "id": 51,
+          "type": "STRING",
+          "name": "s_AltDescription_ID"
+        },
+        {
+          "id": 52,
+          "type": "STRING",
+          "name": "s_AltDescription_TH"
+        },
+        {
+          "id": 53,
+          "type": "STRING",
+          "name": "s_AltDescription_PT"
+        },
+        {
+          "id": 54,
+          "type": "STRING",
+          "name": "s_AltDescription_HI"
+        },
+        {
+          "id": 55,
+          "type": "STRING",
+          "name": "s_Kor_StorePrice_AOS"
+        },
+        {
+          "id": 56,
+          "type": "STRING",
+          "name": "s_Kor_StorePrice_IOS"
+        },
+        {
+          "id": 57,
+          "type": "I16",
+          "name": "b_IsLimitTime"
+        },
+        {
+          "id": 58,
+          "type": "STRING",
+          "name": "s_UIStartTime"
+        },
+        {
+          "id": 59,
+          "type": "STRING",
+          "name": "s_StartTime"
+        },
+        {
+          "id": 60,
+          "type": "STRING",
+          "name": "s_EndTime"
+        }
+      ],
+      "clientFile": "client/shops/products.json"
+    },
+    {
+      "id": 13,
+      "name": "reward_group",
+      "struct": "main.getRewardGroupData",
+      "file": "tables/rewards/groups.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 1289,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I64",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I64",
+          "name": "i_Group"
+        },
+        {
+          "id": 3,
+          "type": "I64",
+          "name": "i_RewardType"
+        },
+        {
+          "id": 4,
+          "type": "I64",
+          "name": "i_RewardID"
+        },
+        {
+          "id": 5,
+          "type": "I64",
+          "name": "l_RewardQuantity"
+        },
+        {
+          "id": 6,
+          "type": "I64",
+          "name": "i_BuyFirstQuantity"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Fan",
+      "struct": "main.getFanData",
+      "file": "tables/characters/fan_levels.json",
+      "keyFields": [
+        "i_Area",
+        "i_Grade"
+      ],
+      "rowCount": 12,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I64",
+          "name": "i_Area"
+        },
+        {
+          "id": 2,
+          "type": "I64",
+          "name": "i_Grade"
+        },
+        {
+          "id": 3,
+          "type": "I64",
+          "name": "i_FanCount"
+        },
+        {
+          "id": 4,
+          "type": "I64",
+          "name": "i_BonusRate"
+        },
+        {
+          "id": 5,
+          "type": "I64",
+          "name": "i_BonusRateUI"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "SystemNotification",
+      "struct": "main.getSystemNotificationData",
+      "file": "tables/localization/notifications.json",
+      "keyFields": [
+        "i_Id"
+      ],
+      "rowCount": 49,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I64",
+          "name": "i_Id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_DescriptionType"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "i_Type"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Factor"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "name": "SystemString",
+      "struct": "main.getSystemStringData",
+      "file": "tables/localization/strings.json",
+      "keyFields": [
+        "i_StringID"
+      ],
+      "rowCount": 567,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I64",
+          "name": "i_StringID"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_Category"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_UIType"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Key"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_KO"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_EN"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_JA"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_ZH_CHS"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_ZH_CHT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_ID"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_PT"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_ES"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_RU"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_DE"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_AR_XA"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_VI"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_IT"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_TH"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_HI"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "name": "SubscribeList",
+      "struct": "main.getSubscribeList",
+      "file": "tables/passes/seasons.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 13,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I64",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I16",
+          "name": "i_Area"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Type"
+        },
+        {
+          "id": 4,
+          "type": "I16",
+          "name": "i_TimeLimit"
+        },
+        {
+          "id": 7,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 11,
+          "type": "I32",
+          "name": "i_StartYear"
+        },
+        {
+          "id": 12,
+          "type": "I32",
+          "name": "i_RepeatMonth"
+        },
+        {
+          "id": 13,
+          "type": "I32",
+          "name": "i_MonthGroupIndex"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "name": "SubscribePassReward",
+      "struct": "main.getSubscribePassReward",
+      "file": "tables/passes/rewards.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 416,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I64",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I64",
+          "name": "i_Group"
+        },
+        {
+          "id": 3,
+          "type": "I16",
+          "name": "i_Step"
+        },
+        {
+          "id": 4,
+          "type": "I64",
+          "name": "i_Goal"
+        },
+        {
+          "id": 5,
+          "type": "I64",
+          "name": "i_FreeRewardGroup"
+        },
+        {
+          "id": 6,
+          "type": "I64",
+          "name": "i_PaidRewardGroup"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "name": "SubscribePass",
+      "struct": "main.getSubscribePass",
+      "file": "tables/passes/rules.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 13,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I64",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I64",
+          "name": "i_SubscribeID"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_AcquireList"
+        },
+        {
+          "id": 4,
+          "type": "I16",
+          "name": "i_PointPrice"
+        },
+        {
+          "id": 5,
+          "type": "I64",
+          "name": "i_PaidPoint"
+        },
+        {
+          "id": 6,
+          "type": "I64",
+          "name": "i_ActiveBuffID"
+        },
+        {
+          "id": 7,
+          "type": "I64",
+          "name": "i_HiddenStep"
+        },
+        {
+          "id": 8,
+          "type": "I64",
+          "name": "i_ADPoint"
+        },
+        {
+          "id": 9,
+          "type": "I64",
+          "name": "i_ADCoolTime"
+        },
+        {
+          "id": 10,
+          "type": "I64",
+          "name": "i_TicketCollectionId"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Guitar",
+      "struct": "main.getGuitarData",
+      "file": "tables/items/guitars.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 85,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I16",
+          "name": "i_Area"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Title_KO"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Title_EN"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Title_JA"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHS"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHT"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Title_VI"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Title_ES"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Title_IT"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Title_ID"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Title_TH"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Title_PT"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Title_HI"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 27,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 28,
+          "type": "STRING",
+          "name": "s_GuitarName"
+        },
+        {
+          "id": 29,
+          "type": "I16",
+          "name": "i_GuitarType"
+        },
+        {
+          "id": 30,
+          "type": "STRING",
+          "name": "s_GoodsType"
+        },
+        {
+          "id": 31,
+          "type": "STRING",
+          "name": "s_Cost"
+        },
+        {
+          "id": 32,
+          "type": "I64",
+          "name": "i_RequirementCharacterLevel"
+        },
+        {
+          "id": 33,
+          "type": "DOUBLE",
+          "name": "d_IncrementValue"
+        },
+        {
+          "id": 34,
+          "type": "I64",
+          "name": "i_AcquisitionType"
+        },
+        {
+          "id": 35,
+          "type": "I64",
+          "name": "i_AcquisitionId"
+        },
+        {
+          "id": 36,
+          "type": "I64",
+          "name": "i_SortOrder"
+        },
+        {
+          "id": 37,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 38,
+          "type": "I16",
+          "name": "i_DownloadType"
+        }
+      ],
+      "clientFile": "client/items/guitars.json"
+    },
+    {
+      "id": 21,
+      "name": "SubscribePassRewardInformation",
+      "struct": "main.getSubscribePassRewardInformation",
+      "file": "tables/passes/reward_information.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 78,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 15,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "name": "ticketcollection",
+      "struct": "main.getTicketCollectionData",
+      "file": "tables/items/tickets.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 26,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_TicketType"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Title_KO"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Title_EN"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Title_JA"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHS"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Title_ZH_CHT"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Title_VI"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Title_ES"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Title_IT"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Title_ID"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Title_TH"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Title_PT"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Title_HI"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 27,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 28,
+          "type": "STRING",
+          "name": "s_ResourceName_Big"
+        },
+        {
+          "id": 29,
+          "type": "I16",
+          "name": "i_Season"
+        },
+        {
+          "id": 30,
+          "type": "STRING",
+          "name": "s_PassUIBundleName"
+        },
+        {
+          "id": 31,
+          "type": "STRING",
+          "name": "s_BackgroundColor"
+        },
+        {
+          "id": 32,
+          "type": "STRING",
+          "name": "s_LabelColor"
+        },
+        {
+          "id": 33,
+          "type": "STRING",
+          "name": "s_SeasonLabelColor"
+        },
+        {
+          "id": 34,
+          "type": "STRING",
+          "name": "s_SeasonBackColor"
+        },
+        {
+          "id": 35,
+          "type": "I32",
+          "name": "i_SortOrder"
+        },
+        {
+          "id": 36,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "name": "character",
+      "struct": "main.getCharacterData",
+      "file": "tables/characters/characters.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 2,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I16",
+          "name": "i_Area"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_BundleName"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Name_KO"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Name_EN"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Name_JA"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHS"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHT"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Name_VI"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Name_ES"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Name_IT"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Name_ID"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Name_TH"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Name_PT"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Name_HI"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 27,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 28,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 29,
+          "type": "I64",
+          "name": "i_MaxLevel"
+        },
+        {
+          "id": 30,
+          "type": "DOUBLE",
+          "name": "d_LevelRate"
+        },
+        {
+          "id": 31,
+          "type": "DOUBLE",
+          "name": "d_LateCost"
+        },
+        {
+          "id": 32,
+          "type": "DOUBLE",
+          "name": "d_Cost"
+        },
+        {
+          "id": 33,
+          "type": "DOUBLE",
+          "name": "d_CostIncreaseValue"
+        },
+        {
+          "id": 34,
+          "type": "DOUBLE",
+          "name": "d_CostValueConstant"
+        },
+        {
+          "id": 35,
+          "type": "DOUBLE",
+          "name": "d_Amount"
+        },
+        {
+          "id": 36,
+          "type": "DOUBLE",
+          "name": "d_AmountIncreaseValue"
+        },
+        {
+          "id": 37,
+          "type": "DOUBLE",
+          "name": "d_AmountValueConstant"
+        },
+        {
+          "id": 38,
+          "type": "DOUBLE",
+          "name": "d_BonusAmountIncreaseRate"
+        },
+        {
+          "id": 39,
+          "type": "I64",
+          "name": "i_UnlockLevel"
+        },
+        {
+          "id": 40,
+          "type": "DOUBLE",
+          "name": "d_UnlockCost"
+        },
+        {
+          "id": 41,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_1"
+        },
+        {
+          "id": 42,
+          "type": "I64",
+          "name": "i_RequirementFollowerId_2"
+        },
+        {
+          "id": 43,
+          "type": "I64",
+          "name": "i_RequirementPropId_1"
+        },
+        {
+          "id": 44,
+          "type": "I64",
+          "name": "i_RequirementPropId_2"
+        },
+        {
+          "id": 45,
+          "type": "I64",
+          "name": "i_RequirementPropCount"
+        },
+        {
+          "id": 46,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ],
+      "clientFile": "client/characters/characters.json"
+    },
+    {
+      "id": 24,
+      "name": "samseckevent",
+      "struct": "main.getSamSeckEventData",
+      "file": "tables/events/meowfest.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 3,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_ConditionType"
+        },
+        {
+          "id": 15,
+          "type": "DOUBLE",
+          "name": "d_Condition"
+        },
+        {
+          "id": 16,
+          "type": "I64",
+          "name": "i_MailRewardID"
+        },
+        {
+          "id": 17,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ],
+      "clientFile": "client/events/meowfest.json"
+    },
+    {
+      "id": 25,
+      "name": "localpush",
+      "struct": "main.getLocalPushData",
+      "file": "tables/localization/local_push.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 12,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_LocalPushRegisterType"
+        },
+        {
+          "id": 3,
+          "type": "I64",
+          "name": "i_TimeForSeconds"
+        },
+        {
+          "id": 4,
+          "type": "I16",
+          "name": "b_IsMultipleJson"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_JsonMessage_KO"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_JsonMessage_EN"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_JsonMessage_JA"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_JsonMessage_ZH_CHS"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_JsonMessage_ZH_CHT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_JsonMessage_VI"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_JsonMessage_ES"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_JsonMessage_IT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_JsonMessage_ID"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_JsonMessage_TH"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_JsonMessage_PT"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_JsonMessage_HI"
+        },
+        {
+          "id": 17,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "name": "followerquest",
+      "struct": "main.getFollowerQuestData",
+      "file": "tables/quests/follower_quests.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 68,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I32",
+          "name": "i_UnlockFollowerID"
+        },
+        {
+          "id": 3,
+          "type": "I32",
+          "name": "i_UnlockFollowerLevel"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_ConditionType1"
+        },
+        {
+          "id": 5,
+          "type": "DOUBLE",
+          "name": "d_Condition1_1"
+        },
+        {
+          "id": 6,
+          "type": "DOUBLE",
+          "name": "d_Condition1_2"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_ConditionType2"
+        },
+        {
+          "id": 8,
+          "type": "DOUBLE",
+          "name": "d_Condition2_1"
+        },
+        {
+          "id": 9,
+          "type": "DOUBLE",
+          "name": "d_Condition2_2"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_ConditionType3"
+        },
+        {
+          "id": 11,
+          "type": "DOUBLE",
+          "name": "d_Condition3_1"
+        },
+        {
+          "id": 12,
+          "type": "DOUBLE",
+          "name": "d_Condition3_2"
+        },
+        {
+          "id": 13,
+          "type": "I32",
+          "name": "i_RewardGroup1"
+        },
+        {
+          "id": 14,
+          "type": "I32",
+          "name": "i_RewardGroup2"
+        },
+        {
+          "id": 15,
+          "type": "I32",
+          "name": "i_RewardGroup3"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 27,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 28,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 29,
+          "type": "I32",
+          "name": "i_Type"
+        }
+      ],
+      "clientFile": "client/quests/follower_quests.json"
+    },
+    {
+      "id": 27,
+      "name": "proplevel",
+      "struct": "main.getPropLevelData",
+      "file": "tables/items/prop_levels.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 340,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I64",
+          "name": "i_PropId"
+        },
+        {
+          "id": 3,
+          "type": "I64",
+          "name": "i_Level"
+        },
+        {
+          "id": 4,
+          "type": "DOUBLE",
+          "name": "d_Cost"
+        },
+        {
+          "id": 5,
+          "type": "I64",
+          "name": "i_PerksId"
+        },
+        {
+          "id": 6,
+          "type": "DOUBLE",
+          "name": "d_PerksValue"
+        },
+        {
+          "id": 7,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ],
+      "clientFile": "client/items/prop_levels.json"
+    },
+    {
+      "id": 28,
+      "name": "follower_profile",
+      "struct": "main.getFollowerProfileData",
+      "file": "tables/followers/profiles.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 22,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "s_Name_KO"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_Name_EN"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_Name_JA"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHS"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHT"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Name_VI"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Name_ES"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Name_IT"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Name_ID"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Name_TH"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Name_PT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Name_HI"
+        },
+        {
+          "id": 14,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_GiftItemID"
+        },
+        {
+          "id": 16,
+          "type": "I16",
+          "name": "b_IsVisible"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_BackgroundColor"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "name": "passgoodsshop",
+      "struct": "main.getPassGoodsShopData",
+      "file": "tables/shops/pass_goods.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 13,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I32",
+          "name": "i_TicketID"
+        },
+        {
+          "id": 3,
+          "type": "I32",
+          "name": "i_GoodsTicketID"
+        },
+        {
+          "id": 4,
+          "type": "I32",
+          "name": "i_ShopID"
+        },
+        {
+          "id": 5,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 6,
+          "type": "I32",
+          "name": "i_SaleShopID"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "name": "followergiftitem",
+      "struct": "main.getFollowerGiftItemData",
+      "file": "tables/items/follower_gifts.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 6,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I32",
+          "name": "i_GiftType"
+        },
+        {
+          "id": 3,
+          "type": "I64",
+          "name": "d_Value"
+        },
+        {
+          "id": 4,
+          "type": "I32",
+          "name": "i_Limit"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_Name_KO"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_Name_EN"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Name_JA"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHS"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHT"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Name_VI"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Name_ES"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Name_IT"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Name_ID"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Name_TH"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Name_PT"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Name_HI"
+        },
+        {
+          "id": 18,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "name": "followerprofilelevel",
+      "struct": "main.getFollowerProfileLevelData",
+      "file": "tables/followers/profile_levels.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 440,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I32",
+          "name": "i_ProfileID"
+        },
+        {
+          "id": 3,
+          "type": "I32",
+          "name": "i_Level"
+        },
+        {
+          "id": 4,
+          "type": "I64",
+          "name": "d_RequireEXP"
+        },
+        {
+          "id": 5,
+          "type": "I32",
+          "name": "i_RewardGroup"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_UnlockInformation"
+        },
+        {
+          "id": 7,
+          "type": "I32",
+          "name": "i_AddCandy"
+        },
+        {
+          "id": 8,
+          "type": "I32",
+          "name": "i_UnlockStoryID"
+        },
+        {
+          "id": 9,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "name": "ad_list",
+      "struct": "main.getAdListData",
+      "file": "tables/ads/placements.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 2,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I32",
+          "name": "i_Category"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "s_ConditionType1"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "s_ConditionValue1"
+        },
+        {
+          "id": 5,
+          "type": "STRING",
+          "name": "s_ConditionType2"
+        },
+        {
+          "id": 6,
+          "type": "STRING",
+          "name": "s_ConditionValue2"
+        },
+        {
+          "id": 7,
+          "type": "STRING",
+          "name": "s_ResourceName"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_Name_KO"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Name_EN"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Name_JA"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHS"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHT"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Name_VI"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Name_ES"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Name_IT"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Name_ID"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Name_TH"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Name_PT"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Name_HI"
+        },
+        {
+          "id": 20,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_RewardType"
+        },
+        {
+          "id": 22,
+          "type": "I32",
+          "name": "i_RewardGroup"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_ExtraValue"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_AdType"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "name": "chthird_stage",
+      "struct": "main.getChThirdStageData",
+      "file": "tables/chapters/stages.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 41,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I32",
+          "name": "i_Chapter"
+        },
+        {
+          "id": 3,
+          "type": "I32",
+          "name": "i_StageIndex"
+        },
+        {
+          "id": 4,
+          "type": "I32",
+          "name": "i_RewardGroupID"
+        },
+        {
+          "id": 5,
+          "type": "I32",
+          "name": "i_GoalScore1"
+        },
+        {
+          "id": 6,
+          "type": "I32",
+          "name": "i_GoalScore2"
+        },
+        {
+          "id": 7,
+          "type": "I32",
+          "name": "i_GoalScore3"
+        },
+        {
+          "id": 8,
+          "type": "STRING",
+          "name": "s_BonusProfileID"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Name_KO"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Name_EN"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Name_JA"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHS"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHT"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Name_VI"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Name_ES"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Name_IT"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Name_ID"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Name_TH"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Name_PT"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Name_HI"
+        },
+        {
+          "id": 21,
+          "type": "STRING",
+          "name": "s_Description_KO"
+        },
+        {
+          "id": 22,
+          "type": "STRING",
+          "name": "s_Description_EN"
+        },
+        {
+          "id": 23,
+          "type": "STRING",
+          "name": "s_Description_JA"
+        },
+        {
+          "id": 24,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHS"
+        },
+        {
+          "id": 25,
+          "type": "STRING",
+          "name": "s_Description_ZH_CHT"
+        },
+        {
+          "id": 26,
+          "type": "STRING",
+          "name": "s_Description_VI"
+        },
+        {
+          "id": 27,
+          "type": "STRING",
+          "name": "s_Description_ES"
+        },
+        {
+          "id": 28,
+          "type": "STRING",
+          "name": "s_Description_IT"
+        },
+        {
+          "id": 29,
+          "type": "STRING",
+          "name": "s_Description_ID"
+        },
+        {
+          "id": 30,
+          "type": "STRING",
+          "name": "s_Description_TH"
+        },
+        {
+          "id": 31,
+          "type": "STRING",
+          "name": "s_Description_PT"
+        },
+        {
+          "id": 32,
+          "type": "STRING",
+          "name": "s_Description_HI"
+        },
+        {
+          "id": 33,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 34,
+          "type": "STRING",
+          "name": "s_StageType"
+        },
+        {
+          "id": 35,
+          "type": "I32",
+          "name": "i_StoryID"
+        },
+        {
+          "id": 36,
+          "type": "I32",
+          "name": "i_BonusMusicID"
+        },
+        {
+          "id": 37,
+          "type": "STRING",
+          "name": "s_PercentRewardGroupID"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "name": "chthird_score",
+      "struct": "main.getChThirdScoreData",
+      "file": "tables/chapters/scores.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 50,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I32",
+          "name": "i_Level"
+        },
+        {
+          "id": 3,
+          "type": "I32",
+          "name": "i_CharacterScore"
+        },
+        {
+          "id": 4,
+          "type": "I32",
+          "name": "i_FollowerScore"
+        },
+        {
+          "id": 5,
+          "type": "I32",
+          "name": "i_MusicScore"
+        },
+        {
+          "id": 6,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "name": "chthird_chapter",
+      "struct": "main.getChThirdChapterData",
+      "file": "tables/chapters/chapters.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 2,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I32",
+          "name": "i_unlockLevel"
+        },
+        {
+          "id": 3,
+          "type": "I32",
+          "name": "i_RewardGroupID1"
+        },
+        {
+          "id": 4,
+          "type": "I32",
+          "name": "i_GoalStar1"
+        },
+        {
+          "id": 5,
+          "type": "I32",
+          "name": "i_RewardGroupID2"
+        },
+        {
+          "id": 6,
+          "type": "I32",
+          "name": "i_GoalStar2"
+        },
+        {
+          "id": 7,
+          "type": "I32",
+          "name": "i_RewardGroupID3"
+        },
+        {
+          "id": 8,
+          "type": "I32",
+          "name": "i_GoalStar3"
+        },
+        {
+          "id": 9,
+          "type": "STRING",
+          "name": "s_Name_KO"
+        },
+        {
+          "id": 10,
+          "type": "STRING",
+          "name": "s_Name_EN"
+        },
+        {
+          "id": 11,
+          "type": "STRING",
+          "name": "s_Name_JA"
+        },
+        {
+          "id": 12,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHS"
+        },
+        {
+          "id": 13,
+          "type": "STRING",
+          "name": "s_Name_ZH_CHT"
+        },
+        {
+          "id": 14,
+          "type": "STRING",
+          "name": "s_Name_VI"
+        },
+        {
+          "id": 15,
+          "type": "STRING",
+          "name": "s_Name_ES"
+        },
+        {
+          "id": 16,
+          "type": "STRING",
+          "name": "s_Name_IT"
+        },
+        {
+          "id": 17,
+          "type": "STRING",
+          "name": "s_Name_ID"
+        },
+        {
+          "id": 18,
+          "type": "STRING",
+          "name": "s_Name_TH"
+        },
+        {
+          "id": 19,
+          "type": "STRING",
+          "name": "s_Name_PT"
+        },
+        {
+          "id": 20,
+          "type": "STRING",
+          "name": "s_Name_HI"
+        },
+        {
+          "id": 21,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "name": "percent",
+      "struct": "main.getPercentData",
+      "file": "tables/rewards/drop_candidates.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 120,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_GroupID"
+        },
+        {
+          "id": 2,
+          "type": "I32",
+          "name": "i_RewardType"
+        },
+        {
+          "id": 3,
+          "type": "I32",
+          "name": "i_RewardID"
+        },
+        {
+          "id": 4,
+          "type": "I32",
+          "name": "l_RewardQuantity"
+        },
+        {
+          "id": 5,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 6,
+          "type": "I32",
+          "name": "i_id"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "name": "ad_level",
+      "struct": "main.getAdLevelData",
+      "file": "tables/ads/levels.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 80,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_GroupID"
+        },
+        {
+          "id": 2,
+          "type": "I32",
+          "name": "i_Level"
+        },
+        {
+          "id": 3,
+          "type": "I32",
+          "name": "i_RequireEXP"
+        },
+        {
+          "id": 4,
+          "type": "I32",
+          "name": "i_RewardGroup"
+        },
+        {
+          "id": 5,
+          "type": "I16",
+          "name": "b_IsActive"
+        },
+        {
+          "id": 6,
+          "type": "I32",
+          "name": "i_id"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "name": "event_list",
+      "struct": "main.getEventListData",
+      "file": "tables/events/schedule.json",
+      "keyFields": [
+        "idx"
+      ],
+      "rowCount": 5,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "idx"
+        },
+        {
+          "id": 2,
+          "type": "STRING",
+          "name": "event_type"
+        },
+        {
+          "id": 3,
+          "type": "STRING",
+          "name": "start_date"
+        },
+        {
+          "id": 4,
+          "type": "STRING",
+          "name": "end_date"
+        },
+        {
+          "id": 5,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "name": "select_reward",
+      "struct": "main.getSelectRewardData",
+      "file": "tables/rewards/selection.json",
+      "keyFields": [
+        "i_id"
+      ],
+      "rowCount": 12,
+      "fields": [
+        {
+          "id": 1,
+          "type": "I32",
+          "name": "i_id"
+        },
+        {
+          "id": 2,
+          "type": "I32",
+          "name": "i_GroupId"
+        },
+        {
+          "id": 3,
+          "type": "I32",
+          "name": "i_RewardGroupId"
+        },
+        {
+          "id": 4,
+          "type": "I32",
+          "name": "i_AltRewardGroupId"
+        },
+        {
+          "id": 5,
+          "type": "I16",
+          "name": "b_IsActive"
+        }
+      ]
+    }
+  ]
+}
