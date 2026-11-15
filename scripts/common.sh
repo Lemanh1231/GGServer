@@ -6,6 +6,7 @@ declare -A gg_overrides=()
 for gg_key in GG_ROOT GG_CONFIG PORT HOST GG_LOG GG_JAR JAVA JAVA_HOME GG_PUBLIC_BASE GG_ADMIN_PASSWORD GG_SECRET_KEY GG_CERT_PASSWORD GG_ADMIN_URL GG_NO_ADB GG_MONGO_URI GG_MONGO_DATABASE; do
     if [[ -v "$gg_key" ]]; then gg_overrides["$gg_key"]="${!gg_key}"; fi
 done
+if [[ -f "$GG_PROJECT/../.env" ]]; then set -a; source "$GG_PROJECT/../.env"; set +a; fi
 if [[ -f "$GG_PROJECT/.env" ]]; then set -a; source "$GG_PROJECT/.env"; set +a; fi
 if [[ -f "$GG_PROJECT/resources/.env" ]]; then set -a; source "$GG_PROJECT/resources/.env"; set +a; fi
 for gg_key in "${!gg_overrides[@]}"; do export "$gg_key=${gg_overrides[$gg_key]}"; done

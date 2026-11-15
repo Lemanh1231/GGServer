@@ -262,23 +262,8 @@ public final class SqliteUserRepository implements UserRepository {
             catch (RuntimeException ignored) {}
             data.put("created_at", created);
         }
-        Currency.Parsed current = Currency.parse(row.get("u_like"));
-        ud.put("u_like", current.floating());
-        Map<String,Object> areas = ensureAreas(data);
-        for (Object value : areas.values()) if (value instanceof Map<?,?>) {
-            Map<String,Object> area = Json.map(value);
-            Currency.Parsed old = Currency.parse(area.get("s_Gp1"));
-            Currency.Parsed target;
-            if (Json.truth(data.get("force_server_like"))) {
-                // Legacy saves use a boolean reset flag; setLikeCurrency stores an exact GP
-                // integer string instead. Never interpret the boolean as a currency amount.
-                String exact = exactForcedLike(data);
-                target = exact == null ? current : Currency.parse(exact);
-            }
-            else if (Double.compare(old.floating(), current.floating()) == 0) target = old;
-            else target = old.integer().compareTo(current.integer()) > 0 ? old : current;
-            area.put("d_Like", target.floating()); area.put("s_Gp1", target.gp());
-        }
+        ensureAreas(data);
+        emu.leman.ggserver.game.economy.AreaCurrency.normalize(data);
         return data;
     }
 
@@ -383,25 +368,14 @@ public final class SqliteUserRepository implements UserRepository {
             String uuid = resolve(identifier);
             if (uuid == null) return null;
             Currency.Parsed delta = Currency.parse(like);
-            update("UPDATE user_data SET u_cp=u_cp+?,u_candy=u_candy+?,u_like=MIN(?,u_like+?),u_fans=u_fans+? WHERE uuid=?",
-                    cp, candy, Currency.MAX_FLOAT, delta.floating(), fans, uuid);
             Map<String,Object> row = row("SELECT u_like,user_contents_json FROM user_data WHERE uuid=?", uuid);
             Map<String,Object> data = parseContents(row);
-            double newLike = Currency.parse(row.get("u_like")).floating();
-            ensureMap(data, "userdata").put("u_like", newLike);
+            ensureMap(data,"userdata").put("u_like",row.get("u_like"));
+            emu.leman.ggserver.game.economy.AreaCurrency.addLike(data,like);
+            double newLike=Json.dbl(ensureMap(data,"userdata").get("u_like"));
             if (delta.integer().signum() != 0 || cp != 0 || candy != 0) data.put("needs_client_reset", true);
-            String forcedExact = exactForcedLike(data);
-            if (forcedExact != null) {
-                BigInteger exact = Currency.parse(forcedExact).integer().add(delta.integer());
-                data.put("force_server_like", Currency.parse(exact).gp());
-            }
-            for (Object value : ensureMap(data, "areas").values()) if (value instanceof Map<?,?>) {
-                Map<String,Object> area = Json.map(value);
-                area.put("d_Like", newLike);
-                BigInteger exact = Currency.parse(area.get("s_Gp1")).integer().add(delta.integer());
-                area.put("s_Gp1", Currency.parse(exact).gp());
-            }
-            update("UPDATE user_data SET user_contents_json=?,u_like=? WHERE uuid=?", Json.stringify(data), newLike, uuid);
+            update("UPDATE user_data SET user_contents_json=?,u_like=?,u_cp=u_cp+?,u_candy=u_candy+?,u_fans=u_fans+? WHERE uuid=?",
+                    Json.stringify(data),newLike,cp,candy,fans,uuid);
             return null;
         });
     }
@@ -412,11 +386,7 @@ public final class SqliteUserRepository implements UserRepository {
             if (uuid == null) return null;
             Currency.Parsed parsed = Currency.parse(amount);
             Map<String,Object> data = parseContents(row("SELECT user_contents_json FROM user_data WHERE uuid=?", uuid));
-            ensureMap(data, "userdata").put("u_like", parsed.floating());
-            data.put("needs_client_reset", true); data.put("force_server_like", parsed.gp());
-            for (Object value : ensureMap(data, "areas").values()) if (value instanceof Map<?,?>) {
-                Json.map(value).put("d_Like", parsed.floating()); Json.map(value).put("s_Gp1", parsed.gp());
-            }
+            emu.leman.ggserver.game.economy.AreaCurrency.setLike(data,amount);
             update("UPDATE user_data SET u_like=?,user_contents_json=? WHERE uuid=?", parsed.floating(), Json.stringify(data), uuid);
             return null;
         });

@@ -11,7 +11,7 @@ class EventManagerTest {
     @TempDir Path root;
     @Test void defaultsLegacyNormalizationAndHotReload() {
         EventManager events=new EventManager(root);
-        assertTrue(events.isAttendanceEventEnabled(1));assertFalse(events.isAttendanceEventEnabled(2));assertFalse(events.isAttendanceEventEnabled(999));assertEquals(13,events.activeStarPassSeason());
+        assertFalse(events.isAttendanceEventEnabled(1));assertFalse(events.isAttendanceEventEnabled(2));assertFalse(events.isAttendanceEventEnabled(999));assertEquals(13,events.activeStarPassSeason());
         write(root.resolve("event_config.json"),obj("events",obj("1",obj("enabled",false),"2",obj("enabled",true)),"paid_star_card",obj("enabled",true),"star_pass",obj("active_season",99),"weather_festival",obj("snow_enabled",true,"cherry_blossom_enabled",true)));
         assertFalse(events.isAttendanceEventEnabled(1));assertTrue(events.isAttendanceEventEnabled(2));assertEquals(13,events.activeStarPassSeason());
         assertTrue(events.isWeatherSnowEnabled());assertFalse(events.isWeatherCherryBlossomEnabled());
@@ -28,7 +28,7 @@ class EventManagerTest {
         events.save(events.snapshot(),true);assertEquals(1,notices.get());
         assertTrue(Files.exists(root.resolve("event_config.json")));
     }
-    @Test void corruptConfigurationFallsBackToDefaults() throws Exception {
-        Files.writeString(root.resolve("event_config.json"),"{broken");EventManager events=new EventManager(root);assertTrue(events.isMeowfestEnabled());assertEquals(2,events.activeEvents().size());
+    @Test void corruptConfigurationFailsClosed() throws Exception {
+        Files.writeString(root.resolve("event_config.json"),"{broken");EventManager events=new EventManager(root);assertFalse(events.isMeowfestEnabled());assertEquals(0,events.activeEvents().size());
     }
 }

@@ -46,7 +46,7 @@
     "s_ConditionType1": "DAY_LIMIT",
     "s_ConditionValue1": "5",
     "s_ConditionType2": "COOLTIME",
-    "s_ConditionValue2": "0",
+    "s_ConditionValue2": "300",
     "s_ResourceName": "icon_chocolate_large",
     "s_Name_KO": "쿠키 구입",
     "s_Name_EN": "Purchase Cookies"

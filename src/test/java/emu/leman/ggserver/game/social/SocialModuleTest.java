@@ -16,9 +16,12 @@ class SocialModuleTest {
     SocialModule social;
     @BeforeEach void setup() {
         write(root.resolve("gamedata/game_data.json"),obj(
-            "5",List.of(obj("1",1,"47",1),obj("1",201,"47",1)),
-            "30",List.of(obj("1",1,"2",2,"3",50)),
-            "31",List.of(obj("1",1,"2",1,"3",1,"4",0,"5",0,"6","","7",0),obj("1",2,"2",1,"3",2,"4",50,"5",500,"6","","7",2),obj("1",3,"2",1,"3",3,"4",150,"5",501,"6","story","7",3)),
+            "5",List.of(obj("1",1,"47",1),obj("1",201,"47",1),obj("1",204,"47",204)),
+            "2",List.of(obj("1",204)),"3",List.of(obj("1",204)),"4",List.of(obj("1",204)),
+            "7",List.of(obj("1",204)),"20",List.of(obj("1",204)),
+            "28",List.of(obj("1",1,"14",1,"15","1")),
+            "30",List.of(obj("1",1,"2",1,"3",50)),
+            "31",List.of(obj("1",1,"2",1,"3",1,"4",0,"5",0,"6","","7",0),obj("1",2,"2",1,"3",2,"4",50,"5",600,"6","","7",2),obj("1",3,"2",1,"3",3,"4",150,"5",601,"6","story","7",3)),
             "13",List.of(obj("1",500,"2",600,"3",1,"4",1,"5",10),obj("1",501,"2",601,"3",11,"4",1,"5",2)),
             "26",List.of(obj("1",1,"29",1,"4","ADViewCount","5",3,"7","TapCount","8",100,"13",600,"14",600,"15",600),obj("1",2,"29",1,"13",600),obj("1",902,"29",2,"2",1,"3",1),obj("1",903,"29",2,"2",2,"3",100))));
         services=new Services(root); social=new SocialModule(services); social.register(); services.state.createUser("a","device-a");
@@ -38,33 +41,61 @@ class SocialModuleTest {
         assertEquals(5,lng(map(result.get("user_follower_profile")).get("i_AddCandy")));
         assertEquals(2000,integer(find(rows(user(),"user_follower"),"i_id",1).get("i_Level")));
         command("setFollowerProfileGift",obj("profile_id",1,"gift_id",1,"use_gitf_value",999));
-        assertEquals(0,lng(find(rows(user(),"user_follower_giftitem"),"i_id",1).get("i_Value")));
+        assertEquals(1,lng(find(rows(user(),"user_follower_giftitem"),"i_id",1).get("i_Value")));
         command("setFollowerProfileGift",obj("use_gitf_value",-1));
-        assertEquals(0,lng(find(rows(user(),"user_follower_giftitem"),"i_id",1).get("i_Value")));
+        assertEquals(1,lng(find(rows(user(),"user_follower_giftitem"),"i_id",1).get("i_Value")));
     }
     @Test void rewardClaimsAliasAndDuplicatesAreIdempotent() {
-        Map<String,Object> user=user(); user.put("user_follower_profile",new ArrayList<>(List.of(obj("i_id",1,"i_Level",2,"d_Exp",50)))); save(user);
+        Map<String,Object> user=user(); user.put("user_follower",new ArrayList<>(List.of(obj("i_id",1,"i_Level",1))));user.put("user_follower_profile",new ArrayList<>(List.of(obj("i_id",1,"i_Level",2,"d_Exp",50)))); save(user);
         long before=lng(map(user.get("userdata")).get("u_cp"));
         List<Object> first=list(command("setUserFollowerProfileReward",obj("i_id",201,"s_level","2,2,3")));
         assertEquals(2,first.size()); assertEquals(1,list(map(first.getFirst()).get("reward_data")).size()); assertTrue(list(map(first.getLast()).get("reward_data")).isEmpty());
         command("setUserFollowerProfileReward",obj("i_id",1,"s_level","2"));
         assertEquals(before+10,lng(map(user().get("userdata")).get("u_cp")));
     }
-    @Test void messengerPreservesActiveProgressAndRepairsLegacySequences() {
-        assertEquals("1,111,130,75,156,136",mergeGroups("1,111,130,136",List.of(1,75,156),111));
+    @Test void messengerPreservesHistoryWithoutInventingCompletedGroupsFromFollowerOwnership() {
         Map<String,Object> user=obj("user_follower",new ArrayList<>(List.of(obj("i_id",1,"i_Level",10),obj("i_id",4,"i_Level",1))),"user_messenger",new ArrayList<>(List.of(room(1,"1,75"))));
         syncMessenger(user); Map<String,Object> joy=find(rows(user,"user_messenger"),"i_MessengerChatRoomId",1);
-        assertEquals("4,7,1",joy.get("s_UnlockGroupList"));
+        assertEquals("1,75",joy.get("s_UnlockGroupList"));
         rows(user,"user_follower").add(obj("i_id",201,"i_Level",700)); rows(user,"user_follower").add(obj("i_id",202,"i_Level",1));
-        syncMessenger(user); assertTrue(str(find(rows(user,"user_messenger"),"i_MessengerChatRoomId",16).get("s_UnlockGroupList")).endsWith(",172"));
+        syncMessenger(user); assertNull(find(rows(user,"user_messenger"),"i_MessengerChatRoomId",16));
         joy.put("s_UnlockGroupList","1,111,130,136"); syncMessenger(user); assertTrue(str(joy.get("s_UnlockGroupList")).endsWith(",136"));
         mergeMessenger(user,List.of(obj("i_MessengerChatRoomId",1,"i_LastConfirmIndex",8)));
-        assertNotNull(find(rows(user,"user_messenger"),"i_MessengerChatRoomId",17)); assertEquals(8,integer(joy.get("i_LastConfirmIndex")));
+        assertNull(find(rows(user,"user_messenger"),"i_MessengerChatRoomId",17)); assertEquals(8,integer(joy.get("i_LastConfirmIndex")));
+    }
+    @Test void messengerRejectsStaleHistoryButAllowsNewGroupIndexResetAndNativeSentinel() {
+        var user=obj("user_messenger",new ArrayList<>(List.of(room(1,"1,4"))));
+        var joy=map(rows(user,"user_messenger").getFirst()); joy.put("i_LastConfirmIndex",12);
+        mergeMessenger(user,List.of(obj("i_MessengerChatRoomId",1,"s_UnlockGroupList","1","i_LastConfirmIndex",50)));
+        assertEquals("1,4",joy.get("s_UnlockGroupList")); assertEquals(12,lng(joy.get("i_LastConfirmIndex")));
+        mergeMessenger(user,List.of(obj("i_MessengerChatRoomId",1,"s_UnlockGroupList","1,4","i_LastConfirmIndex",2)));
+        assertEquals(12,lng(joy.get("i_LastConfirmIndex")));
+        mergeMessenger(user,List.of(obj("i_MessengerChatRoomId",1,"s_UnlockGroupList","1,4,7","i_LastConfirmIndex",-1)));
+        assertEquals("1,4,7",joy.get("s_UnlockGroupList")); syncMessenger(user); assertEquals(-1,lng(joy.get("i_LastConfirmIndex")));
+        mergeMessenger(user,List.of(obj("i_MessengerChatRoomId",1,"s_UnlockGroupList","1,7,4","i_LastConfirmIndex",99)));
+        assertEquals("1,4,7",joy.get("s_UnlockGroupList"));
+    }
+    @Test void messengerRejectsMalformedHistoryAndOutOfRangeNativeFields() {
+        var user=obj("user_messenger",new ArrayList<>());
+        for(Object text:List.of("1,bad,4","1,,4","1,4,999999999999999999999","1,1","1,2","",42)) {
+            mergeMessenger(user,List.of(obj("i_MessengerChatRoomId",1,"s_UnlockGroupList",text,"i_LastConfirmIndex",0)));
+            assertTrue(rows(user,"user_messenger").isEmpty());
+        }
+        for(Object index:List.of(-2,2147483648L,0.5,Double.NaN)) {
+            mergeMessenger(user,List.of(obj("i_MessengerChatRoomId",1,"s_UnlockGroupList","1","i_LastConfirmIndex",index)));
+            assertTrue(rows(user,"user_messenger").isEmpty());
+        }
+        mergeMessenger(user,List.of(obj("i_MessengerChatRoomId",1,"i_LastConfirmIndex",0)));
+        assertTrue(rows(user,"user_messenger").isEmpty());
+        mergeMessenger(user,List.of(obj("i_MessengerChatRoomId",1,"s_UnlockGroupList","1","i_LastConfirmIndex",-1,"l_UpdateTimeTicks",200)));
+        mergeMessenger(user,List.of(obj("i_MessengerChatRoomId",1,"s_UnlockGroupList","1,4","i_LastConfirmIndex",0,"l_UpdateTimeTicks",100)));
+        var joy=map(rows(user,"user_messenger").getFirst());
+        assertEquals("1,4",joy.get("s_UnlockGroupList")); assertEquals(200,lng(joy.get("l_UpdateTimeTicks")));
     }
     @Test void questNormalizesMergesAdsOnlyAndRejectsDelayedClaimReplay() {
         Map<String,Object> user=user(); user.put("user_follower_quest",new ArrayList<>()); social.followers.normalizeQuest(user);
         Map<String,Object> quest=map(rows(user,"user_follower_quest").getFirst()); assertEquals(3,dbl(quest.get("d_ConditionValue1"))); assertEquals(0,dbl(quest.get("d_ConditionValue2")));
-        social.followers.mergeQuest(user,List.of(obj("i_CurrentID",1,"d_ConditionValue2",40))); save(user);
+        social.followers.mergeQuest(user,List.of(obj("i_CurrentID",1,"d_ConditionValue2",100))); save(user);
         long before=lng(map(user.get("userdata")).get("u_cp"));
         for(int sub=1;sub<=3;sub++) command("setUserFollowerQuest",obj("i_CurrentID",1,"i_SubID",sub));
         Map<String,Object> replay=map(command("setUserFollowerQuest",obj("i_CurrentID",1,"i_SubID",3)));
@@ -76,13 +107,13 @@ class SocialModuleTest {
         assertArrayEquals(new int[]{902,1},social.followers.nextQuest(user,42));
         assertArrayEquals(new int[]{902,1},social.followers.nextQuest(user,902));
     }
-    @Test void clientQuestResynchronizationRemainsSupported() {
+    @Test void clientCannotResynchronizeToFutureQuest() {
         Map<String,Object> result=map(command("setUserFollowerQuest",obj("i_CurrentID",2,"i_SubID",1)));
-        assertEquals(2,integer(result.get("i_CurrentID")));
-        assertEquals(1,list(result.get("reward_data")).size());
+        assertEquals(1,integer(result.get("i_CurrentID")));
+        assertEquals(0,list(result.get("reward_data")).size());
         result=map(command("setUserFollowerQuest",obj("i_CurrentID",2,"i_SubID",1,"d_ConditionValue",25)));
         assertTrue(list(result.get("reward_data")).isEmpty());
-        assertEquals(25,dbl(result.get("d_ConditionValue1")));
+        assertEquals(3,dbl(result.get("d_ConditionValue1")));
     }
     @Test void inconsistentWelcomeFlagRetainsPythonInsertionBehavior() {
         Map<String,Object> user=user(); user.put("welcome_post_sent",false); user.put("deleted_post_indices",new ArrayList<>(List.of(1))); save(user);
@@ -104,7 +135,7 @@ class SocialModuleTest {
         long now=System.currentTimeMillis()/1000; Map<String,Object> user=user(); user.put("created_at",now-100); user.put("welcome_post_sent",true); save(user);
         write(root.resolve("broadcast_posts.json"),List.of(mail(101,now-200,now+100,false),mail(102,now-200,now+100,true),mail(103,now-50,now-1,true),mail(104,now-50,now+100,false)));
         List<Object> posts=list(map(command("getPost",obj())).get("post_list")); assertEquals(List.of(102L,104L),posts.stream().map(v->lng(map(v).get("idx"))).toList());
-        command("deletePost",obj("idx",104)); assertEquals(1,list(map(command("getPost",obj())).get("post_list")).size());
+        command("providePost",obj("idx",104)); command("deletePost",obj("idx",104)); assertEquals(1,list(map(command("getPost",obj())).get("post_list")).size());
         command("deletePost",obj("type",1)); assertEquals(1,list(map(command("getPost",obj())).get("post_list")).size()); // unclaimed reward retained
     }
     @Test void sendUsesGlobalTombstonesAndPersistedSequenceAndAlreadyGrantedMarker() {
@@ -127,12 +158,12 @@ class SocialModuleTest {
         Map<String,Object> user=user(); user.put("welcome_post_sent",true); user.put("areas",obj("1",obj("s_Gp1","100000000000000000000000000000000000000","d_Like",1e38)));
         map(user.get("userdata")).put("u_like",1e38); save(user);
         List<Object> items=new ArrayList<>();
-        for(int type:new int[]{2,3,4,5,7,9}) items.add(obj("i_RewardType",type,"i_RewardId",204,"d_RewardQuantity",2));
+        for(int type:new int[]{2,3,4,5,7,9}) items.add(obj("i_RewardType",type,"i_RewardId",204,"d_RewardQuantity",type==7?2:1));
         items.add(obj("i_RewardType",1,"i_RewardId",3,"d_RewardQuantity",10));
         Map<String,Object> post=social.posts.sendPost("a","Items","",items,1,false);
         command("providePost",obj("idx",post.get("idx"))); user=user();
         for(String key:List.of("user_music","costumes","user_prop","user_follower","user_unit","user_guitar")) assertNotNull(find(rows(user,key),"i_id",204),key);
-        assertNotNull(find(rows(user,"user_messenger"),"i_MessengerChatRoomId",204));
+        assertNull(find(rows(user,"user_messenger"),"i_MessengerChatRoomId",204)); // Native unlocks only after group 118 is completed.
         assertEquals("100000000000000000000000000000000000010",str(map(map(user.get("areas")).get("1")).get("s_Gp1")));
         command("providePost",obj("idx",post.get("idx"))); assertEquals(2,integer(find(rows(user(),"user_unit"),"i_id",204).get("i_Level")));
     }

@@ -4,6 +4,7 @@ import emu.leman.ggserver.Services;
 import emu.leman.ggserver.net.CmdId;
 import emu.leman.ggserver.game.player.ProfileModule;
 import emu.leman.ggserver.game.economy.Currency;
+import emu.leman.ggserver.game.economy.AreaCurrency;
 import emu.leman.ggserver.database.StateStore;
 import emu.leman.ggserver.net.HandlerRegistry;
 import emu.leman.ggserver.net.Result;
@@ -34,6 +35,8 @@ public final class AccountModule implements emu.leman.ggserver.game.GameModule {
         s.registry.register(CmdId.GET_UPDATE_TIME,(r,c)->Result.ok(obj("upd_time",1700000000)));
         s.registry.register(CmdId.DEFAULT_SETTING_LIST,(r,c)->Result.ok(defaultSettings()));
         s.registry.register(CmdId.HIBERNATION_LOG,(r,c)->Result.ok(obj("action",0)));
+        // Legacy RPC list is not table25 and is not an OS push delivery channel.
+        s.registry.register(CmdId.GET_LOCAL_PUSH,(r,c)->Result.ok(List.of()));
         s.registry.register(CmdId.COMPLETE_LOG,(r,c)->Result.ok(obj("status","1")));
     }
     private String identity(Map<String,Object> p,Map<String,Object> c) { return str(first(p.get("uuid"),p.get("device_uuid"),c.get("uuid"))); }
@@ -67,12 +70,7 @@ public final class AccountModule implements emu.leman.ggserver.game.GameModule {
                 if(truth(p.get("uuid"))) resp.put("uuid",p.get("uuid")); return Result.ok(obj("user",resp));
             }
             migrateLegacy(u); Map<String,Object> contents=userContents(u); Map<String,Object> areas=areas(u);
-            Currency.Parsed like=Currency.parse(ud.get("u_like"));
-            for(Object value:areas.values()) {
-                Map<String,Object> area=map(value); Currency.Parsed previous=Currency.parse(first(area.get("s_Gp1"),"0"));
-                Currency.Parsed target=truth(u.get("force_server_like"))||like.integer().compareTo(previous.integer())>0 ? like:previous;
-                area.put("d_Like",target.floating()); area.put("s_Gp1",target.gp());
-            }
+            AreaCurrency.normalize(u);
             u.remove("force_server_like");
             if(!str(ud.get("u_create_time")).matches("-?\\d+")) ud.put("u_create_time",str(today()));
             boolean reset=truth(u.get("needs_client_reset"))||lng(p.get("u_seq"))!=lng(ud.get("u_seq")); String now=timestamp();
@@ -88,12 +86,8 @@ public final class AccountModule implements emu.leman.ggserver.game.GameModule {
     }
     public Map<String,Object> userContents(Map<String,Object> user) { return content.contents(user); }
     public Map<String,Object> userLoadData(Map<String,Object> user) {
-        Map<String,Object> contents=userContents(user), areas=areas(user), ud=object(user,"userdata"); Currency.Parsed like=Currency.parse(ud.get("u_like"));
-        for(Object value:areas.values()) {
-            Map<String,Object> area=map(value);
-            if(like.floating()>dbl(area.get("d_Like"))) area.put("d_Like",like.floating());
-            if(like.integer().compareTo(Currency.parse(first(area.get("s_Gp1"),"0")).integer())>0) area.put("s_Gp1",like.gp());
-        }
+        Map<String,Object> contents=userContents(user), areas=areas(user), ud=object(user,"userdata");
+        AreaCurrency.normalize(user);
         Map<String,Object> response=new LinkedHashMap<>(ud); response.put("u_id",str(first(ud.get("u_seq"),ud.get("u_id")))); response.put("u_last_communication",timestamp());
         return obj("user",response,"area_data",areas,"user_contents",contents);
     }
@@ -111,16 +105,19 @@ public final class AccountModule implements emu.leman.ggserver.game.GameModule {
     }
     private Result save(Map<String,Object> p,Map<String,Object> c) {
         synchronized(s.state) {
+            try {AreaCurrency.validateSave(p.get("user_area_info"));}
+            catch(IllegalArgumentException invalid) {return Result.error(1,invalid.getMessage());}
             Map<String,Object> u=user(p,c); if(u==null) return Result.ok(obj("status","Y"));
             Map<String,Object> ud=object(u,"userdata"); String time=timestamp(); u.put("last_save_time",now()); ud.put("u_save_date",time); ud.put("u_last_communication",time);
             if(p.containsKey("user_achievement")) content.achievements(u,p.get("user_achievement"));
-            String[][] merges={{"user_character","characters"},{"user_costume","costumes"},{"user_music","user_music"},{"user_guitar","user_guitar"},{"user_follower","user_follower"},{"user_prop","user_prop"}};
+            String[][] merges={{"user_character","characters"},{"user_costume","costumes"},{"user_guitar","user_guitar"},{"user_follower","user_follower"},{"user_prop","user_prop"}};
             for(String[] keys:merges) if(p.containsKey(keys[0])) u.put(keys[1],safeMergeItems(u.get(keys[1]),p.get(keys[0])));
+            if(p.containsKey("user_skill")) content.mergeSkills(u,p.get("user_skill"));
             AuthFollowerSupport follower=new AuthFollowerSupport(content);
             if(p.containsKey("user_follower")) follower.sync(u);
             if(p.containsKey("user_messenger")) follower.mergeMessenger(u,p.get("user_messenger")); follower.messenger(u);
             for(String key:List.of("user_ticketcollection","user_candy_shop")) if(p.containsKey(key)) u.put(key,p.get(key));
-            if(p.containsKey("user_event_point")) { u.put("user_event_point",p.get("user_event_point")); content.eventPoints(u); }
+            if(p.containsKey("user_event_point")) content.mergeEventPoints(u,p.get("user_event_point"));
             if(p.containsKey("user_daily_mission")) content.dailyMissions(u,p.get("user_daily_mission"));
             if(p.containsKey("user_follower_quest")) follower.mergeQuest(u,p.get("user_follower_quest"));
             for(String key:List.of("user_chthird_stage","user_ch_third_stage")) if(p.containsKey(key)) { u.put("user_chthird_stage",p.get(key)); u.put("user_ch_third_stage",p.get(key)); }
@@ -131,12 +128,15 @@ public final class AccountModule implements emu.leman.ggserver.game.GameModule {
             for(Object raw:list(p.get("user_info"))) { Map<String,Object> info=map(raw); for(String key:List.of("u_selected_costume_id","u_selected_music_id")) if(truth(info.get(key))) ud.put(key,info.get(key)); }
             for(Object raw:list(p.get("user_area_info"))) {
                 Map<String,Object> incoming=map(raw); Object n=incoming.get("u_area_num"); if(n==null) continue;
-                Map<String,Object> stored=map(object(u,"areas").computeIfAbsent(str(n),k->obj())); stored.putAll(incoming);
-                Currency.Parsed server=Currency.parse(ud.get("u_like")), client=Currency.parse(incoming.get("s_Gp1"));
-                boolean useServer=truth(u.get("needs_client_reset"))||truth(u.get("force_server_like"))||server.integer().compareTo(client.integer())>0;
-                Currency.Parsed target=useServer?server:client; stored.put("s_Gp1",target.gp()); stored.put("d_Like",target.floating());
-                if(!useServer) { ud.put("u_like",target.floating()); s.state.setLikeCurrency(str(u.get("uuid")),target.floating()); }
+                int number=integer(n);Map<String,Object> stored=AreaCurrency.area(u,number);
+                Currency.Parsed server=AreaCurrency.balance(u,number);
+                boolean protectedBalance=truth(u.get("needs_client_reset"))||number==1&&truth(u.get("force_server_like"));
+                Currency.Parsed target=protectedBalance?server:incoming.containsKey("s_Gp1")?Currency.parse(incoming.get("s_Gp1")):
+                        incoming.containsKey("d_Like")?Currency.parse(incoming.get("d_Like")):server;
+                stored.putAll(incoming);AreaCurrency.put(u,number,target);
             }
+            // Evaluate acquisition after the same offline snapshot's characters/followers/areas.
+            if(p.containsKey("user_music")) content.mergeMusic(u,p.get("user_music"));
             s.state.saveUser(u); return Result.ok(obj("status","Y"));
         }
     }

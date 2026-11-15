@@ -32,6 +32,7 @@ public final class NotificationCli {
             Map<String,Object> request = Json.obj("uuid", target,
                 "title", options.getOrDefault("title", "Thông báo từ Ban Quản Trị"),
                 "memo", options.getOrDefault("memo", "Cảm ơn bạn đã đồng hành cùng Guitar Girl!"), "items", items);
+            if(options.containsKey("request-id")) request.put("request_id",options.get("request-id"));
             Map<String,Object> post = send(request, options.get("server"), env);
             out.println("[SUCCESS] Sent notification #" + post.get("idx") + " to " + target);
             out.println("Title: " + request.get("title"));
@@ -44,6 +45,7 @@ public final class NotificationCli {
     }
 
     static Map<String,Object> send(Map<String,Object> request, String server, Map<String,String> env) throws Exception {
+        request.putIfAbsent("request_id",UUID.randomUUID().toString());
         String base = server != null ? server : CliSupport.adminUrl(env);
         URI uri = URI.create(base.replaceAll("/+$", "") + "/admin/api/send_post");
         if (!("http".equals(uri.getScheme()) || "https".equals(uri.getScheme())) || uri.getHost() == null || uri.getUserInfo() != null)
@@ -56,7 +58,7 @@ public final class NotificationCli {
         try (HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3)).build()) {
             response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (java.io.IOException e) {
-            throw new IllegalStateException("Cannot reach running Java server at " + base + "; start it with ./serverctl.sh start. No mail was written offline.", e);
+            throw new IllegalStateException("Mail delivery outcome unknown at " + base + "; request_id="+request.get("request_id")+". Check server before retrying; reuse this request_id.", e);
         }
         Map<String,Object> body;
         try { body = Json.map(Json.parse(response.body())); }
@@ -75,7 +77,7 @@ public final class NotificationCli {
     }
 
     private static Map<String,String> parse(String[] args) {
-        Set<String> allowed = Set.of("uuid", "title", "memo", "cp", "candy", "like", "cookie", "guitar", "costume", "music", "server");
+        Set<String> allowed = Set.of("uuid", "title", "memo", "cp", "candy", "like", "cookie", "guitar", "costume", "music", "server", "request-id");
         Map<String,String> options = new LinkedHashMap<>();
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
@@ -97,6 +99,7 @@ public final class NotificationCli {
         out.println("Usage: ./send-notification.sh [--uuid all|UUID] [--title TEXT] [--memo TEXT]");
         out.println("  [--cp N] [--candy N] [--like N] [--cookie N] [--guitar ID] [--costume ID] [--music ID]");
         out.println("  [--server URL] (default GG_ADMIN_URL or http://127.0.0.1:$PORT)");
+        out.println("  [--request-id ID] Reuse the same ID when retrying an uncertain send; do not generate a new one.");
         out.println("Requires the running Java server; authentication: GG_ADMIN_PASSWORD. Set GG_NO_ADB=1 to skip optional ADB resume.");
     }
 }

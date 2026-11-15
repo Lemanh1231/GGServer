@@ -322,7 +322,7 @@ class MongoUserRepositoryTest {
         }
     }
     private static void assertGp(Map<String,Object> user, String expected) {
-        for (Object value : Json.map(user.get("areas")).values()) assertEquals(expected, Json.map(value).get("s_Gp1"));
+        assertEquals(expected, Json.map(Json.map(user.get("areas")).get("1")).get("s_Gp1"));
         assertTrue(Double.isFinite(Json.dbl(ud(user).get("u_like"))));
     }
 }

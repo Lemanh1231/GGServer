@@ -35,12 +35,13 @@ distributions {
     main {
         contents {
             from('.') {
-                include 'resources/server-config.example.json'
+                include 'resources/server-config.json', 'resources/docker/server-config.json'
                 include 'resources/schema/**', 'resources/gamedata/**', 'resources/cdn_files/**', 'resources/static/**'
                 include 'resources/event_config.json', 'resources/broadcast_posts.json', 'resources/post_seq.json'
                 include 'resources/README.md'
-                include 'README.md', 'SECURITY.md', 'MONGO_COLLECTIONS.md'
+                include 'README.md', 'MIGRATION.md', 'MONGO_COLLECTIONS.md'
             }
+            from('.') { include 'src/main/java/emu/leman/ggserver/migration/MONGO_MIGRATION.md' }
         }
     }
 }
@@ -50,6 +51,13 @@ tasks.withType(AbstractArchiveTask).configureEach {
     reproducibleFileOrder = true
 }
 test { useJUnitPlatform() }
+tasks.register('importPythonData', JavaExec) {
+    group = 'application'
+    description = 'Explicitly snapshot ../emulator/data/database.db into this project; refuses overwrite.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'emu.leman.ggserver.migration.ImportPythonData'
+    args '--source', providers.gradleProperty('pythonRoot').getOrElse('../emulator'), '--root', file('resources').absolutePath
+}
 tasks.register('fatJar', Jar) {
     archiveClassifier = 'all'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

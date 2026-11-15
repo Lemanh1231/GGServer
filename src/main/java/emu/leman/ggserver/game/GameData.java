@@ -66,7 +66,14 @@ public final class GameData {
                 Map<String,Object> converted=obj("i_id",row.get("1"),"s_RewardType",row.get(name.equals("daily_mission")?"29":"28"),
                         "b_IsActive",row.getOrDefault(name.equals("daily_mission")?"44":"52",1));
                 if(name.equals("daily_mission")) converted.putAll(obj("s_DailyMissionConditionType",row.get("27"),"d_Condition_1",row.get("28"),"i_Reward_1",row.get("42")));
-                else for(int level=1;level<=20;level++) { String key=str(level<=10?40+level:level<=12?42+level:63+level);if(row.containsKey(key)) converted.put("i_Reward_"+level,row.get(key)); }
+                else {
+                    converted.put("i_MaxLevel",row.get("55"));
+                    for(int level=1;level<=20;level++) {
+                        String key=str(level<=10?40+level:level<=12?42+level:63+level);
+                        if(row.containsKey(key)) converted.put("i_Reward_"+level,row.get(key));
+                        if(row.containsKey(str(55+level))) converted.put("s_Condition_"+level,row.get(str(55+level)));
+                    }
+                }
                 rows.add(converted);
             } else rows.add(copy(row));
         }

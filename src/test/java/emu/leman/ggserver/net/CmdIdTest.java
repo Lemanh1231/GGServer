@@ -40,7 +40,7 @@ class CmdIdTest {
         assertEquals(schemaCommands,identifiers());
         try(Services services=new Services(root)) {
             new GameContext(services).registerModules();
-            assertEquals(60,services.registry.commands().size());
+            assertEquals(61,services.registry.commands().size());
             assertTrue(identifiers().containsAll(services.registry.commands()));
         }
     }

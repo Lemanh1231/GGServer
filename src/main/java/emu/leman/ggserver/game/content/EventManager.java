@@ -68,7 +68,35 @@ public final class EventManager {
         cfg.put("events",legacy); cfg.put("paid_star_card",obj("name","Thẻ Sao Gold trả tiền","enabled",sp.get("paid_card_enabled"),"price",0));
         return cfg;
     }
-    public Map<String,Object> snapshot() { try { return normalize(read(configPath)); } catch(Exception e) { return normalize(defaults()); } }
+    private static Map<String,Object> disabled() {
+        var cfg=defaults();
+        for(Object value:cfg.values())if(value instanceof Map) {
+            var section=map(value);
+            for(String key:List.of("enabled","paid_card_enabled","snow_enabled","cherry_blossom_enabled"))if(section.containsKey(key))section.put(key,false);
+        }
+        for(Object value:map(cfg.get("attendance_events")).values())map(value).put("enabled",false);
+        return normalize(cfg);
+    }
+    public Map<String,Object> snapshot() {
+        try {
+            Object value=read(configPath);if(!(value instanceof Map)||map(value).isEmpty())return disabled();
+            var raw=map(value);
+            for(String section:defaults().keySet())if(raw.containsKey(section)) {
+                if(!(raw.get(section) instanceof Map))return disabled();
+                var item=map(raw.get(section));
+                for(String key:List.of("enabled","paid_card_enabled","snow_enabled","cherry_blossom_enabled"))
+                    if(item.containsKey(key)&&!(item.get(key) instanceof Boolean))return disabled();
+            }
+            Object attendance=raw.getOrDefault("attendance_events",raw.get("events"));
+            if(attendance!=null) {
+                if(!(attendance instanceof Map))return disabled();
+                for(Object row:map(attendance).values())if(!(row instanceof Map)
+                        || map(row).containsKey("enabled")&&!(map(row).get("enabled") instanceof Boolean))return disabled();
+            }
+            return normalize(value);
+        }
+        catch(Exception e) {return disabled();}
+    }
     public Map<String,Object> activeEvents() { Map<String,Object> out=obj(); map(snapshot().get("attendance_events")).forEach((k,v)->{if(truth(map(v).get("enabled"))) out.put(k,v);}); return out; }
     public Map<String,Object> getActiveAttendanceEvents() { return activeEvents(); }
     public Map<String,Object> saveConfig(Map<String,Object> cfg) { return save(cfg); }

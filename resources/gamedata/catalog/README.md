@@ -80,9 +80,21 @@ legacy dùng trong fixture/test. Không sửa `GameData.data()` để hot patch 
 
 ## Cập nhật an toàn
 
-Nhánh Java-only không kèm bộ trích xuất dữ liệu offline. Chỉnh dữ liệu trong
-thư mục riêng, review diff và chạy `./gradlew test fatJar` trước khi triển khai.
-`rowCount` là số dòng mong đợi:
+Từ `GGServerJava/`, export vào **thư mục mới**, review diff rồi mới đưa vào catalog:
+
+```bash
+python3 scripts/build_game_catalog.py \
+  --game-data resources/gamedata/game_data.json \
+  --schema resources/schema/schema.json \
+  --capture resources/gamedata/getGameDataList.b64 \
+  --il2cpp-dump ../work/out/dump.cs \
+  --output /tmp/opencode/gg-catalog-next
+
+python3 -m unittest discover -s scripts -p 'test_game_catalog.py'
+./gradlew test fatJar
+```
+
+Exporter không ghi đè thư mục đích có sẵn. `rowCount` là số dòng mong đợi:
 khi thêm/xóa row có chủ đích cần cập nhật rowCount của bảng và tổng manifest.
 Nguồn SHA-256 ghi nhận baseline export, không phải chữ ký bảo mật cho file chỉnh tay.
 Chạy wire audit trên server disposable sau khi thay đổi kinh tế/quest/reward.

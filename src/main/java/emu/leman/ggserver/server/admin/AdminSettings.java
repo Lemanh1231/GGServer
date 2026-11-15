@@ -48,22 +48,12 @@ final class AdminSettings {
         boolean reset = false, sendMail = truth(req.get("send_mail"));
         if (present(setLike)) {
             var parsed = Currency.parse(setLike);
-            ud.put("u_like", parsed.floating());
-            user.put("force_server_like", parsed.gp());
-            for (var area : child(user, "areas").values()) if (area instanceof Map) {
-                map(area).put("d_Like", parsed.floating()); map(area).put("s_Gp1", parsed.gp());
-            }
+            emu.leman.ggserver.game.economy.AreaCurrency.setLike(user,setLike);
             reset = true;
         } else if (present(addLike)) {
             var parsed = Currency.parse(addLike);
             if (parsed.integer().signum() != 0) {
-                ud.put("u_like", Math.min(Currency.MAX_FLOAT, dbl(ud.get("u_like")) + parsed.floating()));
-                if (truth(user.get("force_server_like"))) user.put("force_server_like", Currency.parse(Currency.parse(user.get("force_server_like")).integer().add(parsed.integer())).gp());
-                for (var area : child(user, "areas").values()) if (area instanceof Map) {
-                    var current = Currency.parse(map(area).get("s_Gp1"));
-                    var updated = Currency.parse(current.integer().add(parsed.integer()));
-                    map(area).put("d_Like", updated.floating()); map(area).put("s_Gp1", updated.gp());
-                }
+                emu.leman.ggserver.game.economy.AreaCurrency.addLike(user,addLike);
                 if (sendMail) AdminServer.addReward(mailItems, 3, parsed.floating(), true);
                 reset = true;
             }
@@ -158,7 +148,7 @@ final class AdminSettings {
             switch (id) {
                 case 1 -> ud.put("u_cp", Math.addExact(lng(ud.get("u_cp")), (long)amount));
                 case 2 -> ud.put("u_candy", dbl(ud.get("u_candy")) + amount);
-                case 3, 4 -> ud.put("u_like", Math.min(Currency.MAX_FLOAT, dbl(ud.get("u_like")) + amount));
+                case 3, 4 -> emu.leman.ggserver.game.economy.AreaCurrency.addLike(user,amount);
                 case 8 -> ud.put("u_fans", Math.addExact(lng(ud.get("u_fans")), (long)amount));
                 case 11 -> StateStore.addAp(user, (int)amount);
                 default -> throw new IllegalArgumentException("Unsupported attendance goods reward ID " + id);

@@ -14,8 +14,13 @@ public final class SocialPosts {
     private static final String[] LANGS={"ko","en","jp","zh_chs","zh_cht","vi","es","it","id","th","pt","hi"};
     public SocialPosts(Services services) { this.services=services; }
     private List<Object> broadcasts() {
-        try { return list(emu.leman.ggserver.util.Json.read(services.root.resolve("broadcast_posts.json"))); }
-        catch(RuntimeException e) { return new ArrayList<>(); }
+        var path=services.root.resolve("broadcast_posts.json");
+        if(!java.nio.file.Files.exists(path)) return new ArrayList<>();
+        Object value=emu.leman.ggserver.util.Json.read(path);
+        if(!(value instanceof List<?>)) throw new IllegalStateException("Mailbox broadcast storage must be an array; refusing to overwrite");
+        for(Object raw:list(value)) if(!(raw instanceof Map)||lng(map(raw).get("idx"))<=0)
+            throw new IllegalStateException("Invalid mailbox broadcast record; refusing to overwrite");
+        return list(value);
     }
     private static long now() { return System.currentTimeMillis()/1000; }
     private static Set<Long> deleted(Map<String,Object> user) {
@@ -68,17 +73,19 @@ public final class SocialPosts {
     public List<Object> claim(Map<String,Object> user,long idx,int type) {
         synchronized(services.state) {
             List<Object> granted=new ArrayList<>(); if(user==null) return granted;
+            // Invalid legacy rewards/capacity must not partially mutate even a direct caller's snapshot.
+            Map<String,Object> original=user; user=copy(user);
             boolean all=idx==0||type==1, changed=false; double likeDelta=0;
             for(Object value:getUserPosts(user)) {
                 Map<String,Object> post=map(value); if(!all&&lng(post.get("idx"))!=idx) continue;
                 if(integer(post.get("have_reward"))==1) {
-                    for(Object itemValue:list(post.get("item_list"))) {
+                    for(Object itemValue:MailboxRewards.validate(services.gameData,list(post.get("item_list")),true)) {
                         Map<String,Object> item=map(itemValue);
                         granted.add(obj("i_RewardType",integer(first(item.get("i_RewardType"),1)),"i_RewardId",integer(first(item.get("i_RewardId"),1)),"d_RewardQuantity",dbl(item.get("d_RewardQuantity"))));
                         if(!truth(item.get("already_granted"))) {
                             int rewardType=integer(item.get("i_RewardType")), rewardId=integer(item.get("i_RewardId"));
                             double quantity=dbl(item.get("d_RewardQuantity"));
-                            SocialRewards.grant(user,rewardType,rewardId,quantity,true,false);
+                            MailboxRewards.grant(user,item);
                             if((rewardType==1||rewardType==11)&&(rewardId==3||rewardId==4)) likeDelta+=quantity;
                         }
                     }
@@ -90,6 +97,7 @@ public final class SocialPosts {
                 if(Currency.parse(likeDelta).integer().signum()!=0) user.put("needs_client_reset",true);
                 user.put("welcome_post_sent",true); services.state.saveUser(user);
             }
+            original.clear(); original.putAll(user);
             return granted;
         }
     }
@@ -102,13 +110,14 @@ public final class SocialPosts {
     public Map<String,Object> delete(Map<String,Object> user,long idx,int type) {
         synchronized(services.state) {
             if(user!=null) {
+                getUserPosts(user); // Include lazy broadcast deliveries before protecting unclaimed mail.
                 user.put("welcome_post_sent",true); Set<Long> deleted=deleted(user); List<Object> remaining=new ArrayList<>(); boolean all=idx==0||type==1;
                 for(Object value:rows(user,"posts")) {
                     Map<String,Object> post=map(value); long id=lng(post.get("idx"));
-                    boolean remove=all?integer(post.get("have_reward"))==0&&(integer(post.get("status"))==1||integer(post.get("flg"))==1):id==idx;
+                    boolean remove=integer(post.get("have_reward"))==0&&(all?(integer(post.get("status"))==1||integer(post.get("flg"))==1):id==idx);
                     if(remove) { if(id!=0) deleted.add(id); } else remaining.add(post);
                 }
-                if(!all&&idx!=0) deleted.add(idx);
+                if(!all&&idx!=0&&remaining.stream().noneMatch(v->lng(map(v).get("idx"))==idx)) deleted.add(idx);
                 user.put("posts",remaining); user.put("deleted_post_indices",new ArrayList<>(deleted)); services.state.saveUser(user);
             }
             return obj("idx",idx);
@@ -118,7 +127,7 @@ public final class SocialPosts {
         List<Map<String,Object>> result=new ArrayList<>();
         for(Map<String,Object> row:services.state.listUserRows()) {
             Map<String,Object> contents;
-            try { contents=map(parse(str(row.get("user_contents_json")))); } catch(RuntimeException e) { contents=obj(); }
+            contents=map(parse(str(row.get("user_contents_json"))));
             result.add(obj("uuid",row.get("uuid"),"contents",contents));
         }
         return result;
@@ -126,35 +135,75 @@ public final class SocialPosts {
     private long nextIndex(List<Object> broadcasts,List<Map<String,Object>> users) {
         long max=100;
         for(Object value:broadcasts) max=Math.max(max,lng(map(value).get("idx")));
-        try { max=Math.max(max,lng(map(emu.leman.ggserver.util.Json.read(services.root.resolve("post_seq.json"))).get("last_idx"))); } catch(RuntimeException ignored) { }
+        var sequence=services.root.resolve("post_seq.json");
+        Map<String,Object> previous=java.nio.file.Files.exists(sequence)?map(emu.leman.ggserver.util.Json.read(sequence)):obj();
+        max=Math.max(max,lng(previous.get("last_idx")));
         for(Map<String,Object> row:users) {
             Map<String,Object> contents=map(row.get("contents"));
             for(Object value:list(contents.get("posts"))) max=Math.max(max,lng(map(value).get("idx")));
             for(Object value:list(contents.get("deleted_post_indices"))) max=Math.max(max,lng(value));
         }
-        long next=Math.addExact(max,1); write(services.root.resolve("post_seq.json"),obj("last_idx",next)); return next;
+        long watermark=Math.max(now(),lng(previous.get("last_notification_time")));
+        for(Object raw:broadcasts) watermark=Math.max(watermark,notificationTime(map(raw)));
+        for(var row:users) for(Object raw:list(map(row.get("contents")).get("posts"))) watermark=Math.max(watermark,notificationTime(map(raw)));
+        long next=Math.addExact(max,1); write(sequence,obj("last_idx",next,"last_notification_time",Math.addExact(watermark,1))); return next;
+    }
+    public static long notificationTime(Map<String,Object> post) { return lng(post.getOrDefault("notification_time",post.get("create_time"))); }
+    private static Object canonical(Object value) {
+        if(value instanceof Map<?,?> values) {
+            Map<String,Object> sorted=new TreeMap<>();
+            values.forEach((key,item)->sorted.put(str(key),canonical(item))); return sorted;
+        }
+        if(value instanceof List<?> values) return values.stream().map(SocialPosts::canonical).toList();
+        return value;
     }
     public Map<String,Object> sendPost(String uuid,Object title,Object memo,List<?> items,int noticeType,boolean appliesToNewUsers) {
+        return sendPost(uuid,title,memo,items,noticeType,appliesToNewUsers,"");
+    }
+    public Map<String,Object> sendPost(String uuid,Object title,Object memo,List<?> items,int noticeType,boolean appliesToNewUsers,String requestId) {
         synchronized(services.state) {
+            if(requestId==null) requestId="";
+            if(!requestId.isEmpty()&&!requestId.matches("[A-Za-z0-9_-]{8,128}")) throw new IllegalArgumentException("Invalid mail request_id");
             boolean broadcast=uuid==null||uuid.isEmpty()||uuid.equals("all")||uuid.equals("null");
             Map<String,Object> target=broadcast?null:services.state.getUser(uuid); if(!broadcast&&target==null) return null;
             List<Object> broadcasts=broadcasts(); List<Map<String,Object>> users=allUserContents();
-            List<Object> normalized=new ArrayList<>();
-            if(items!=null) for(Object value:items) {
-                Map<String,Object> item=map(value), out=obj("i_RewardType",item.getOrDefault("i_RewardType",1),"i_RewardId",item.getOrDefault("i_RewardId",1),"d_RewardQuantity",dbl(item.getOrDefault("d_RewardQuantity",1.0)));
-                if(truth(item.get("already_granted"))) out.put("already_granted",true); normalized.add(out);
+            List<Object> normalized=MailboxRewards.validate(services.gameData,items,true);
+            String fingerprint=stringify(canonical(obj("target",broadcast?null:str(target.get("uuid")),"title",title,"memo",memo,"items",normalized,"notice_type",noticeType,"future",appliesToNewUsers)));
+            List<Object> previousSends=new ArrayList<>(target==null?broadcasts:list(target.get("posts")));
+            if(target!=null) previousSends.addAll(map(target.get("mail_send_requests")).values());
+            if(!requestId.isEmpty()) for(Object raw:previousSends) {
+                var existing=map(raw);
+                if(requestId.equals(str(existing.get("request_id")))) {
+                    if(!fingerprint.equals(str(existing.get("request_fingerprint")))) throw new IllegalArgumentException("request_id already used for different mail");
+                    return copy(existing);
+                }
             }
             long now=now(),idx=nextIndex(broadcasts,users);
             Map<String,Object> post=obj("idx",idx,"notice_type",noticeType,"have_reward",normalized.isEmpty()?0:1,"status",0,"unlimit_flg",0,"flg",0,"create_time",now,"del_time",now+86400*30L,"item_list",normalized,"url","","image_resource_name","","applies_to_new_users",appliesToNewUsers);
+            post.put("notification_time",map(emu.leman.ggserver.util.Json.read(services.root.resolve("post_seq.json"))).get("last_notification_time"));
+            if(!requestId.isEmpty()) {post.put("request_id",requestId);post.put("request_fingerprint",fingerprint);}
             Map<String,Object> titles=map(title),memos=map(memo);
             Object defaultTitle=title instanceof String?title:titles.getOrDefault("vi",titles.getOrDefault("en","Thông báo"));
             Object defaultMemo=memo instanceof String?memo:memos.getOrDefault("vi",memos.getOrDefault("en",""));
             for(String lang:LANGS) { post.put("title_"+lang,titles.getOrDefault(lang,defaultTitle)); post.put("memo_"+lang,memos.getOrDefault(lang,defaultMemo)); }
-            if(target!=null) deliver(target,post);
+            if(target!=null) {
+                if(!requestId.isEmpty()) {
+                    var receipts=map(target.computeIfAbsent("mail_send_requests",k->obj()));
+                    receipts.put(requestId,copy(post));
+                }
+                deliver(target,post);
+            }
             else {
-                broadcasts.add(post); broadcasts.removeIf(v->{Map<String,Object> b=map(v);return !truth(b.get("unlimit_flg"))&&lng(b.get("del_time"))<=now;});
+                broadcasts.add(post); broadcasts.removeIf(v->{Map<String,Object> b=map(v);return !truth(b.get("request_id"))&&!truth(b.get("unlimit_flg"))&&lng(b.get("del_time"))<=now;});
                 write(services.root.resolve("broadcast_posts.json"),broadcasts);
-                for(Map<String,Object> row:users) { Map<String,Object> user=services.state.getUser(str(row.get("uuid"))); if(user!=null) deliver(user,post); }
+                // Durable broadcast is the commit point. Cache delivery failures must not turn a
+                // successful send into a retryable error: getPost reconciles missing copies later.
+                int pending=0;
+                for(Map<String,Object> row:users) {
+                    try { Map<String,Object> user=services.state.getUser(str(row.get("uuid"))); if(user!=null) deliver(user,post); }
+                    catch(RuntimeException e) { pending++; org.slf4j.LoggerFactory.getLogger(SocialPosts.class).warn("Broadcast {} committed; recipient delivery deferred",idx); }
+                }
+                if(pending>0) post.put("delivery_pending",pending);
             }
             return post;
         }

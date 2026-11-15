@@ -20,6 +20,8 @@ class AdminServerTest {
     String token;
     final HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
     @BeforeEach void setup() throws Exception {
+        write(root.resolve("gamedata/game_data.json"),obj("20",List.of(obj("1",10,"37",1))));
+        write(root.resolve("event_config.json"),emu.leman.ggserver.game.content.EventManager.defaults());
         services = new Services(root);
         token = new AdminAuth(root).createToken(3600);
         var admin = new AdminServer(services);

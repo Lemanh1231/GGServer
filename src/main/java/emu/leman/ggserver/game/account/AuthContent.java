@@ -105,12 +105,56 @@ public final class AuthContent {
         for (Object raw : list(value)) { Map<String,Object> row = map(raw); int id = integer(row.get(key)); if (id != 0) result.put(id,row); }
         return result;
     }
+    /** Offline music purchases/levels remain client-managed, within known catalog bounds.
+     * Preserve historical rows unchanged; only new acquisitions must satisfy current gates. */
+    public void mergeMusic(Map<String,Object> user,Object incoming) {
+        var existing=index(user.get("user_music"),"i_id");
+        List<Object> accepted=new ArrayList<>();
+        for(Object raw:list(incoming)) {
+            var row=new LinkedHashMap<>(map(raw));long id=nonnegativeLong(row.get("i_id")),level=nonnegativeLong(row.get("i_Level"));
+            if(id<=0||id>Integer.MAX_VALUE)continue;
+            var definition=s.gameData.row(2,(int)id);
+            if(definition.isEmpty()||level<1||level>integer(definition.getOrDefault("28",50)))continue;
+            if(row.containsKey("i_BonusLevel")&&(nonnegativeLong(row.get("i_BonusLevel"))<0||nonnegativeLong(row.get("i_BonusLevel"))>Integer.MAX_VALUE))continue;
+            accepted.add(row);
+        }
+        // Resolve new prerequisite songs from the same snapshot, independent of DTO ordering.
+        boolean changed;
+        do {
+            changed=false;
+            for(var iterator=accepted.iterator();iterator.hasNext();) {var row=map(iterator.next());int id=integer(row.get("i_id"));
+                if(!existing.containsKey(id)&&!emu.leman.ggserver.game.content.AcquisitionRules.allowed(s.gameData,user,2,id))continue;
+                Object appear=row.get("b_EncoreBonusAppear"),follower=row.get("i_EncoreBonusFollowerId");
+                emu.leman.ggserver.game.content.EncoreRules.mergeAppearance(s.gameData,user,existing.get(id),row,appear,follower,now());
+                user.put("user_music",safeMergeItems(user.get("user_music"),List.of(row)));existing.put(id,row);iterator.remove();changed=true;
+            }
+        } while(changed&&!accepted.isEmpty());
+    }
+
+    /** Server-produced points target only the enabled current season/version. */
+    public void awardPassPoints(Map<String,Object> user,long amount) {
+        if(amount<=0||!starPassEnabled())return;
+        int season=activeSeason();var definition=s.gameData.row(17,season);
+        if(definition.isEmpty()||integer(definition.getOrDefault("7",1))!=1||!"Pass".equals(definition.get("3")))return;
+        eventPoints(user);
+        for(Object raw:rows(user,"user_event_point")) {var row=map(raw);
+            if("Pass".equals(row.get("s_EventType"))&&integer(row.get("i_DataID"))==season&&integer(row.get("i_Version"))==passVersion(season)) {
+                long total=Math.addExact(lng(row.get("i_Point")),amount);row.put("i_Point",total);row.put("i_Step",passStep(season,total));return;
+            }
+        }
+    }
     public List<Object> achievements(Map<String,Object> user,Object incoming) {
         Map<Integer,Map<String,Object>> old = index(user.get("achievements"),"i_id"), sent = index(incoming == null ? user.get("achievements") : incoming,"i_id");
         List<Object> result = new ArrayList<>();
-        for (int i=1;i<=10;i++) {
+        Set<Integer> ids=new LinkedHashSet<>();
+        for(int i=1;i<=10;i++) ids.add(i); // Backward-compatible baseline when a fixture has no catalog.
+        for(var definition:s.gameData.table(9)) if(integer(definition.getOrDefault("52",1))==1) ids.add(integer(definition.get("1")));
+        ids.addAll(old.keySet()); // Never discard a historical achievement merely because config changed.
+        ids.remove(0);
+        for (int i:ids) {
             Map<String,Object> prev = old.getOrDefault(i,obj()), upd = sent.getOrDefault(i,obj());
             int previousLevel = integer(first(prev.get("i_Level"),1));
+            if(upd.containsKey("i_Level")&&integer(upd.get("i_Level"))<previousLevel) upd=obj(); // Stale tier must not replace current-tier counters.
             int level = Math.max(previousLevel, upd.get("i_Level") == null ? previousLevel : integer(first(upd.get("i_Level"),1)));
             result.add(obj("i_id",i,"i_Level",level,"d_Quantity",upd.getOrDefault("d_Quantity",prev.getOrDefault("d_Quantity",0)),"s_Quantity",upd.getOrDefault("s_Quantity",prev.getOrDefault("s_Quantity",""))));
         }
@@ -145,20 +189,63 @@ public final class AuthContent {
         user.put("user_buff",result); return result;
     }
     public List<Object> eventPoints(Map<String,Object> user) {
-        List<Object> result = new ArrayList<>(); Map<Integer,long[]> passes = new LinkedHashMap<>();
+        List<Object> result = new ArrayList<>(); Map<String,Map<String,Object>> passes = new LinkedHashMap<>();
         for (Object raw : rows(user,"user_event_point")) {
             Map<String,Object> row = map(raw);
             if (!"Pass".equals(row.get("s_EventType"))) { result.add(row); continue; }
-            if (!starPassEnabled()) continue;
-            long[] best = passes.computeIfAbsent(integer(row.get("i_DataID")),k->new long[]{Long.MIN_VALUE,Long.MIN_VALUE});
-            best[0] = Math.max(best[0],lng(row.get("i_Point"))); best[1] = Math.max(best[1],lng(row.get("i_ADViewTime")));
+            int id=integer(row.get("i_DataID")),version=integer(row.getOrDefault("i_Version",passVersion(id)));
+            if(id<=0) continue;
+            var best=passes.computeIfAbsent(id+":"+version,k->obj("s_EventType","Pass","i_DataID",id,"i_Version",version,"i_Point",0,"i_ADViewTime",0));
+            best.put("i_Point",Math.max(lng(best.get("i_Point")),lng(row.get("i_Point"))));
+            best.put("i_ADViewTime",Math.max(lng(best.get("i_ADViewTime")),lng(row.get("i_ADViewTime"))));
+            best.put("i_Step",passStep(id,lng(best.get("i_Point"))));
         }
         if (starPassEnabled()) {
-            int active = activeSeason(); long[] best = passes.remove(active);
-            result.add(pass(active,best == null ? new long[]{0,0} : best));
-            passes.forEach((id,value)->{ if (id>0) result.add(pass(id,value)); });
+            int active = activeSeason(); var best = passes.remove(active+":"+passVersion(active));
+            result.add(best == null ? pass(active,new long[]{0,0}) : best);
         }
-        user.put("user_event_point",result); return result;
+        result.addAll(passes.values());
+        user.put("user_event_point",result);
+        // Disabled events are hidden, not destroyed in the saved snapshot.
+        return result.stream().filter(raw->{var row=map(raw);return !"Pass".equals(row.get("s_EventType"))
+                || starPassEnabled()&&integer(row.get("i_Version"))==passVersion(integer(row.get("i_DataID")));}).toList();
+    }
+    /** Monotonic absolute counters retain offline gains without letting stale saves undo grants.
+     * Old-season versions remain historical; a client cannot relabel them as this year's points. */
+    public void mergeEventPoints(Map<String,Object> user,Object incoming) {
+        eventPoints(user);
+        List<Object> stored=rows(user,"user_event_point");
+        for(Object raw:list(incoming)) {
+            var row=map(raw);int id=integer(row.get("i_DataID"));
+            if(!"Pass".equals(row.get("s_EventType")) || s.gameData.row(17,id).isEmpty()
+                    || integer(row.get("i_Version"))!=passVersion(id)) continue;
+            long points=nonnegativeLong(row.get("i_Point"));if(points<0) continue;
+            Map<String,Object> found=null;
+            for(Object old:stored) {var prev=map(old);if("Pass".equals(prev.get("s_EventType"))&&integer(prev.get("i_DataID"))==id&&integer(prev.get("i_Version"))==passVersion(id)) {found=prev;break;}}
+            if(found==null) {found=pass(id,new long[]{0,0});stored.add(found);}
+            found.put("i_Point",Math.max(points,lng(found.get("i_Point"))));
+            // Ad times are server-owned; accepting a future client time can lock out real ads.
+        }
+        eventPoints(user);
+    }
+    private static long nonnegativeLong(Object value) {
+        try {long n=Long.parseLong(str(value));return n<0?-1:n;}catch(NumberFormatException e){return -1;}
+    }
+    /** Native save rows intentionally omit level. Never infer ownership/levels from timers. */
+    public void mergeSkills(Map<String,Object> user,Object incoming) {
+        Map<Integer,Map<String,Object>> owned=index(user.get("user_skill"),"i_id");
+        for(Object raw:list(incoming)) {
+            var row=map(raw);int id=integer(row.get("i_id"));var prev=owned.get(id);
+            if(prev==null || s.gameData.row(8,id).isEmpty()) continue;
+            long on=nonnegativeLong(row.get("l_ActivateOnTicks")),off=nonnegativeLong(row.get("l_ActivateOffTicks"));
+            String flag=str(row.get("b_Activate"));
+            boolean active=flag.equals("1")||flag.equals("true");
+            if(!Set.of("0","1","false","true").contains(flag)||on<0||off<on||off>3155378975999999999L||active&&on==0) continue;
+            long oldOn=lng(prev.get("l_ActivateOnTicks")),oldOff=lng(prev.get("l_ActivateOffTicks"));
+            if(on<oldOn||on==oldOn&&off<oldOff) continue;
+            if(on==oldOn && off==oldOff && !truth(prev.get("b_Activate"))) active=false;
+            prev.put("b_Activate",active);prev.put("l_ActivateOnTicks",on);prev.put("l_ActivateOffTicks",off);
+        }
     }
     private Map<String,Object> pass(int season,long[] values) { return obj("s_EventType","Pass","i_DataID",season,"i_Point",values[0],"i_Step",passStep(season,values[0]),"i_ADViewTime",values[1],"i_Version",passVersion(season)); }
     private Set<Integer> purchases(Map<String,Object> user) {
@@ -240,15 +327,7 @@ public final class AuthContent {
         unlocked.forEach(id->ensure(skills,id,obj("i_id",id,"i_Level",1,"b_Activate",0,"l_ActivateOnTicks",0,"l_ActivateOffTicks",0)));
         List<Object> props=rows(user,"user_prop"); if(props.isEmpty()) { props.add(obj("i_id",1,"i_Level",1)); props.add(obj("i_id",2,"i_Level",1)); }
         AuthFollowerSupport followers=new AuthFollowerSupport(this); followers.sync(user);
-        Map<String,Object> ud=object(user,"userdata"); int step=integer(ud.get("u_samseck_step")); if(step>3) { step=3; ud.put("u_samseck_step",3); }
-        List<Object> claimed=rows(user,"claimed_samseck");
-        if(step>=1) { if(claimed.stream().noneMatch(x->integer(x)==1)) claimed.add(1); ensure(defaults(user,"user_guitar",item(1)),10,item(10)); }
-        if(step>=2) { if(claimed.stream().noneMatch(x->integer(x)==2)) claimed.add(2); ensure(defaults(user,"costumes",item(1)),13,item(13)); }
-        if(step>=3) {
-            List<Object> units=rows(user,"user_unit"); Map<String,Object> unit=index(units,"i_id").get(1);
-            if(claimed.stream().noneMatch(x->integer(x)==3)) { claimed.add(3); if(unit!=null) unit.put("i_Level",Math.min(20,integer(first(unit.get("i_Level"),1))+1)); else units.add(obj("i_id",1,"i_Level",1)); }
-            else if(unit==null) units.add(obj("i_id",1,"i_Level",1));
-        }
+        // Projection must not manufacture event receipts or grant skipped historical rewards.
         Object stages=first(user.get("user_ch_third_stage"),user.get("user_chthird_stage"),new ArrayList<>()); user.put("user_ch_third_stage",stages); user.put("user_chthird_stage",stages);
         List<Object> chars=defaults(user,"characters",item(1)); ensure(chars,2,item(2));
         List<Object> costumes=defaults(user,"costumes",item(1)); ensure(costumes,201,item(201));
@@ -261,7 +340,7 @@ public final class AuthContent {
             "user_messenger",followers.messenger(user),"user_guitar",guitars,"user_event_point",eventPoints(user),"user_subscribe_list",subscriptions(user),
             "user_subscribe_pass_reward",rows(user,"user_subscribe_pass_reward"),"user_ticketcollection",tickets(user),"user_follower_profile_reward",rows(user,"user_follower_profile_reward"),
             "user_follower_profile",rows(user,"user_follower_profile"),"user_follower_giftitem",defaults(user,"user_follower_giftitem",obj("i_id",1,"i_Value",141)),
-            "user_follower_quest",rows(user,"user_follower_quest"),"user_chthird_stage",stages,"user_ad_level",adLevels,"user_ad_list",adList(user),"user_select_reward",rows(user,"user_select_reward"));
+            "user_follower_quest",rows(user,"user_follower_quest"),"user_chthird_stage",emu.leman.ggserver.game.content.ContentChapter.wireProgress(s.gameData,user),"user_ad_level",adLevels,"user_ad_list",adList(user),"user_select_reward",rows(user,"user_select_reward"));
         if(!user.containsKey("user_tutorial")) { List<Object> tutorials=new ArrayList<>(); for(int i=1;i<=7;i++) tutorials.add(obj("i_id",i)); user.put("user_tutorial",tutorials); }
         result.put("user_tutorial",rows(user,"user_tutorial")); return result;
     }

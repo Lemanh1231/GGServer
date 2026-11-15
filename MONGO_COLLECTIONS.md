@@ -1,5 +1,12 @@
 # Separated MongoDB player collections
 
+**2026-11-13 deployment update:** split storage is now live on authenticated local
+MongoDB (`127.0.0.1:27017`, `ggserver`). With explicit user approval, the 7-account
+SQLite backup was restored insert-only (983 inventory rows); all exported state
+and identity aliases matched. Remote MongoDB was not modified. See
+[deploy/mongodb/README.md](deploy/mongodb/README.md). The earlier pending notes
+at the bottom are historical; there was no remote in-place split migration.
+
 ## Layout (storage version 2)
 
 `users` retains canonical `_id`/UUID, device/UID aliases, `u_seq`, balances,
@@ -90,3 +97,8 @@ The account JSON backup alone is not a full backup of an already-separated DB:
 back up all child collections as well. To roll back, stop all access and restore
 the appropriate full backup; do not deploy an old one-document-only server against
 converted accounts.
+
+Live migration has **not** been applied. The current configured MongoDB endpoint
+returned no `ggserver` database/accounts during inspection, unlike the earlier
+7-account migration. Verify the correct endpoint/database/backup before cutover;
+do not recreate identities or reimport stale SQLite over live accounts.

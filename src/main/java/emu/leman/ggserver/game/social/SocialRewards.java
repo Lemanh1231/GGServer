@@ -16,18 +16,7 @@ final class SocialRewards {
                 case 1 -> ud.put("u_cp",lng(ud.get("u_cp"))+(long)quantity);
                 case 2 -> ud.put("u_candy",dbl(ud.get("u_candy"))+quantity);
                 case 3,4 -> {
-                    Object current=first(user.get("force_server_like"),ud.get("u_like"),0);
-                    java.math.BigInteger total=Currency.parse(current).integer().add(Currency.parse(quantity).integer());
-                    Currency.Parsed parsed=Currency.parse(total);
-                    double floating=Math.min(Currency.MAX_FLOAT,Currency.parse(current).floating()+quantity);
-                    ud.put("u_like",floating);
-                    if(truth(user.get("force_server_like"))) user.put("force_server_like",parsed.gp());
-                    Map<String,Object> areas=map(user.get("areas"));
-                    for(Object value:areas.values()) if(value instanceof Map) {
-                        Map<String,Object> area=map(value);
-                        Currency.Parsed exact=Currency.parse(Currency.parse(first(area.get("s_Gp1"),current)).integer().add(Currency.parse(quantity).integer()));
-                        area.put("d_Like",floating); area.put("s_Gp1",exact.gp());
-                    }
+                    emu.leman.ggserver.game.economy.AreaCurrency.addLike(user,quantity);
                 }
                 case 8 -> ud.put("u_fans",lng(ud.get("u_fans"))+(long)quantity);
                 case 11 -> StateStore.addAp(user,(int)quantity);

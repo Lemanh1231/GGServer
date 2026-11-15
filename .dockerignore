@@ -1,0 +1,13 @@
+.gradle
+build
+data
+captures
+.git
+*.log
+resources/data
+resources/captures
+resources/logs
+resources/.run
+resources/out
+resources/.env
+.env

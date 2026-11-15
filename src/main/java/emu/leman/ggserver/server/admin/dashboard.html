@@ -985,7 +985,7 @@
                 </div>
             </div>
 
-            <!-- 9. Live In-Game Push & Mailbox -->
+            <!-- 9. Broadcast Mailbox -->
             <div class="card">
                 <div class="card-header">
                     <div class="card-title" data-i18n="card_mail_title">📬 Gửi Thư & Tặng Quà Toàn Server (Broadcast Mail)</div>
@@ -1830,7 +1830,17 @@
             }
         }
 
+        // Keep the same key for a failed/uncertain retry, including across a page reload.
+        function mailRequestId(payload) {
+            const key = 'gg_mail_pending_' + JSON.stringify(payload);
+            let id = sessionStorage.getItem(key);
+            if (!id) { id = crypto.randomUUID(); sessionStorage.setItem(key, id); }
+            return id;
+        }
+        function mailRequestDone(payload) { sessionStorage.removeItem('gg_mail_pending_' + JSON.stringify(payload)); }
+        let directMailSending = false, modalMailSending = false;
         async function sendDirectMail() {
+            if (directMailSending) return;
             const defTitle = currentLang === 'en' ? 'Admin Notice' : 'Thông báo Quản trị';
             const defMemo = currentLang === 'en' ? 'Special gift from the administrator' : 'Quà tặng từ quản trị viên';
             const title = document.getElementById('mail-title').value.trim() || defTitle;
@@ -1839,18 +1849,21 @@
             const candy = parseFloat(document.getElementById('mail-candy').value) || 0;
             const cookies = parseInt(document.getElementById('mail-cookies').value) || 0;
 
+            const payload = { title, memo, cp, candy, cookies };
+            directMailSending = true;
             try {
                 const res = await fetch('/admin/api/send_post', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, memo, cp, candy, cookies })
+                    body: JSON.stringify({ ...payload, request_id: mailRequestId(payload) })
                 });
                 const data = await res.json();
                 if (!data.success) throw new Error(data.error || 'Gửi thất bại');
+                mailRequestDone(payload);
                 showToast(currentLang === 'en' ? '🚀 Mail and gifts sent successfully! Active players will see the red dot.' : '🚀 Đã gửi thư và quà thành công vào game! Người chơi sẽ thấy chấm đỏ.');
             } catch (e) {
                 showToast((currentLang === 'en' ? '❌ Failed to send mail: ' : '❌ Lỗi khi gửi thư: ') + e.message, true);
-            }
+            } finally { directMailSending = false; }
         }
 
         const GAME_UNITS = [];
@@ -2579,6 +2592,7 @@
         }
 
         async function sendModalMail() {
+            if (modalMailSending) return;
             const targetUuid = document.getElementById('modal-mail-uuid').value.trim() || null;
             const defTitle = currentLang === 'en' ? 'Gift from Administrator' : 'Quà Tặng Từ Quản Trị Viên';
             const defMemo = currentLang === 'en' ? 'Enjoy playing Guitar Girl! Please receive this special gift.' : 'Chúc bạn chơi game Guitar Girl thật vui vẻ! Hãy nhận phần quà này nhé.';
@@ -2588,21 +2602,24 @@
             const candy = parseFloat(document.getElementById('modal-mail-candy').value) || 0;
             const cookies = parseInt(document.getElementById('modal-mail-cookies').value) || 0;
 
+            const payload = { uuid: targetUuid, title, memo, cp, candy, cookies };
+            modalMailSending = true;
             try {
                 const res = await fetch('/admin/api/send_post', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ uuid: targetUuid, title, memo, cp, candy, cookies })
+                    body: JSON.stringify({ ...payload, request_id: mailRequestId(payload) })
                 });
                 const data = await res.json();
                 if (!data.success) throw new Error(data.error || (currentLang === 'en' ? 'Sending failed' : 'Gửi thất bại'));
+                mailRequestDone(payload);
                 showToast(targetUuid
                     ? (currentLang === 'en' ? '🚀 Private mail & gifts sent to player successfully!' : '🚀 Đã gửi thư và quà riêng cho người chơi thành công!')
                     : (currentLang === 'en' ? '🚀 Server-wide mail & gifts sent successfully!' : '🚀 Đã gửi thư và quà cho toàn bộ server thành công!'));
                 closeMailModal();
             } catch (e) {
                 showToast((currentLang === 'en' ? '❌ Error sending mail: ' : '❌ Lỗi khi gửi thư: ') + e.message, true);
-            }
+            } finally { modalMailSending = false; }
         }
 
         async function logoutAdmin() {

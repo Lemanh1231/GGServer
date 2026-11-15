@@ -49,7 +49,7 @@ class GamePacketTest {
                 assertEquals(value,response.get("nickname"));
                 assertEquals(value,call(services,"getProfile",obj()).get("u_nick"));
             }
-            assertEquals(18,services.registry.commands().size());
+            assertEquals(19,services.registry.commands().size());
         }
     }
 

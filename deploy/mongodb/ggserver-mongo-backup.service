@@ -1,0 +1,9 @@
+[Unit]
+Description=Guitar Girl local MongoDB backup
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/bin/bash /root/project/GGServer/GGServerJava/deploy/mongodb/backup.sh

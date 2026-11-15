@@ -104,7 +104,10 @@ public final class AdminServer {
                             addReward(items, 1, AdminSettings.whole(req.get("cp")), false);
                             addReward(items, 2, number(req.get("candy")), false);
                             addReward(items, 11, AdminSettings.whole(req.get("cookies")), false);
-                            var post = posts.send(target, first(req.get("title"), "Thông báo Quản trị"), first(req.get("memo"), "Quản trị viên đã gửi thông báo đến bạn."), items);
+                            if(number(req.get("cp"))<0||number(req.get("candy"))<0||number(req.get("cookies"))<0)
+                                throw new IllegalArgumentException("Mail rewards cannot be negative");
+                            items=emu.leman.ggserver.game.social.MailboxRewards.validate(services.gameData,items,false);
+                            var post = posts.send(target, first(req.get("title"), "Thông báo Quản trị"), first(req.get("memo"), "Quản trị viên đã gửi thông báo đến bạn."), items,false,str(req.get("request_id")));
                             response = obj("success", true, "message", "Đã gửi thư và quà thành công vào game!", "post", post);
                         }
                         case "/admin/api/user/ban" -> {

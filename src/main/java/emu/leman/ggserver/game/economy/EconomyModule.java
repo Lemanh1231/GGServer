@@ -4,6 +4,7 @@ import emu.leman.ggserver.Services;
 import emu.leman.ggserver.net.CmdId;
 import emu.leman.ggserver.database.StateStore;
 import emu.leman.ggserver.game.social.SocialFollowers;
+import emu.leman.ggserver.game.social.FollowerAccess;
 import emu.leman.ggserver.net.CommandHandler;
 import emu.leman.ggserver.net.HandlerRegistry;
 import emu.leman.ggserver.net.Result;
@@ -18,8 +19,10 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     private static final Map<Integer,Integer> AD_GROUPS = Map.of(3, 200010, 2, 210010, 18, 220010);
     private final Services s;
     private final EconomyData data;
+    private final Clock clock;
 
-    public EconomyModule(Services services) { s = services; data = new EconomyData(s.config); }
+    public EconomyModule(Services services) { this(services,Clock.systemDefaultZone()); }
+    EconomyModule(Services services,Clock clock) { s = services; data = new EconomyData(s.config); this.clock = clock; }
 
     @Override public String id() { return "economy"; }
     @Override public void register() {
@@ -72,8 +75,8 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     }
     private static Map<String,Object> find(List<Object> list, int id) { return find(list, "i_id", id); }
     private static int number(Map<String,Object> row, String key, int fallback) { return integer(first(row.get(key), fallback)); }
-    private static long now() { return Instant.now().getEpochSecond(); }
-    private static int today() { return Integer.parseInt(LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)); }
+    private long now() { return clock.instant().getEpochSecond(); }
+    private int today() { return Integer.parseInt(LocalDate.now(clock).format(DateTimeFormatter.BASIC_ISO_DATE)); }
     private static LocalDate date(long seconds) { return Instant.ofEpochSecond(seconds).atZone(ZoneId.systemDefault()).toLocalDate(); }
     private static void add(Map<String,Object> map, String key, long amount) { map.put(key, lng(map.get(key)) + amount); }
 
@@ -85,8 +88,10 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             case "GP", "CANDY" -> "candy";
             default -> "";
         };
-        if (key.isEmpty() || !s.state.spendCurrency(uuid(user), key, price.doubleValue())) return false;
+        if (key.isEmpty()) return false;
         Map<String,Object> ud = ud(user);
+        // Mutate the detached snapshot only: payment and inventory commit together in saveUser.
+        if(key.equals("cp") ? lng(ud.get("u_cp"))<price : !Double.isFinite(dbl(ud.get("u_candy")))||dbl(ud.get("u_candy"))<price) return false;
         if (key.equals("cp")) add(ud, "u_cp", -price);
         else ud.put("u_candy", dbl(ud.get("u_candy")) - price);
         return true;
@@ -97,7 +102,9 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         Map<String,Object> row = data.row(table, id);
         if (row.isEmpty()) return new Price(null, null);
         long amount = lng(row.get(priceColumn));
-        if (table == 2 && amount == 0 && lng(row.get("46")) > 0) amount = lng(row.get("46"));
+        // CH2 GP acquisition is a local LevelUpMusic purchase using native MusicCost.
+        // This legacy RPC has no verified dynamic price; never charge sort-order or grant free.
+        if (table == 2 && integer(row.get("50"))==2 && "GP".equals(row.get("45")) && amount==0) return new Price(null,null);
         return amount < 0 ? new Price(null, null) : new Price(str(row.get(currencyColumn)), amount);
     }
 
@@ -121,15 +128,12 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
                 case 2 -> { candy = dbl(reward.get("reward_value")); ud.put("u_candy", dbl(ud.get("u_candy")) + candy); }
                 case 3, 4 -> {
                     like = reward.get("reward_value");
-                    // Preserve large integral balances rather than narrowing to a double.
-                    ud.put("u_like", Currency.parse(Currency.parse(ud.get("u_like")).integer().add(Currency.parse(like).integer())).floating());
+                    AreaCurrency.addLike(user,like);
                 }
                 case 8 -> { fans = value; add(ud, "u_fans", fans); }
                 case 11 -> StateStore.addAp(user, (int)value);
                 default -> { }
             }
-            if (cp != 0 || candy != 0 || dbl(like) != 0 || fans != 0)
-                s.state.incrementCurrency(uuid(user), cp, candy, like, fans);
             return;
         }
         if (type == 11) {
@@ -174,7 +178,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         }
     }
 
-    private static void subscribe(Map<String,Object> user, int... ids) {
+    private void subscribe(Map<String,Object> user, int... ids) {
         Set<Integer> all = new LinkedHashSet<>();
         for (int id : ids) { all.add(id); all.add(1000 + (id > 1000 ? id % 1000 : id)); }
         for (int id : all) {
@@ -207,7 +211,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             if (condition == 4 || AD_GROUPS.containsKey(id)) item.put("i_Count",0);
             else if (condition == 5 || id == 10012) {
                 long time = lng(item.get("i_PurchaseTime"));
-                if (time <= 0 || !date(time).equals(LocalDate.now())) { item.put("i_Count",0); item.put("i_PurchaseTime",0); }
+                if (time <= 0 || !date(time).equals(LocalDate.now(clock))) { item.put("i_Count",0); item.put("i_PurchaseTime",0); }
             }
         }
         List<Object> result = new ArrayList<>(byId.values());
@@ -248,6 +252,14 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
 
     private String eligibility(Map<String,Object> user, int id) {
         if (user == null) return "User not found";
+        Map<String,Object> product=data.row(12,id);
+        if(product.isEmpty()||integer(product.getOrDefault("35",1))!=1)return "Product is unavailable";
+        int method=strictInt(product.get("33"));
+        if(method!=0&&method!=1)return "Unsupported payment method";
+        if(strictLong(product.getOrDefault("34",0))<0)return "Invalid product price";
+        if(integer(product.get("57"))==1&&!inSaleWindow(product))return "Product is outside its sale window";
+        if(id>=1001&&id<=1013&&(!s.events.isStarPassEnabled()||!s.events.isPaidStarCardEnabled()||id%1000!=s.events.activeStarPassSeason()))return "Star card is unavailable";
+        if(id>=2001&&id<=3013&&!s.events.isPassGoodsSaleEnabled())return "Pass goods sale is closed";
         List<Object> shop = normaliseShop(user);
         int season = id % 1000;
         if (id >= 1000 && id < 2000) {
@@ -267,12 +279,21 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         }
         Map<String,Object> row = data.row(12,id), item = find(shop,id);
         int condition = integer(row.get("36")), max = integer(row.get("37"));
+        if(id!=31&&condition==4&&item!=null&&lng(item.get("i_TotalCount"))>0&&now()-lng(item.get("i_PurchaseTime"))<Math.max(0,max))return "Please wait before claiming again";
         if (item != null && max > 0 && lng(item.get("i_Count")) >= max) {
             if (condition == 1 || condition == 2) return "Vật phẩm đã đạt giới hạn mua tối đa!";
-            if (condition == 5 && lng(item.get("i_PurchaseTime")) > 0 && date(lng(item.get("i_PurchaseTime"))).equals(LocalDate.now()))
+            if (condition == 5 && lng(item.get("i_PurchaseTime")) > 0 && date(lng(item.get("i_PurchaseTime"))).equals(LocalDate.now(clock)))
                 return "Vật phẩm đã đạt giới hạn mua trong ngày!";
         }
         return "";
+    }
+
+    private boolean inSaleWindow(Map<String,Object> row) {
+        try {
+            var format=DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss").withResolverStyle(java.time.format.ResolverStyle.STRICT);
+            var start=LocalDateTime.parse(str(row.get("59")),format);var end=LocalDateTime.parse(str(row.get("60")),format);var current=LocalDateTime.now(clock);
+            return !end.isBefore(start)&&!current.isBefore(start)&&current.isBefore(end);
+        } catch(java.time.format.DateTimeParseException e) {return false;}
     }
 
     private Result buyCheck(Map<String,Object> p, Map<String,Object> c) {
@@ -295,7 +316,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     private Result buyShop(Map<String,Object> p, Map<String,Object> c) {
         Map<String,Object> user = user(p,c);
         if (user == null) return Result.error(1,"User not found");
-        int id = integer(p.getOrDefault("idx",1));
+        int id = strictInt(p.getOrDefault("idx",1));
         String error = eligibility(user,id);
         if (!error.isEmpty()) return Result.error(1,error);
         Map<String,Object> row = data.row(12,id);
@@ -316,6 +337,9 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             updated.put("i_EXP",exp+5); updated.put("i_Level",adLevel(adGroup,exp+5)[0]);
         }
         List<Object> rewards = data.rewards(group);
+        for(var definition:data.rows(13)) if(integer(definition.get("2"))==group
+                &&(strictInt(definition.get("3"))<=0||strictInt(definition.get("4"))<=0||strictLong(definition.get("5"))<=0))return Result.error(1,"Invalid shop rewards");
+        if(rewards.isEmpty()||rewards.stream().anyMatch(r->!validShopReward(map(r))))return Result.error(1,"Invalid shop rewards");
         for (Object rew : rewards) grant(user,map(rew),true);
         int season = id % 1000;
         if (pass && season >= 1 && season <= 13) {
@@ -340,16 +364,21 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         return Result.ok(result);
     }
 
-    private static int varietyCost(int id) {
-        return switch (id) { case 1 -> 10; case 2,3 -> 30; case 4,5,6,11 -> 50; case 7,8,9,12 -> 100;
-            case 10,13,14,15 -> 150; case 16,17,18,19 -> 200; default -> 50; };
+    private boolean validShopReward(Map<String,Object> reward) {
+        int type=integer(reward.get("reward_type")),id=integer(reward.get("reward_id"));
+        if(lng(reward.get("reward_value"))<=0)return false;
+        if(type==1||type==11)return Set.of(1,2,3,4,8,11).contains(id);
+        int table=switch(type){case 2->2;case 3->3;case 4->4;case 6->6;case 9->20;case 10->17;default->0;};
+        return table!=0&&!data.row(table,type==10&&id>1000?id%1000:id).isEmpty();
     }
     private Result buyVariety(Map<String,Object> p, Map<String,Object> c) {
         Map<String,Object> user = user(p,c);
-        int id = number(p,"idx",1), type = id == 11 || id == 12 ? 1 : 4;
-        int rewardId = id == 11 ? 4 : id == 12 ? 1 : id >= 13 && id <= 19 ? id-2 : id;
-        long value = id == 11 ? 3000 : id == 12 ? 10 : 1;
-        boolean paid = deduct(user,"GP",(long)varietyCost(id));
+        int id = strictInt(p.get("idx"));
+        var definition=find(list(s.gameData.varietyStore()),id);
+        if(user==null||definition==null)return Result.error(1,"Invalid Variety item");
+        int type=strictInt(definition.get("i_RewardType")),rewardId=strictInt(definition.get("i_RewardId"));long value=strictLong(definition.get("i_RewardQuantity")),cost=strictLong(definition.get("i_Cost"));
+        if(cost<0||!validShopReward(reward(type,rewardId,value)))return Result.error(1,"Invalid Variety reward or price");
+        boolean paid = deduct(user,"GP",cost);
         if (paid) {
             List<Object> shop = items(user,"user_candy_shop");
             Map<String,Object> item = find(shop,id);
@@ -365,8 +394,10 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
 
     private Result buyInventory(Map<String,Object> p, Map<String,Object> c, boolean music) {
         Map<String,Object> user = user(p,c);
-        int id = number(p,"idx",1);
+        int id = strictInt(p.getOrDefault("idx",1));
+        if(!emu.leman.ggserver.game.content.AcquisitionRules.allowed(s.gameData,user,music?2:3,id))return Result.error(1,"Content acquisition requirements are not met");
         Price price = music ? price(2,id,"45","39") : price(3,id,"29","30");
+        if(price.amount==null)return Result.error(1,"Use the native offline music purchase path");
         boolean paid = user != null && find(items(user,music ? "user_music" : "costumes"),id) == null && deduct(user,price.currency,price.amount);
         if (paid) { grant(user,reward(music ? 2 : 3,id,1),true); s.state.saveUser(user); }
         Map<String,Object> result = obj("u_gold",ud(user).getOrDefault("u_candy",0),"u_cp",ud(user).getOrDefault("u_cp",0),"u_mp",0);
@@ -376,15 +407,13 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     }
 
     private Result buyItem(Map<String,Object> p, Map<String,Object> c) {
-        Map<String,Object> user = user(p,c);
-        if (deduct(user,"GP",(long)varietyCost(integer(p.getOrDefault("idx",1))))) s.state.saveUser(user);
-        return Result.ok(obj("idx",p.getOrDefault("idx",1),"u_gold",ud(user).getOrDefault("u_candy",0),
-                "u_cp",ud(user).getOrDefault("u_cp",0),"u_mp",0,"u_credit",0));
+        // No verified grant/callback contract for this unused legacy endpoint.
+        return Result.error(1,"Legacy item purchase is unsupported; use Variety Store");
     }
 
     private Price upgradePrice(int table, int id, int level) {
         Map<String,Object> row = data.row(table,id);
-        if (row.isEmpty()) return new Price("CP",100L);
+        if (row.isEmpty()) return new Price(null,null);
         if (table == 7) return new Price(str(row.getOrDefault("28","CP")),lng(row.getOrDefault("29",200)) + Math.max(0,level)*(long)dbl(row.get("30")));
         return new Price(str(row.getOrDefault("29","CP")),lng(row.getOrDefault("30",100)) + (Math.max(1,level)-1)*(long)dbl(first(row.get("31"),10)));
     }
@@ -393,15 +422,18 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         Map<String,Object> user = user(p,c), result = obj();
         if (user == null) return Result.ok(result);
         String type = str(p.get("type"));
-        int id = number(p,"idx",1);
+        int id = strictInt(p.getOrDefault("idx",1));
         String key = switch (type) { case "unit" -> "user_unit"; case "skill" -> "user_skill"; case "guitar" -> "user_guitar"; case "costume" -> "costumes"; default -> ""; };
+        int table=switch(type){case "unit"->7;case "skill"->8;case "guitar"->20;case "costume"->3;default->0;};
+        var definition=data.row(table,id);
+        if(key.isEmpty()||definition.isEmpty()) return Result.error(1,"Invalid content ID or type");
         if (!key.isEmpty()) {
             List<Object> list = items(user,key);
             Map<String,Object> item = find(list,id);
             int level = item == null ? (type.equals("unit") ? 0 : 1) : integer(item.get("i_Level"));
             if (type.equals("unit") || type.equals("skill")) {
-                int max = type.equals("unit") ? 20 : number(data.row(8,id),"28",20);
-                if (type.equals("skill") && level >= max) result.put(key,item);
+                int max = type.equals("unit") ? number(definition,"27",20) : number(definition,"28",20);
+                if (level >= max) result.put(key,item);
                 else {
                     Price price = upgradePrice(type.equals("unit") ? 7 : 8,id,level);
                     if (deduct(user,price.currency,price.amount)) {
@@ -411,6 +443,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
                     }
                 }
             } else {
+                if(item==null&&!emu.leman.ggserver.game.content.AcquisitionRules.allowed(s.gameData,user,table,id))return Result.error(1,"Content acquisition requirements are not met");
                 Price price = type.equals("guitar") ? price(20,id,"30","31") : price(3,id,"29","30");
                 if (item == null && deduct(user,price.currency,price.amount)) list.add(obj("i_id",id,"i_Level",1,"i_BonusLevel",0));
             }
@@ -446,7 +479,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     }
     private List<Object> boardRewards(String event) { return list(map(data.boards().get(event)).get("reward_list")); }
     private int maxDay(String event) { int count = boardRewards(event).size(); return count == 0 ? 7 : count; }
-    private static int claimDay(Map<String,Object> state, int max) {
+    private int claimDay(Map<String,Object> state, int max) {
         if (integer(state.get("ymd")) == today()) return number(state,"day",1);
         int day = integer(state.get("day"))+1;
         return day > max ? 1 : day;
@@ -471,7 +504,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
                 int count = integer(ud.get("attendance_count"))+1;
                 ud.put("attendance_count",count); ud.put("attendance_date",today());
                 ud.put("max_coutinuous_attendance_count",Math.max(integer(ud.get("max_coutinuous_attendance_count")),count));
-                s.state.updateAttendance(uuid(user),count,today()); s.state.saveUser(user); added = true;
+                s.state.saveUser(user); added = true;
             }
             claimed = integer(state.get("ymd")) == today();
             current = claimed ? integer(state.getOrDefault("day",1)) : claimDay(state,maxDay("1"));
@@ -518,27 +551,53 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     private Map<String,Object> dayReward(String event, int day) {
         for (Object raw : boardRewards(event)) {
             Map<String,Object> row = map(raw);
-            if (integer(row.get("reward_num")) == day) return reward(integer(row.get("reward_type")),integer(row.get("reward_id")),row.get("reward_value"));
+            if (strictInt(row.get("reward_num")) == day) return reward(strictInt(row.get("reward_type")),strictInt(row.get("reward_id")),row.get("reward_value"));
         }
-        return reward(1,1,100);
+        return null;
+    }
+
+    private boolean validEventReward(Map<String,Object> reward) {
+        int type=strictInt(reward.get("reward_type")),id=strictInt(reward.get("reward_id"));
+        long value=strictLong(reward.get("reward_value"));
+        if(value<=0||value>Integer.MAX_VALUE||id<=0)return false;
+        if(type==1)return Set.of(1,2,3,4,8,11).contains(id);
+        int table=switch(type){case 2->2;case 3->3;case 4->4;case 7->7;case 9->20;case 11->30;default->0;};
+        return table!=0&&!data.row(table,id).isEmpty();
+    }
+    private List<Object> eventGroup(int group) {
+        List<Object> rewards=new ArrayList<>();
+        for(var row:data.rows(13))if(strictInt(row.get("2"))==group) {
+            var reward=reward(strictInt(row.get("3")),strictInt(row.get("4")),row.get("5"));
+            if(!validEventReward(reward))return List.of();rewards.add(reward);
+        }
+        return rewards;
     }
 
     private Result eventReward(Map<String,Object> p, Map<String,Object> c) {
         Map<String,Object> user = user(p,c);
         String event = str(p.getOrDefault("event_idx",1));
         if (!s.events.isAttendanceEventEnabled(event)) return Result.ok(eventResponse(obj(),null,"N",null));
-        if (user == null) return Result.ok(eventResponse(obj(),dayReward(event,1),"Y",null));
+        if (user == null) return Result.error(1,"Account not found");
+        if (boardRewards(event).isEmpty()) return Result.error(1,"Attendance board is unavailable");
         Map<String,Object> ud = ud(user), state = attendanceState(user,event);
         if (integer(state.get("ymd")) == today()) return Result.ok(eventResponse(ud,null,"N",null));
         int day = claimDay(state,maxDay(event));
         Map<String,Object> rew = dayReward(event,day);
+        if(rew==null)return Result.error(1,"Attendance reward is unavailable");
+        if(integer(rew.get("reward_type"))!=13&&!validEventReward(rew))return Result.error(1,"Invalid attendance reward");
         List<Object> expanded = null;
         if (integer(rew.get("reward_type")) == 13) {
+            if(strictInt(rew.get("reward_id"))<=0||strictLong(rew.get("reward_value"))<=0)return Result.error(1,"Invalid selection reward");
             Map<String,Object> selected = find(items(user,"user_select_reward"),"i_GroupId",number(rew,"reward_id",10));
-            if (selected == null) selected = obj();
-            List<Object> primary = data.rewards(number(selected,"i_RewardGroupId",10010));
-            List<Object> alternate = data.rewards(number(selected,"i_AltRewardGroupId",10130));
-            if (alternate.isEmpty()) alternate.add(reward(1,1,500));
+            if (selected == null) return Result.error(1,"Choose an event reward first");
+            boolean validSelection=data.rows(39).stream().anyMatch(r->strictInt(r.get("5"))==1
+                    && strictInt(r.get("2"))>0 && strictInt(r.get("2"))==strictInt(selected.get("i_GroupId"))
+                    && strictInt(r.get("3"))>0 && strictInt(r.get("3"))==strictInt(selected.get("i_RewardGroupId"))
+                    && strictInt(r.get("4"))>0 && strictInt(r.get("4"))==strictInt(selected.get("i_AltRewardGroupId")));
+            if(!validSelection)return Result.error(1,"Invalid event selection");
+            List<Object> primary = eventGroup(integer(selected.get("i_RewardGroupId")));
+            List<Object> alternate = eventGroup(integer(selected.get("i_AltRewardGroupId")));
+            if(primary.isEmpty()||alternate.isEmpty())return Result.error(1,"Event reward group is unavailable");
             boolean owned = !primary.isEmpty() && primary.stream().allMatch(r -> {
                 int type = integer(map(r).get("reward_type")), id = integer(map(r).get("reward_id"));
                 return type == 3 && find(items(user,"costumes"),id) != null || type == 9 && find(items(user,"user_guitar"),id) != null;
@@ -547,14 +606,24 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             for (Object r : expanded) grant(user,map(r),false);
         } else grant(user,rew,false);
         state.put("day",day); state.put("ymd",today());
-        if (event.equals("1")) { ud.put("attendance_count",day); ud.put("attendance_date",today()); s.state.updateAttendance(uuid(user),day,today()); }
+        if (event.equals("1")) { ud.put("attendance_count",day); ud.put("attendance_date",today()); }
         s.state.saveUser(user);
         return Result.ok(eventResponse(ud,rew,"Y",expanded));
     }
 
     private Result selectReward(Map<String,Object> p, Map<String,Object> c) {
-        Map<String,Object> user = user(p,c), row = data.row(39,number(p,"i_id",1));
-        if (row.isEmpty()) row = data.row(39,1);
+        Map<String,Object> user = user(p,c);
+        if(user==null)return Result.error(1,"Account not found");
+        final int id;
+        try {id=Integer.parseInt(str(p.get("i_id")));}catch(NumberFormatException e){return Result.error(1,"Invalid selection ID");}
+        Map<String,Object> row = data.rows(39).stream().filter(r->strictInt(r.get("1"))==id).findFirst().orElse(obj());
+        if(row.isEmpty()||strictInt(row.get("5"))!=1||strictInt(row.get("2"))<=0)return Result.error(1,"Event selection is unavailable");
+        boolean enabled=data.rows(38).stream().anyMatch(r->"DailyReward_Select_NewUser".equals(r.get("2"))
+                && strictInt(r.get("5"))==1 && s.events.isAttendanceEventEnabled(r.get("1"))
+                && boardRewards(str(r.get("1"))).stream().anyMatch(v->strictInt(map(v).get("reward_type"))==13
+                    && strictInt(map(v).get("reward_id"))==strictInt(row.get("2"))));
+        if(!enabled)return Result.error(1,"Selection event is disabled");
+        if(eventGroup(strictInt(row.get("3"))).isEmpty()||eventGroup(strictInt(row.get("4"))).isEmpty())return Result.error(1,"Event reward group is unavailable");
         Map<String,Object> selected = obj("i_GroupId",number(row,"2",10),"i_RewardGroupId",number(row,"3",10010),"i_AltRewardGroupId",number(row,"4",10130));
         long seq = lng(p.get("u_seq"));
         List<Object> selectedList = new ArrayList<>(List.of(selected));
@@ -592,52 +661,81 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     private Result gameReward(Map<String,Object> p, Map<String,Object> c) {
         Map<String,Object> user = user(p,c);
         String type = str(p.getOrDefault("type","daily_mission")), itemId = str(p.getOrDefault("id",1));
-        int id = integer(itemId), level = Math.max(1,integer(p.getOrDefault("level",1)));
+        int id = strictInt(itemId), level = strictInt(p.getOrDefault("level",1));
         boolean daily = type.equals("daily_mission");
         if (!daily && !type.equals("achievement")) return gameResponse(type,id,level,"None",0,"N");
         Map<String,Object> row = s.gameData.serverRows(daily ? "daily_mission" : "achievement").stream()
                 .filter(r->integer(r.get("i_id"))==id).findFirst().orElseGet(LinkedHashMap::new);
-        if(row.isEmpty() || integer(row.get("b_IsActive"))==0) return gameResponse(type,id,level,"None",0,"N");
+        if(user==null || row.isEmpty() || integer(row.get("b_IsActive"))==0 || level<1
+                || level>(daily?1:integer(row.get("i_MaxLevel")))) return gameResponse(type,id,level,"None",0,"N");
         String rewardType = str(row.getOrDefault("s_RewardType","CP")).strip();
         if (rewardType.isEmpty()) rewardType = "CP";
         long value = lng(row.getOrDefault("i_Reward_"+(daily?1:level),0));
         if (user != null) {
             Map<String,Object> claims;
             if (daily) {
-                if (!truth(user.get("user_daily_mission"))) initialiseMissions(user);
+                initialiseMissions(user);
                 Map<String,Object> days = child(user,"claimed_daily_rewards");
                 String date = str(today());
                 days.keySet().removeIf(k -> !k.equals(date)); claims = child(days,date);
             } else claims = child(user,"claimed_achievement_rewards");
             List<Object> progress = items(user,daily ? "user_daily_mission" : "achievements");
             Map<String,Object> item = find(progress,id);
-            String claim = itemId+":"+level;
-            if (claims.containsKey(claim)) return gameResponse(type,id,Math.max(item == null ? level : number(item,"i_Level",level),level+1),"0",0,"N");
+            String claim = id+":"+level;
+            // Honor historical textual aliases too; never erase old receipts to migrate keys.
+            boolean claimed=claims.keySet().stream().anyMatch(k->{String[] parts=k.split(":",-1);return parts.length==2&&strictInt(parts[0])==id&&strictInt(parts[1])==level;});
+            if (claimed) return gameResponse(type,id,Math.max(item == null ? level : number(item,"i_Level",level),level+1),"0",0,"N");
+            // Native claims carry the current offline counter before the next userSave.
+            // This protocol is client-authoritative for counters, not for tiers/receipts/rewards.
+            String reported=str(p.get("s_quantity"));
+            if(item!=null && number(item,"i_Level",1)==level && reported.length()<=320 && reported.matches("[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?(?:[A-Za-z]+)?")) {
+                var q=Currency.parse(reported);
+                if(daily) item.put("d_Quantity",Math.max(dbl(item.get("d_Quantity")),q.floating()));
+                else if(q.integer().compareTo(Currency.parse(first(truth(item.get("s_Quantity"))?item.get("s_Quantity"):null,item.get("d_Quantity"))).integer())>0) {
+                    item.put("s_Quantity",q.gp());item.put("d_Quantity",q.floating());
+                }
+            }
+            Object goal=row.get((daily?"d_Condition_":"s_Condition_")+level);
+            if(item==null || number(item,"i_Level",1)!=level || goal==null || !reached(item,goal,daily))
+                return gameResponse(type,id,level,"None",0,"N");
             claims.put(claim,now());
             if (rewardType.equalsIgnoreCase("CP") && value > 0) grant(user,reward(1,1,value),false);
             if (item != null) item.put("i_Level",Math.max(number(item,"i_Level",1),level+1));
             else if (!daily) progress.add(obj("i_id",id,"i_Level",level+1,"d_Quantity",0.0,"s_Quantity",""));
             if (daily) missionCompleted(progress);
-            if (!user.containsKey("user_event_point")) user.put("user_event_point",new ArrayList<>(List.of(obj("s_EventType","Pass","i_DataID",13,"i_Point",0,"i_Step",0,"i_ADViewTime",0,"i_Version",13))));
-            for (Object raw : items(user,"user_event_point")) {
-                Map<String,Object> ep = map(raw);
-                if (str(ep.get("s_EventType")).equals("Pass")) {
-                    add(ep,"i_Point",10); ep.put("i_Step",stepForPoints(number(ep,"i_DataID",13),lng(ep.get("i_Point")))); break;
-                }
-            }
+            new emu.leman.ggserver.game.account.AuthContent(s).awardPassPoints(user,10);
             s.state.saveUser(user);
         }
         return gameResponse(type,itemId.matches("[0-9]+") ? id : 1,level+1,rewardType,value,"Y");
     }
 
+    private static int strictInt(Object value) {
+        try {return Integer.parseInt(str(value));} catch(NumberFormatException e) {return Integer.MIN_VALUE;}
+    }
+    private static long strictLong(Object value) {
+        try {return Long.parseLong(str(value));} catch(NumberFormatException e) {return Long.MIN_VALUE;}
+    }
+    private static boolean reached(Map<String,Object> item,Object goal,boolean daily) {
+        if(daily) {double quantity=dbl(item.get("d_Quantity")),target=dbl(goal);return Double.isFinite(quantity)&&Double.isFinite(target)&&target>0&&quantity>=target;}
+        var target=Currency.parse(goal).integer();
+        var quantity=Currency.parse(first(truth(item.get("s_Quantity"))?item.get("s_Quantity"):null,item.get("d_Quantity"))).integer();
+        return target.signum()>0&&quantity.compareTo(target)>=0;
+    }
+
     private Result passReward(Map<String,Object> p, Map<String,Object> c) {
         Map<String,Object> user = user(p,c);
-        int group = integer(p.get("group")), step = integer(p.get("step")), type = integer(p.get("type"));
-        Object version = p.getOrDefault("i_Version",5);
+        int group = strictInt(p.get("group")), step = strictInt(p.get("step")), type = strictInt(p.get("type"));
+        int version = passVersion(group);
         Map<String,Object> claim = obj("i_SubscribeID",group,"i_Type",type,"i_Step",step,"i_UpdateTime",now(),"i_Version",version);
         List<Object> rewards = new ArrayList<>();
+        if(user==null || !validPass(group,p) || (type!=0&&type!=1) || step<0)
+            return Result.ok(obj("subscribe_pass_reward",obj(),"reward_data",rewards));
+        new emu.leman.ggserver.game.account.AuthContent(s).eventPoints(user);
+        long points=0;
+        for(Object raw:items(user,"user_event_point")) {var ep=map(raw);if("Pass".equals(ep.get("s_EventType"))&&integer(ep.get("i_DataID"))==group&&integer(ep.get("i_Version"))==version) points=Math.max(points,lng(ep.get("i_Point")));}
         for (Map<String,Object> row : data.rows(18)) if (integer(row.get("2")) == group && integer(row.get("3")) == step)
-            rewards = data.rewards(integer(row.get(type != 0 ? "6" : "5")));
+            if(points>=lng(row.get("4"))) rewards = data.rewards(integer(row.get(type != 0 ? "6" : "5")));
+        if(rewards.isEmpty()) return Result.ok(obj("subscribe_pass_reward",obj(),"reward_data",rewards));
         if (user != null) {
             boolean paid = s.events.isPaidStarCardEnabled() && s.events.isStarPassEnabled();
             for (Object raw : items(user,"user_subscribe_list")) {
@@ -652,7 +750,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
                 for (Object raw : claims) {
                     Map<String,Object> old = map(raw);
                     if (integer(old.get("i_SubscribeID")) == group && integer(old.get("i_Type")) == type && integer(old.get("i_Step")) == step
-                            && str(old.getOrDefault("i_Version",version)).equals(str(version))) { existing = old; break; }
+                            && strictInt(old.getOrDefault("i_Version",version))==version) { existing = old; break; }
                 }
                 if (existing != null) { claim = existing; rewards.clear(); }
                 else { for (Object rew : rewards) grant(user,map(rew),false); claims.add(claim); s.state.saveUser(user); }
@@ -671,29 +769,38 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
 
     private int passVersion(int group) {
         Map<String,Object> row = data.row(17,group);
-        return Year.now().getValue() - (row.isEmpty() ? group <= 5 ? 2020 : 2021 : number(row,"11",2020));
+        return Year.now(clock).getValue() - (row.isEmpty() ? group <= 5 ? 2020 : 2021 : number(row,"11",2020));
+    }
+
+    private boolean validPass(int group,Map<String,Object> p) {
+        var season=data.row(17,group);
+        return s.events.isStarPassEnabled() && group==s.events.activeStarPassSeason() && !season.isEmpty() && "Pass".equals(season.get("3")) && integer(season.get("7"))==1
+                && (!p.containsKey("i_Version") || strictInt(p.get("i_Version"))==passVersion(group));
     }
 
     private Result paidEventPoint(Map<String,Object> p, Map<String,Object> c) {
         Map<String,Object> user = user(p,c);
         if (user == null) return Result.error(1,"User not found");
-        int group = number(p,"i_SubscribeID",13), version = integer(p.get("i_Version")), type = integer(p.get("type"));
-        if (version <= 0) version = passVersion(group);
+        int group = strictInt(p.getOrDefault("i_SubscribeID",s.events.activeStarPassSeason())), version = passVersion(group), type = strictInt(p.get("type"));
+        if(!validPass(group,p)||(type!=0&&type!=1)) return Result.error(1,"Invalid Pass parameters");
         Map<String,Object> cfg = obj();
         for (Map<String,Object> row : data.rows(19)) if (integer(row.get("1")) == group || integer(row.get("2")) == group) { cfg = row; break; }
-        int points = type == 1 ? number(cfg,"5",5000) : number(cfg,"8",2000);
-        if (type == 1 && !deduct(user,"CP",(long)number(cfg,"4",50)))
-            return new Result(obj("u_cp",ud(user).getOrDefault("u_cp",0),"u_candy",dbl(ud(user).get("u_candy"))),obj("code",1,"errmsg","Not enough CP"));
+        if(cfg.isEmpty()) return Result.error(1,"Missing Pass rule");
+        int points = type == 1 ? number(cfg,"5",0) : number(cfg,"8",0);
+        if(points<=0) return Result.error(1,"Invalid Pass points");
+        new emu.leman.ggserver.game.account.AuthContent(s).eventPoints(user);
         List<Object> events = items(user,"user_event_point");
         long base = 0, ad = 0;
         List<Object> others = new ArrayList<>();
         for (Object raw : events) {
             Map<String,Object> ep = map(raw);
-            if (str(ep.get("s_EventType")).equals("Pass") && integer(ep.get("i_DataID")) == group) {
+            if (str(ep.get("s_EventType")).equals("Pass") && integer(ep.get("i_DataID")) == group && integer(ep.get("i_Version"))==version) {
                 base = Math.max(base,lng(ep.get("i_Point"))); ad = Math.max(ad,lng(ep.get("i_ADViewTime")));
             } else others.add(raw);
         }
-        long total = base+points;
+        if(type==0 && ad>0 && now()-ad<number(cfg,"9",600)) return Result.error(1,"Pass advertisement is cooling down");
+        if(type==1&&!deduct(user,"CP",cfg.containsKey("4")?lng(cfg.get("4")):null)) return Result.error(1,"Not enough CP");
+        long total = Math.addExact(base,points);
         others.add(obj("s_EventType","Pass","i_DataID",group,"i_Point",total,"i_Step",stepForPoints(group,total),"i_ADViewTime",type == 0 ? now() : ad,"i_Version",version));
         user.put("user_event_point",others); s.state.saveUser(user);
         return Result.ok(obj("u_cp",ud(user).getOrDefault("u_cp",0),"u_candy",dbl(ud(user).get("u_candy")),"i_SubscribeID",group,"i_Point",total,"i_Version",version));
@@ -706,6 +813,9 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         Map<String,Object> user = user(p,c);
         if (user == null || id != 2 && !(id == 1 && rawProfile > 0))
             return Result.ok(obj("i_id",id,"user_ad_list",obj("i_id",id,"i_Count",0,"i_TotalCount",0,"i_LastViewTime",0),"reward_data",new ArrayList<>()));
+        if(id==1 && (!FollowerAccess.ownedProfile(s.gameData,user,rawProfile)
+                || !FollowerAccess.active(s.gameData.row(32,1),"2")))
+            return Result.error(1,"Profile ad is not available");
         Map<String,Object> slots = child(user,"ad_rewards");
         String key = str(id);
         if (!(slots.get(key) instanceof Map)) slots.put(key,obj("i_id",id,"i_Count",0,"i_TotalCount",0,"i_LastViewTime",0,"upd_day",today()));
@@ -716,24 +826,21 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         SocialFollowers followers = new SocialFollowers(s);
         int profileId = rawProfile;
         if (id == 1) {
-            profileId = followers.profileId(data.game(),rawProfile);
-            List<Object> profiles = items(user,"user_follower_profile");
-            profile = SocialFollowers.find(profiles,"i_id",profileId,rawProfile);
-            if (profile == null) { profile = SocialFollowers.newProfile(profileId); profiles.add(profile); }
-            List<Object> owned = items(user,"user_follower");
-            if (SocialFollowers.find(owned,"i_id",profileId,rawProfile) == null && rawProfile != 100000)
-                owned.add(obj("i_id",rawProfile,"i_Level",1,"i_BonusLevel",0));
+            profileId = FollowerAccess.profileId(s.gameData,rawProfile);
+            profile = FollowerAccess.profile(s.gameData,user,rawProfile);
+            if(followers.levels(s.gameData.data(),profileId).isEmpty()) return Result.error(1,"Invalid profile configuration");
         }
         long last = lng(slot.get("i_LastViewTime"));
         boolean allowed = integer(slot.get("i_Count")) < 5 && (id == 2 || last == 0 || now()-last >= 600);
         if (allowed) {
             if (id == 2) { StateStore.addAp(user,25); rewards.add(reward(1,11,25)); }
             else {
-                Map<Integer,Map<String,Object>> levels = followers.levels(data.game(),profileId,rawProfile,1);
+                if(profile==null) {profile=SocialFollowers.newProfile(profileId);items(user,"user_follower_profile").add(profile);}
+                Map<Integer,Map<String,Object>> levels = followers.levels(s.gameData.data(),profileId);
                 int level = Math.max(1,number(profile,"i_Level",1));
                 long current = lng(levels.getOrDefault(level,obj()).get("4")), next = lng(levels.getOrDefault(level+1,obj()).get("4"));
                 long gain = next > current ? Math.max(100,Math.min(300,(long)((next-current)*0.1))) : 100;
-                SocialFollowers.applyProfileExp(profile,levels,gain); followers.syncProfiles(user);
+                SocialFollowers.applyProfileExp(profile,levels,gain);
                 rewards.add(reward(0,0,gain));
             }
             add(slot,"i_Count",1); add(slot,"i_TotalCount",1); slot.put("i_LastViewTime",now()); s.state.saveUser(user);

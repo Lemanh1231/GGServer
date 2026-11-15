@@ -19,7 +19,7 @@ class AccountModuleTest {
     @Test void registersEveryCommandAndKeepsSystemRevisionFixed() {
         try(Services s=new Services(root)) {
             new AccountModule(s).register();
-            assertEquals(Set.of("userJoin","userLogin","userSave","userLoad","lastSaveTime","setTutorialNew","setSubscribe","setReviewPopup","updateNickName","updateAvatar","updateUserTitle","getProfile","Request","getServerTime","getUpdateTime","defaultSettingList","hibernationLog","completeLog"),s.registry.commands());
+            assertEquals(Set.of("userJoin","userLogin","userSave","userLoad","lastSaveTime","setTutorialNew","setSubscribe","setReviewPopup","updateNickName","updateAvatar","updateUserTitle","getProfile","Request","getServerTime","getUpdateTime","defaultSettingList","hibernationLog","getLocalPush","completeLog"),s.registry.commands());
             assertEquals(1700000000,lng(call(s,"getUpdateTime",obj()).get("upd_time")));
             assertEquals(27,list(call(s,"defaultSettingList",obj()).get("setting_list")).size());
             long datetime=lng(call(s,"getServerTime",obj()).get("datetime")); assertTrue(datetime>20200000000000L);
@@ -73,6 +73,7 @@ class AccountModuleTest {
         }
     }
     @Test void normalizersRetainDailyAndPaidPassSemantics() {
+        write(root.resolve("event_config.json"),emu.leman.ggserver.game.content.EventManager.defaults());
         List<Object> missionsFixture=new ArrayList<>();String[] types={"DailyAttendanceCount","TapCount","ExtraTouchCount","SkillUseCount","PlayTimePerSecond","CompleteDailyMissionCount"};int[] targets={1,2000,30,5,1800,5};
         for(int i=0;i<6;i++) missionsFixture.add(obj("1",i+1,"27",types[i],"28",targets[i],"44",1));
         write(root.resolve("gamedata/game_data.json"),obj("10",missionsFixture,"17",List.of(obj("1",13,"11",2021)),"18",List.of(obj("2",13,"3",1,"4",100),obj("2",13,"3",2,"4",500))));
@@ -86,6 +87,45 @@ class AccountModuleTest {
             u.put("user_shop",new ArrayList<>(List.of(obj("i_id",2013,"i_Count",1)))); assertEquals(1,content.subscriptions(u).size()); assertEquals(Set.of(13,1013),ids(content.tickets(u)));
             u.put("user_shop",new ArrayList<>(List.of(obj("i_id",2013,"i_Count",1),obj("i_id",1012,"i_Count",1)))); content.subscriptions(u); assertEquals(Set.of(12,13,1013),ids(content.tickets(u)));
             s.events.setStarPass(false,null,null); assertEquals(1,content.eventPoints(u).size()); assertEquals(1,content.subscriptions(u).size());
+        }
+    }
+    @Test void chapterTwoAchievementsAreSeededAndProgressSurvivesSaveAndReopen() {
+        List<Object> definitions=new ArrayList<>();
+        for(int id=201;id<=207;id++) definitions.add(obj("1",id,"52",1));
+        definitions.add(obj("1",208,"52",0));
+        write(root.resolve("gamedata/game_data.json"),obj("9",definitions));
+        try(Services s=new Services(root)) {
+            new AccountModule(s).register();
+            var u=s.state.createUser("phone","phone","");
+            u.put("achievements",new ArrayList<>(List.of(obj("i_id",201,"i_Level",3,"d_Quantity",42),obj("i_id",999,"i_Level",2,"d_Quantity",10))));
+            s.state.saveUser(u);
+            call(s,"userSave",obj("device_uuid","phone","user_achievement",List.of(obj("i_id",201,"i_Level",1,"d_Quantity",5),obj("i_id",202,"d_Quantity",19))));
+            var saved=list(s.state.getUser("phone").get("achievements"));
+            assertTrue(ids(saved).containsAll(Set.of(201,202,203,204,205,206,207,999)));
+            assertFalse(ids(saved).contains(208));
+            var first=map(saved.stream().filter(v->integer(map(v).get("i_id"))==201).findFirst().orElseThrow());
+            assertEquals(3,integer(first.get("i_Level"))); assertEquals(42,dbl(first.get("d_Quantity")));
+        }
+        try(Services s=new Services(root)) {
+            var achievements=new AuthContent(s).achievements(s.state.getUser("phone"),null);
+            assertTrue(ids(achievements).containsAll(Set.of(201,202,203,204,205,206,207,999)));
+            assertEquals(19,dbl(map(achievements.stream().filter(v->integer(map(v).get("i_id"))==202).findFirst().orElseThrow()).get("d_Quantity")));
+        }
+    }
+    @Test void messengerProgressSurvivesAuthSaveAndActualReopenWithoutSyntheticChapterTwoHistory() {
+        try(Services s=new Services(root)) {
+            new AccountModule(s).register();
+            var user=s.state.createUser("chat-phone","chat-phone","");
+            user.put("user_messenger",new ArrayList<>(List.of(obj("i_MessengerChatRoomId",1,"s_UnlockGroupList","1,4","i_LastConfirmIndex",12,"l_UpdateTimeTicks",200))));
+            user.put("user_follower",new ArrayList<>(List.of(obj("i_id",201,"i_Level",700),obj("i_id",204,"i_Level",1))));
+            s.state.saveUser(user);
+            call(s,"userSave",obj("device_uuid","chat-phone","user_messenger",List.of(obj("i_MessengerChatRoomId",1,"s_UnlockGroupList","1","i_LastConfirmIndex",2))));
+            assertEquals(1,list(s.state.getUser("chat-phone").get("user_messenger")).size());
+        }
+        try(Services s=new Services(root)) {
+            var rooms=list(s.state.getUser("chat-phone").get("user_messenger"));
+            assertEquals(1,rooms.size()); assertEquals("1,4",map(rooms.getFirst()).get("s_UnlockGroupList"));
+            assertEquals(12,lng(map(rooms.getFirst()).get("i_LastConfirmIndex")));
         }
     }
     @Test void profileTutorialAndAccountEndpointsPersist() {
@@ -124,9 +164,10 @@ class AccountModuleTest {
                 "user_buff",new ArrayList<>(List.of(obj("i_id",1,"i_EndTime",now()-1),obj("i_id",2,"i_ExpiredTime",now()+100))));
             Map<String,Object> result=content.contents(u);
             assertEquals(Set.of(1,2,4),ids(list(result.get("user_skill")))); assertEquals(Set.of(2,4),ids(list(result.get("user_buff"))));
-            assertEquals(Set.of(1,2),ids(list(result.get("user_character")))); assertTrue(ids(list(result.get("user_costume"))).containsAll(Set.of(1,13,201))); assertTrue(ids(list(result.get("user_guitar"))).containsAll(Set.of(1,10,201)));
-            assertEquals(3,integer(map(u.get("userdata")).get("u_samseck_step"))); assertEquals(1,integer(map(list(u.get("user_unit")).getFirst()).get("i_Level")));
-            content.contents(u); assertEquals(1,integer(map(list(u.get("user_unit")).getFirst()).get("i_Level")));
+            assertEquals(Set.of(1,2),ids(list(result.get("user_character")))); assertTrue(ids(list(result.get("user_costume"))).containsAll(Set.of(1,201))); assertTrue(ids(list(result.get("user_guitar"))).containsAll(Set.of(1,201)));
+            assertFalse(ids(list(result.get("user_costume"))).contains(13));assertFalse(ids(list(result.get("user_guitar"))).contains(10));
+            assertEquals(99,integer(map(u.get("userdata")).get("u_samseck_step"))); assertTrue(list(u.get("user_unit")).isEmpty());
+            content.contents(u); assertTrue(list(u.get("user_unit")).isEmpty());
             Map<String,Object> p=map(list(u.get("user_follower_profile")).getFirst()); assertEquals(2,integer(p.get("i_Level"))); assertEquals(60,lng(p.get("d_Exp"))); assertEquals(2,integer(p.get("i_AddCandy")));
             assertEquals(2000,integer(map(list(u.get("user_follower")).getFirst()).get("i_Level"))); assertEquals(1,list(u.get("user_follower_profile_reward")).size());
             assertEquals(2,integer(map(list(u.get("user_follower_profile_reward")).getFirst()).get("i_RewardLevel")));

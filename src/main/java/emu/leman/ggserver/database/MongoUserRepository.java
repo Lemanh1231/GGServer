@@ -121,19 +121,7 @@ public final class MongoUserRepository implements UserRepository {
         user.put("is_banned", Json.truth(document.get("is_banned")));
         for (String inventory : INVENTORIES) user.putIfAbsent(inventory, new ArrayList<>());
         normalizeSavedInventories(user);
-        Currency.Parsed current = Currency.parse(document.get("u_like"));
-        ud.put("u_like", current.floating());
-        for (Object value : ensureMap(user, "areas").values()) if (value instanceof Map<?,?>) {
-            Map<String,Object> area = Json.map(value);
-            Currency.Parsed old = Currency.parse(area.get("s_Gp1"));
-            Currency.Parsed target;
-            if (Json.truth(user.get("force_server_like"))) {
-                String exact = forcedExact(user);
-                target = exact == null ? current : Currency.parse(exact);
-            } else if (Double.compare(old.floating(), current.floating()) == 0) target = old;
-            else target = old.integer().compareTo(current.integer()) > 0 ? old : current;
-            area.put("d_Like", target.floating()); area.put("s_Gp1", target.gp());
-        }
+        emu.leman.ggserver.game.economy.AreaCurrency.normalize(user);
         return user;
     }
     private static Document account(Map<String,Object> user, String uuid, String device, String uid, long sequence) {
@@ -270,17 +258,11 @@ public final class MongoUserRepository implements UserRepository {
             document.put("u_cp", Json.lng(document.get("u_cp")) + cp);
             document.put("u_candy", Json.dbl(document.get("u_candy")) + candy);
             document.put("u_fans", Json.lng(document.get("u_fans")) + fans);
-            double newLike = Math.min(Currency.MAX_FLOAT, Currency.parse(document.get("u_like")).floating() + delta.floating());
-            document.put("u_like", newLike);
             Map<String,Object> data = contents(document);
+            ensureMap(data,"userdata").put("u_like",document.get("u_like"));
+            emu.leman.ggserver.game.economy.AreaCurrency.addLike(data,like);
+            document.put("u_like",Json.dbl(ensureMap(data,"userdata").get("u_like")));
             if (delta.integer().signum() != 0 || cp != 0 || candy != 0) data.put("needs_client_reset", true);
-            String exact = forcedExact(data);
-            if (exact != null) data.put("force_server_like", Currency.parse(Currency.parse(exact).integer().add(delta.integer())).gp());
-            for (Object value : ensureMap(data, "areas").values()) if (value instanceof Map<?,?>) {
-                Map<String,Object> area = Json.map(value);
-                area.put("d_Like", newLike);
-                area.put("s_Gp1", Currency.parse(Currency.parse(area.get("s_Gp1")).integer().add(delta.integer())).gp());
-            }
             document.put("contents", nativeContents(data));
         });
     }
@@ -289,10 +271,7 @@ public final class MongoUserRepository implements UserRepository {
         mutate(identifier, document -> {
             document.put("u_like", parsed.floating());
             Map<String,Object> data = contents(document);
-            data.put("needs_client_reset", true); data.put("force_server_like", parsed.gp());
-            for (Object value : ensureMap(data, "areas").values()) if (value instanceof Map<?,?>) {
-                Json.map(value).put("d_Like", parsed.floating()); Json.map(value).put("s_Gp1", parsed.gp());
-            }
+            emu.leman.ggserver.game.economy.AreaCurrency.setLike(data,amount);
             document.put("contents", nativeContents(data));
         });
     }
