@@ -176,15 +176,19 @@ public final class GameServer implements HttpHandler,AutoCloseable {
         String authorization=header(e,"Authorization");
         String token=str(first(form.get("access_token"),form.get("session_token"),authorization.startsWith("Bearer ")?authorization.substring(7):null));
         SessionAccess.Decision session=SessionAccess.validate(services,token,request,BOOTSTRAP.contains(command));
+        boolean invalidMessage=(request!=null && request.containsKey("_decode_error"))
+                || (!BOOTSTRAP.contains(command) && (request==null || !(request.get("data") instanceof Map)));
         if(session.error()!=null) cap.put("session_diagnostics",SessionAccess.diagnostics(token,header(e,"Content-Type")));
         if(session.uuid()!=null) ctx.put("uuid",session.uuid());
-        if(session.error()==null && !BOOTSTRAP.contains(command)) {
+        if(session.error()==null && !invalidMessage && !BOOTSTRAP.contains(command)) {
             String account=session.uuid()==null?identity:session.uuid();
             if(!account.isEmpty()) services.state.updateUserIp(account,ip,domain);
             banned=!account.isEmpty() && services.state.isUserBanned(account);
         }
         Result result;
         if(session.error()!=null) result=Result.error(401,session.error());
+        else if(invalidMessage)
+            result=Result.error(400,"Missing or invalid RPC message");
         else if(banned && !BOOTSTRAP.contains(command)) {
             result=Result.error(900,"Tài khoản của bạn đã bị KHÓA (BAN) bởi Quản trị viên!\nVui lòng liên hệ Admin để được hỗ trợ.");
             cap.put("blocked",true);cap.put("error",result.error());

@@ -56,6 +56,17 @@ class TransportTest {
         assertEquals(0,lng(map(decoded.get("error")).get("code")));assertTrue(lng(map(decoded.get("server_time")).get("time"))>0);
         try(var captures=Files.list(root.resolve("captures"))) { var capture=map(read(captures.filter(Files::isRegularFile).findFirst().orElseThrow()));assertEquals("203.0.113.5",capture.get("client_ip"));assertEquals("game.example",capture.get("domain")); }
     }
+    @Test void bootstrapWithoutMessageDoesNotDecodeRoutingOrCredentialsAsBody() throws Exception {
+        var message=Dispatch.findMessageField(obj("call","getServerTime","access_token","opaque-old-sdk-token","session_token","expired-session-token"));
+        assertNull(message.body());
+        String body="call=getServerTime&access_token=opaque-old-sdk-token";
+        var response=request("/main/getServerTime/en/","POST",body.getBytes(StandardCharsets.UTF_8),Map.of("Content-Type","application/x-www-form-urlencoded"));
+        var decoded=codec.decodeRequest(new String(response.body(),StandardCharsets.UTF_8),"main.getServerTimeReturn").named();
+        assertEquals(0,integer(map(decoded.get("error")).get("code")));
+        assertTrue(lng(map(decoded.get("data")).get("time"))>0);
+        String nativeMessage=codec.encodeResponse("main.getServerTime",obj("data",obj()));
+        assertEquals(nativeMessage,Dispatch.findMessageField(obj("call","getServerTime","legacy_message",nativeMessage)).body());
+    }
     @Test void bannedAccountGetsNativeEnvelopeAndBootstrapStillWorks() throws Exception {
         services.state.createUser("banned-test","banned-device","");assertTrue(services.state.banUser("banned-test",true));
         var dispatch=new Dispatch(codec);String command=dispatch.resolveCommand(obj("call","userLoad"));

@@ -66,6 +66,8 @@ lib/
 *.gz
 *.7z
 *.py
+!patcher/merge_apk.py
+!patcher/test_native_patch_guards.py
 __pycache__/
 .idea/
 *.iml

@@ -156,14 +156,16 @@ class AccountModuleTest {
         }
     }
     @Test void normalizesBuffsGatesSamseckAndFollowerProfiles() {
-        write(root.resolve("gamedata/game_data.json"),obj("5",List.of(obj("1",1,"47",1)),"31",List.of(obj("2",1,"3",1,"4",0,"7",0),obj("2",1,"3",2,"4",50,"6","story","7",2),obj("2",1,"3",3,"4",150,"7",3))));
+        write(root.resolve("gamedata/game_data.json"),obj("8",List.of(obj("1",1,"2",1,"37",100),obj("1",2,"2",1,"37",300),obj("1",3,"2",1,"37",500),obj("1",4,"2",1,"37",1)),
+                "5",List.of(obj("1",1,"47",1)),"31",List.of(obj("2",1,"3",1,"4",0,"7",0),obj("2",1,"3",2,"4",50,"6","story","7",2),obj("2",1,"3",3,"4",150,"7",3))));
         try(Services s=new Services(root)) {
             AuthContent content=new AuthContent(s); Map<String,Object> u=obj("userdata",obj("u_samseck_step",99),"characters",new ArrayList<>(List.of(obj("i_id",1,"i_Level",300))),
                 "user_follower",new ArrayList<>(List.of(obj("i_id",1,"i_Level",2000))),"user_follower_profile",new ArrayList<>(List.of(obj("i_id",1,"i_Level",19,"d_Exp",60))),
                 "user_follower_profile_reward",new ArrayList<>(List.of(obj("i_id",1,"i_RewardLevel",19))),"user_skill",new ArrayList<>(List.of(obj("i_id",3,"i_Level",9))),
                 "user_buff",new ArrayList<>(List.of(obj("i_id",1,"i_EndTime",now()-1),obj("i_id",2,"i_ExpiredTime",now()+100))));
             Map<String,Object> result=content.contents(u);
-            assertEquals(Set.of(1,2,4),ids(list(result.get("user_skill")))); assertEquals(Set.of(2,4),ids(list(result.get("user_buff"))));
+            assertEquals(Set.of(1,2,3,4),ids(list(result.get("user_skill")))); assertEquals(Set.of(2,4),ids(list(result.get("user_buff"))));
+            assertEquals(9,integer(map(list(result.get("user_skill")).getFirst()).get("i_Level"))); // earned upgrade is never revoked
             assertEquals(Set.of(1,2),ids(list(result.get("user_character")))); assertTrue(ids(list(result.get("user_costume"))).containsAll(Set.of(1,201))); assertTrue(ids(list(result.get("user_guitar"))).containsAll(Set.of(1,201)));
             assertFalse(ids(list(result.get("user_costume"))).contains(13));assertFalse(ids(list(result.get("user_guitar"))).contains(10));
             assertEquals(99,integer(map(u.get("userdata")).get("u_samseck_step"))); assertTrue(list(u.get("user_unit")).isEmpty());

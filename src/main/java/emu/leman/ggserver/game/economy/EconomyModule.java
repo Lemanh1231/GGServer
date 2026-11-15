@@ -437,6 +437,9 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         if (!key.isEmpty()) {
             List<Object> list = items(user,key);
             Map<String,Object> item = find(list,id);
+            if ((type.equals("unit") || type.equals("skill")) && item==null
+                    && !emu.leman.ggserver.game.content.UpgradeAccess.unlocked(s.gameData,user,table,id))
+                return Result.error(1,"Content unlock requirements are not met");
             int level = item == null ? (type.equals("unit") ? 0 : 1) : integer(item.get("i_Level"));
             if (type.equals("unit") || type.equals("skill")) {
                 int max = type.equals("unit") ? number(definition,"27",20) : number(definition,"28",20);
@@ -823,8 +826,12 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         Map<String,Object> user = user(p,c);
         if (user == null || id != 2 && !(id == 1 && rawProfile > 0))
             return Result.ok(obj("i_id",id,"user_ad_list",obj("i_id",id,"i_Count",0,"i_TotalCount",0,"i_LastViewTime",0),"reward_data",new ArrayList<>()));
-        if(id==1 && (!FollowerAccess.ownedProfile(s.gameData,user,rawProfile)
-                || !FollowerAccess.active(s.gameData.row(32,1),"2")))
+        var definition=s.gameData.row(32,id);
+        if(definition.isEmpty() || integer(definition.get("20"))!=1)
+            return Result.error(1,"Advertisement is not available");
+        int limit=adCondition(definition,"DAY_LIMIT"), cooldown=adCondition(definition,"COOLTIME");
+        if(limit<=0 || cooldown<0) return Result.error(1,"Invalid advertisement configuration");
+        if(id==1 && !FollowerAccess.ownedProfile(s.gameData,user,rawProfile))
             return Result.error(1,"Profile ad is not available");
         Map<String,Object> slots = child(user,"ad_rewards");
         String key = str(id);
@@ -841,7 +848,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             if(followers.levels(s.gameData.data(),profileId).isEmpty()) return Result.error(1,"Invalid profile configuration");
         }
         long last = lng(slot.get("i_LastViewTime"));
-        boolean allowed = integer(slot.get("i_Count")) < 5 && (id == 2 || last == 0 || now()-last >= 600);
+        boolean allowed = integer(slot.get("i_Count")) < limit && (last == 0 || now()-last >= cooldown);
         if (allowed) {
             if (id == 2) { StateStore.addAp(user,25); rewards.add(reward(1,11,25)); }
             else {
@@ -859,5 +866,13 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
                 "i_TotalCount",integer(slot.get("i_TotalCount")),"i_LastViewTime",lng(slot.get("i_LastViewTime"))),"reward_data",rewards);
         if (profile != null) result.put("user_follower_profile",profile);
         return Result.ok(result);
+    }
+
+    private static int adCondition(Map<String,Object> definition,String condition) {
+        for(int col:new int[]{3,5}) if(condition.equals(str(definition.get(str(col))))) {
+            try { return Integer.parseInt(str(definition.get(str(col+1)))); }
+            catch(NumberFormatException ignored) { return -1; }
+        }
+        return -1;
     }
 }

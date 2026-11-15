@@ -53,7 +53,16 @@ public final class ProfilePackets {
     }
 
     private static final class GetProfile extends ProfileHandler {
-        GetProfile(Services services) { super(CmdId.GET_PROFILE,services); }
-        @Override public Result handle(GamePacket packet) { return Result.ok(profile(packet).profile()); }
+        private final Services services;
+        GetProfile(Services services) { super(CmdId.GET_PROFILE,services); this.services=services; }
+        @Override public Result handle(GamePacket packet) {
+            String target=str(packet.payload().get("get_u_seq"));
+            if(target.isEmpty() || target.equals("0")) return Result.ok(profile(packet).profile());
+            // Repository reads return a detached, atomically saved snapshot. Do not acquire
+            // a second account stripe while the requester stripe is held (A->B / B->A).
+            var snapshot=services.state.getUser(target);
+            if(snapshot==null || snapshot.isEmpty()) return Result.error(1,"Profile not found");
+            return Result.ok(ProfileManager.project(snapshot));
+        }
     }
 }

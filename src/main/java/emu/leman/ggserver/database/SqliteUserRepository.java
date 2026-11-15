@@ -178,6 +178,14 @@ public final class SqliteUserRepository implements UserRepository {
         String canonical=transaction(()->resolve(identifier));
         return canonical==null?identifier:canonical;
     }
+    @Override public UserIdentity getIdentity(String identifier) {
+        if(identifier==null||identifier.isEmpty())return null;
+        return transaction(()->{
+            String canonical=resolve(identifier);
+            var identity=canonical==null?null:row("SELECT uuid,device_uuid FROM user_data WHERE uuid=?",canonical);
+            return identity==null?null:new UserIdentity(Json.str(identity.get("uuid")),Json.str(identity.get("device_uuid")));
+        });
+    }
     @Override public List<Map<String,Object>> listUserRows() {
         return transaction(() -> {
             List<Map<String,Object>> rows = new ArrayList<>();

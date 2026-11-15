@@ -20,6 +20,7 @@ public final class StateStore implements AutoCloseable {
     }
     public StateStore(UserRepository repository) { this.repository = java.util.Objects.requireNonNull(repository); }
     public Map<String,Object> getUser(String identifier) { return repository.getUser(identifier); }
+    public UserIdentity getIdentity(String identifier) { return repository.getIdentity(identifier); }
     public String canonicalIdentity(String identifier) { return repository.canonicalIdentity(identifier); }
     public Map<String,Object> createUser(String uuid, String deviceUuid) { return createUser(uuid, deviceUuid, ""); }
     public Map<String,Object> createUser(String uuid, String deviceUuid, String ip) { return repository.createUser(uuid, deviceUuid, ip); }

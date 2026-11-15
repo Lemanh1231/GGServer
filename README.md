@@ -3,6 +3,16 @@
 Server Guitar Girl viết bằng **Java 21**, package/application ID **`emu.leman.ggserver`**.
 Build và chạy bằng **Gradle Wrapper**; không cần cài Maven hay Gradle hệ thống.
 
+## Audit và bản sửa source mới
+
+- [RPC inventory](RPC_INVENTORY.md) và [logic audit](RPC_LOGIC_AUDIT.md).
+- [Session latency audit](REQUEST_LATENCY_AUDIT.md).
+- [Các việc còn mở/chờ triển khai](CURRENT_ISSUES.md) và
+  [đối chiếu tài liệu lỗi cũ](BUG_DISPOSITION.md).
+- [Native patch guard tests](patcher/README.md) (chỉ source, không APK/keystore).
+
+Source đã sửa không đồng nghĩa production hoặc Android UI đã được xác minh.
+
 ## Build và chạy
 
 ```bash

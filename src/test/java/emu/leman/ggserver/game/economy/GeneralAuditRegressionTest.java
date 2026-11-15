@@ -57,6 +57,7 @@ class GeneralAuditRegressionTest {
         assertEquals(once,lng(map(list(user().get("user_event_point")).getFirst()).get("i_Point")));
     }
     @Test void failedPurchaseDoesNotDeduct() throws Exception {
+        var eligible=user();eligible.put("characters",new ArrayList<>(List.of(obj("i_id",1,"i_Level",100))));s.state.saveUser(eligible);
         try(var db=java.sql.DriverManager.getConnection("jdbc:sqlite:"+root.resolve("data/database.db"));var sql=db.createStatement()) {
             sql.execute("CREATE TRIGGER audit_purchase_fail BEFORE INSERT ON user_inventory BEGIN SELECT RAISE(ABORT,'audit failure'); END");
             assertThrows(IllegalStateException.class,()->call("buyContents","type","skill","idx",1));

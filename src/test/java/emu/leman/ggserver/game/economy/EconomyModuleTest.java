@@ -46,7 +46,8 @@ class EconomyModuleTest {
                 "2",List.of(obj("1",50,"45","CP","39",0,"46",12),obj("1",51,"45","USD","39",20),obj("1",52,"45","CP","39",-1)),
                 "5",List.of(obj("1",1,"47",1)),
                 "28",List.of(obj("1",1,"14",1,"15","1")),
-                "32",List.of(obj("1",1,"2",1)),
+                "32",List.of(obj("1",1,"2",0,"20",1,"3","COOLTIME","4","600","5","DAY_LIMIT","6","5"),
+                        obj("1",2,"2",1,"20",1,"3","DAY_LIMIT","4","5","5","COOLTIME","6","300")),
                 "31",List.of(obj("2",1,"3",1,"4",0,"7",0),obj("2",1,"3",2,"4",50,"7",3),obj("2",1,"3",3,"4",150,"7",4))));
         write(root.resolve("gamedata/getEventRewardList.json"),obj("data",obj(
                 "1",obj("group_idx",1,"reward_list",List.of(
@@ -169,7 +170,11 @@ class EconomyModuleTest {
         assertEquals(100,lng(map(list(response.get("reward_data")).getFirst()).get("reward_value")));
         assertEquals(2,integer(map(response.get("user_follower_profile")).get("i_Level")));
         assertTrue(list(call("setAdReward","i_id",1,"param1",1).get("reward_data")).isEmpty());
-        for (int i=0;i<5;i++) assertEquals(1,list(call("setAdReward","i_id",2).get("reward_data")).size());
+        for (int i=0;i<5;i++) {
+            assertEquals(1,list(call("setAdReward","i_id",2).get("reward_data")).size());
+            assertTrue(list(call("setAdReward","i_id",2).get("reward_data")).isEmpty());
+            clock.advance(300);
+        }
         assertTrue(list(call("setAdReward","i_id",2).get("reward_data")).isEmpty());
         assertEquals(1,integer(map(list(user().get("user_follower")).getFirst()).get("i_Level")));
     }
@@ -180,6 +185,68 @@ class EconomyModuleTest {
         Map<String,Object> response = call("paidEventPoint","i_SubscribeID",1,"type",1);
         assertEquals(90,lng(response.get("i_Point"))); assertEquals(995,cp());
         assertEquals(1,list(user().get("user_event_point")).size());
+    }
+
+    @Test void cookieCooldownExactBoundaryFutureClockAndVietnamMidnight() {
+        clock.time=Instant.parse("2026-11-16T16:50:00Z");
+        assertEquals(1,list(call("setAdReward","i_id",2).get("reward_data")).size());
+        clock.advance(299);
+        assertTrue(list(call("setAdReward","i_id",2).get("reward_data")).isEmpty());
+        clock.advance(1);
+        assertEquals(1,list(call("setAdReward","i_id",2).get("reward_data")).size());
+        clock.advance(-1);
+        assertTrue(list(call("setAdReward","i_id",2).get("reward_data")).isEmpty());
+        var u=user();var slot=map(map(u.get("ad_rewards")).get("2"));
+        slot.put("i_Count",5);s.state.saveUser(u);
+        clock.time=Instant.parse("2026-11-16T16:59:59Z");
+        assertTrue(list(call("setAdReward","i_id",2).get("reward_data")).isEmpty());
+        clock.advance(1);
+        var response=call("setAdReward","i_id",2);
+        assertEquals(1,list(response.get("reward_data")).size());
+        assertEquals(1,integer(map(response.get("user_ad_list")).get("i_Count")));
+        assertEquals(3,integer(map(response.get("user_ad_list")).get("i_TotalCount")));
+    }
+
+    @Test void cookieReceiptSurvivesReopen() {
+        call("setAdReward","i_id",2);
+        int before=integer(map(user().get("user_ap")).get("i_Ap"));
+        s.close();s=new Services(root);new EconomyModule(s,clock).register();
+        assertTrue(list(call("setAdReward","i_id",2).get("reward_data")).isEmpty());
+        assertEquals(before,integer(map(user().get("user_ap")).get("i_Ap")));
+        clock.advance(300);
+        assertEquals(1,list(call("setAdReward","i_id",2).get("reward_data")).size());
+    }
+
+    @Test void profileAdUsesActiveNotCategoryAndBothAdsRejectDisabledDefinitions() {
+        assertEquals(0,integer(s.gameData.row(32,1).get("2")));
+        assertEquals(1,list(call("setAdReward","i_id",1,"param1",1).get("reward_data")).size());
+        for(int id:new int[]{1,2}) {
+            s.gameData.row(32,id).put("20",0);
+            String before=stringify(user());
+            assertNotEquals(0,integer(result("setAdReward","i_id",id,"param1",1).error().get("code")));
+            assertEquals(before,stringify(user()));
+        }
+    }
+
+    @Test void adConditionsAreNamedAndCatalogDrivenRatherThanHardcoded() {
+        var definition=s.gameData.row(32,2);
+        definition.putAll(obj("3","COOLTIME","4","10","5","DAY_LIMIT","6","2"));
+        assertEquals(1,list(call("setAdReward","i_id",2).get("reward_data")).size());
+        clock.advance(9);assertTrue(list(call("setAdReward","i_id",2).get("reward_data")).isEmpty());
+        clock.advance(1);assertEquals(1,list(call("setAdReward","i_id",2).get("reward_data")).size());
+        clock.advance(10);assertTrue(list(call("setAdReward","i_id",2).get("reward_data")).isEmpty());
+    }
+
+    @Test void failedAdSaveRollsBackApAndReceiptThenRetryGrantsOnce() throws Exception {
+        String before=stringify(user());
+        try(var db=java.sql.DriverManager.getConnection("jdbc:sqlite:"+s.config.database());var statement=db.createStatement()) {
+            statement.execute("CREATE TRIGGER fail_ad BEFORE UPDATE ON user_data BEGIN SELECT RAISE(ABORT,'synthetic save failure'); END");
+            assertThrows(RuntimeException.class,()->call("setAdReward","i_id",2));
+            assertEquals(before,stringify(user()));
+            statement.execute("DROP TRIGGER fail_ad");
+        }
+        assertEquals(1,list(call("setAdReward","i_id",2).get("reward_data")).size());
+        assertTrue(list(call("setAdReward","i_id",2).get("reward_data")).isEmpty());
     }
 
     @Test void capturedAttendanceBoardDecodesWithoutPython() {

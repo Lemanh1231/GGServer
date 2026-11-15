@@ -68,15 +68,22 @@ public final class MongoUserRepository implements UserRepository {
         return Json.lng(Objects.requireNonNull(counter).get("value"));
     }
     private Document find(String identifier) {
+        return find(identifier,null);
+    }
+    private Document find(String identifier,Bson projection) {
         checkOpen();
         if (identifier == null || identifier.isEmpty()) return null;
-        Document found = users.find(eq("_id", identifier)).first();
+        Document found = users.find(eq("_id", identifier)).projection(projection).first();
         if (found != null) return found;
         String sequence = identifier.strip();
         if (sequence.startsWith("guest_")) sequence = sequence.substring(6);
         long seq = -1;
         try { if (sequence.matches("[0-9]+")) seq = Long.parseLong(sequence); } catch (NumberFormatException ignored) {}
-        return users.find(or(eq("device_uuid", identifier), eq("u_id", identifier), eq("u_seq", seq))).first();
+        return users.find(or(eq("device_uuid", identifier), eq("u_id", identifier), eq("u_seq", seq))).projection(projection).first();
+    }
+    @Override public UserIdentity getIdentity(String identifier) {
+        var document=find(identifier,Projections.include("_id","device_uuid"));
+        return document==null?null:new UserIdentity(Json.str(document.get("_id")),Json.str(document.get("device_uuid")));
     }
     @Override public String canonicalIdentity(String identifier) {
         var document=find(identifier);

@@ -320,12 +320,19 @@ public final class AuthContent {
 
     private static void ensure(List<Object> items,int id,Map<String,Object> value) { if(items.stream().noneMatch(raw->integer(map(raw).get("i_id"))==id)) items.add(value); }
     public Map<String,Object> contents(Map<String,Object> user) {
-        List<Object> skills=rows(user,"user_skill"); Map<Integer,Map<String,Object>> charsById=index(user.get("characters"),"i_id");
-        int[][] gates={{1,1,100},{2,1,300},{3,1,500},{4,1,10},{21,2,100},{22,2,300},{23,2,500},{24,2,10}};
-        Set<Integer> unlocked=new LinkedHashSet<>();
-        for(int[] gate:gates) if(integer(charsById.getOrDefault(gate[1],obj()).get("i_Level"))>=gate[2]) unlocked.add(gate[0]);
-        skills.removeIf(raw->!unlocked.contains(integer(map(raw).get("i_id"))));
-        unlocked.forEach(id->ensure(skills,id,obj("i_id",id,"i_Level",1,"b_Activate",0,"l_ActivateOnTicks",0,"l_ActivateOffTicks",0)));
+        List<Object> skills=rows(user,"user_skill");
+        // Never delete earned levels/timers when progress or catalog gates change.
+        // Revisit dependencies until all currently eligible skills have been materialized.
+        boolean added;
+        do {
+            int before=skills.size();
+            for(var row:s.gameData.table(8)) {
+                int id=integer(row.get("1"));
+                if(emu.leman.ggserver.game.content.UpgradeAccess.unlocked(s.gameData,user,8,id))
+                    ensure(skills,id,obj("i_id",id,"i_Level",1,"b_Activate",0,"l_ActivateOnTicks",0,"l_ActivateOffTicks",0));
+            }
+            added=skills.size()>before;
+        } while(added);
         List<Object> props=rows(user,"user_prop"); if(props.isEmpty()) { props.add(obj("i_id",1,"i_Level",1)); props.add(obj("i_id",2,"i_Level",1)); }
         AuthFollowerSupport followers=new AuthFollowerSupport(this); followers.sync(user);
         // Projection must not manufacture event receipts or grant skipped historical rewards.

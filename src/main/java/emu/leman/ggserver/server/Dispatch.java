@@ -46,6 +46,7 @@ public final class Dispatch {
         for(String field:List.of("tapsonic_data","msg","data")) if(form.get(field) instanceof String s && s.length()>=8) return new Message(field,s);
         Message best=null;
         for(var e:form.entrySet()) {
+            if(Set.of("call","access_token","session_token").contains(e.getKey())) continue;
             if(!(e.getValue() instanceof String s) || s.length()<8) continue;
             byte[] raw; try { raw=Base64.getMimeDecoder().decode(s); } catch(Exception ex) { continue; }
             if(raw.length>=3 && raw[0]=='B' && raw[1]=='Z' && raw[2]=='h') return new Message(e.getKey(),s);

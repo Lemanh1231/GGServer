@@ -21,11 +21,14 @@ public final class ProfileManager extends PlayerManager {
     }
 
     public Map<String,Object> profile() {
-        return player().read(snapshot -> {
-            Map<String,Object> ud=snapshot==null ? obj() : map(snapshot.get("userdata"));
-            Map<String,Object> result=obj("u_avatar",ud.getOrDefault("u_avatar",1),"u_id",ud.getOrDefault("u_id",""),"u_nick",ud.getOrDefault("u_nick","Guitarist"),"u_country",ud.getOrDefault("u_country","KR"),"u_title",ud.getOrDefault("u_title",1));
-            for(String key:List.of("allper","allcom","gold","silver","bronze","single_cnt","multi_cnt","master_cnt","single_score","multi_score")) result.put(key,0);
-            return result;
-        });
+        return player().read(ProfileManager::project);
+    }
+
+    /** Only public fields from one persisted snapshot; never exposes account/session data. */
+    static Map<String,Object> project(Map<String,Object> snapshot) {
+        Map<String,Object> ud=snapshot==null ? obj() : map(snapshot.get("userdata"));
+        Map<String,Object> result=obj("u_avatar",ud.getOrDefault("u_avatar",1),"u_id",ud.getOrDefault("u_id",""),"u_nick",ud.getOrDefault("u_nick","Guitarist"),"u_country",ud.getOrDefault("u_country","KR"),"u_title",ud.getOrDefault("u_title",1));
+        for(String key:List.of("allper","allcom","gold","silver","bronze","single_cnt","multi_cnt","master_cnt","single_score","multi_score")) result.put(key,0);
+        return result;
     }
 }
