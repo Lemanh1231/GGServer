@@ -2,8 +2,6 @@ package emu.leman.ggserver.server;
 
 import emu.leman.ggserver.net.codec.Codec;
 import emu.leman.ggserver.net.CmdId;
-import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import static emu.leman.ggserver.util.Json.*;
 
@@ -56,9 +54,7 @@ public final class Dispatch {
         return best==null?new Message(null,null):best;
     }
     public static Map<String,Object> nowTimes() {
-        Instant now=Instant.now();
-        long dt=Long.parseLong(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneOffset.ofHours(9)).format(now));
-        return obj("time",now.getEpochSecond(),"datetime",dt);
+        return emu.leman.ggserver.util.GameTime.serverTime();
     }
     public record Envelope(String dto,Map<String,Object> data) {}
     public Envelope buildReturn(String command,Object retData,String call,String category,Map<String,Object> error) {

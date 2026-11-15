@@ -6,7 +6,6 @@ import emu.leman.ggserver.game.economy.Currency;
 import emu.leman.ggserver.database.StateStore;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import static emu.leman.ggserver.util.Json.*;
@@ -39,7 +38,7 @@ final class AdminSettings {
                 entry = obj("s_EventType", "Pass", "i_DataID", season, "i_ADViewTime", 0);
                 listAt(user, "user_event_point").add(entry);
             }
-            entry.put("i_Point", point); entry.put("i_Step", step); entry.put("i_Version", LocalDate.now().getYear() - year);
+            entry.put("i_Point", point); entry.put("i_Step", step); entry.put("i_Version", emu.leman.ggserver.util.GameTime.today().getYear() - year);
         }
         attendance(user, req);
         if (req.containsKey("unlock_ch2")) chapter2(user, truth(req.get("unlock_ch2")));
@@ -110,7 +109,7 @@ final class AdminSettings {
     private void progress(Map<String,Object> user, String event, Object target, boolean unlock, String mode, int max, boolean grant) {
         if (!present(target) && !grant) return;
         var state = child(child(user, "attendance"), event);
-        int today = Integer.parseInt(LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE));
+        int today = Integer.parseInt(emu.leman.ggserver.util.GameTime.today().format(DateTimeFormatter.BASIC_ISO_DATE));
         int day = present(target) ? Math.toIntExact(whole(target)) : 0;
         int claimed = day <= 0 ? 0 : day >= max && mode.equals("complete") ? max : Math.min(day, max) - 1;
         int date = day <= 0 ? 0 : day >= max && mode.equals("complete") || !unlock ? today : 0;

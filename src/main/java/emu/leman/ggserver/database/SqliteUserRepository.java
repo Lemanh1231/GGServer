@@ -173,6 +173,11 @@ public final class SqliteUserRepository implements UserRepository {
         if (identifier == null || identifier.isEmpty()) return null;
         return transaction(() -> getUserInternal(identifier));
     }
+    @Override public String canonicalIdentity(String identifier) {
+        if(identifier==null||identifier.isEmpty())return identifier;
+        String canonical=transaction(()->resolve(identifier));
+        return canonical==null?identifier:canonical;
+    }
     @Override public List<Map<String,Object>> listUserRows() {
         return transaction(() -> {
             List<Map<String,Object>> rows = new ArrayList<>();
@@ -258,7 +263,7 @@ public final class SqliteUserRepository implements UserRepository {
         data.put("is_banned", Json.truth(row.get("is_banned")));
         if (!data.containsKey("created_at")) {
             long created = Json.lng(Json.first(data.get("last_save_time"), Instant.now().getEpochSecond()));
-            try { created = LocalDate.parse(Json.str(ud.get("u_create_time")), DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay(ZoneId.systemDefault()).toEpochSecond(); }
+            try { created = LocalDate.parse(Json.str(ud.get("u_create_time")), DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay(emu.leman.ggserver.util.GameTime.ZONE).toEpochSecond(); }
             catch (RuntimeException ignored) {}
             data.put("created_at", created);
         }
@@ -328,21 +333,29 @@ public final class SqliteUserRepository implements UserRepository {
     }
 
     private void writeInventories(String uuid, Map<String,Object> user) throws SQLException {
-        for (var entry : INVENTORIES.entrySet()) {
-            if (!user.containsKey(entry.getKey())) continue;
-            update("DELETE FROM user_inventory WHERE uuid=? AND item_type=?", uuid, entry.getValue());
-            for (Object raw : Json.list(user.get(entry.getKey()))) {
-                Map<String,Object> item = Json.map(raw);
-                Map<String,Object> extra = new LinkedHashMap<>(item);
-                ITEM_COLUMNS.forEach(extra::remove);
-                update("""
-                    INSERT INTO user_inventory (uuid,item_type,item_id,level,active_time,bonus_level,value,extra_json)
-                    VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(uuid,item_type,item_id) DO UPDATE SET
-                    level=excluded.level,active_time=excluded.active_time,bonus_level=excluded.bonus_level,
-                    value=excluded.value,extra_json=excluded.extra_json
-                    """, uuid, entry.getValue(), Json.lng(item.get("i_id")), Json.lng(item.getOrDefault("i_Level", 1)),
-                    Json.lng(item.get("i_ActiveTime")), Json.lng(item.get("i_BonusLevel")), Json.lng(item.get("i_Value")),
-                    extra.isEmpty() ? null : Json.stringify(extra));
+        // Keep the same enclosing transaction and replacement semantics, but
+        // prepare once per save instead of compiling SQL for every inventory row.
+        try(var delete=db.prepareStatement("DELETE FROM user_inventory WHERE uuid=? AND item_type=?");
+                var insert=db.prepareStatement("""
+                INSERT INTO user_inventory (uuid,item_type,item_id,level,active_time,bonus_level,value,extra_json)
+                VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(uuid,item_type,item_id) DO UPDATE SET
+                level=excluded.level,active_time=excluded.active_time,bonus_level=excluded.bonus_level,
+                value=excluded.value,extra_json=excluded.extra_json
+                """)) {
+            for (var entry : INVENTORIES.entrySet()) {
+                if (!user.containsKey(entry.getKey())) continue;
+                delete.setString(1,uuid);delete.setString(2,entry.getValue());delete.executeUpdate();
+                for (Object raw : Json.list(user.get(entry.getKey()))) {
+                    Map<String,Object> item = Json.map(raw);
+                    Map<String,Object> extra = new LinkedHashMap<>(item);
+                    ITEM_COLUMNS.forEach(extra::remove);
+                    insert.setString(1,uuid);insert.setString(2,entry.getValue());
+                    insert.setLong(3,Json.lng(item.get("i_id")));insert.setLong(4,Json.lng(item.getOrDefault("i_Level",1)));
+                    insert.setLong(5,Json.lng(item.get("i_ActiveTime")));insert.setLong(6,Json.lng(item.get("i_BonusLevel")));
+                    insert.setLong(7,Json.lng(item.get("i_Value")));insert.setString(8,extra.isEmpty()?null:Json.stringify(extra));
+                    insert.addBatch();
+                }
+                insert.executeBatch();insert.clearBatch();
             }
         }
     }
@@ -571,7 +584,7 @@ public final class SqliteUserRepository implements UserRepository {
     }
     public static Map<String,Object> defaultUser(long sequence, String uuid, String deviceUuid, String ip) {
         String guest = "guest_" + sequence;
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = emu.leman.ggserver.util.GameTime.localNow();
         String timestamp = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         Map<String,Object> ud = Json.obj("u_seq", sequence, "u_id", guest, "uuid", uuid, "u_name", guest,
                 "u_nick", "Guitarist", "u_fans_grade", 1, "u_selected_costume_id", 1, "u_selected_music_id", 1,

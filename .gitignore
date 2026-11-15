@@ -23,6 +23,11 @@ id_ed25519*
 
 # Player state, wire captures, dumps and backups
 data/
+# Resource-loader Java packages are source, not player state.
+!src/main/java/emu/leman/ggserver/data/
+!src/main/java/emu/leman/ggserver/data/**
+!src/test/java/emu/leman/ggserver/data/
+!src/test/java/emu/leman/ggserver/data/**
 captures/
 logs/
 backups/

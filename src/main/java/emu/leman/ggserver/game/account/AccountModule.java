@@ -8,8 +8,6 @@ import emu.leman.ggserver.game.economy.AreaCurrency;
 import emu.leman.ggserver.database.StateStore;
 import emu.leman.ggserver.net.HandlerRegistry;
 import emu.leman.ggserver.net.Result;
-import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import static emu.leman.ggserver.util.Json.*;
 import static emu.leman.ggserver.game.account.AuthContent.*;
@@ -156,7 +154,7 @@ public final class AccountModule implements emu.leman.ggserver.game.GameModule {
         String id=str(first(p.get("device_uuid"),p.get("uuid"),c.get("uuid"),str(p.getOrDefault("u_seq","")),str(p.getOrDefault("u_id",""))));
         Map<String,Object> u=s.state.getUser(id); return Result.ok(obj("u_seq",p.getOrDefault("u_seq",0),"user_subscribe_list",u==null?List.of():content.subscriptions(u)));
     }
-    public static Map<String,Object> serverTime() { return obj("time",now(),"datetime",Long.parseLong(LocalDateTime.now(ZoneOffset.ofHours(9)).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))); }
+    public static Map<String,Object> serverTime() { return emu.leman.ggserver.util.GameTime.serverTime(); }
     public Map<String,Object> defaultSettings() {
         Map<String,Object> weather=map(content.config().get("weather_festival")); String mode=str(weather.get("mode"));
         boolean snow=mode.equals("snow")||mode.isEmpty()&&content.enabled("weather_festival","snow_enabled",true), cherry=mode.equals("cherry")||mode.isEmpty()&&!snow&&content.enabled("weather_festival","cherry_blossom_enabled",false);

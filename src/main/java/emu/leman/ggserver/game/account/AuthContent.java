@@ -1,6 +1,7 @@
 package emu.leman.ggserver.game.account;
 
 import emu.leman.ggserver.Services;
+import emu.leman.ggserver.util.GameTime;
 import java.nio.file.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -33,8 +34,8 @@ public final class AuthContent {
         return user;
     }
     public static long now() { return Instant.now().getEpochSecond(); }
-    public static int today() { return Integer.parseInt(LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)); }
-    public static String timestamp() { return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); }
+    public static int today() { return Integer.parseInt(GameTime.today().format(DateTimeFormatter.BASIC_ISO_DATE)); }
+    public static String timestamp() { return GameTime.timestamp(); }
     public static List<Object> rows(Map<String,Object> user,String key) {
         if (!(user.get(key) instanceof List)) user.put(key,new ArrayList<>());
         return list(user.get(key));
@@ -73,7 +74,7 @@ public final class AuthContent {
     public int passVersion(int season) {
         int year = season <= 5 ? 2020 : 2021;
         for (Object raw : table("17")) { Map<String,Object> row = map(raw); if (integer(row.get("1")) == season) { year = integer(first(row.get("11"),2020)); break; } }
-        return LocalDate.now().getYear()-year;
+        return GameTime.today().getYear()-year;
     }
     public int passStep(int season,long points) {
         int step = 0;
@@ -299,7 +300,7 @@ public final class AuthContent {
         for(var entry:items.entrySet()) {
             int id=entry.getKey(), cond=integer(defs.getOrDefault(id,obj()).get("36")); Map<String,Object> row=entry.getValue();
             if(cond==4||Set.of(2,3,18).contains(id)) row.put("i_Count",0);
-            else if(cond==5||id==10012) { long time=lng(row.get("i_PurchaseTime")); if(time<=0||!Instant.ofEpochSecond(time).atZone(ZoneId.systemDefault()).toLocalDate().equals(LocalDate.now())) { row.put("i_Count",0); row.put("i_PurchaseTime",0); } }
+            else if(cond==5||id==10012) { long time=lng(row.get("i_PurchaseTime")); if(time<=0||!GameTime.date(time).equals(GameTime.today())) { row.put("i_Count",0); row.put("i_PurchaseTime",0); } }
         }
         List<Object> result=new ArrayList<>(items.values()); user.put("user_shop",result); return result;
     }

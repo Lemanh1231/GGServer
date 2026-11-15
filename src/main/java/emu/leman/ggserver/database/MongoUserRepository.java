@@ -78,6 +78,10 @@ public final class MongoUserRepository implements UserRepository {
         try { if (sequence.matches("[0-9]+")) seq = Long.parseLong(sequence); } catch (NumberFormatException ignored) {}
         return users.find(or(eq("device_uuid", identifier), eq("u_id", identifier), eq("u_seq", seq))).first();
     }
+    @Override public String canonicalIdentity(String identifier) {
+        var document=find(identifier);
+        return document==null?identifier:document.getString("_id");
+    }
     private Map<String,Object> contents(Document document) {
         return sections.read(document);
     }

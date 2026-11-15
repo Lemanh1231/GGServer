@@ -41,9 +41,14 @@ final class ContentMusic {
                     || integer(song.get("b_EncoreBonusAppear"))!=1) return Result.error(1,"Encore is not available");
             var lifecycle=EncoreRules.state(user,ids.get(index));
             if(!lifecycle.isEmpty()?integer(lifecycle.get("pending"))!=1:EncoreRules.legacyClaimed(user,song)) return Result.error(1,"Encore was already claimed");
-            int level=integer(song.get("i_Level"));
+            // Historical/imported state is not necessarily validated by the current save path.
+            // Do not truncate fractional IDs/levels or wrap a long into a valid catalog ID.
+            final int level,rawFollower;
+            try {
+                level=Integer.parseInt(str(song.get("i_Level")));
+                rawFollower=Integer.parseInt(str(song.get("i_EncoreBonusFollowerId")));
+            } catch(NumberFormatException e) {return Result.error(1,"Invalid Encore configuration");}
             Map<String,Object> config=s.gameData.row(11,level);
-            int rawFollower=integer(song.get("i_EncoreBonusFollowerId"));
             if(config.isEmpty() || !EncoreRules.eligible(s.gameData,user,ids.get(index),rawFollower)) return Result.error(1,"Invalid Encore configuration");
             final int candy,exp;
             try {candy=Integer.parseInt(str(config.get("6")));exp=Integer.parseInt(str(config.get("7")));}

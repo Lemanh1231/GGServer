@@ -11,7 +11,6 @@ import java.io.*;
 import java.net.*;
 import java.nio.file.*;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -209,7 +208,7 @@ public final class GameServer implements HttpHandler,AutoCloseable {
     }
     private void capture(HttpExchange e,String tag,Map<String,Object> data,boolean banned) {
         try {
-            Map<String,Object> merged=obj("timestamp",LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+            Map<String,Object> merged=obj("timestamp",emu.leman.ggserver.util.GameTime.timestamp(),
                     "domain",requestDomain(e),"host_header",header(e,"Host"),"active_domain_header",first(header(e,"X-GG-Active-Domain"),null),
                     "via_failover_apk",!header(e,"X-GG-Local-Proxy").isEmpty(),"client_ip",clientIp(e));merged.putAll(data);
             String safeTag=tag.replaceAll("[^a-zA-Z0-9_.-]","_");

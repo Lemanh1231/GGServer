@@ -112,7 +112,7 @@ public final class EventManager {
     /** User-independent event-main fields. A disabled event yields an empty map. */
     public Map<String,Object> getEventModeData() {
         if(!isEventRankingEnabled())return obj();
-        return obj("idx",1,"title","Guitar Girl Live Festival","img1","","img2","","movie","","utc",9,"banner","","desc_cn","吉他少女现场庆典活动","desc_en","Guitar Girl Live Festival Event","desc_jp","ギターガールライブフェスティバル","server_time",java.time.Instant.now().getEpochSecond(),"start_time",1600000000L,"end_time",4102444800L);
+        return obj("idx",1,"title","Guitar Girl Live Festival","img1","","img2","","movie","","utc",7,"banner","","desc_cn","吉他少女现场庆典活动","desc_en","Guitar Girl Live Festival Event","desc_jp","ギターガールライブフェスティバル","server_time",java.time.Instant.now().getEpochSecond(),"start_time",1600000000L,"end_time",4102444800L);
     }
     /** Event-ranking rewards (not attendance rewards). */
     public Map<String,Object> getEventRewardList() {

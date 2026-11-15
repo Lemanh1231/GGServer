@@ -230,7 +230,7 @@ public final class SqliteToMongo {
             Object created = user.get("last_save_time");
             try {
                 created = LocalDate.parse(Json.str(ud.get("u_create_time")), DateTimeFormatter.BASIC_ISO_DATE)
-                        .atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+                        .atStartOfDay(emu.leman.ggserver.util.GameTime.ZONE).toEpochSecond();
             } catch (RuntimeException ignored) { }
             if (created != null) user.put("created_at", created);
         }

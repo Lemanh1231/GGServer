@@ -272,3 +272,11 @@ Gửi thư cần server Java đang chạy và `GG_ADMIN_PASSWORD` hợp lệ. C�
 cần Bash/Linux, `curl` và `flock`; Java server vẫn có thể chạy trực tiếp trên nền
 tảng có Java 21. Không build ghi đè JAR đang được JVM chạy: dừng server trước khi
 build/redeploy hoặc triển khai bằng tên JAR phiên bản riêng.
+# Quy ước giờ gameplay — UTC+7
+
+Source hiện tại dùng `Asia/Ho_Chi_Minh` cho lịch gameplay, ngày điểm danh,
+daily/shop, tháng/năm Pass và `server_time.datetime`/`getServerTime.datetime`.
+Mốc đổi ngày là **00:00 Việt Nam (17:00 UTC ngày trước)**, độc lập timezone của
+host/JVM. Unix timestamp và các cooldown tính theo số giây không bị cộng/trừ7h.
+Không chuyển đổi lại receipt hoặc timestamp lịch sử. Việc sửa source không có
+nghĩa binary production đã được deploy; kiểm JAR/version trước khi vận hành.

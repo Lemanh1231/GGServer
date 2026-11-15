@@ -21,7 +21,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     private final EconomyData data;
     private final Clock clock;
 
-    public EconomyModule(Services services) { this(services,Clock.systemDefaultZone()); }
+    public EconomyModule(Services services) { this(services,Clock.system(emu.leman.ggserver.util.GameTime.ZONE)); }
     EconomyModule(Services services,Clock clock) { s = services; data = new EconomyData(s.config); this.clock = clock; }
 
     @Override public String id() { return "economy"; }
@@ -76,8 +76,8 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     private static Map<String,Object> find(List<Object> list, int id) { return find(list, "i_id", id); }
     private static int number(Map<String,Object> row, String key, int fallback) { return integer(first(row.get(key), fallback)); }
     private long now() { return clock.instant().getEpochSecond(); }
-    private int today() { return Integer.parseInt(LocalDate.now(clock).format(DateTimeFormatter.BASIC_ISO_DATE)); }
-    private static LocalDate date(long seconds) { return Instant.ofEpochSecond(seconds).atZone(ZoneId.systemDefault()).toLocalDate(); }
+    private int today() { return emu.leman.ggserver.util.GameTime.day(clock); }
+    private static LocalDate date(long seconds) { return emu.leman.ggserver.util.GameTime.date(seconds); }
     private static void add(Map<String,Object> map, String key, long amount) { map.put(key, lng(map.get(key)) + amount); }
 
     private boolean deduct(Map<String,Object> user, String currency, Long price) {
@@ -211,7 +211,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             if (condition == 4 || AD_GROUPS.containsKey(id)) item.put("i_Count",0);
             else if (condition == 5 || id == 10012) {
                 long time = lng(item.get("i_PurchaseTime"));
-                if (time <= 0 || !date(time).equals(LocalDate.now(clock))) { item.put("i_Count",0); item.put("i_PurchaseTime",0); }
+                if (time <= 0 || !date(time).equals(emu.leman.ggserver.util.GameTime.today(clock))) { item.put("i_Count",0); item.put("i_PurchaseTime",0); }
             }
         }
         List<Object> result = new ArrayList<>(byId.values());
@@ -231,7 +231,10 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     }
 
     List<Object> normaliseAdLevels(Map<String,Object> user) {
-        List<Object> shop = normaliseShop(user);
+        return normaliseAdLevels(user,normaliseShop(user));
+    }
+
+    private List<Object> normaliseAdLevels(Map<String,Object> user,List<Object> shop) {
         Object raw = user.get("user_ad_level");
         List<Object> existing = raw instanceof Map ? List.of(raw) : list(raw);
         List<Object> result = new ArrayList<>();
@@ -258,8 +261,12 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         if(method!=0&&method!=1)return "Unsupported payment method";
         if(strictLong(product.getOrDefault("34",0))<0)return "Invalid product price";
         if(integer(product.get("57"))==1&&!inSaleWindow(product))return "Product is outside its sale window";
-        if(id>=1001&&id<=1013&&(!s.events.isStarPassEnabled()||!s.events.isPaidStarCardEnabled()||id%1000!=s.events.activeStarPassSeason()))return "Star card is unavailable";
-        if(id>=2001&&id<=3013&&!s.events.isPassGoodsSaleEnabled())return "Pass goods sale is closed";
+        if(id>=1001&&id<=1013) {
+            // A single fresh snapshot per check; do not cache operator event toggles.
+            var pass=map(s.events.snapshot().get("star_pass"));
+            if(!truth(pass.get("enabled"))||!truth(pass.get("paid_card_enabled"))||id%1000!=integer(pass.get("active_season")))return "Star card is unavailable";
+        }
+        if(StarPassShopRules.merchandise(id)&&!StarPassShopRules.saleOpen(s.events.snapshot()))return "Pass goods sale is closed";
         List<Object> shop = normaliseShop(user);
         int season = id % 1000;
         if (id >= 1000 && id < 2000) {
@@ -277,12 +284,12 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             if ((sid == 2000+season || sid == 3000+season) && lng(item.getOrDefault("i_Count",item.get("i_TotalCount"))) > 0)
                 return "Bạn đã sở hữu gói vật phẩm này rồi!";
         }
-        Map<String,Object> row = data.row(12,id), item = find(shop,id);
-        int condition = integer(row.get("36")), max = integer(row.get("37"));
+        Map<String,Object> item = find(shop,id);
+        int condition = integer(product.get("36")), max = integer(product.get("37"));
         if(id!=31&&condition==4&&item!=null&&lng(item.get("i_TotalCount"))>0&&now()-lng(item.get("i_PurchaseTime"))<Math.max(0,max))return "Please wait before claiming again";
         if (item != null && max > 0 && lng(item.get("i_Count")) >= max) {
             if (condition == 1 || condition == 2) return "Vật phẩm đã đạt giới hạn mua tối đa!";
-            if (condition == 5 && lng(item.get("i_PurchaseTime")) > 0 && date(lng(item.get("i_PurchaseTime"))).equals(LocalDate.now(clock)))
+            if (condition == 5 && lng(item.get("i_PurchaseTime")) > 0 && date(lng(item.get("i_PurchaseTime"))).equals(emu.leman.ggserver.util.GameTime.today(clock)))
                 return "Vật phẩm đã đạt giới hạn mua trong ngày!";
         }
         return "";
@@ -291,7 +298,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     private boolean inSaleWindow(Map<String,Object> row) {
         try {
             var format=DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss").withResolverStyle(java.time.format.ResolverStyle.STRICT);
-            var start=LocalDateTime.parse(str(row.get("59")),format);var end=LocalDateTime.parse(str(row.get("60")),format);var current=LocalDateTime.now(clock);
+            var start=LocalDateTime.parse(str(row.get("59")),format);var end=LocalDateTime.parse(str(row.get("60")),format);var current=emu.leman.ggserver.util.GameTime.localNow(clock);
             return !end.isBefore(start)&&!current.isBefore(start)&&current.isBefore(end);
         } catch(java.time.format.DateTimeParseException e) {return false;}
     }
@@ -321,14 +328,16 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         if (!error.isEmpty()) return Result.error(1,error);
         Map<String,Object> row = data.row(12,id);
         int sellType = row.isEmpty() ? 1 : integer(row.get("33"));
-        long price = lng(row.get("34"));
-        if (id == 2003 || id == 3003) price = 50;
+        long price = StarPassShopRules.effectivePrice(id,lng(row.get("34")));
         boolean pass = id >= 1000 && id <= 3020;
         if ((pass || sellType == 1) && !deduct(user,"CP",price))
             return Result.error(1,pass ? "Không đủ Socola!" : "Not enough CP");
         int group = integer(row.get("31"));
         Map<String,Object> updated = null;
-        List<Object> levels = normaliseAdLevels(user);
+        // eligibility already normalized this detached shop snapshot. Reuse it for
+        // ad history and receipts instead of rebuilding/scanning it three times.
+        List<Object> shop = items(user,"user_shop");
+        List<Object> levels = normaliseAdLevels(user,shop);
         if (AD_GROUPS.containsKey(id)) {
             int adGroup = AD_GROUPS.get(id);
             updated = find(levels,adGroup);
@@ -337,8 +346,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             updated.put("i_EXP",exp+5); updated.put("i_Level",adLevel(adGroup,exp+5)[0]);
         }
         List<Object> rewards = data.rewards(group);
-        for(var definition:data.rows(13)) if(integer(definition.get("2"))==group
-                &&(strictInt(definition.get("3"))<=0||strictInt(definition.get("4"))<=0||strictLong(definition.get("5"))<=0))return Result.error(1,"Invalid shop rewards");
+        for(var definition:data.groupedRows(13,"2",group)) if(strictInt(definition.get("3"))<=0||strictInt(definition.get("4"))<=0||strictLong(definition.get("5"))<=0)return Result.error(1,"Invalid shop rewards");
         if(rewards.isEmpty()||rewards.stream().anyMatch(r->!validShopReward(map(r))))return Result.error(1,"Invalid shop rewards");
         for (Object rew : rewards) grant(user,map(rew),true);
         int season = id % 1000;
@@ -346,7 +354,6 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             subscribe(user,season,1000+season);
             if (rewards.stream().noneMatch(r -> integer(map(r).get("reward_type")) == 10)) rewards.add(reward(10,1000+season,1));
         }
-        List<Object> shop = normaliseShop(user);
         Set<Integer> record = new LinkedHashSet<>(List.of(id));
         if (id >= 2000 && id <= 3020) { record.add(2000+season); record.add(3000+season); }
         for (int recordId : record) {
@@ -480,7 +487,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
     private List<Object> boardRewards(String event) { return list(map(data.boards().get(event)).get("reward_list")); }
     private int maxDay(String event) { int count = boardRewards(event).size(); return count == 0 ? 7 : count; }
     private int claimDay(Map<String,Object> state, int max) {
-        if (integer(state.get("ymd")) == today()) return number(state,"day",1);
+        if (integer(state.get("ymd")) >= today()) return number(state,"day",1);
         int day = integer(state.get("day"))+1;
         return day > max ? 1 : day;
     }
@@ -500,13 +507,14 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         int current = 1;
         if (user != null) {
             Map<String,Object> ud = ud(user), state = attendanceState(user,"1");
-            if (str(p.getOrDefault("type","check")).equals("add") && integer(ud.get("attendance_date")) != today()) {
+            if (str(p.getOrDefault("type","check")).equals("add") && integer(ud.get("attendance_date")) < today()
+                    && integer(state.get("ymd")) < today()) {
                 int count = integer(ud.get("attendance_count"))+1;
                 ud.put("attendance_count",count); ud.put("attendance_date",today());
                 ud.put("max_coutinuous_attendance_count",Math.max(integer(ud.get("max_coutinuous_attendance_count")),count));
                 s.state.saveUser(user); added = true;
             }
-            claimed = integer(state.get("ymd")) == today();
+            claimed = integer(state.get("ymd")) >= today() || integer(ud.get("attendance_date")) > today();
             current = claimed ? integer(state.getOrDefault("day",1)) : claimDay(state,maxDay("1"));
         }
         Map<String,Object> result = obj("status",added || !claimed ? "Y" : "N","attendance_count",current,
@@ -535,7 +543,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             Map<String,Object> board = map(entry.getValue()), state = user == null ? obj() : attendanceState(user,event);
             List<Object> rewards = list(board.get("reward_list")), overlaid = new ArrayList<>();
             int claimed = integer(state.get("day")), ymd = integer(state.get("ymd"));
-            if (claimed >= (rewards.isEmpty() ? 7 : rewards.size()) && ymd != today()) { claimed = 0; ymd = 0; }
+            if (claimed >= (rewards.isEmpty() ? 7 : rewards.size()) && ymd < today()) { claimed = 0; ymd = 0; }
             for (Object raw : rewards) {
                 Map<String,Object> reward = new LinkedHashMap<>(map(raw));
                 if (claimed != 0 && integer(reward.get("reward_num")) <= claimed) {
@@ -580,7 +588,9 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         if (user == null) return Result.error(1,"Account not found");
         if (boardRewards(event).isEmpty()) return Result.error(1,"Attendance board is unavailable");
         Map<String,Object> ud = ud(user), state = attendanceState(user,event);
-        if (integer(state.get("ymd")) == today()) return Result.ok(eventResponse(ud,null,"N",null));
+        if (integer(state.get("ymd")) >= today()
+                || event.equals("1") && integer(ud.get("attendance_date")) > today())
+            return Result.ok(eventResponse(ud,null,"N",null));
         int day = claimDay(state,maxDay(event));
         Map<String,Object> rew = dayReward(event,day);
         if(rew==null)return Result.error(1,"Attendance reward is unavailable");

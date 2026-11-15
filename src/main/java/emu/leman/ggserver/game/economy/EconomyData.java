@@ -13,6 +13,11 @@ final class EconomyData {
     private final emu.leman.ggserver.config.ServerConfig config;
     private Map<String,Object> game;
     private Map<String,Object> boards;
+    // Catalog was already loaded once for this module's lifetime. Index that same
+    // snapshot only; dynamic event configuration is deliberately not cached here.
+    private final Map<Integer,List<Map<String,Object>>> tables = new HashMap<>();
+    private final Map<Integer,Map<Integer,Map<String,Object>>> byId = new HashMap<>();
+    private final Map<String,Map<Integer,List<Map<String,Object>>>> groups = new HashMap<>();
 
     EconomyData(Path root) { this(emu.leman.ggserver.config.ServerConfig.defaults(root)); }
     EconomyData(emu.leman.ggserver.config.ServerConfig config) { this.config=config; this.root=config.root; }
@@ -29,20 +34,36 @@ final class EconomyData {
         return game;
     }
 
-    List<Map<String,Object>> rows(int table) {
-        List<Map<String,Object>> result = new ArrayList<>();
-        for (Object row : list(game().get(String.valueOf(table)))) if (row instanceof Map) result.add(map(row));
-        return result;
+    synchronized List<Map<String,Object>> rows(int table) {
+        return tables.computeIfAbsent(table,key -> {
+            List<Map<String,Object>> result = new ArrayList<>();
+            for (Object row : list(game().get(String.valueOf(key)))) if (row instanceof Map) result.add(map(row));
+            return List.copyOf(result);
+        });
     }
 
-    Map<String,Object> row(int table, int id) {
-        for (Map<String,Object> row : rows(table)) if (integer(row.get("1")) == id) return row;
-        return obj();
+    synchronized Map<String,Object> row(int table, int id) {
+        var index=byId.computeIfAbsent(table,key -> {
+            Map<Integer,Map<String,Object>> result=new HashMap<>();
+            for(var row:rows(key))result.putIfAbsent(integer(row.get("1")),row);
+            return result;
+        });
+        return index.getOrDefault(id,Map.of());
+    }
+
+    synchronized List<Map<String,Object>> groupedRows(int table,String column,int group) {
+        var index=groups.computeIfAbsent(table+":"+column,key -> {
+            Map<Integer,List<Map<String,Object>>> result=new HashMap<>();
+            for(var row:rows(table))result.computeIfAbsent(integer(row.get(column)),ignored -> new ArrayList<>()).add(row);
+            result.replaceAll((id,values)->List.copyOf(values));
+            return result;
+        });
+        return index.getOrDefault(group,List.of());
     }
 
     List<Object> rewards(int group) {
         List<Object> result = new ArrayList<>();
-        for (Map<String,Object> row : rows(13)) if (integer(row.get("2")) == group)
+        for (Map<String,Object> row : groupedRows(13,"2",group))
             result.add(reward(integer(row.get("3")), integer(row.get("4")), lng(row.get("5"))));
         return result;
     }

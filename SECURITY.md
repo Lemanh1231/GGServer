@@ -24,3 +24,18 @@ Before deploying:
 
 Please do not post live account identifiers, access tokens or secrets in public
 issues. Provide redacted reproduction steps and synthetic fixtures instead.
+
+## Source security review — 2026-11-16
+
+See `GGServerJava-threat-model.md` for the scoped threat model, owner-confirmed
+public-game/private-admin context, tests and remaining conditional risks.
+The direct guest-login alias substitution is fixed in source: an existing
+account requires its actual stored device credential, not a UID/canonical alias.
+This is not external-provider verification and does not protect a leaked real
+device credential. Deploy only after a separate authorized review.
+
+Enforce request/rate/concurrency/time limits and capture rotation; strip and set
+forwarding headers at a trusted proxy and block direct origin access. Java-side
+body/depth limits alone do not bound aggregate resource usage. Private admin
+exposure and strong secrets remain required; the legacy token/logout/cookie
+behavior is not redesigned by this release.

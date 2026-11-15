@@ -4,7 +4,6 @@ import emu.leman.ggserver.Services;
 import emu.leman.ggserver.net.CmdId;
 import emu.leman.ggserver.net.HandlerRegistry;
 import emu.leman.ggserver.net.Result;
-import java.time.LocalDate;
 import java.util.*;
 import static emu.leman.ggserver.util.Json.*;
 
@@ -28,9 +27,11 @@ public final class ContentModule implements emu.leman.ggserver.game.GameModule {
         new ContentMusic(s).register();
     }
 
-    public Map<String,Object> filteredGameData() { return filteredGameData(LocalDate.now().getMonthValue()); }
+    public Map<String,Object> filteredGameData() { return filteredGameData(emu.leman.ggserver.util.GameTime.today().getMonthValue()); }
     public Map<String,Object> filteredGameData(int currentMonth) {
         Map<String,Object> ret=s.gameData.namedData(),cfg=s.events.snapshot();
+        for(Object value:list(ret.get("shop")))
+            emu.leman.ggserver.game.economy.StarPassShopRules.project(map(value),cfg);
         if(!truth(map(cfg.get("meowfest")).get("enabled"))) ret.put("samseckevent",new ArrayList<>());
         List<Object> attendance=new ArrayList<>();
         for(Object value:list(ret.get("event_list"))) {

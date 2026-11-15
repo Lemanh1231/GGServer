@@ -35,7 +35,7 @@ public final class SocialPosts {
             long created=lng(user.get("created_at"));
             if(created==0) {
                 created=lng(first(user.get("last_save_time"),now));
-                try { created=LocalDate.parse(str(map(user.get("userdata")).get("u_create_time")),DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay(ZoneId.systemDefault()).toEpochSecond(); }
+                try { created=LocalDate.parse(str(map(user.get("userdata")).get("u_create_time")),DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay(emu.leman.ggserver.util.GameTime.ZONE).toEpochSecond(); }
                 catch(RuntimeException ignored) { }
                 user.put("created_at",created);
             }

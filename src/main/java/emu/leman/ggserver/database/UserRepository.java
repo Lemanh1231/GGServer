@@ -6,6 +6,11 @@ import java.util.Map;
 /** Storage boundary. Returned account maps are detached snapshots, never live database objects. */
 public interface UserRepository extends AutoCloseable {
     Map<String,Object> getUser(String identifier);
+    /** Resolve locking identity without loading every inventory/feature section. */
+    default String canonicalIdentity(String identifier) {
+        var user=getUser(identifier);
+        return user==null?identifier:emu.leman.ggserver.util.Json.str(user.get("uuid"));
+    }
     Map<String,Object> createUser(String uuid, String deviceUuid, String ip);
     void saveUser(Map<String,Object> user);
     void updateUserIp(String identifier, String ip, String domain);

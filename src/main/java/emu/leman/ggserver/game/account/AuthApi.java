@@ -43,8 +43,16 @@ public final class AuthApi {
         String appId = str(form,"app_id","0"), device = str(form,"device_cd",""), nick = "Guitarist";
         String canonical = device.isEmpty() ? "neon_"+UUID.randomUUID() : device;
         if (!device.isEmpty()) {
+            // Repository lookup also accepts UUID/u_seq/u_id aliases. Those are
+            // account selectors, not guest credentials: require the stored device
+            // before createUser can update account metadata or a session is issued.
+            var existing=s.state.getUser(device);
+            if(existing!=null && !device.equals(str(map(existing.get("userdata")).get("device_uuid"))))
+                return rejectedGuestIdentity();
             Map<String,Object> user = AuthContent.createUser(s,device,device,ip);
             Map<String,Object> ud = map(user.get("userdata"));
+            // Recheck the resolved result, including account-creation races.
+            if(!device.equals(str(ud.get("device_uuid"))))return rejectedGuestIdentity();
             canonical = str(first(user.get("uuid"),ud.get("uuid"),device));
             memberId = lng(first(ud.get("u_seq"), memberId));
             nick = str(first(ud.get("u_nick"),nick));
@@ -57,6 +65,9 @@ public final class AuthApi {
             "reg_nation","US","is_guest_login",false,"provider_display_name","PmangPlus","pushgroup",null,"locale",null);
         return simple(obj("access_token",token,"member",member,"force_receipt",null,"conflict_member_id",null,"is_guest_login",false,
             "old_member_id",null,"jailbreak_yn","N","fcm_send_lang","EN","unreg_status","NO","unreg_remain_time",null,"callTime",0));
+    }
+    private static Map<String,Object> rejectedGuestIdentity() {
+        return obj("value",null,"result_code","401","result_msg","Guest identity could not be verified; no session issued");
     }
     private static Map<String,Object> simple(Object value) { return obj("value",value,"result_code","000","result_msg","API_OK"); }
     private static Response json(Object value) { return new Response(bytes(value),"application/json; charset=utf-8"); }

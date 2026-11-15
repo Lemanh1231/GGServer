@@ -22,10 +22,7 @@ public final class Services implements AutoCloseable {
         state=new StateStore(config);
         events=new EventManager(this.root);
         sessions=new SessionManager(config.sessionTimeoutSeconds,config.sessionCleanupSeconds,config.maxSessions);
-        registry=new HandlerRegistry(identity -> {
-            var user=state.getUser(identity);
-            return user==null ? identity : emu.leman.ggserver.util.Json.str(user.get("uuid"));
-        });
+        registry=new HandlerRegistry(state::canonicalIdentity);
     }
     @Override public void close() { try { sessions.close(); } finally { state.close(); } }
 }
