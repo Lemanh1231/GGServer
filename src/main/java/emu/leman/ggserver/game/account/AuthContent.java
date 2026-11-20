@@ -341,6 +341,8 @@ public final class AuthContent {
         List<Object> costumes=defaults(user,"costumes",item(1)); ensure(costumes,201,item(201));
         List<Object> guitars=defaults(user,"user_guitar",item(1)); ensure(guitars,201,item(201));
         List<Object> music=defaults(user,"user_music",music(1)); ensure(music,201,music(201));
+        long encoreNow=java.time.Instant.now().getEpochSecond();
+        for(Object raw:music)emu.leman.ggserver.game.content.EncoreRules.normalizeAppearance(user,map(raw),encoreNow);
         shop(user); List<Object> adLevels=adLevels(user);
         Map<String,Object> result=obj("user_achievement",achievements(user,null),"user_buff",activeBuffs(user),"user_candy_shop",rows(user,"user_candy_shop"),
             "user_character",chars,"user_costume",costumes,"user_daily_mission",dailyMissions(user,null),"user_follower",defaults(user,"user_follower",item(1)),

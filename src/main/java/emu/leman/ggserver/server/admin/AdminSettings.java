@@ -19,6 +19,10 @@ final class AdminSettings {
     Map<String,Object> update(Map<String,Object> req) {
         var user = services.state.getUser(data.resolve(req));
         if (user == null || user.isEmpty()) throw new IllegalArgumentException("Không tìm thấy người chơi!");
+        if(req.containsKey("event_overrides"))user.put("event_overrides",emu.leman.ggserver.game.content.EventManager.validateOverrides(req.get("event_overrides")));
+        return services.events.withAccount(user,()->updateAccount(req,user));
+    }
+    private Map<String,Object> updateAccount(Map<String,Object> req,Map<String,Object> user) {
         String uuid = str(user.get("uuid"));
         Map<String,Object> ud = child(user, "userdata");
         long cp = whole(req.get("add_cp"));
@@ -97,7 +101,9 @@ final class AdminSettings {
         if (customized) {
             for (var entry : custom.entrySet()) {
                 var cfg = map(entry.getValue()); String event = entry.getKey();
-                if (!truth(cfg.get("modified")) || !services.events.isAttendanceEventEnabled(event)) continue;
+                if (!truth(cfg.get("modified"))) continue;
+                if(!List.of("1","2","3","202110","202111").contains(event))throw new IllegalArgumentException("Unknown attendance event");
+                if(!services.events.isAttendanceEventEnabled(event))throw new IllegalArgumentException("Attendance event is disabled for this account: "+event);
                 int max = List.of("2", "202110").contains(event) ? 14 : 7;
                 progress(user, event, cfg.get("target_day"), truth(cfg.getOrDefault("unlock_today", true)), str(cfg.getOrDefault("mode", "claim_day")), max, truth(cfg.get("grant_all")));
             }
@@ -108,11 +114,13 @@ final class AdminSettings {
     }
     private void progress(Map<String,Object> user, String event, Object target, boolean unlock, String mode, int max, boolean grant) {
         if (!present(target) && !grant) return;
-        var state = child(child(user, "attendance"), event);
         int today = Integer.parseInt(emu.leman.ggserver.util.GameTime.today().format(DateTimeFormatter.BASIC_ISO_DATE));
         int day = present(target) ? Math.toIntExact(whole(target)) : 0;
-        int claimed = day <= 0 ? 0 : day >= max && mode.equals("complete") ? max : Math.min(day, max) - 1;
-        int date = day <= 0 ? 0 : day >= max && mode.equals("complete") || !unlock ? today : 0;
+        if(day<0||day>max)throw new IllegalArgumentException("Attendance day must be between 0 and "+max);
+        if(!List.of("claim_day","complete").contains(mode))throw new IllegalArgumentException("Invalid attendance mode");
+        var state = child(child(user, "attendance"), event);
+        int claimed = day==0 ? 0 : mode.equals("complete") ? day : day-1;
+        int date = day <= 0 ? 0 : mode.equals("complete") || !unlock ? today : 0;
         if (grant) {
             List<Object> rewards = eventRewards(event);
             if (rewards.isEmpty()) throw new IllegalArgumentException("Attendance reward data unavailable for event " + event + "; no progress or rewards saved");

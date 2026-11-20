@@ -121,6 +121,30 @@ class ChapterEncoreRegressionTest {
         }
     }
     @ParameterizedTest @MethodSource("chapters")
+    void inactiveZeroReceiptAllowsNewRollButNeverReplay(int chapter,String backend) throws Exception {
+        setup(chapter,backend);var u=user();
+        var row=map(list(u.get("user_music")).getFirst());
+        row.put("b_EncoreBonusAppear",0);row.put("i_EncoreBonusFollowerId",0);row.put("l_EncoreBonusActivateTime",0);
+        u.put("encore_claims",obj(str(music),0));
+        new emu.leman.ggserver.game.account.AuthContent(s).contents(u);
+        assertEquals(1,integer(EncoreRules.state(u,music).get("legacy_placeholder")));
+        s.state.saveUser(u);reopen();reject(List.of(music));
+        save(song(1,music));claim();reopen();save(song(1,music));reject(List.of(music));
+    }
+    @ParameterizedTest @MethodSource("chapters")
+    void inactiveRealReceiptStartsMigrationAtLoadNotAtNextRoll(int chapter,String backend) throws Exception {
+        setup(chapter,backend);var u=user();var row=map(list(u.get("user_music")).getFirst());
+        row.put("b_EncoreBonusAppear",0);u.put("encore_claims",obj(str(music),123));
+        EncoreRules.normalizeAppearance(u,row,1000);
+        assertEquals(1000,lng(EncoreRules.state(u,music).get("claimed_at")));
+        EncoreRules.normalizeAppearance(u,row,2000);
+        assertEquals(1000,lng(EncoreRules.state(u,music).get("claimed_at")));
+        var incoming=song(1,music);
+        EncoreRules.mergeAppearance(s.gameData,u,row,incoming,1,music,2000);
+        assertEquals(0,integer(incoming.get("b_EncoreBonusAppear")));
+        assertEquals(1000,lng(EncoreRules.state(u,music).get("claimed_at")));
+    }
+    @ParameterizedTest @MethodSource("chapters")
     void legacyReceiptMigratesWithoutTrustingItsTimeUnits(int chapter,String backend) throws Exception {
         setup(chapter,backend);var u=user();u.put("encore_claims",obj(str(music),Long.MAX_VALUE));s.state.saveUser(u);
         reject(List.of(music));save(song(1,music));reopen();reject(List.of(music));
@@ -128,6 +152,47 @@ class ChapterEncoreRegressionTest {
         long claimed=lng(EncoreRules.state(user(),music).get("claimed_at"));
         assertTrue(Math.abs(claimed-System.currentTimeMillis()/1000)<5);
         backdate(75601);save(song(1,music));claim();reject(List.of(music));
+    }
+    @ParameterizedTest @MethodSource("chapters")
+    void legacyZeroReceiptIsHiddenOnLoadAndRecoversAfterCooldown(int chapter,String backend) throws Exception {
+        setup(chapter,backend);var u=user();u.put("encore_claims",obj(str(music),0));s.state.saveUser(u);
+        double balance=dbl(map(u.get("userdata")).get("u_candy"));
+        var contents=new emu.leman.ggserver.game.account.AuthContent(s).contents(u);
+        var projected=list(contents.get("user_music")).stream().map(v->map(v))
+                .filter(v->integer(v.get("i_id"))==music).findFirst().orElseThrow();
+        assertEquals(0,integer(projected.get("b_EncoreBonusAppear")));
+        assertEquals(0,integer(projected.get("i_EncoreBonusFollowerId")));
+        long claimed=lng(EncoreRules.state(u,music).get("claimed_at"));
+        assertTrue(Math.abs(claimed-System.currentTimeMillis()/1000)<5);
+        s.state.saveUser(u);reopen();reject(List.of(music));
+        save(song(1,music));save(obj("i_id",music,"i_Level",1));reopen();
+        assertEquals(claimed,lng(EncoreRules.state(user(),music).get("claimed_at")),"Stale saves must not restart cooldown");
+        assertEquals(0,integer(map(list(user().get("user_music")).getFirst()).get("b_EncoreBonusAppear")));
+        assertEquals(0,lng(map(user().get("encore_claims")).get(str(music))));
+        assertEquals(balance,dbl(map(user().get("userdata")).get("u_candy")));
+        backdate(75601);save(song(1,music));claim();save(song(1,music));reject(List.of(music));
+    }
+    @ParameterizedTest @MethodSource("chapters")
+    void consumedLifecycleHidesStaleFlagButPendingGiftSurvivesProjection(int chapter,String backend) throws Exception {
+        setup(chapter,backend);var u=user();
+        u.put("encore_state",obj(str(music),obj("pending",1,"issued_at",100)));
+        var song=map(list(u.get("user_music")).getFirst());
+        EncoreRules.normalizeAppearance(u,song,200);
+        assertEquals(1,integer(song.get("b_EncoreBonusAppear")));
+        u.put("encore_state",obj(str(music),obj("pending",0,"claimed_at",150)));
+        EncoreRules.normalizeAppearance(u,song,200);
+        assertEquals(0,integer(song.get("b_EncoreBonusAppear")));
+        assertEquals(150,lng(song.get("l_EncoreBonusActivateTime")));
+        EncoreRules.normalizeAppearance(u,song,300);
+        assertEquals(150,lng(EncoreRules.state(u,music).get("claimed_at")));
+    }
+    @ParameterizedTest @MethodSource("chapters")
+    void saveReconcilesLegacyGiftEvenWhenAppearanceIsOmitted(int chapter,String backend) throws Exception {
+        setup(chapter,backend);var u=user();u.put("encore_claims",obj(str(music),0));s.state.saveUser(u);
+        save(obj("i_id",music,"i_Level",1));reopen();
+        assertEquals(0,integer(map(list(user().get("user_music")).getFirst()).get("b_EncoreBonusAppear")));
+        assertEquals(0,integer(EncoreRules.state(user(),music).get("pending")));
+        assertTrue(lng(EncoreRules.state(user(),music).get("claimed_at"))>0);reject(List.of(music));
     }
     @ParameterizedTest @MethodSource("chapters")
     void invalidBatchNeverPartiallyGrantsAndValidBatchIncludesProfileBonus(int chapter,String backend) throws Exception {

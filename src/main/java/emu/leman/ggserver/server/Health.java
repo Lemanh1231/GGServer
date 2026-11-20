@@ -1,0 +1,12 @@
+package emu.leman.ggserver.server;
+
+/** Public liveness page: never exposes account, host, database or log details. */
+final class Health {
+    private Health() {}
+    static String html() {
+        return """
+        <!doctype html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#171820"><title>Guitar Girl · Trạng thái</title><style>
+        *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at top,#3b2b42,transparent 65%),#171820;color:#f1e8e5;font:16px/1.6 system-ui,sans-serif}.card{width:100%;max-width:620px;background:#22232e;border:1px solid #494151;border-radius:28px;padding:clamp(24px,6vw,48px);box-shadow:0 24px 90px #0004}.brand{color:#efafc0;font-weight:700;letter-spacing:.03em}.label{font-size:12px;color:#b7acd8;letter-spacing:.15em;margin-top:32px}h1{font-size:clamp(30px,6vw,42px);line-height:1.2;margin:16px 0}.status{display:inline-flex;align-items:center;gap:10px;background:#a4c9b612;color:#b8dec9;border:1px solid #a4c9b640;border-radius:30px;padding:8px 16px}.dot{width:9px;height:9px;background:#a4c9b6;border-radius:50%}p{color:#b7adb8}.check{border-top:1px solid #ffffff14;margin-top:28px;padding-top:20px;font-size:14px}a,button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;border-radius:12px;padding:10px 18px;text-decoration:none;background:#efafc0;color:#38212b;border:0;font:inherit;cursor:pointer}a.secondary{background:transparent;color:#efafc0;border:1px solid #efafc040}nav{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}:focus-visible{outline:3px solid #b7acd8;outline-offset:4px}</style></head><body><main class="card"><div class="brand">♫ Guitar Girl · Server status</div><div class="label">SERVICE AVAILABILITY</div><h1>Máy chủ đang phản hồi.</h1><div class="status"><span class="dot" aria-hidden="true"></span>HTTP service · Online</div><p>Kết nối tới dịch vụ web thành công. Đây là kiểm tra liveness, không xác nhận toàn bộ chức năng game hoặc database.</p><div class="check">Phản hồi: <strong>HTTP 200</strong><br>Kiểm tra lại để nhận trạng thái tại thời điểm hiện tại.</div><nav><button onclick="location.reload()">Kiểm tra lại</button><a class="secondary" href="/download">Tải game</a></nav></main></body></html>
+        """;
+    }
+}

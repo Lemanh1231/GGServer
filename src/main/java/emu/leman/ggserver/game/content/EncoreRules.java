@@ -32,6 +32,28 @@ public final class EncoreRules {
         Object receipt=map(user.get("encore_claims")).get(str(song.get("i_id")));
         return receipt!=null && lng(song.get("l_EncoreBonusActivateTime"))<=lng(receipt);
     }
+    /** Reconcile stale display flags without granting rewards or deleting replay receipts. */
+    public static void normalizeAppearance(Map<String,Object> user,Map<String,Object> song,long now) {
+        int music=integer(song.get("i_id"));
+        // A zero receipt on an inactive, never-activated song is an imported placeholder,
+        // not evidence of a successful claim. Persist the distinction before a new roll.
+        if(integer(song.get("b_EncoreBonusAppear"))!=1 && state(user,music).isEmpty()
+                && map(user.get("encore_claims")).containsKey(str(music))) {
+            boolean placeholder=lng(map(user.get("encore_claims")).get(str(music)))==0
+                    && lng(song.get("l_EncoreBonusActivateTime"))==0;
+            states(user).put(str(music),placeholder?obj("pending",0,"legacy_placeholder",1)
+                    :obj("pending",0,"claimed_at",now,"legacy_migrated",1));
+        }
+        if(integer(song.get("b_EncoreBonusAppear"))!=1)return;
+        int id=integer(song.get("i_id"));var state=state(user,id);
+        if(state.isEmpty()) {
+            if(!legacyClaimed(user,song))return;
+            // Legacy receipt units are unknown: begin one conservative cooldown now.
+            states(user).put(str(id),obj("pending",0,"claimed_at",now));
+        } else if(integer(state.get("pending"))==1)return;
+        song.put("b_EncoreBonusAppear",0);song.put("i_EncoreBonusFollowerId",0);
+        song.put("l_EncoreBonusActivateTime",lng(state(user,id).get("claimed_at")));
+    }
     /** Only server claim clears pending. A no-bonus/stale save must not delete a gift. */
     private static void preserve(Map<String,Object> previous,Map<String,Object> incoming) {
         for(String field:List.of("b_EncoreBonusAppear","i_EncoreBonusFollowerId","l_EncoreBonusActivateTime"))incoming.remove(field);
@@ -39,6 +61,7 @@ public final class EncoreRules {
             if(previous.containsKey(field))incoming.put(field,previous.get(field));
     }
     public static void mergeAppearance(GameData data,Map<String,Object> user,Map<String,Object> previous,Map<String,Object> incoming,Object appear,Object follower,long now) {
+        if(previous!=null)normalizeAppearance(user,previous,now);
         preserve(previous,incoming);
         int id=integer(incoming.get("i_id"));var state=state(user,id);
         if(previous!=null && integer(previous.get("b_EncoreBonusAppear"))==1

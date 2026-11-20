@@ -1,5 +1,19 @@
 # Security and private runtime files
 
+## Java4Shell (CVE-2026-114938)
+
+Use a vendor-confirmed patched JDK 21. Ubuntu 24.04 fixes this issue in
+`21.0.13.1+2-1~24.04.1`; see https://ubuntu.com/security/CVE-2026-114938.
+Check the running JVM with `jcmd <pid> VM.version`, not only `java -version`:
+upgrading packages does not update an already running JVM.
+
+`deploy/systemd/20-base64-intrinsic-mitigation.conf` provides an optional
+defense-in-depth service drop-in. Merge any existing `JAVA_TOOL_OPTIONS`, test
+startup/protocol compatibility, then reload systemd and restart the owning
+service. Verify `UseBASE64Intrinsics = false` with `jcmd <pid> VM.flags -all`.
+This mitigation is not a substitute for the vendor patch. The game decodes
+Base64 before session validation; authentication is not a decoder boundary.
+
 This branch intentionally excludes production configuration, account data, logs,
 wire captures, backups, APKs, signing keys, certificates and credentials.
 The example configuration contains no production connection information.

@@ -18,7 +18,7 @@ public final class ContentModule implements emu.leman.ggserver.game.GameModule {
         s.registry.register(CmdId.GET_SAM_SECK_LIST,(req,ctx)->Result.ok(obj("event_type","","rewardList",s.events.isMeowfestEnabled()?List.of(
             obj("i_id",1,"i_RewardType",9,"i_RewardId",10,"d_RewardQuantity",1.0),
             obj("i_id",2,"i_RewardType",3,"i_RewardId",13,"d_RewardQuantity",1.0),
-            obj("i_id",3,"i_RewardType",7,"i_RewardId",1,"d_RewardQuantity",1.0)):List.of())));
+            obj("i_id",3,"i_RewardType",1,"i_RewardId",2,"d_RewardQuantity",333.0)):List.of())));
         s.registry.register(CmdId.GET_SAM_SECK_REWARD,(req,ctx)->{synchronized(s.state){return samseckReward(req,ctx);}});
         s.registry.register(CmdId.GET_EVENT_MAIN,this::eventMain);
         s.registry.register(CmdId.GET_EVENT_RANK,this::eventRank);
@@ -81,7 +81,8 @@ public final class ContentModule implements emu.leman.ggserver.game.GameModule {
             claimed.add(id);
             if(id==1) { if(!user.containsKey("user_guitar")) user.put("user_guitar",new ArrayList<>(List.of(obj("i_id",1,"i_Level",1,"i_BonusLevel",0))));owned(user,"user_guitar",10,true); }
             if(id==2) { if(!user.containsKey("costumes")) user.put("costumes",new ArrayList<>(List.of(obj("i_id",1,"i_Level",1,"i_BonusLevel",0))));owned(user,"costumes",13,true); }
-            if(id==3) {Map<String,Object> unit=find(rows(user,"user_unit"),1);if(unit==null)rows(user,"user_unit").add(obj("i_id",1,"i_Level",1));else {int old=integer(first(unit.get("i_Level"),1)),max=integer(s.gameData.row(7,1).getOrDefault("27",20));unit.put("i_Level",(int)Math.max(old,Math.min(max,(long)old+1)));}}
+            // HaveMate is the requirement, not a mate-level reward.
+            if(id==3) ud.put("u_candy",dbl(ud.get("u_candy"))+333.0);
         }
         s.state.saveUser(user);return Result.ok(obj("step",step));
     }

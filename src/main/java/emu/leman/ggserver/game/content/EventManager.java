@@ -16,6 +16,62 @@ public final class EventManager {
         return Collections.unmodifiableList(seasons);
     }
     private final Path configPath;
+    private final ThreadLocal<Map<String,Object>> accountOverrides=new ThreadLocal<>();
+    private final ThreadLocal<String> accountIdentity=new ThreadLocal<>();
+    public static Set<String> accountEventKeys() {
+        Set<String> keys=new LinkedHashSet<>(List.of("star_pass","paid_card","pass_goods_sale","meowfest","chapter3_tour","fan_art_costume","event_ranking","snow","cherry"));
+        keys.addAll(List.of("attendance:1","attendance:2","attendance:3","attendance:202110","attendance:202111"));return Set.copyOf(keys);
+    }
+    public static Map<String,Object> validateOverrides(Object raw) {
+        if(!(raw instanceof Map))throw new IllegalArgumentException("Account event overrides must be an object");
+        Map<String,Object> result=new LinkedHashMap<>();
+        for(var entry:map(raw).entrySet()) {
+            if(!accountEventKeys().contains(entry.getKey()) || !(entry.getValue() instanceof Boolean))
+                throw new IllegalArgumentException("Invalid account event override: "+entry.getKey());
+            result.put(entry.getKey(),entry.getValue());
+        }
+        if(truth(result.get("snow"))&&truth(result.get("cherry")))throw new IllegalArgumentException("Choose only one weather effect");
+        return result;
+    }
+    public <T> T withAccount(Map<String,Object> user,java.util.function.Supplier<T> operation) {
+        var previous=accountOverrides.get();
+        var previousIdentity=accountIdentity.get();accountIdentity.set(str(user.get("uuid")));
+        accountOverrides.set(map(user.get("event_overrides")));
+        try{return operation.get();}finally{if(previous==null)accountOverrides.remove();else accountOverrides.set(previous);if(previousIdentity==null)accountIdentity.remove();else accountIdentity.set(previousIdentity);}
+    }
+    private Map<String,Object> effective(Map<String,Object> cfg) {
+        var overrides=accountOverrides.get();if(overrides==null||overrides.isEmpty())return cfg;
+        for(var entry:overrides.entrySet()) {
+            String key=entry.getKey();if(!(entry.getValue() instanceof Boolean)||!accountEventKeys().contains(key))continue;
+            if(key.startsWith("attendance:"))map(map(cfg.get("attendance_events")).get(key.substring(11))).put("enabled",entry.getValue());
+            else if(key.equals("paid_card"))map(cfg.get("star_pass")).put("paid_card_enabled",entry.getValue());
+            else if(key.equals("snow")||key.equals("cherry")) {
+                var weather=map(cfg.get("weather_festival"));weather.remove("mode");
+                weather.put(key.equals("snow")?"snow_enabled":"cherry_blossom_enabled",entry.getValue());
+                if(truth(entry.getValue()))weather.put(key.equals("snow")?"cherry_blossom_enabled":"snow_enabled",false);
+            } else map(cfg.get(key)).put("enabled",entry.getValue());
+        }
+        return normalize(cfg);
+    }
+    /** Stable per-effective-config catalog identity, not a wall clock or reward timestamp. */
+    public synchronized long catalogRevision(Object catalog) {
+        try {
+            var digest=java.security.MessageDigest.getInstance("SHA-256");
+            digest.update("gg-catalog-revision-v1".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            digest.update(stringify(catalog).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            digest.update(stringify(snapshot()).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            String fingerprint=java.util.HexFormat.of().formatHex(digest.digest());
+            Path path=configPath.resolveSibling("catalog-revisions.json");
+            Map<String,Object> revisions=Files.exists(path)?map(read(path)):obj();
+            String scope=accountIdentity.get()==null?"":accountIdentity.get();
+            var entry=map(map(revisions.get("scopes")).get(scope));
+            if(fingerprint.equals(entry.get("fingerprint")))return lng(entry.get("revision"));
+            long revision=Math.max(java.time.Instant.now().getEpochSecond(),Math.addExact(lng(revisions.get("sequence")),1));
+            var scopes=new LinkedHashMap<>(map(revisions.get("scopes")));
+            scopes.put(scope,obj("fingerprint",fingerprint,"revision",revision));
+            write(path,obj("sequence",revision,"scopes",scopes));return revision;
+        } catch(java.security.NoSuchAlgorithmException e) {throw new IllegalStateException(e);}
+    }
     private Consumer<Map<String,Object>> notificationSink;
     public EventManager(Path root) { configPath=root.resolve("event_config.json"); }
     public Path configPath() { return configPath; }
@@ -30,7 +86,7 @@ public final class EventManager {
             "weather_festival",obj("name","Lễ hội Hiệu ứng Thời tiết Mùa","description","Hiệu ứng tuyết rơi mùa đông (Snow Festival) hoặc cánh hoa anh đào rơi mùa xuân (Cherry Blossom Date)","snow_enabled",true,"cherry_blossom_enabled",false));
         String[] sections={"pass_goods_sale","meowfest","chapter3_tour","fan_art_costume","event_ranking"};
         String[] labels={"Cửa hàng Giảm giá Star Pass (Pass Goods Sale)","Sự kiện Nuôi Mèo Meowfest (SamSeck)","Tour Chapter 3 (Sunshine High School)","Trang phục Thiết kế Fan Art","Đua Top Xếp Hạng Sự Kiện (Event Ranking)"};
-        String[] sectionDescriptions={"Mở biểu tượng nút Sale trên sảnh chính để mua lại toàn bộ Trang phục & Guitar của 13 mùa Star Pass đã qua","Mở khóa 3 mốc nuôi mèo Tam Thể nhận Cây cào móng (Guitar 10), Quần yếm (Costume 13), Bé mèo Navi (Unit 1)","Biểu diễn sân khấu trường trung học Sunshine 20 màn với Năng lượng Cookie / AP","Kích hoạt bộ trang phục nghệ thuật do cộng đồng người hâm mộ sáng tạo","Bảng xếp hạng đua top điểm sự kiện trực tiếp với danh sách Top 100 cao thủ"};
+        String[] sectionDescriptions={"Mở biểu tượng nút Sale trên sảnh chính để mua lại toàn bộ Trang phục & Guitar của 13 mùa Star Pass đã qua","Hoàn thành 3 mốc Meowfest nhận Cây cào móng (Guitar 10), Quần yếm (Costume 13), 333 socola; sở hữu Navi là điều kiện mốc cuối, không tặng cấp mèo","Biểu diễn sân khấu trường trung học Sunshine 20 màn với Năng lượng Cookie / AP","CH2 Guitar Girl cấp 100: nhận Spring Fairy (223) và Fairy’s Melody (234) miễn phí qua client; không tự cấp khi bật sự kiện","Bảng xếp hạng đua top điểm sự kiện trực tiếp với danh sách Top 100 cao thủ"};
         for(int i=0;i<sections.length;i++) cfg.put(sections[i],obj("name",labels[i],"description",sectionDescriptions[i],"enabled",true));
         return cfg;
     }
@@ -93,7 +149,7 @@ public final class EventManager {
                 for(Object row:map(attendance).values())if(!(row instanceof Map)
                         || map(row).containsKey("enabled")&&!(map(row).get("enabled") instanceof Boolean))return disabled();
             }
-            return normalize(value);
+            return effective(normalize(value));
         }
         catch(Exception e) {return disabled();}
     }

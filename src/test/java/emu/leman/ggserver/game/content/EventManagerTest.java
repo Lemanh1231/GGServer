@@ -31,4 +31,32 @@ class EventManagerTest {
     @Test void corruptConfigurationFailsClosed() throws Exception {
         Files.writeString(root.resolve("event_config.json"),"{broken");EventManager events=new EventManager(root);assertFalse(events.isMeowfestEnabled());assertEquals(0,events.activeEvents().size());
     }
+    @Test void accountOverridesAreIsolatedAndScopeClearsAfterFailure() {
+        EventManager events=new EventManager(root);events.save(EventManager.defaults());events.setMeowfestEnabled(false);
+        var account=obj("event_overrides",EventManager.validateOverrides(obj("meowfest",true,"attendance:1",false,"cherry",true,"snow",false)));
+        events.withAccount(account,()->{
+            assertTrue(events.isMeowfestEnabled());assertFalse(events.isAttendanceEventEnabled(1));
+            assertTrue(events.isWeatherCherryBlossomEnabled());assertFalse(events.isWeatherSnowEnabled());return null;
+        });
+        assertFalse(events.isMeowfestEnabled());assertTrue(events.isAttendanceEventEnabled(1));
+        assertThrows(IllegalStateException.class,()->events.withAccount(account,()->{throw new IllegalStateException();}));
+        assertFalse(events.isMeowfestEnabled());
+        assertThrows(IllegalArgumentException.class,()->EventManager.validateOverrides(obj("meowfest","true")));
+        assertThrows(IllegalArgumentException.class,()->EventManager.validateOverrides(obj("unknown",true)));
+        assertThrows(IllegalArgumentException.class,()->EventManager.validateOverrides(obj("snow",true,"cherry",true)));
+    }
+    @Test void catalogRevisionIsStablePersistentAndIncreasesOnEffectiveChanges() {
+        var events=new EventManager(root);events.save(EventManager.defaults());
+        long original=events.catalogRevision(obj("table",1));
+        assertEquals(original,events.catalogRevision(obj("table",1)));
+        assertEquals(original,new EventManager(root).catalogRevision(obj("table",1)));
+        var user=obj("uuid","revision-user","event_overrides",obj("attendance:2",true));
+        long personal=events.withAccount(user,()->events.catalogRevision(obj("table",1)));
+        assertTrue(personal>original);
+        user.put("event_overrides",obj());
+        long reverted=events.withAccount(user,()->events.catalogRevision(obj("table",1)));
+        assertTrue(reverted>personal);
+        events.setMeowfestEnabled(false);
+        assertTrue(events.catalogRevision(obj("table",1))>reverted);
+    }
 }

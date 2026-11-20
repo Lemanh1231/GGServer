@@ -47,6 +47,16 @@ class TransportTest {
         assertArrayEquals(Files.readAllBytes(root.resolve("cdn_files/Android")),get.body());
         assertEquals(404,request("/AssetBundles/../schema.json","GET",new byte[0],Map.of()).statusCode());
     }
+    @Test void browserHealthIsHtmlAndMonitoringRemainsText() throws Exception {
+        var response=request("/health","GET",new byte[0],Map.of("Accept","text/html"));
+        assertEquals(200,response.statusCode());
+        assertTrue(response.headers().firstValue("Content-Type").orElseThrow().startsWith("text/html"));
+        assertTrue(new String(response.body(),StandardCharsets.UTF_8).contains("Máy chủ đang phản hồi"));
+        assertEquals("Accept",response.headers().firstValue("Vary").orElseThrow());
+        var head=request("/health","HEAD",new byte[0],Map.of("Accept","text/html"));
+        assertEquals(200,head.statusCode());assertEquals(0,head.body().length);
+        assertEquals("GG emulator OK",new String(request("/health","GET",new byte[0],Map.of()).body(),StandardCharsets.UTF_8));
+    }
     @Test void gzipPostAndCapture() throws Exception {
         String payload=codec.encodeResponse("main.getServerTime",obj("call","getServerTime","data",obj()));
         byte[] body=("call=getServerTime&tapsonic_data="+URLEncoder.encode(payload,StandardCharsets.UTF_8)).getBytes(StandardCharsets.UTF_8);

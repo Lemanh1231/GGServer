@@ -63,6 +63,7 @@ public final class AdminServer {
                 switch (path) {
                     case "/admin/api/events" -> respond(exchange, 200, obj("success", true, "config", services.events.snapshot(), "seasons", seasons()));
                     case "/admin/api/users" -> respond(exchange, 200, obj("success", true, "users", users(), "active_season", services.events.activeStarPassSeason()));
+                    case "/admin/api/status" -> respond(exchange, 200, status());
                     default -> respond(exchange, 404, obj("success", false, "error", "Unknown admin route: " + path));
                 }
             } else if (method.equals("POST")) {
@@ -157,6 +158,31 @@ public final class AdminServer {
         }
         return true;
     }
+    private Map<String,Object> status() throws IOException {
+        List<String> lines=new ArrayList<>();
+        List<Long> offsets=new ArrayList<>();String generation="";
+        Path file=services.config.folder("logs").resolve("latest.log");
+        if(Files.isRegularFile(file)) {
+            var attributes=Files.readAttributes(file,java.nio.file.attribute.BasicFileAttributes.class);
+            generation=str(attributes.fileKey())+":"+attributes.creationTime().toMillis();
+            // Bounded tail; expose operational summaries only, never payloads/stack traces.
+            try(var input=new RandomAccessFile(file.toFile(),"r")) {
+                long start=Math.max(0,input.length()-65536);input.seek(start);
+                if(start>0)input.readLine();
+                String line;
+                while((line=input.readLine())!=null) {
+                    if(line.matches("(?:\\[[0-9 :\\-]+\\] )?\\[(INFO|WARN)\\] (SEND: [A-Za-z0-9_.]+ \\| (?:code=[0-9]+ \\| )?[0-9]+ B \\| [0-9]+ ms|Starting GGServer [0-9.]+|Database ready: (mongo|sqlite)|Registered [0-9]+ game handlers|Resources ready: [0-9]+ tables / [0-9]+ rows)")) {
+                        lines.add(line);offsets.add(input.getFilePointer());
+                        if(lines.size()>80){lines.removeFirst();offsets.removeFirst();}
+                    }
+                }
+            }
+        }
+        Runtime runtime=Runtime.getRuntime();
+        return obj("success",true,"status",obj("uptime_seconds",java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime()/1000,
+                "heap_used",runtime.totalMemory()-runtime.freeMemory(),"heap_max",runtime.maxMemory(),
+                "database",services.config.databaseBackend,"log_available",Files.isRegularFile(file)),"logs",lines,"log_offsets",offsets,"log_generation",generation);
+    }
     private String canonical(String identifier) {
         var user = services.state.getUser(identifier);
         if (user == null) throw new IllegalArgumentException("Không tìm thấy người chơi!");
@@ -194,7 +220,7 @@ public final class AdminServer {
                     "attendance_count", first(row.get("attendance_count"), ud.get("attendance_count"), 0),
                     "attendance_day", att1.getOrDefault("day", 0), "attendance_ymd", att1.getOrDefault("ymd", 0),
                     "ch2_attendance_day", att3.getOrDefault("day", 0), "ch2_attendance_ymd", att3.getOrDefault("ymd", 0),
-                    "attendance_map", attendance, "ch2_unlocked", ch2, "is_gold", gold,
+                    "attendance_map", attendance, "ch2_unlocked", ch2, "is_gold", gold,"event_overrides",map(user.get("event_overrides")),
                     "star_point", pass.getOrDefault("i_Point", 0), "star_step", pass.getOrDefault("i_Step", 0),
                     "is_banned", truth(row.get("is_banned")), "is_test", StateStore.isTestUser(uuid, str(row.get("device_uuid")))));
         }

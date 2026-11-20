@@ -44,7 +44,8 @@ class AdminServerTest {
         assertEquals(418, call("/administrator", "GET", null, false).statusCode());
         var login = call("/admin", "GET", null, false);
         assertEquals(200, login.statusCode());
-        assertTrue(login.body().contains("/admin/api/login"));
+        assertTrue(login.body().contains("data-page=\"login\""));
+        assertTrue(login.body().contains("/admin/api/"));
         assertEquals(401, call("/admin/api/users", "GET", null, false).statusCode());
         assertEquals(401, call("/admin/api/login", "POST", obj("password", "definitely-not-the-password"), false).statusCode());
         assertEquals(404, call("/admin/api/not-implemented", "GET", null, true).statusCode());
@@ -52,7 +53,7 @@ class AdminServerTest {
         assertEquals(405, call("/admin/api/users", "DELETE", null, true).statusCode());
         var dashboard = call("/admin", "GET", null, true);
         assertTrue(dashboard.body().contains("attendance_events_custom"));
-        assertTrue(dashboard.body().contains("Tiếng Việt"));
+        assertTrue(dashboard.body().contains("data-page=\"dashboard\""));
         var cookie = HttpRequest.newBuilder(base.resolve("/admin/api/events")).header("Cookie", "unrelated=1; gg_admin_token=" + token).GET().build();
         assertEquals(200, client.send(cookie, HttpResponse.BodyHandlers.ofString()).statusCode());
         var logout = call("/admin/api/logout", "POST", obj(), false);
@@ -71,6 +72,52 @@ class AdminServerTest {
         Path otherRoot = root.resolve("generated-key");
         String generated = new AdminAuth(otherRoot, "password", null).createToken(60);
         assertTrue(new AdminAuth(otherRoot, "password", null).verifyToken(generated));
+    }
+    @Test void operationalLogsAreAuthenticatedBoundedAndFiltered() throws Exception {
+        assertEquals(401,call("/admin/api/status","GET",null,false).statusCode());
+        Path logs=services.config.folder("logs");Files.createDirectories(logs);
+        List<String> lines=new ArrayList<>();
+        lines.add("[INFO] secret token=do-not-expose");
+        lines.add("java.lang.Exception: private payload");
+        for(int i=0;i<100;i++)lines.add("[2026-11-17 06:00:00] [INFO] SEND: userSave | 140 B | 5 ms");
+        Files.write(logs.resolve("latest.log"),lines);
+        var response=call("/admin/api/status","GET",null,true);
+        assertEquals(200,response.statusCode());var data=json(response);
+        assertEquals(80,list(data.get("logs")).size());
+        assertEquals(80,list(data.get("log_offsets")).size());
+        assertFalse(str(data.get("log_generation")).isBlank());
+        assertFalse(response.body().contains("do-not-expose"));
+        assertFalse(response.body().contains("private payload"));
+        assertTrue(lng(map(data.get("status")).get("heap_max"))>0);
+    }
+    @Test void accountEventSettingsPersistAndApplyOnlyToTargetRpc() throws Exception {
+        services.state.createUser("event-target","event-target-device");
+        services.state.createUser("event-other","event-other-device");
+        services.events.setMeowfestEnabled(false);
+        var response=call("/admin/api/user/event_settings","POST",obj("uuid","event-target","event_overrides",obj("meowfest",true)),true);
+        assertEquals(200,response.statusCode());
+        services.registry.register("testEventScope",(req,ctx)->emu.leman.ggserver.net.Result.ok(obj("enabled",services.events.isMeowfestEnabled())));
+        var a=services.registry.handle("testEventScope",obj("data",obj("uuid","event-target")),obj());
+        var b=services.registry.handle("testEventScope",obj("data",obj("uuid","event-other")),obj());
+        assertTrue(truth(map(a.data()).get("enabled")));assertFalse(truth(map(b.data()).get("enabled")));
+        assertFalse(services.events.isMeowfestEnabled());
+        assertEquals(400,call("/admin/api/user/event_settings","POST",obj("uuid","event-target","event_overrides",obj("unknown",true)),true).statusCode());
+        assertEquals(200,call("/admin/api/user/event_settings","POST",obj("uuid","event-target","event_overrides",obj()),true).statusCode());
+        assertFalse(truth(map(services.registry.handle("testEventScope",obj("data",obj("uuid","event-target")),obj()).data()).get("enabled")));
+    }
+    @Test void attendanceRejectsOutOfRangeWithoutSavingAndCompletesExactDay() throws Exception {
+        services.state.createUser("attendance-editor","attendance-editor-device");
+        services.events.setAttendanceEventEnabled("202111",true);
+        String before=stringify(services.state.getUser("attendance-editor"));
+        for(int day:List.of(-1,8,123)) {
+            var r=call("/admin/api/user/event_settings","POST",obj("uuid","attendance-editor","add_cp",99,
+                    "attendance_events_custom",obj("202111",obj("modified",true,"target_day",day,"mode","complete"))),true);
+            assertEquals(400,r.statusCode());assertEquals(before,stringify(services.state.getUser("attendance-editor")));
+        }
+        var r=call("/admin/api/user/event_settings","POST",obj("uuid","attendance-editor",
+                "attendance_events_custom",obj("202111",obj("modified",true,"target_day",3,"mode","complete"))),true);
+        assertEquals(200,r.statusCode());
+        assertEquals(3,integer(map(map(services.state.getUser("attendance-editor").get("attendance")).get("202111")).get("day")));
     }
     @Test void settingsCurrenciesInventoryBansAndDeletes() throws Exception {
         var user = services.state.createUser("admin-test-user", "admin-test-device");

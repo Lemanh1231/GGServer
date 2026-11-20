@@ -11,6 +11,8 @@ public final class HandlerRegistry {
     private final ReentrantLock[] accountLocks = new ReentrantLock[1024];
     private final ReentrantReadWriteLock operations = new ReentrantReadWriteLock(true);
     private final Function<String,String> canonicalIdentity;
+    private java.util.function.BiFunction<String,Supplier<Result>,Result> accountScope=(id,operation)->operation.get();
+    public void accountScope(java.util.function.BiFunction<String,Supplier<Result>,Result> scope) {accountScope=Objects.requireNonNull(scope);}
     public HandlerRegistry() { this(Function.identity()); }
     public HandlerRegistry(Function<String,String> canonicalIdentity) {
         this.canonicalIdentity=canonicalIdentity;
@@ -22,7 +24,7 @@ public final class HandlerRegistry {
         if(handler==null) return Result.ok(obj()); // Matches Python's unimplemented-command fallback.
         Map<String,Object> data=payload(request);
         String identity=str(first(data.get("uuid"),context.get("uuid"),data.get("u_seq"),""));
-        return withAccountLock(identity,() -> handler.handle(request,context));
+        return withAccountLock(identity,() -> accountScope.apply(identity,() -> handler.handle(request,context)));
     }
     public <T> T withAccountLock(String identity,Supplier<T> operation) {
         operations.readLock().lock();

@@ -86,7 +86,17 @@ public final class GameServer implements HttpHandler,AutoCloseable {
             if(method.equals("OPTIONS")) {
                 e.getResponseHeaders().set("Access-Control-Allow-Methods","GET, POST, OPTIONS, HEAD");e.getResponseHeaders().set("Access-Control-Allow-Headers","*");send(e,"",200);return;
             }
-            if(path.equals("/") || path.equals("/health")) { send(e,"GG emulator OK",200);return; }
+            if(path.equals("/") || path.equals("/health")) {
+                if(path.equals("/health") && str(e.getRequestHeaders().getFirst("Accept")).contains("text/html")) {
+                    byte[] html=Health.html().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                    e.getResponseHeaders().set("Content-Type","text/html; charset=utf-8");
+                    e.getResponseHeaders().set("Cache-Control","no-store");
+                    e.getResponseHeaders().set("Vary","Accept");
+                    if(e.getRequestMethod().equals("HEAD")){e.sendResponseHeaders(200,-1);e.close();}
+                    else {e.sendResponseHeaders(200,html.length);try(var out=e.getResponseBody()){out.write(html);}}
+                } else {e.getResponseHeaders().set("Vary","Accept");send(e,"GG emulator OK",200);}
+                return;
+            }
             if(path.startsWith("/admin") && admin.handle(e)) return;
             if(method.equals("GET") || method.equals("HEAD")) { get(e,path); return; }
             if(method.equals("POST")) { post(e,path); return; }

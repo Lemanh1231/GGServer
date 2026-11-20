@@ -147,14 +147,14 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             int levels = Math.max(1, (int)value);
             if (unit == null) units.add(obj("i_id", id, "i_Level", Math.min(20, levels)));
             else unit.put("i_Level", Math.min(20, number(unit, "i_Level", 1) + levels));
-        } else if (type == 6 && shop) {
+        } else if (type == 6) {
             List<Object> buffs = items(user, "user_buff");
             Map<String,Object> buff = find(buffs, id);
             if (buff == null) { buff = obj("i_id", id, "i_Level", 1); buffs.add(buff); }
             long end = lng(buff.getOrDefault("i_EndTime", buff.get("i_ExpiredTime")));
             buff.put("i_Level", Math.max(1, number(buff, "i_Level", 1)));
             buff.put("i_ActiveTime", now());
-            buff.put("i_EndTime", Math.max(now(), end) + value);
+            buff.put("i_EndTime", Math.addExact(Math.max(now(), end), value));
             buff.remove("i_BuffTime"); buff.remove("i_ExpiredTime");
         } else if (type == 10 && shop) {
             subscribe(user, id, id > 1000 ? id % 1000 : id);
@@ -597,7 +597,11 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         int day = claimDay(state,maxDay(event));
         Map<String,Object> rew = dayReward(event,day);
         if(rew==null)return Result.error(1,"Attendance reward is unavailable");
-        if(integer(rew.get("reward_type"))!=13&&!validEventReward(rew))return Result.error(1,"Invalid attendance reward");
+        boolean attendanceOnly = strictInt(rew.get("reward_type"))==0
+                && strictInt(rew.get("reward_id"))==0 && strictLong(rew.get("reward_value"))==0
+                && data.rows(38).stream().anyMatch(row->event.equals(str(row.get("1")))
+                    && "DailyReward_Select_NewUser".equals(row.get("2")));
+        if(!attendanceOnly&&integer(rew.get("reward_type"))!=13&&!validEventReward(rew))return Result.error(1,"Invalid attendance reward");
         List<Object> expanded = null;
         if (integer(rew.get("reward_type")) == 13) {
             if(strictInt(rew.get("reward_id"))<=0||strictLong(rew.get("reward_value"))<=0)return Result.error(1,"Invalid selection reward");
@@ -617,7 +621,7 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
             });
             expanded = owned ? alternate : primary;
             for (Object r : expanded) grant(user,map(r),false);
-        } else grant(user,rew,false);
+        } else if(!attendanceOnly) grant(user,rew,false);
         state.put("day",day); state.put("ymd",today());
         if (event.equals("1")) { ud.put("attendance_count",day); ud.put("attendance_date",today()); }
         s.state.saveUser(user);
@@ -749,27 +753,41 @@ public final class EconomyModule implements emu.leman.ggserver.game.GameModule {
         for (Map<String,Object> row : data.rows(18)) if (integer(row.get("2")) == group && integer(row.get("3")) == step)
             if(points>=lng(row.get("4"))) rewards = data.rewards(integer(row.get(type != 0 ? "6" : "5")));
         if(rewards.isEmpty()) return Result.ok(obj("subscribe_pass_reward",obj(),"reward_data",rewards));
-        if (user != null) {
-            boolean paid = s.events.isPaidStarCardEnabled() && s.events.isStarPassEnabled();
-            for (Object raw : items(user,"user_subscribe_list")) {
-                Map<String,Object> sub = map(raw);
-                int id = integer(sub.get("i_SubscribeID"));
-                if ((id == group || id == 1000+group) && truth(sub.get("i_isActive"))) paid = true;
-            }
-            if (type == 1 && !paid) rewards.clear();
-            else {
-                List<Object> claims = items(user,"user_subscribe_pass_reward");
-                Map<String,Object> existing = null;
-                for (Object raw : claims) {
-                    Map<String,Object> old = map(raw);
-                    if (integer(old.get("i_SubscribeID")) == group && integer(old.get("i_Type")) == type && integer(old.get("i_Step")) == step
-                            && strictInt(old.getOrDefault("i_Version",version))==version) { existing = old; break; }
-                }
-                if (existing != null) { claim = existing; rewards.clear(); }
-                else { for (Object rew : rewards) grant(user,map(rew),false); claims.add(claim); s.state.saveUser(user); }
-            }
+        // A denied claim must not look like a persisted receipt to the native UI.
+        if(type==1 && !paidPass(user,group))
+            return Result.ok(obj("subscribe_pass_reward",obj(),"reward_data",List.of()));
+        List<Object> claims = items(user,"user_subscribe_pass_reward");
+        Map<String,Object> existing = null;
+        for (Object raw : claims) {
+            Map<String,Object> old = map(raw);
+            if (integer(old.get("i_SubscribeID")) == group && integer(old.get("i_Type")) == type && integer(old.get("i_Step")) == step
+                    && strictInt(old.getOrDefault("i_Version",version))==version) { existing = old; break; }
+        }
+        if (existing != null) { claim = existing; rewards.clear(); }
+        else {
+            for (Object rew : rewards) grant(user,map(rew),false);
+            claims.add(claim);
+            s.state.saveUser(user); // Buffs/currencies/inventory and receipt publish together.
         }
         return Result.ok(obj("subscribe_pass_reward",claim,"reward_data",rewards));
+    }
+
+    private boolean paidPass(Map<String,Object> user,int group) {
+        if(s.events.isPaidStarCardEnabled() && s.events.isStarPassEnabled()) return true;
+        for(Object raw:items(user,"user_subscribe_list")) {
+            var sub=map(raw);int id=integer(sub.get("i_SubscribeID"));
+            if((id==group || id==1000+group) && truth(sub.get("i_isActive"))) return true;
+        }
+        // Login projects subscriptions from durable purchases. Claims must also work
+        // before that projection (e.g. imported accounts), without granting free Gold.
+        for(Object raw:items(user,"user_shop")) {
+            var item=map(raw);int id=integer(item.get("i_id"));
+            if((id==1000+group || id==2000+group || id==3000+group)
+                    && lng(item.getOrDefault("i_Count",item.get("i_TotalCount")))>0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int stepForPoints(int group, long points) {

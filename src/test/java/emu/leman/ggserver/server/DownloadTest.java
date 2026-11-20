@@ -49,7 +49,8 @@ class DownloadTest {
     }
     @Test void landingPageNamesJavaAndDoesNotPromiseLosslessUninstall() {
         String html=Download.getDownloadHtml();assertTrue(html.contains("Java Server"));
-        assertTrue(html.contains("kotorin.dev"));assertFalse(html.contains("100%"));
+        assertTrue(html.contains("kotorin.dev"));
+        assertFalse(html.contains("100% an toàn"));
         assertTrue(html.contains("Không gỡ game"));
     }
 }

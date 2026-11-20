@@ -23,6 +23,10 @@ public final class Services implements AutoCloseable {
         events=new EventManager(this.root);
         sessions=new SessionManager(config.sessionTimeoutSeconds,config.sessionCleanupSeconds,config.maxSessions);
         registry=new HandlerRegistry(state::canonicalIdentity);
+        registry.accountScope((identity,operation)-> {
+            var user=identity.isBlank()?null:state.getUser(identity);
+            return events.withAccount(user==null?java.util.Map.of():user,operation);
+        });
     }
     @Override public void close() { try { sessions.close(); } finally { state.close(); } }
 }

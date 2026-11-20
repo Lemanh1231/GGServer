@@ -56,10 +56,12 @@ class ContentModuleTest {
     }
     @Test void meowfestRewardsAreGrantedExactlyOnce() {
         var u=user();u.put("characters",new ArrayList<>(List.of(obj("i_id",1,"i_Level",200))));u.put("user_music",new ArrayList<>(List.of(obj("i_id",1,"i_Level",1),obj("i_id",211,"i_Level",1),obj("i_id",216,"i_Level",1))));u.put("user_unit",new ArrayList<>(List.of(obj("i_id",1,"i_Level",1))));s.state.saveUser(u);
+        double candy=dbl(map(user().get("userdata")).get("u_candy"));
         call("getSamSeckReward","i_id",1);call("getSamSeckReward","i_id",2);call("getSamSeckReward","i_id",3);call("getSamSeckReward","i_id",3);
         assertEquals(3,integer(map(user().get("userdata")).get("u_samseck_step")));
         assertEquals(1,ContentModule.rows(user(),"user_guitar").stream().filter(r->integer(r.get("i_id"))==10).count());
-        assertEquals(2,integer(ContentModule.find(ContentModule.rows(user(),"user_unit"),1).get("i_Level")));
+        assertEquals(1,integer(ContentModule.find(ContentModule.rows(user(),"user_unit"),1).get("i_Level")));
+        assertEquals(candy+333.0,dbl(map(user().get("userdata")).get("u_candy")));
         s.events.setMeowfestEnabled(false);assertEquals(1,integer(call("getSamSeckReward","i_id",1).error().get("code")));
     }
     @Test void freshUserStagesStayEmptyUntilExplicitChapterQuery() {

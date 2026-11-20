@@ -16,11 +16,15 @@ class AccountModuleTest {
         Result result=s.registry.handle(command,obj("data",payload),obj("uuid","fallback","client_ip","203.0.113.8","domain","game.test"));
         assertEquals(0,integer(result.error().get("code"))); return map(result.data());
     }
-    @Test void registersEveryCommandAndKeepsSystemRevisionFixed() {
+    @Test void registersEveryCommandAndUpdatesRevisionOnlyWhenConfigurationChanges() {
         try(Services s=new Services(root)) {
             new AccountModule(s).register();
             assertEquals(Set.of("userJoin","userLogin","userSave","userLoad","lastSaveTime","setTutorialNew","setSubscribe","setReviewPopup","updateNickName","updateAvatar","updateUserTitle","getProfile","Request","getServerTime","getUpdateTime","defaultSettingList","hibernationLog","getLocalPush","completeLog"),s.registry.commands());
-            assertEquals(1700000000,lng(call(s,"getUpdateTime",obj()).get("upd_time")));
+            long revision=lng(call(s,"getUpdateTime",obj()).get("upd_time"));
+            assertTrue(revision>1700000000L);
+            assertEquals(revision,lng(call(s,"getUpdateTime",obj()).get("upd_time")));
+            s.events.save(emu.leman.ggserver.game.content.EventManager.defaults());
+            assertTrue(lng(call(s,"getUpdateTime",obj()).get("upd_time"))>revision);
             assertEquals(27,list(call(s,"defaultSettingList",obj()).get("setting_list")).size());
             long datetime=lng(call(s,"getServerTime",obj()).get("datetime")); assertTrue(datetime>20200000000000L);
         }

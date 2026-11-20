@@ -30,7 +30,7 @@ public final class AccountModule implements emu.leman.ggserver.game.GameModule {
         new ProfileModule(s).register();
         s.registry.register(CmdId.REQUEST,(r,c)->Result.ok(obj("idx",253,"game_url",c.get("game_url"),"cdn_url",c.get("cdn_url"))));
         s.registry.register(CmdId.GET_SERVER_TIME,(r,c)->Result.ok(serverTime()));
-        s.registry.register(CmdId.GET_UPDATE_TIME,(r,c)->Result.ok(obj("upd_time",1700000000)));
+        s.registry.register(CmdId.GET_UPDATE_TIME,(r,c)->Result.ok(obj("upd_time",s.events.catalogRevision(s.gameData.namedData()))));
         s.registry.register(CmdId.DEFAULT_SETTING_LIST,(r,c)->Result.ok(defaultSettings()));
         s.registry.register(CmdId.HIBERNATION_LOG,(r,c)->Result.ok(obj("action",0)));
         // Legacy RPC list is not table25 and is not an OS push delivery channel.
